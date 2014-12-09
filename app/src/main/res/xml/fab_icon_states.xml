@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<state-list>
+    
+    <state>				
+        <points>
+        	<item>0.5</item>    
+        	<item>0</item>
+        	<item>0.5</item>
+        	<item>1</item>
+        	
+        	<item>0</item>
+        	<item>0.5</item>
+        	<item>1</item>
+        	<item>0.5</item>
+        </points>        
+    </state>
+    
+    <state>        
+        <points>
+            <item>0.633</item>
+        	<item>0.161</item>
+        	<item>0</item>
+        	<item>0.793</item>
+        	
+        	<item>0.633</item>    
+        	<item>0.161</item>
+        	<item>1</item>
+        	<item>0.527</item>
+        </points>
+        
+        <links>
+            <item>0</item>        	
+        	<item>1</item>
+        </links>        
+    </state>
+
+</state-list>

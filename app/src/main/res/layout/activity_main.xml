@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_dl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        
+        <android.support.v7.widget.Toolbar  
+		    android:id="@+id/main_toolbar"
+		    android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:minHeight="?attr/actionBarSize"
+		    android:background="?attr/colorPrimary"
+		    app:theme="@style/AppBar"/>       
+        
+        <com.rey.material.view.TabPageIndicator
+        	style="@style/TabPageIndicator" 
+            android:id="@+id/main_tpi"                
+            android:layout_height="48dp"
+            android:layout_width="match_parent"
+            android:paddingLeft="60dp"
+            android:clipToPadding="false"
+            android:background="?attr/colorPrimary"/>  
+        
+        <android.support.v4.view.ViewPager
+		    android:id="@+id/main_vp"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent" />
+        
+    </LinearLayout>    
+    
+    <FrameLayout 
+        android:id="@+id/main_fl_drawer"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:paddingTop="?attr/actionBarSize">
+        
+        <ListView 
+            android:id="@+id/main_lv_drawer"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"	        
+	        android:choiceMode="singleChoice"
+	        android:divider="@null"
+	        android:dividerHeight="0dp"
+	        android:background="?android:attr/windowBackground"
+	        android:listSelector="?attr/colorPrimary"/>
+        
+    </FrameLayout>    
+    
+</android.support.v4.widget.DrawerLayout>

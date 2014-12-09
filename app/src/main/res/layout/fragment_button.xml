@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbarStyle="outsideOverlay">
+    
+    <LinearLayout    
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:gravity="center">
+	    
+        <View
+            android:id="@+id/button_v"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:layout_marginTop="16dp"/>   
+	    	        
+	    <TextView 
+			android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:textSize="@dimen/title_text"
+		    android:padding="8dp"
+		    android:textColor="#FF000000"
+		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+		    android:text="Flat"/>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_flat"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF000000"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/FlatButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="0dp"
+		        android:layout_height="1dp"
+		        android:layout_weight="0.1"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_flat_color"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF2196F3"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/FlatColorButtonRippleStyle"
+		        app:delayClick="true"/>
+	        
+	    </LinearLayout>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center"
+	        android:paddingTop="8dp">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_flat_wave"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF000000"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/FlatWaveButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="0dp"
+		        android:layout_height="1dp"
+		        android:layout_weight="0.1"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_flat_wave_color"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF2196F3"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/FlatWaveColorButtonRippleStyle"
+		        app:delayClick="true"/>
+	        
+	    </LinearLayout>
+	    
+	    <TextView 
+			android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:textSize="@dimen/title_text"
+		    android:padding="8dp"
+		    android:textColor="#FF000000"
+		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+		    android:text="Raise"/>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_raise"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF000000"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/RaiseButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="0dp"
+		        android:layout_height="1dp"
+		        android:layout_weight="0.1"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_raise_color"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FFFFFFFF"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/RaiseColorButtonRippleStyle"
+		        app:delayClick="true"/>
+	        
+	    </LinearLayout>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center"
+	        android:paddingTop="8dp">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_raise_wave"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FF000000"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/RaiseWaveButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="0dp"
+		        android:layout_height="1dp"
+		        android:layout_weight="0.1"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_raise_wave_color"
+		        android:layout_width="0dp"
+		        android:layout_height="@dimen/bt_height"
+		        android:layout_weight="0.4"
+		        android:textColor="#FFFFFFFF"
+		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+		        android:text="BUTTON"
+		        app:ripple="@style/RaiseWaveColorButtonRippleStyle"
+		        app:delayClick="true"/>
+	        
+	    </LinearLayout>
+	    
+	    <TextView 
+			android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:textSize="@dimen/title_text"
+		    android:padding="8dp"
+		    android:textColor="#FF000000"
+		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+		    android:text="Float"/>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_float"
+		        android:layout_width="76dp"
+		        android:layout_height="78dp"
+		        android:textColor="#FF000000"
+		        android:text="+"
+		        android:textSize="30sp"
+		        app:ripple="@style/FloatButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="100dp"
+		        android:layout_height="1dp"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_float_color"
+		        android:layout_width="76dp"
+		        android:layout_height="78dp"
+		        android:textColor="#FFFFFFFF"
+		        android:text="+"
+		        android:textSize="30sp"
+		        app:ripple="@style/FloatColorButtonRippleStyle"
+		        app:delayClick="true"/>        
+	    </LinearLayout>
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="1.0"
+	        android:gravity="center"
+	        android:padding="8dp">
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_float_wave"
+		        android:layout_width="76dp"
+		        android:layout_height="78dp"
+		        android:textColor="#FF000000"
+		        android:text="+"
+		        android:textSize="30sp"
+		        app:ripple="@style/FloatWaveButtonRippleStyle"
+		        app:delayClick="false"/>
+	        
+	        <View
+	            android:layout_width="100dp"
+		        android:layout_height="1dp"/>
+	        
+	        <com.rey.material.view.Button 
+		        android:id="@+id/button_bt_float_wave_color"
+		        android:layout_width="76dp"
+		        android:layout_height="78dp"
+		        android:textColor="#FFFFFFFF"
+		        android:text="+"
+		        android:textSize="30sp"
+		        app:ripple="@style/FloatWaveColorButtonRippleStyle"
+		        app:delayClick="true"/>        
+	    </LinearLayout>
+
+	</LinearLayout>
+    
+    
+</ScrollView>
+    

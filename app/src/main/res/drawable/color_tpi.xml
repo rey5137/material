@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	
+    <item android:state_enabled="true" android:state_checked="false" android:color="@color/tpi_unchecked" />    
+    <item android:state_enabled="true" android:state_checked="true" android:color="@color/tpi_checked" />
+    
+</selector>

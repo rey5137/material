@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        
+    <item
+        android:id="@+id/ab_bt_thumb"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_thumb_up"
+        android:title="Thumb up"/>
+    
+</menu>
