@@ -42,7 +42,6 @@ public class ProgressFragment extends Fragment implements Callback{
 		
 	public static ProgressFragment newInstance(){
 		ProgressFragment fragment = new ProgressFragment();
-		
 		return fragment;
 	}
 

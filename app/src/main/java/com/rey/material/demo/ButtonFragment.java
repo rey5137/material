@@ -84,13 +84,16 @@ public class ButtonFragment extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				RevealDrawable.ColorChangeTask task1 = new RevealDrawable.ColorChangeTask(color1, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
-				RevealDrawable.ColorChangeTask task2 = new RevealDrawable.ColorChangeTask(color2, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
-				
-				if(drawable.getCurColor() == color1)
-					drawable.changeColor(task2, task1, task2);
-				else
-					drawable.changeColor(task1, task2, task1);
+//				RevealDrawable.ColorChangeTask task1 = new RevealDrawable.ColorChangeTask(color1, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
+//				RevealDrawable.ColorChangeTask task2 = new RevealDrawable.ColorChangeTask(color2, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
+//
+//				if(drawable.getCurColor() == color1)
+//					drawable.changeColor(task2, task1, task2);
+//				else
+//					drawable.changeColor(task1, task2, task1);
+
+                Dialog dialog = new Dialog();
+                dialog.show(getFragmentManager(), "asd");
 			}
 			
 		});
