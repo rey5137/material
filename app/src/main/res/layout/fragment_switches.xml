@@ -21,7 +21,7 @@
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Checkbox"/>
 	    
-	    <com.rey.material.view.CheckBox 
+	    <com.rey.material.widget.CheckBox
             style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb1"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             android:checked="true"
             android:gravity="center_vertical"/>  
             
-	    <com.rey.material.view.CheckBox 
+	    <com.rey.material.widget.CheckBox
             style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb2"
             android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
             android:checked="false"
             android:gravity="center_vertical"/>
 	    
-	    <com.rey.material.view.CheckBox 
+	    <com.rey.material.widget.CheckBox
             style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb3"
             android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Radio Button"/>
 	    
-	    <com.rey.material.view.RadioButton 
+	    <com.rey.material.widget.RadioButton
             style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb1"
             android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
             android:checked="true"
             android:gravity="center_vertical"/>   
             
-	    <com.rey.material.view.RadioButton 
+	    <com.rey.material.widget.RadioButton
             style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb2"
             android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
             android:checked="false"
             android:gravity="center_vertical"/>   
             
-	    <com.rey.material.view.RadioButton 
+	    <com.rey.material.widget.RadioButton
             style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb3"
             android:layout_width="wrap_content"
@@ -99,14 +99,14 @@
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Switch"/>
 	    
-	    <com.rey.material.view.Switch 
+	    <com.rey.material.widget.Switch
             style="@style/SwitchDefault"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:checked="false"/>
 	    
-	    <com.rey.material.view.Switch 
+	    <com.rey.material.widget.Switch
             style="@style/SwitchDefault"
             android:layout_width="64dp"
             android:layout_height="wrap_content"

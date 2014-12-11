@@ -12,7 +12,7 @@
 	    android:orientation="vertical"
 	    android:padding="8dp">
 	    
-        <com.rey.material.view.EditText
+        <com.rey.material.widget.EditText
             android:id="@+id/textfield_et_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:inputType="text"
             android:hint="Input with label"/>  
 	    
-        <com.rey.material.view.EditText
+        <com.rey.material.widget.EditText
             android:id="@+id/textfield_et_char_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             android:hint="Input with char counter"
             android:layout_marginTop="8dp"/>        
         
-        <com.rey.material.view.EditText
+        <com.rey.material.widget.EditText
             android:id="@+id/textfield_et_helper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             android:hint="Input with helper"
             android:layout_marginTop="8dp"/>   
             
-        <com.rey.material.view.EditText
+        <com.rey.material.widget.EditText
             android:id="@+id/textfield_et_helper_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
             android:hint="Input with helper + error"
             android:layout_marginTop="8dp"/>   
             
-        <com.rey.material.view.EditText
+        <com.rey.material.widget.EditText
             android:id="@+id/textfield_et_disable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

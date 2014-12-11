@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.view.TabPageIndicator;
+import com.rey.material.widget.TabPageIndicator;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 

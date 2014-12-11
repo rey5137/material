@@ -1,4 +1,4 @@
-package com.rey.material.view;
+package com.rey.material.widget;
 
 import android.content.Context;
 import android.support.v7.internal.widget.ListViewCompat;

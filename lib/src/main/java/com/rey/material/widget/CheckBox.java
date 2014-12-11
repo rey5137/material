@@ -1,4 +1,4 @@
-package com.rey.material.view;
+package com.rey.material.widget;
 
 import com.rey.material.drawable.CheckBoxDrawable;
 

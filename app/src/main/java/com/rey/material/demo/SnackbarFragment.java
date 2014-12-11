@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.view.Button;
-import com.rey.material.view.SnackBar;
+import com.rey.material.widget.Button;
+import com.rey.material.widget.SnackBar;
 
 public class SnackbarFragment extends Fragment{
 	

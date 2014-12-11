@@ -21,7 +21,7 @@
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Mobile Snackbar"/>
 	    
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_mobile_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -32,7 +32,7 @@
 			    app:ripple="@style/RaiseButtonRippleStyle"
 			    app:delayClick="false"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_mobile_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -53,7 +53,7 @@
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Tablet Snackbar"/>
 	    
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_tablet_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -64,7 +64,7 @@
 			    app:ripple="@style/RaiseButtonRippleStyle"
 			    app:delayClick="false"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_tablet_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"

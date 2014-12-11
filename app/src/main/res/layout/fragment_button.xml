@@ -34,7 +34,7 @@
 	        android:weightSum="1.0"
 	        android:gravity="center">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_flat"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -50,7 +50,7 @@
 		        android:layout_height="1dp"
 		        android:layout_weight="0.1"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_flat_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -71,7 +71,7 @@
 	        android:gravity="center"
 	        android:paddingTop="8dp">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_flat_wave"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -87,7 +87,7 @@
 		        android:layout_height="1dp"
 		        android:layout_weight="0.1"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_flat_wave_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -116,7 +116,7 @@
 	        android:weightSum="1.0"
 	        android:gravity="center">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_raise"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -132,7 +132,7 @@
 		        android:layout_height="1dp"
 		        android:layout_weight="0.1"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_raise_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -153,7 +153,7 @@
 	        android:gravity="center"
 	        android:paddingTop="8dp">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_raise_wave"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -169,7 +169,7 @@
 		        android:layout_height="1dp"
 		        android:layout_weight="0.1"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_raise_wave_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
@@ -198,7 +198,7 @@
 	        android:weightSum="1.0"
 	        android:gravity="center">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_float"
 		        android:layout_width="76dp"
 		        android:layout_height="78dp"
@@ -212,7 +212,7 @@
 	            android:layout_width="100dp"
 		        android:layout_height="1dp"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_float_color"
 		        android:layout_width="76dp"
 		        android:layout_height="78dp"
@@ -231,7 +231,7 @@
 	        android:gravity="center"
 	        android:padding="8dp">
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_float_wave"
 		        android:layout_width="76dp"
 		        android:layout_height="78dp"
@@ -245,7 +245,7 @@
 	            android:layout_width="100dp"
 		        android:layout_height="1dp"/>
 	        
-	        <com.rey.material.view.Button 
+	        <com.rey.material.widget.Button
 		        android:id="@+id/button_bt_float_wave_color"
 		        android:layout_width="76dp"
 		        android:layout_height="78dp"

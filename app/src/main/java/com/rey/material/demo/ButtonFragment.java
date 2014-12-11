@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.rey.material.app.Dialog;
 import com.rey.material.drawable.RevealDrawable;
-import com.rey.material.view.Button;
+import com.rey.material.util.ThemeUtil;
+import com.rey.material.widget.Button;
 
 public class ButtonFragment extends Fragment{
 
@@ -92,8 +94,15 @@ public class ButtonFragment extends Fragment{
 //				else
 //					drawable.changeColor(task1, task2, task1);
 
-                Dialog dialog = new Dialog();
-                dialog.show(getFragmentManager(), "asd");
+                Dialog dialog = new Dialog(getActivity());
+                dialog.setLayoutParams(ThemeUtil.dpToPx(getActivity(), 300), ThemeUtil.dpToPx(getActivity(), 200));
+                dialog.setDimAmount(0.5f);
+                dialog.setBackgroundColor(0xFFFFFFFF);
+                dialog.setElevation(ThemeUtil.dpToPx(getActivity(), 4));
+                dialog.setMaxElevation(ThemeUtil.dpToPx(getActivity(), 10));
+                dialog.setCornerRadius(ThemeUtil.dpToPx(getActivity(), 2));
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
 			}
 			
 		});

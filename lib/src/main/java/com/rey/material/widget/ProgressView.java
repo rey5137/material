@@ -1,4 +1,4 @@
-package com.rey.material.view;
+package com.rey.material.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

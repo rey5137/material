@@ -1,6 +1,6 @@
 package com.rey.material.demo;
 
-import com.rey.material.view.EditText;
+import com.rey.material.widget.EditText;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

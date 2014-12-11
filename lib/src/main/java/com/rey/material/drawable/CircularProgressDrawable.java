@@ -20,7 +20,7 @@ import com.rey.material.R;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
-import com.rey.material.view.ProgressView;
+import com.rey.material.widget.ProgressView;
 
 public class CircularProgressDrawable extends Drawable implements Animatable {
 	

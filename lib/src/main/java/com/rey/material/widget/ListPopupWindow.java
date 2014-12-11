@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rey.material.view;
+package com.rey.material.widget;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
@@ -525,7 +525,7 @@ public class ListPopupWindow {
      *
      * @param clickListener Listener to register
      *
-     * @see ListView#setOnItemClickListener(android.widget.AdapterView.OnItemClickListener)
+     * @see com.rey.material.widget.ListView#setOnItemClickListener(android.widget.AdapterView.OnItemClickListener)
      */
     public void setOnItemClickListener(AdapterView.OnItemClickListener clickListener) {
         mItemClickListener = clickListener;
@@ -536,7 +536,7 @@ public class ListPopupWindow {
      *
      * @param selectedListener Listener to register.
      *
-     * @see ListView#setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener)
+     * @see com.rey.material.widget.ListView#setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener)
      */
     public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener selectedListener) {
         mItemSelectedListener = selectedListener;
