@@ -192,7 +192,7 @@ public class ListPopupWindow {
      * @param context Context used for contained views.
      */
     public ListPopupWindow(Context context) {
-        this(context, null, R.attr.listPopupWindowStyle);
+        this(context, null, R.attr.listPopupWindowStyle, 0);
     }
 
     /**
@@ -203,7 +203,7 @@ public class ListPopupWindow {
      * @param attrs   Attributes from inflating parent views used to style the popup.
      */
     public ListPopupWindow(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.listPopupWindowStyle);
+        this(context, attrs, R.attr.listPopupWindowStyle, 0);
     }
 
     /**
@@ -214,11 +214,24 @@ public class ListPopupWindow {
      * @param attrs Attributes from inflating parent views used to style the popup.
      * @param defStyleAttr Default style attribute to use for popup content.
      */
-    public ListPopupWindow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ListPopupWindow(Context context, AttributeSet attrs, int defStyleAttr){
+        this(context, attrs, defStyleAttr, 0);
+    }
+
+    /**
+     * Create a new, empty popup window capable of displaying items from a ListAdapter.
+     * Backgrounds should be set using {@link #setBackgroundDrawable(android.graphics.drawable.Drawable)}.
+     *
+     * @param context Context used for contained views.
+     * @param attrs Attributes from inflating parent views used to style the popup.
+     * @param defStyleAttr Default style attribute to use for popup content.
+     * @param defStyleRes Default style to use for popup content.
+     */
+    public ListPopupWindow(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         mContext = context;
 
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ListPopupWindow,
-                defStyleAttr, 0);
+                defStyleAttr, defStyleRes);
         mDropDownHorizontalOffset = a.getDimensionPixelOffset(
                 R.styleable.ListPopupWindow_android_dropDownHorizontalOffset, 0);
         mDropDownVerticalOffset = a.getDimensionPixelOffset(

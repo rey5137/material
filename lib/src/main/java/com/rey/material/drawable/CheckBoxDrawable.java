@@ -363,9 +363,13 @@ public class CheckBoxDrawable extends Drawable implements Animatable {
 		private int mTickColor = 0xFFFFFFFF;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CheckBoxDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CheckBoxDrawable, defStyleAttr, defStyleRes);
 			
 			width(a.getDimensionPixelSize(R.styleable.CheckBoxDrawable_cbd_width, ThemeUtil.dpToPx(context, 32)));
 			height(a.getDimensionPixelSize(R.styleable.CheckBoxDrawable_cbd_height, ThemeUtil.dpToPx(context, 32)));

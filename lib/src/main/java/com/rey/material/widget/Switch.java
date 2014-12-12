@@ -59,29 +59,35 @@ public class Switch extends View implements Checkable {
 	private float mStartPosition;
 	
 	private int[] mTempStates = new int[2];
+
+    public Switch(Context context) {
+        super(context);
+
+        init(context, null, 0, 0);
+    }
+
+    public Switch(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context, attrs, 0, 0);
+    }
+
+	public Switch(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-	public Switch(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		
-		init(context, attrs, defStyle);				
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public Switch(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0);
-	}
+    public Switch(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
 
-	public Switch(Context context) {
-		super(context);
-		
-		init(context, null, 0);
-	}
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 	
-	private void init(Context context, AttributeSet attrs, int defStyle){
-		mRippleManager.onCreate(this, context, attrs, defStyle);
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 				
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, 0, defStyle);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
 		
 		mStrokeSize = a.getDimensionPixelSize(R.styleable.Switch_sw_strokeSize, ThemeUtil.dpToPx(context, 2));
 		mStrokeColors = a.getColorStateList(R.styleable.Switch_sw_strokeColor);

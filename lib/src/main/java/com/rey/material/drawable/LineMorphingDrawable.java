@@ -403,9 +403,13 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 		private static final String TAG_ITEM = "item";
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LineMorphingDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LineMorphingDrawable, defStyleAttr, defStyleRes);
 			int resId;
 			
 			if((resId = a.getResourceId(R.styleable.LineMorphingDrawable_lmd_state, 0)) != 0)

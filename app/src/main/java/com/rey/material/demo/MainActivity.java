@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
 		
 		setSupportActionBar(toolbar);
-		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, null, R.style.NavigationDrawerDrawable).build();
+		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, R.style.NavigationDrawerDrawable).build();
 		toolbar.setNavigationIcon(mNavigatorDrawable);
 		
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {

@@ -24,19 +24,19 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public void onCreate(View v, Context context, AttributeSet attrs, int defStyle){
+	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		mView = v;
 		
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, 0, defStyle);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, defStyleRes);
 		int resId = a.getResourceId(R.styleable.RippleView_ripple, 0);		
 		mDelayClick = a.getBoolean(R.styleable.RippleView_delayClick, mDelayClick);
 		a.recycle();
 		
 		if(resId != 0){
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mView.setBackground(new RippleDrawable.Builder(context, attrs, resId).build());
+				mView.setBackground(new RippleDrawable.Builder(context, resId).build());
 			else
-				mView.setBackgroundDrawable(new RippleDrawable.Builder(context, attrs, resId).build());
+				mView.setBackgroundDrawable(new RippleDrawable.Builder(context, resId).build());
 		}		
 	}
 	

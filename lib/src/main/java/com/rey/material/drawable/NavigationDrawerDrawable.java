@@ -103,19 +103,23 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
 		private LineMorphingDrawable mLineDrawable;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NavigationDrawerDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NavigationDrawerDrawable, defStyleAttr, defStyleRes);
 						
 			if(a != null){
 				int rippleId = a.getResourceId(R.styleable.NavigationDrawerDrawable_nd_ripple, 0);
 				int lineId = a.getResourceId(R.styleable.NavigationDrawerDrawable_nd_icon, 0);
 					
 				if(rippleId > 0)
-					ripple(new ToolbarRippleDrawable.Builder(context, null, rippleId).build());
+					ripple(new ToolbarRippleDrawable.Builder(context, rippleId).build());
 				
 				if(lineId > 0){
-					LineMorphingDrawable.Builder builder = new LineMorphingDrawable.Builder(context, null, lineId);
+					LineMorphingDrawable.Builder builder = new LineMorphingDrawable.Builder(context, lineId);
 					
 					builder.states(new LineMorphingDrawable.State(new float[]{0f, 0.1f, 1f, 0.1f, 0f, 0.5f, 1f, 0.5f, 0f, 0.9f, 1f, 0.9f}, null), new LineMorphingDrawable.State(new float[]{0.5f, 0f, 1f, 0.5f, 0f, 0.5f, 1f, 0.5f, 0.5f, 1f, 1f, 0.5f}, new int[]{0, 2}));
 					

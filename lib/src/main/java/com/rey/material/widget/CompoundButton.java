@@ -13,32 +13,38 @@ public class CompoundButton extends android.widget.CompoundButton {
 
 	private RippleManager mRippleManager = new RippleManager();
 	private Drawable mButtonDrawable;
-	
-	public CompoundButton(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+
+    public CompoundButton(Context context) {
+        super(context);
+
+        init(context, null, 0, 0);
+    }
+
+    public CompoundButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context, attrs, 0, 0);
+    }
+
+	public CompoundButton(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);				
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public CompoundButton(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0);
-	}
+    public CompoundButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
 
-	public CompoundButton(Context context) {
-		super(context);
-		
-		init(context, null, 0);
-	}
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-	private void init(Context context, AttributeSet attrs, int defStyle){
-		mRippleManager.onCreate(this, context, attrs, defStyle);
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 		
 		//a fix to reset paddingLeft attribute
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1){
-			TypedArray a = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.padding, android.R.attr.paddingLeft}, 0, defStyle);
+			TypedArray a = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.padding, android.R.attr.paddingLeft}, defStyleAttr, defStyleRes);
 			
 			if(!a.hasValue(0) && !a.hasValue(1))
 				setPadding(0, getPaddingTop(), getPaddingRight(), getPaddingBottom());

@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -75,43 +76,61 @@ public class SnackBar extends FrameLayout {
 	public static SnackBar make(Context context){
 		return new SnackBar(context);
 	}
-	
-	@SuppressWarnings("deprecation")
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
 	private SnackBar(Context context){
 		super(context);
-		
-		mText = new TextView(context);
-		mText.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
-		addView(mText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		
-		mAction = new Button(context);
-		mAction.setBackgroundResource(0);
-		mAction.setGravity(Gravity.CENTER);
-		mAction.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(mActionClickListener != null)
-					mActionClickListener.onActionClick(SnackBar.this, mActionId);
-				
-				dismiss();
-			}
-			
-		});
-		addView(mAction, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		
-		
-		mBackground = new BackgroundDrawable();
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			setBackground(mBackground);
-		else
-			setBackgroundDrawable(mBackground);
-		
-		setClickable(true);
+		init(context, null, 0, 0);
 	}
-		
-	@Override
+
+    private SnackBar(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs, 0, 0);
+    }
+
+    private SnackBar(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, 0);
+    }
+
+    private SnackBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mText = new TextView(context);
+        mText.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
+        addView(mText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        mAction = new Button(context);
+        mAction.setBackgroundResource(0);
+        mAction.setGravity(Gravity.CENTER);
+        mAction.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mActionClickListener != null)
+                    mActionClickListener.onActionClick(SnackBar.this, mActionId);
+
+                dismiss();
+            }
+
+        });
+        addView(mAction, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+
+        mBackground = new BackgroundDrawable();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            setBackground(mBackground);
+        else
+            setBackgroundDrawable(mBackground);
+
+        setClickable(true);
+    }
+
+    @Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -352,9 +371,9 @@ public class SnackBar extends FrameLayout {
 	public SnackBar actionRipple(int resId){
 		if(resId != 0){
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mAction.setBackground(new RippleDrawable.Builder(getContext(), null, resId).build());
+				mAction.setBackground(new RippleDrawable.Builder(getContext(), resId).build());
 			else
-				mAction.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), null, resId).build());
+				mAction.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), resId).build());
 		}	
 		return this;
 	}

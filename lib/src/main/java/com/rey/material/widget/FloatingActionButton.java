@@ -45,25 +45,31 @@ public class FloatingActionButton extends Button {
  	public FloatingActionButton(Context context) {
 		super(context);
 		
-		init(context, null, 0);
+		init(context, null, 0, 0);
 	}
 	
 	public FloatingActionButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		init(context, attrs, 0);
+		init(context, attrs, 0, 0);
 	}
 	
 	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyleAttr);
+		init(context, attrs, defStyleAttr, 0);
 	}
+
+    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
+
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 	
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public void init(Context context, AttributeSet attrs, int defStyleAttr) {
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, 0, defStyleAttr);
+	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, defStyleRes);
 		
 		int radius = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_radius, ThemeUtil.dpToPx(context, 28));
 		int elevation = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_elevation, ThemeUtil.dpToPx(context, 4));
@@ -79,13 +85,13 @@ public class FloatingActionButton extends Button {
 		mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation);
 		
 		if(iconId != 0)
-			setIcon(new LineMorphingDrawable.Builder(context, attrs, iconId).build());
+			setIcon(new LineMorphingDrawable.Builder(context, iconId).build());
 		
-		mRippleManager.onCreate(this, context, null, 0);
+		mRippleManager.onCreate(this, context, null, 0, 0);
 		mRippleManager.setDelayClick(delayClick);
 				
 		if(rippleId != 0){
-			RippleDrawable.Builder buidler = new RippleDrawable.Builder(context, attrs, rippleId);
+			RippleDrawable.Builder buidler = new RippleDrawable.Builder(context, rippleId);
 			
 			buidler.maskType(RippleDrawable.Mask.TYPE_OVAL)
 					.backgroundDrawable(null)

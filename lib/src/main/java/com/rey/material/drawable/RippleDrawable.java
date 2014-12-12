@@ -472,9 +472,13 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		private int mMaskBottom;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, defStyleAttr, defStyleRes);
 			
 			int resId = a.getResourceId(R.styleable.RippleDrawable_rd_background, 0);
 			if(resId != 0)

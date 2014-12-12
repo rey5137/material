@@ -77,34 +77,39 @@ public class EditText extends FrameLayout {
 	private InputView mInputView;
 	private LabelView mSupportView;
 	private DividerDrawable mDivider;
-	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public EditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+
+    public EditText(Context context) {
+        super(context);
+
+        init(context, null, 0, 0);
+    }
+
+    public EditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context, attrs, 0, 0);
+    }
+
+	public EditText(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);				
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public EditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0);
-	}
+    public EditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
 
-	public EditText(Context context) {
-		super(context);
-		
-		init(context, null, 0);
-	}
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private void init(Context context, AttributeSet attrs, int defStyle){		
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditText, 0, defStyle);
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditText, defStyleAttr, defStyleRes);
 		
 		mLabelEnable = a.getBoolean(R.styleable.EditText_et_labelEnable, false);
 		mSupportMode = a.getInteger(R.styleable.EditText_et_supportMode, SUPPORT_MODE_NONE);
 		
-		mInputView = new InputView(context, attrs, defStyle);
+		mInputView = new InputView(context, attrs, defStyleAttr);
 		int inputId = a.getResourceId(R.styleable.EditText_et_inputId, 0);
 		mInputView.setId(inputId > 0 ? inputId : ViewUtil.generateViewId());
 		mInputView.setFocusableInTouchMode(true);
@@ -2647,8 +2652,8 @@ public class EditText extends FrameLayout {
 			super(context, attrs);
 		}
 
-		public InputView(Context context, AttributeSet attrs, int defStyle) {
-			super(context, attrs, defStyle);	
+		public InputView(Context context, AttributeSet attrs, int defStyleAttr) {
+			super(context, attrs, defStyleAttr);
 		}
 
 		@Override

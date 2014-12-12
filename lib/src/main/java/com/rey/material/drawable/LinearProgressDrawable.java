@@ -838,9 +838,13 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
 		private int mOutAnimationDuration = 400;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LinearProgressDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LinearProgressDrawable, defStyleAttr, defStyleRes);
 			int resId;
 			
 			progressPercent(a.getFloat(R.styleable.LinearProgressDrawable_pv_progress, 0));	

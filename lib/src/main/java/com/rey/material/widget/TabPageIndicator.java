@@ -66,25 +66,31 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	public TabPageIndicator(Context context) {
 		super(context);
 		
-		init(context, null, 0);
+		init(context, null, 0, 0);
 	}
 	
 	public TabPageIndicator(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		init(context, attrs, 0);
+		init(context, attrs, 0, 0);
 	}
 	
-	public TabPageIndicator(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+	public TabPageIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	private void init(Context context, AttributeSet attrs, int defStyle){
+    public TabPageIndicator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
+
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		setHorizontalScrollBarEnabled(false);
 								
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, 0, defStyle);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, defStyleAttr, defStyleRes);
 		int indicatorColor;
 		
 		mTabPadding = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_tabPadding, ThemeUtil.dpToPx(context, 12));
@@ -295,9 +301,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setTag(i);
             if(mTabRippleStyle > 0){
             	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            		tv.setBackground(new RippleDrawable.Builder(getContext(), null, mTabRippleStyle).build());
+            		tv.setBackground(new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
 				else
-					tv.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), null, mTabRippleStyle).build());
+					tv.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
             }					
             	
             if(mMode == MODE_SCROLL){

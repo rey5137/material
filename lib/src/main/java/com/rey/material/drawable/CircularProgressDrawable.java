@@ -531,9 +531,13 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 		private int mOutAnimationDuration;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircularProgressDrawable, 0, defStyle);	
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircularProgressDrawable, defStyleAttr, defStyleRes);
 			int resId;
 			
 			padding(a.getDimensionPixelSize(R.styleable.CircularProgressDrawable_cpd_padding, 0));

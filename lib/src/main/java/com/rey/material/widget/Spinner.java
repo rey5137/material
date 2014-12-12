@@ -82,29 +82,35 @@ public class Spinner extends ViewGroup {
 	public Spinner(Context context) {
 		super(context);
 		
-		init(context, null, R.attr.listPopupWindowStyle);
+		init(context, null, R.attr.listPopupWindowStyle, 0);
 	}
 	
 	public Spinner(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		init(context, attrs, R.attr.listPopupWindowStyle);
+		init(context, attrs, R.attr.listPopupWindowStyle, 0);
 	}
 	
-	public Spinner(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+	public Spinner(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public void init(Context context, AttributeSet attrs, int defStyle) {	
-		mRippleManager.onCreate(this, context, attrs, defStyle);
+    public Spinner(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
+
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 				
-		TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyle, 0);
+		TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 		
 		mGravity = a.getInt(R.styleable.Spinner_android_gravity, Gravity.CENTER);
 		
-		mPopup = new DropdownPopup(context, attrs, defStyle);
+		mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
 		mPopup.setModal(true);
 		mDropDownWidth = a.getLayoutDimension(R.styleable.Spinner_android_dropDownWidth, LayoutParams.WRAP_CONTENT);
 		mPopup.setBackgroundDrawable(a.getDrawable(R.styleable.Spinner_android_popupBackground));
@@ -149,7 +155,7 @@ public class Spinner extends ViewGroup {
         }
 		
 		if(isInEditMode()){
-			TextView tv = new TextView(context, attrs, defStyle);
+			TextView tv = new TextView(context, attrs, defStyleAttr);
 			tv.setText("Item 1");
 			super.addView(tv);
 		}
@@ -797,8 +803,8 @@ public class Spinner extends ViewGroup {
             }
         };
         
-        public DropdownPopup(Context context, AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
+        public DropdownPopup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
 
             setAnchorView(Spinner.this);
             setModal(true);

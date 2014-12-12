@@ -8,27 +8,33 @@ import android.view.MotionEvent;
 public class Button extends android.widget.Button {
 
 	private RippleManager mRippleManager = new RippleManager();
-	
-	public Button(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+
+    public Button(Context context) {
+        super(context);
+
+        init(context, null, 0, 0);
+    }
+
+    public Button(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context, attrs, 0, 0);
+    }
+
+	public Button(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public Button(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0);
-	}
+    public Button(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
 
-	public Button(Context context) {
-		super(context);
-		
-		init(context, null, 0);
-	}
-	
-	private void init(Context context, AttributeSet attrs, int defStyle){
-		mRippleManager.onCreate(this, context, attrs, defStyle);
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 	}	
 	
 	@Override

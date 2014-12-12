@@ -95,13 +95,23 @@ public class ButtonFragment extends Fragment{
 //					drawable.changeColor(task1, task2, task1);
 
                 Dialog dialog = new Dialog(getActivity());
-                dialog.setLayoutParams(ThemeUtil.dpToPx(getActivity(), 300), ThemeUtil.dpToPx(getActivity(), 200));
+                dialog.setLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 dialog.setDimAmount(0.5f);
                 dialog.setBackgroundColor(0xFFFFFFFF);
                 dialog.setElevation(ThemeUtil.dpToPx(getActivity(), 4));
                 dialog.setMaxElevation(ThemeUtil.dpToPx(getActivity(), 10));
                 dialog.setCornerRadius(ThemeUtil.dpToPx(getActivity(), 2));
                 dialog.setCanceledOnTouchOutside(true);
+                dialog.setTitle("This is titlte");
+                dialog.setMessage("This is a message \nThis is long message \nThis is really looooooooooooooooong message.");
+                dialog.setMessageTextColor(0xFF000000);
+                dialog.setNegativeAction("CANCEL");
+                dialog.setPositiveAction("ACCEPT");
+                dialog.setPositiveActionRipple(R.style.FlatWaveColorButtonRippleStyle);
+                dialog.setNegativeActionRipple(R.style.FlatColorButtonRippleStyle);
+                dialog.setPositiveActionColor(0xFF0099CC);
+                dialog.setNegativeActionColor(0xFF000000);
+                dialog.setTitleColor(0xFF000000);
                 dialog.show();
 			}
 			

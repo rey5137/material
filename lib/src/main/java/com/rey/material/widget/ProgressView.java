@@ -1,6 +1,6 @@
 package com.rey.material.widget;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Animatable;
@@ -28,19 +28,23 @@ public class ProgressView extends View {
 	private Drawable mProgressDrawable;
 	
 	public ProgressView(Context context) {
-		this(context, null, 0);
+		this(context, null, 0, 0);
 	}
 
 	public ProgressView(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
+		this(context, attrs, 0, 0);
 	}
 
+    public ProgressView(Context context, AttributeSet attrs, int defStyleAttr){
+        this(context, attrs, defStyleAttr, 0);
+    }
+
 	@SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
-	public ProgressView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN)
+	public ProgressView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		super(context, attrs, defStyleAttr);
 		
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, 0, defStyle);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyleAttr, defStyleRes);
 		mAutostart = a.getBoolean(R.styleable.ProgressView_pv_autostart, true);
 		mCircular = a.getBoolean(R.styleable.ProgressView_pv_circular, true);
 		mProgressId = a.getResourceId(R.styleable.ProgressView_pv_progressStyle, 0);	
@@ -49,9 +53,9 @@ public class ProgressView extends View {
 		
 		if(mProgressId > 0){
 			if(mCircular)
-				mProgressDrawable = new CircularProgressDrawable.Builder(context, attrs, mProgressId).build();
+				mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
 			else
-				mProgressDrawable = new LinearProgressDrawable.Builder(context, attrs, mProgressId).build();
+				mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
 						
 			if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
 				setBackground(mProgressDrawable);

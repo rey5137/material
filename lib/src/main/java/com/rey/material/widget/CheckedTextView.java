@@ -8,27 +8,33 @@ import android.view.MotionEvent;
 public class CheckedTextView extends android.widget.CheckedTextView {
 
 	private RippleManager mRippleManager = new RippleManager();
-	
-	public CheckedTextView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+
+    public CheckedTextView(Context context) {
+        super(context);
+
+        init(context, null, 0, 0);
+    }
+
+    public CheckedTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        init(context, attrs, 0, 0);
+    }
+
+	public CheckedTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 		
-		init(context, attrs, defStyle);				
+		init(context, attrs, defStyleAttr, 0);
 	}
 
-	public CheckedTextView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0);
-	}
+    public CheckedTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
 
-	public CheckedTextView(Context context) {
-		super(context);
-		
-		init(context, null, 0);
-	}
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 	
-	private void init(Context context, AttributeSet attrs, int defStyle){
-		mRippleManager.onCreate(this, context, attrs, defStyle);
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 	}	
 	
 	@Override
