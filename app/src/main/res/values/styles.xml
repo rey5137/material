@@ -308,5 +308,28 @@
         <item name="lmd_strokeJoin">mitter</item>
         <item name="lmd_clockwise">true</item>
     </style>
+
+    <!-- Dialog -->
+
+    <style name="Dialog">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">200dp</item>
+        <item name="di_dimAmount">0.5</item>
+        <item name="di_backgroundColor">#FFFFFFFF</item>
+        <item name="di_elevation">4dp</item>
+        <item name="di_maxElevation">8dp</item>
+        <item name="di_cornerRadius">2dp</item>
+        <item name="di_titleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
+        <item name="di_titleTextColor">#FF000000</item>
+        <item name="di_actionRipple">@style/FlatWaveColorButtonRippleStyle</item>
+        <item name="di_actionTextAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="di_actionTextColor">#FF000000</item>
+        <item name="di_messageTextAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="di_messageTextColor">#FF000000</item>
+        <item name="di_dividerColor">#1E000000</item>
+        <item name="di_dividerHeight">1dp</item>
+        <item name="di_cancelable">true</item>
+        <item name="di_canceledOnTouchOutside">true</item>
+    </style>
     
 </resources>

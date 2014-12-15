@@ -3,6 +3,7 @@ package com.rey.material.app;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -10,9 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -44,8 +45,6 @@ public class Dialog extends android.app.Dialog{
 
     private int mMessageTextAppearanceId;
     private int mMessageTextColor;
-    private int mDividerColor;
-    private int mDividerHeight;
 
     private int mContentPadding;
     private int mActionHeight;
@@ -108,23 +107,92 @@ public class Dialog extends android.app.Dialog{
     }
 
     public void applyStyle(int resId){
+        if(resId == 0)
+            return;
+
         Context context = getContext();
+        TypedArray a = context.obtainStyledAttributes(resId, R.styleable.Dialog);
 
-        mTitle.setTextAppearance(context, R.style.Base_TextAppearance_AppCompat_Title);
-        mPositiveAction.setTextAppearance(context, R.style.Base_TextAppearance_AppCompat_Button);
-        mNegativeAction.setTextAppearance(context, R.style.Base_TextAppearance_AppCompat_Button);
+        int layout_width;
+        int layout_height;
 
-        mDividerColor = 0x1E000000;
-        mDividerHeight = ThemeUtil.dpToPx(context, 1);
+        if(ThemeUtil.getType(a, R.styleable.Dialog_android_layout_width) == TypedValue.TYPE_DIMENSION)
+            layout_width = a.getDimensionPixelSize(R.styleable.Dialog_android_layout_width, 0);
+        else
+            layout_width = a.getInteger(R.styleable.Dialog_android_layout_width, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        mContainer.setDividerColor(mDividerColor);
-        mContainer.setDividerHeight(mDividerHeight);
+        if(ThemeUtil.getType(a, R.styleable.Dialog_android_layout_height) == TypedValue.TYPE_DIMENSION)
+            layout_height = a.getDimensionPixelSize(R.styleable.Dialog_android_layout_height, 0);
+        else
+            layout_height = a.getInteger(R.styleable.Dialog_android_layout_height, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        setLayoutParams(layout_width, layout_height);
+
+        setDimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
+        setBackgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, 0xFFFFFFFF));/**/
+        setMaxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
+        setElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, 0));
+        setCornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, 0));
+
+        setTitleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_titleTextColor) != TypedValue.TYPE_NULL)
+            setTitleColor(a.getColor(R.styleable.Dialog_di_titleTextColor, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionBackground) != TypedValue.TYPE_NULL)
+            setActionBackground(a.getResourceId(R.styleable.Dialog_di_actionBackground, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionRipple) != TypedValue.TYPE_NULL)
+            setActionRipple(a.getResourceId(R.styleable.Dialog_di_actionRipple, 0));
+
+        setActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_actionTextAppearance, R.style.TextAppearance_AppCompat_Button));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionTextColor) != TypedValue.TYPE_NULL)
+            setActionTextColor(a.getColorStateList(R.styleable.Dialog_di_actionTextColor));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionBackground) != TypedValue.TYPE_NULL)
+            setPositiveActionBackground(a.getResourceId(R.styleable.Dialog_di_positiveActionBackground, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionRipple) != TypedValue.TYPE_NULL)
+            setPositiveActionRipple(a.getResourceId(R.styleable.Dialog_di_positiveActionRipple, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextAppearance) != TypedValue.TYPE_NULL)
+            setPositiveActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_positiveActionTextAppearance, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextColor) != TypedValue.TYPE_NULL)
+            setPositiveActionTextColor(a.getColorStateList(R.styleable.Dialog_di_positiveActionTextColor));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionBackground) != TypedValue.TYPE_NULL)
+            setNegativeActionBackground(a.getResourceId(R.styleable.Dialog_di_negativeActionBackground, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionRipple) != TypedValue.TYPE_NULL)
+            setNegativeActionRipple(a.getResourceId(R.styleable.Dialog_di_negativeActionRipple, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextAppearance) != TypedValue.TYPE_NULL)
+            setNegativeActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_negativeActionTextAppearance, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextColor) != TypedValue.TYPE_NULL)
+            setNegativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
+
+        setMessageTextAppearance(a.getResourceId(R.styleable.Dialog_di_messageTextAppearance, R.style.TextAppearance_AppCompat_Body1));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_messageTextColor) != TypedValue.TYPE_NULL)
+            setMessageTextColor(a.getColor(R.styleable.Dialog_di_messageTextColor, 0));
+
+        setDividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
+        setDividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
+        setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
+        setCanceledOnTouchOutside(a.getBoolean(R.styleable.Dialog_di_canceledOnTouchOutside, true));
+
+        a.recycle();
+
     }
 
     public void clearContent(){
         setTitle(0);
         setPositiveAction(0);
+        setPositiveActionClickListener(null);
         setNegativeAction(0);
+        setNegativeActionClickListener(null);
         setContentView(null);
     }
 
@@ -164,6 +232,14 @@ public class Dialog extends android.app.Dialog{
         mBackground.setRadius(radius);
     }
 
+    public void setDividerColor(int color){
+        mContainer.setDividerColor(color);
+    }
+
+    public void setDividerHeight(int height){
+        mContainer.setDividerHeight(height);
+    }
+
     @Override
     public void setTitle(CharSequence title){
         mTitle.setText(title);
@@ -183,6 +259,36 @@ public class Dialog extends android.app.Dialog{
         mTitle.setTextAppearance(getContext(), resId);
     }
 
+    public void setActionBackground(int id){
+        setPositiveActionBackground(id);
+        setNegativeActionBackground(id);
+    }
+
+    public void setActionBackground(Drawable drawable){
+        setPositiveActionBackground(drawable);
+        setNegativeActionBackground(drawable);
+    }
+
+    public void setActionRipple(int resId){
+        setPositiveActionRipple(resId);
+        setNegativeActionRipple(resId);
+    }
+
+    public void setActionTextAppearance(int resId){
+        setPositiveActionTextAppearance(resId);
+        setNegativeActionTextAppearance(resId);
+    }
+
+    public void setActionTextColor(ColorStateList color){
+        this.setPositiveActionTextColor(color);
+        setNegativeActionTextColor(color);
+    }
+
+    public void setActionTextColor(int color){
+        setPositiveActionTextColor(color);
+        setNegativeActionTextColor(color);
+    }
+
     public void setPositiveAction(CharSequence action){
         mPositiveAction.setText(action);
         mPositiveAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
@@ -190,6 +296,40 @@ public class Dialog extends android.app.Dialog{
 
     public void setPositiveAction(int id){
         setPositiveAction(id == 0 ? null : getContext().getResources().getString(id));
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @SuppressWarnings("deprecation")
+    public void setPositiveActionBackground(Drawable drawable){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            mPositiveAction.setBackground(drawable);
+        else
+            mPositiveAction.setBackgroundDrawable(drawable);
+    }
+
+    public void setPositiveActionBackground(int id){
+        setPositiveActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
+    }
+
+    public void setPositiveActionRipple(int resId){
+        RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
+        setPositiveActionBackground(drawable);
+    }
+
+    public void setPositiveActionTextAppearance(int resId){
+        mPositiveAction.setTextAppearance(getContext(), resId);
+    }
+
+    public void setPositiveActionTextColor(ColorStateList color){
+        mPositiveAction.setTextColor(color);
+    }
+
+    public void setPositiveActionTextColor(int color){
+        mPositiveAction.setTextColor(color);
+    }
+
+    public void setPositiveActionClickListener(View.OnClickListener listener){
+        mPositiveAction.setOnClickListener(listener);
     }
 
     public void setNegativeAction(CharSequence action){
@@ -203,15 +343,6 @@ public class Dialog extends android.app.Dialog{
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void setPositiveActionBackground(Drawable drawable){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mPositiveAction.setBackground(drawable);
-        else
-            mPositiveAction.setBackgroundDrawable(drawable);
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
     public void setNegativeActionBackground(Drawable drawable){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mNegativeAction.setBackground(drawable);
@@ -219,9 +350,8 @@ public class Dialog extends android.app.Dialog{
             mNegativeAction.setBackgroundDrawable(drawable);
     }
 
-    public void setPositiveActionRipple(int resId){
-        RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
-        setPositiveActionBackground(drawable);
+    public void setNegativeActionBackground(int id){
+        setNegativeActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
     public void setNegativeActionRipple(int resId){
@@ -229,33 +359,18 @@ public class Dialog extends android.app.Dialog{
         setNegativeActionBackground(drawable);
     }
 
-    public void setPositiveActionColor(ColorStateList color){
-        mPositiveAction.setTextColor(color);
-    }
-
-    public void setPositiveActionColor(int color){
-        mPositiveAction.setTextColor(color);
-    }
-
-    public void setNegativeActionColor(ColorStateList color){
-        mNegativeAction.setTextColor(color);
-    }
-
-    public void setNegativeActionColor(int color){
-        mNegativeAction.setTextColor(color);
-    }
-
-    public void setPositiveTextAppearance(int resId){
-        mPositiveAction.setTextAppearance(getContext(), resId);
-    }
-
-    public void setNegativeTextAppearance(int resId){
+    public void setNegativeActionTextAppearance(int resId){
         mNegativeAction.setTextAppearance(getContext(), resId);
     }
 
-    public void setPositiveActionClickListener(View.OnClickListener listener){
-        mPositiveAction.setOnClickListener(listener);
+    public void setNegativeActionTextColor(ColorStateList color){
+        mNegativeAction.setTextColor(color);
     }
+
+    public void setNegativeActionTextColor(int color){
+        mNegativeAction.setTextColor(color);
+    }
+
 
     public void setNegativeActionClickListener(View.OnClickListener listener){
         mNegativeAction.setOnClickListener(listener);
@@ -270,6 +385,10 @@ public class Dialog extends android.app.Dialog{
 
         mMessage.setText(message);
         setContentView(mMessage);
+    }
+
+    public void setMessage(int id){
+        setMessage(id == 0 ? null : getContext().getResources().getString(id));
     }
 
     public void setMessageTextAppearance(int resId){

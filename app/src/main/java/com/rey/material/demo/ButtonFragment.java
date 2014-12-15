@@ -1,6 +1,7 @@
 package com.rey.material.demo;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,7 +82,7 @@ public class ButtonFragment extends Fragment{
 		final View a = v.findViewById(R.id.button_v);
 		final RevealDrawable drawable = new RevealDrawable(color1);
 		a.setBackgroundDrawable(drawable);
-		
+
 		a.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -94,24 +95,31 @@ public class ButtonFragment extends Fragment{
 //				else
 //					drawable.changeColor(task1, task2, task1);
 
-                Dialog dialog = new Dialog(getActivity());
-                dialog.setLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                dialog.setDimAmount(0.5f);
-                dialog.setBackgroundColor(0xFFFFFFFF);
-                dialog.setElevation(ThemeUtil.dpToPx(getActivity(), 4));
-                dialog.setMaxElevation(ThemeUtil.dpToPx(getActivity(), 10));
-                dialog.setCornerRadius(ThemeUtil.dpToPx(getActivity(), 2));
-                dialog.setCanceledOnTouchOutside(true);
+                final Dialog dialog = new Dialog(getActivity());
+//                dialog.setLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//                dialog.setDimAmount(0.5f);
+//                dialog.setBackgroundColor(0xFFFFFFFF);
+//                dialog.setElevation(ThemeUtil.dpToPx(getActivity(), 4));
+//                dialog.setMaxElevation(ThemeUtil.dpToPx(getActivity(), 10));
+//                dialog.setCornerRadius(ThemeUtil.dpToPx(getActivity(), 2));
+//                dialog.setCanceledOnTouchOutside(true);
+                dialog.applyStyle(R.style.Dialog);
                 dialog.setTitle("This is titlte");
                 dialog.setMessage("This is a message \nThis is long message \nThis is really looooooooooooooooong message.");
-                dialog.setMessageTextColor(0xFF000000);
+//                dialog.setMessageTextColor(0xFF000000);
                 dialog.setNegativeAction("CANCEL");
                 dialog.setPositiveAction("ACCEPT");
-                dialog.setPositiveActionRipple(R.style.FlatWaveColorButtonRippleStyle);
-                dialog.setNegativeActionRipple(R.style.FlatColorButtonRippleStyle);
-                dialog.setPositiveActionColor(0xFF0099CC);
-                dialog.setNegativeActionColor(0xFF000000);
-                dialog.setTitleColor(0xFF000000);
+//                dialog.setPositiveActionRipple(R.style.FlatWaveColorButtonRippleStyle);
+//                dialog.setNegativeActionRipple(R.style.FlatColorButtonRippleStyle);
+//                dialog.setPositiveActionTextColor(0xFF0099CC);
+//                dialog.setNegativeActionTextColor(0xFF000000);
+//                dialog.setTitleColor(0xFF000000);
+                dialog.setNegativeActionClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
                 dialog.show();
 			}
 			
