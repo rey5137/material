@@ -291,4 +291,34 @@
         <attr name="spn_dividerPadding" format="reference|dimension"/> 
         <attr name="spn_dividerAnimDuration" format="reference|integer"/>        
     </declare-styleable>   
+    
+    <declare-styleable name="Dialog">
+        <attr name="android:layout_width" />
+        <attr name="android:layout_height" />
+        <attr name="di_dimAmount" format="float" />
+        <attr name="di_backgroundColor" format="color|reference" />
+        <attr name="di_elevation" format="dimension|reference" />
+        <attr name="di_maxElevation" format="dimension|reference" />
+        <attr name="di_cornerRadius" format="dimension|reference" />
+        <attr name="di_titleTextAppearance" format="reference" />
+        <attr name="di_titleTextColor" format="color|reference" />
+        <attr name="di_actionBackground" format="reference" />
+        <attr name="di_actionRipple" format="reference" />
+        <attr name="di_actionTextAppearance" format="reference" />
+        <attr name="di_actionTextColor" format="color|reference" />
+        <attr name="di_positiveActionBackground" format="reference" />
+        <attr name="di_positiveActionRipple" format="reference" />
+        <attr name="di_positiveActionTextAppearance" format="reference" />
+        <attr name="di_positiveActionTextColor" format="color|reference" />
+        <attr name="di_negativeActionBackground" format="reference" />
+        <attr name="di_negativeActionRipple" format="reference" />
+        <attr name="di_negativeActionTextAppearance" format="reference" />
+        <attr name="di_negativeActionTextColor" format="color|reference" />
+        <attr name="di_messageTextAppearance" format="reference" />
+        <attr name="di_messageTextColor" format="color|reference" />
+        <attr name="di_dividerColor" format="color|reference" />
+        <attr name="di_dividerHeight" format="dimension|reference" />
+        <attr name="di_cancelable" format="boolean" />
+        <attr name="di_canceledOnTouchOutside" format="boolean" />
+    </declare-styleable>
 </resources>
