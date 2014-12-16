@@ -427,11 +427,11 @@ public class Dialog extends android.app.Dialog{
 //            View v = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
 //            mWindowSize.set(v.getRight() - v.getLeft(), v.getBottom() - v.getTop());
 
-//            Display display = getWindow().getWindowManager().getDefaultDisplay();
-//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
-//                display.getSize(mWindowSize);
-//            else
-//                mWindowSize.set(display.getWidth(), display.getHeight());
+            Display display = getWindow().getWindowManager().getDefaultDisplay();
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
+                display.getSize(mWindowSize);
+            else
+                mWindowSize.set(display.getWidth(), display.getHeight());
 
             return mWindowSize;
         }

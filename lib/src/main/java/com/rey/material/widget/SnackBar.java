@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
@@ -467,19 +468,30 @@ public class SnackBar extends FrameLayout {
 		show();
 	}
 
-    public void show(FrameLayout parent){
+    public void show(ViewGroup parent){
         if(mState != STATE_DISMISSED)
             return;
 
         if(getParent() != null && getParent() instanceof ViewGroup)
             ((ViewGroup)getParent()).removeView(this);
 
-        LayoutParams params = new LayoutParams(mWidth, mHeight);
-        params.gravity = Gravity.BOTTOM;
-        params.leftMargin = mMarginLeft;
-        params.bottomMargin = mMarginBottom;
+        if(parent instanceof FrameLayout){
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mWidth, mHeight);
+            params.gravity = Gravity.BOTTOM;
+            params.leftMargin = mMarginLeft;
+            params.bottomMargin = mMarginBottom;
 
-        parent.addView(this, params);
+            parent.addView(this, params);
+        }
+        else{
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mWidth, mHeight);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            params.leftMargin = mMarginLeft;
+            params.bottomMargin = mMarginBottom;
+
+            parent.addView(this, params);
+        }
+
         show();
     }
 
