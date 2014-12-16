@@ -39,4 +39,15 @@ public class CheckBox extends CompoundButton {
         drawable.setAnimEnable(true);
     }
 
+    public void setCheckedImmediately(boolean checked){
+        if(mButtonDrawable instanceof CheckBoxDrawable){
+            CheckBoxDrawable drawable = (CheckBoxDrawable)mButtonDrawable;
+            drawable.setAnimEnable(false);
+            setChecked(checked);
+            drawable.setAnimEnable(true);
+        }
+        else
+            setChecked(checked);
+    }
+
 }

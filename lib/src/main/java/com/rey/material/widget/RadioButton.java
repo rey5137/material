@@ -3,6 +3,7 @@ package com.rey.material.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.rey.material.drawable.CheckBoxDrawable;
 import com.rey.material.drawable.RadioButtonDrawable;
 
 public class RadioButton extends CompoundButton {
@@ -46,6 +47,17 @@ public class RadioButton extends CompoundButton {
         if (!isChecked()) {
             super.toggle();
         }
+    }
+
+    public void setCheckedImmediately(boolean checked){
+        if(mButtonDrawable instanceof RadioButtonDrawable){
+            RadioButtonDrawable drawable = (RadioButtonDrawable)mButtonDrawable;
+            drawable.setAnimEnable(false);
+            setChecked(checked);
+            drawable.setAnimEnable(true);
+        }
+        else
+            setChecked(checked);
     }
 	
 }

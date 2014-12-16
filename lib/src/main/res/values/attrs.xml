@@ -314,11 +314,18 @@
         <attr name="di_negativeActionRipple" format="reference" />
         <attr name="di_negativeActionTextAppearance" format="reference" />
         <attr name="di_negativeActionTextColor" format="color|reference" />
-        <attr name="di_messageTextAppearance" format="reference" />
-        <attr name="di_messageTextColor" format="color|reference" />
         <attr name="di_dividerColor" format="color|reference" />
         <attr name="di_dividerHeight" format="dimension|reference" />
         <attr name="di_cancelable" format="boolean" />
         <attr name="di_canceledOnTouchOutside" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SimpleDialog">
+        <attr name="di_messageTextAppearance" format="reference" />
+        <attr name="di_messageTextColor" format="color|reference" />
+        <attr name="di_radioButtonStyle" format="reference" />
+        <attr name="di_checkBoxStyle" format="reference" />
+        <attr name="di_itemHeight" format="dimension|reference" />
+        <attr name="di_itemTextAppearance" format="reference" />
     </declare-styleable>
 </resources>

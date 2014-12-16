@@ -39,19 +39,15 @@ public class Dialog extends android.app.Dialog{
     private TextView mTitle;
     private Button mPositiveAction;
     private Button mNegativeAction;
-    private ScrollView mContentHolder;
+    private View mContent;
     private CardView mBackground;
-    private TextView mMessage;
 
-    private int mMessageTextAppearanceId;
-    private int mMessageTextColor;
-
-    private int mContentPadding;
-    private int mActionHeight;
-    private int mActionOuterHeight;
-    private int mActionOuterPadding;
-    private int mActionMinWidth;
-    private int mActionPadding;
+    protected int mContentPadding;
+    protected int mActionHeight;
+    protected int mActionOuterHeight;
+    protected int mActionOuterPadding;
+    protected int mActionMinWidth;
+    protected int mActionPadding;
 
     private boolean mLayoutActionVertical = false;
 
@@ -74,27 +70,21 @@ public class Dialog extends android.app.Dialog{
         mActionOuterHeight = ThemeUtil.dpToPx(context, 48);
         mActionPadding = ThemeUtil.dpToPx(context, 8);
         mActionOuterPadding = ThemeUtil.dpToPx(context, 16);
-        mMessageTextAppearanceId = R.style.Base_TextAppearance_AppCompat_Body1;
 
         mBackground = new CardView(context);
         mContainer = new ContainerFrameLayout(context);
         mTitle = new TextView(context);
         mPositiveAction = new Button(context);
         mNegativeAction = new Button(context);
-        mContentHolder = new ScrollView(context);
 
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
         mPositiveAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mPositiveAction.setBackgroundResource(0);
         mNegativeAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNegativeAction.setBackgroundResource(0);
-        mContentHolder.setPadding(mContentPadding, 0, mContentPadding, mContentPadding - mActionPadding);
-        mContentHolder.setClipToPadding(false);
-        mContentHolder.setFillViewport(true);
-        mContentHolder.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+
 
         mContainer.addView(mBackground);
-        mContainer.addView(mContentHolder);
         mContainer.addView(mTitle);
         mContainer.addView(mPositiveAction);
         mContainer.addView(mNegativeAction);
@@ -172,11 +162,6 @@ public class Dialog extends android.app.Dialog{
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextColor) != TypedValue.TYPE_NULL)
             setNegativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
-
-        setMessageTextAppearance(a.getResourceId(R.styleable.Dialog_di_messageTextAppearance, R.style.TextAppearance_AppCompat_Body1));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_messageTextColor) != TypedValue.TYPE_NULL)
-            setMessageTextColor(a.getColor(R.styleable.Dialog_di_messageTextColor, 0));
 
         setDividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
         setDividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
@@ -371,45 +356,25 @@ public class Dialog extends android.app.Dialog{
         mNegativeAction.setTextColor(color);
     }
 
-
     public void setNegativeActionClickListener(View.OnClickListener listener){
         mNegativeAction.setOnClickListener(listener);
     }
 
-    public void setMessage(CharSequence message){
-        if(mMessage == null){
-            mMessage = new TextView(getContext());
-            mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
-            mMessage.setTextColor(mMessageTextColor);
-        }
-
-        mMessage.setText(message);
-        setContentView(mMessage);
-    }
-
-    public void setMessage(int id){
-        setMessage(id == 0 ? null : getContext().getResources().getString(id));
-    }
-
-    public void setMessageTextAppearance(int resId){
-        if(mMessageTextAppearanceId != resId){
-            mMessageTextAppearanceId = resId;
-            if(mMessage != null)
-                mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
-        }
-    }
-
-    public void setMessageTextColor(int color){
-        if(mMessageTextColor != color){
-            mMessageTextColor = color;
-            if(mMessage != null)
-                mMessage.setTextColor(color);
-        }
+    public void setShowDivider(boolean show){
+        mContainer.setShowDivider(show);
     }
 
     @Override
     public void setContentView(View v){
-        setContentView(v, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        if(mContent != v) {
+            if(mContent != null)
+                mContainer.removeView(mContent);
+
+            mContent = v;
+        }
+
+        if(mContent != null)
+            mContainer.addView(mContent);
     }
 
     @Override
@@ -420,13 +385,7 @@ public class Dialog extends android.app.Dialog{
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
-        mContentHolder.removeAllViews();
-        if(view != null) {
-            mContentHolder.addView(view, params);
-            mContentHolder.setVisibility(View.VISIBLE);
-        }
-        else
-            mContentHolder.setVisibility(View.GONE);
+        setContentView(view);
     }
 
     private class ContainerFrameLayout extends FrameLayout{
@@ -434,6 +393,7 @@ public class Dialog extends android.app.Dialog{
         private Point mWindowSize;
         private Paint mDividerPaint;
         private float mDividerPos = -1f;
+        private boolean mShowDivider = false;
 
         public ContainerFrameLayout(Context context) {
             super(context);
@@ -453,15 +413,25 @@ public class Dialog extends android.app.Dialog{
             invalidate();
         }
 
+        public void setShowDivider(boolean show){
+            if(mShowDivider != show) {
+                mShowDivider = show;
+                invalidate();
+            }
+        }
+
         private Point getWindowSize(){
             if(mWindowSize == null)
                 mWindowSize = new Point();
 
-            Display display = getWindow().getWindowManager().getDefaultDisplay();
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
-                display.getSize(mWindowSize);
-            else
-                mWindowSize.set(display.getWidth(), display.getHeight());
+//            View v = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
+//            mWindowSize.set(v.getRight() - v.getLeft(), v.getBottom() - v.getTop());
+
+//            Display display = getWindow().getWindowManager().getDefaultDisplay();
+//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
+//                display.getSize(mWindowSize);
+//            else
+//                mWindowSize.set(display.getWidth(), display.getHeight());
 
             return mWindowSize;
         }
@@ -490,10 +460,10 @@ public class Dialog extends android.app.Dialog{
             int contentWidth = 0;
             int contentHeight = 0;
 
-            if(mContentHolder.getVisibility() == View.VISIBLE){
-                mContentHolder.measure(widthMs, heightMs);
-                contentWidth = mContentHolder.getMeasuredWidth();
-                contentHeight = mContentHolder.getMeasuredHeight();
+            if(mContent != null){
+                mContent.measure(widthMs, heightMs);
+                contentWidth = mContent.getMeasuredWidth();
+                contentHeight = mContent.getMeasuredHeight();
             }
 
             int positiveActionWidth = 0;
@@ -548,14 +518,14 @@ public class Dialog extends android.app.Dialog{
 
                 if(height > maxHeight){
                     if(contentHeight > 0)
-                        mContentHolder.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(maxHeight - nonContentHeight, MeasureSpec.EXACTLY));
+                        mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(maxHeight - nonContentHeight, MeasureSpec.EXACTLY));
 
                     height = maxHeight;
                 }
             }
             else{
                 if(contentHeight > 0 && contentHeight != height - nonContentHeight)
-                    mContentHolder.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
+                    mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
             }
 
             int dialogWidth = width + mBackground.getPaddingLeft() + mBackground.getPaddingRight();
@@ -604,35 +574,34 @@ public class Dialog extends android.app.Dialog{
             }
             else{
                 int actionRight = childRight - mActionOuterPadding;
+                boolean hasAction = false;
 
                 if(mPositiveAction.getVisibility() == View.VISIBLE){
                     mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, actionRight, childBottom - temp);
                     actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
+                    hasAction = true;
                 }
 
-                if(mNegativeAction.getVisibility() == View.VISIBLE)
+                if(mNegativeAction.getVisibility() == View.VISIBLE) {
                     mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, actionRight, childBottom - temp);
+                    hasAction = true;
+                }
 
-                childBottom -= mActionOuterHeight;
+                if(hasAction)
+                    childBottom -= mActionOuterHeight;
             }
 
-            if(mContentHolder.getVisibility() == View.VISIBLE) {
-                mContentHolder.layout(childLeft, childTop, childRight, childBottom);
-                View child = mContentHolder.getChildAt(0);
-                if(child != null && child.getMeasuredHeight() > mContentHolder.getMeasuredHeight() - mContentHolder.getPaddingBottom() - mContentHolder.getPaddingTop())
-                    mDividerPos = childBottom - mDividerPaint.getStrokeWidth() / 2f;
-                else
-                    mDividerPos = -1f;
-            }
-            else
-                mDividerPos = -1f;
+            mDividerPos = childBottom - mDividerPaint.getStrokeWidth() / 2f;
+
+            if(mContent != null)
+                mContent.layout(childLeft, childTop, childRight, childBottom);
         }
 
         @Override/**/
         public void draw(Canvas canvas) {
             super.draw(canvas);
 
-            if(mDividerPos >= 0)
+            if(mShowDivider)
                 canvas.drawLine(mBackground.getPaddingLeft(), mDividerPos, mBackground.getWidth() - mBackground.getPaddingRight(), mDividerPos, mDividerPaint);
         }
 

@@ -12,7 +12,7 @@ import android.view.MotionEvent;
 public class CompoundButton extends android.widget.CompoundButton {
 
 	private RippleManager mRippleManager = new RippleManager();
-	private Drawable mButtonDrawable;
+	protected Drawable mButtonDrawable;
 
     public CompoundButton(Context context) {
         super(context);
@@ -76,8 +76,8 @@ public class CompoundButton extends android.widget.CompoundButton {
 		mButtonDrawable = d;
 		super.setButtonDrawable(d);
 	}
-	
-	@Override
+
+    @Override
     public int getCompoundPaddingLeft() {
 		int padding = super.getCompoundPaddingLeft();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)

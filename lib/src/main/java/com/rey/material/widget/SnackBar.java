@@ -464,32 +464,54 @@ public class SnackBar extends FrameLayout {
         params.bottomMargin = mMarginBottom;
         
 		activity.getWindow().addContentView(this, params);
-		
-		if(mInAnimationId != 0){
-			Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
-			anim.setAnimationListener(new Animation.AnimationListener() {
-				
-				@Override
-				public void onAnimationStart(Animation animation) {
-					setState(STATE_SHOWING);
-				}
-				
-				@Override
-				public void onAnimationRepeat(Animation animation) {}
-				
-				@Override
-				public void onAnimationEnd(Animation animation) {					
-					setState(STATE_SHOWED);
-					startTimer();
-				}
-			});
-			startAnimation(anim);
-		}
-		else{
-			setState(STATE_SHOWED);
-			startTimer();
-		}
+		show();
 	}
+
+    public void show(FrameLayout parent){
+        if(mState != STATE_DISMISSED)
+            return;
+
+        if(getParent() != null && getParent() instanceof ViewGroup)
+            ((ViewGroup)getParent()).removeView(this);
+
+        LayoutParams params = new LayoutParams(mWidth, mHeight);
+        params.gravity = Gravity.BOTTOM;
+        params.leftMargin = mMarginLeft;
+        params.bottomMargin = mMarginBottom;
+
+        parent.addView(this, params);
+        show();
+    }
+
+    public void show(){
+        if(getParent() == null || mState != STATE_DISMISSED)
+            return;
+
+        if(mInAnimationId != 0){
+            Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    setState(STATE_SHOWING);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    setState(STATE_SHOWED);
+                    startTimer();
+                }
+            });
+            startAnimation(anim);
+        }
+        else{
+            setState(STATE_SHOWED);
+            startTimer();
+        }
+    }
 	
 	private void startTimer(){
 		removeCallbacks(mDismissRunnable);
