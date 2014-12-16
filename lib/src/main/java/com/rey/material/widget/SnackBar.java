@@ -19,6 +19,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -78,23 +79,23 @@ public class SnackBar extends FrameLayout {
 		return new SnackBar(context);
 	}
 
-	private SnackBar(Context context){
+	public SnackBar(Context context){
 		super(context);
 		init(context, null, 0, 0);
 	}
 
-    private SnackBar(Context context, AttributeSet attrs) {
+    public SnackBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0, 0);
     }
 
-    private SnackBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SnackBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr, 0);
     }
 
-    private SnackBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    public SnackBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -453,53 +454,48 @@ public class SnackBar extends FrameLayout {
 	}
 	
 	public void show(Activity activity){
-		if(mState != STATE_DISMISSED)
-			return;
-		
-		if(getParent() != null && getParent() instanceof ViewGroup)
-			((ViewGroup)getParent()).removeView(this);
-				
-		LayoutParams params = new LayoutParams(mWidth, mHeight);
-        params.gravity = Gravity.BOTTOM;
-        params.leftMargin = mMarginLeft;
-        params.bottomMargin = mMarginBottom;
-        
-		activity.getWindow().addContentView(this, params);
-		show();
+        show((ViewGroup)activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT));
 	}
 
     public void show(ViewGroup parent){
-        if(mState != STATE_DISMISSED)
+        if(mState == STATE_SHOWING || mState == STATE_DISMISSING)
             return;
 
-        if(getParent() != null && getParent() instanceof ViewGroup)
-            ((ViewGroup)getParent()).removeView(this);
+        if(getParent() != parent) {
+            if(getParent() != null)
+                ((ViewGroup) getParent()).removeView(this);
 
-        if(parent instanceof FrameLayout){
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mWidth, mHeight);
-            params.gravity = Gravity.BOTTOM;
-            params.leftMargin = mMarginLeft;
-            params.bottomMargin = mMarginBottom;
-
-            parent.addView(this, params);
-        }
-        else{
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mWidth, mHeight);
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            params.leftMargin = mMarginLeft;
-            params.bottomMargin = mMarginBottom;
-
-            parent.addView(this, params);
+            parent.addView(this);
         }
 
         show();
     }
 
     public void show(){
-        if(getParent() == null || mState != STATE_DISMISSED)
+        ViewGroup parent = (ViewGroup)getParent();
+        if(parent == null || mState == STATE_SHOWING || mState == STATE_DISMISSING)
             return;
 
-        if(mInAnimationId != 0){
+        if(parent instanceof FrameLayout){
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)getLayoutParams();
+
+            params.width = mWidth;
+            params.height = mHeight;
+            params.gravity = Gravity.BOTTOM;
+            params.leftMargin = mMarginLeft;
+            params.bottomMargin = mMarginBottom;
+        }
+        else{
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
+
+            params.width = mWidth;
+            params.height = mHeight;
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            params.leftMargin = mMarginLeft;
+            params.bottomMargin = mMarginBottom;
+        }
+
+        if(mInAnimationId != 0 && mState != STATE_SHOWED){
             Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
             anim.setAnimationListener(new Animation.AnimationListener() {
 
