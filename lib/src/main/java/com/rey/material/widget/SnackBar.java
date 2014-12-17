@@ -46,6 +46,7 @@ public class SnackBar extends FrameLayout {
 	private int mOutAnimationId;
 	private long mDuration = -1;
 	private int mActionId;
+    private boolean mRemoveOnDismiss;
 	
 	private Runnable mDismissRunnable = new Runnable() {
         @Override
@@ -232,6 +233,7 @@ public class SnackBar extends FrameLayout {
 		int actionRipple = a.getResourceId(R.styleable.SnackBar_sb_actionRipple, 0);
 		mInAnimationId = a.getResourceId(R.styleable.SnackBar_sb_inAnimation, 0);
 		mOutAnimationId = a.getResourceId(R.styleable.SnackBar_sb_outAnimation, 0);
+        mRemoveOnDismiss = a.getBoolean(R.styleable.SnackBar_sb_removeOnDismiss, true);
 		
 		a.recycle();
 				
@@ -452,7 +454,12 @@ public class SnackBar extends FrameLayout {
 		mStateChangeListener = listener;
 		return this;
 	}
-	
+
+    public SnackBar removeOnDismiss(boolean b){
+        mRemoveOnDismiss = b;
+        return this;
+    }
+
 	public void show(Activity activity){
         show((ViewGroup)activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT));
 	}
@@ -502,6 +509,7 @@ public class SnackBar extends FrameLayout {
                 @Override
                 public void onAnimationStart(Animation animation) {
                     setState(STATE_SHOWING);
+                    setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -516,6 +524,7 @@ public class SnackBar extends FrameLayout {
             startAnimation(anim);
         }
         else{
+            setVisibility(View.VISIBLE);
             setState(STATE_SHOWED);
             startTimer();
         }
@@ -547,19 +556,21 @@ public class SnackBar extends FrameLayout {
 				
 				@Override
 				public void onAnimationEnd(Animation animation) {
-					if(getParent() != null && getParent() instanceof ViewGroup)
+					if(mRemoveOnDismiss && getParent() != null && getParent() instanceof ViewGroup)
 						((ViewGroup)getParent()).removeView(SnackBar.this);
 					
 					setState(STATE_DISMISSED);
+                    setVisibility(View.GONE);
 				}
 			});
 			startAnimation(anim);
 		}
 		else{
-			if(getParent() != null && getParent() instanceof ViewGroup)
+			if(mRemoveOnDismiss && getParent() != null && getParent() instanceof ViewGroup)
 				((ViewGroup)getParent()).removeView(this);
 			
 			setState(STATE_DISMISSED);
+            setVisibility(View.GONE);
 		}		
 		
 	}

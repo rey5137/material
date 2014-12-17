@@ -1,14 +1,10 @@
 package com.rey.material.app;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -57,15 +53,15 @@ public class SimpleDialog extends Dialog {
     }
 
     @Override
-    public void applyStyle(int resId) {
+    public Dialog applyStyle(int resId) {
         super.applyStyle(resId);
 
         TypedArray a = getContext().obtainStyledAttributes(resId, R.styleable.SimpleDialog);
 
-        setMessageTextAppearance(a.getResourceId(R.styleable.SimpleDialog_di_messageTextAppearance, R.style.TextAppearance_AppCompat_Body1));
+        messageTextAppearance(a.getResourceId(R.styleable.SimpleDialog_di_messageTextAppearance, R.style.TextAppearance_AppCompat_Body1));
 
         if(ThemeUtil.getType(a, R.styleable.SimpleDialog_di_messageTextColor) != TypedValue.TYPE_NULL)
-            setMessageTextColor(a.getColor(R.styleable.SimpleDialog_di_messageTextColor, 0));
+            messageTextColor(a.getColor(R.styleable.SimpleDialog_di_messageTextColor, 0));
 
         mRadioButtonStyle = a.getResourceId(R.styleable.SimpleDialog_di_radioButtonStyle, 0);
         mCheckBoxStyle = a.getResourceId(R.styleable.SimpleDialog_di_checkBoxStyle, 0);
@@ -73,16 +69,18 @@ public class SimpleDialog extends Dialog {
         mItemTextAppearance = a.getResourceId(R.styleable.SimpleDialog_di_itemTextAppearance, R.style.TextAppearance_AppCompat_Body1);
 
         a.recycle();
+
+        return this;
     }
 
     @Override
-    public void clearContent() {
+    public Dialog clearContent() {
         super.clearContent();
-
         mMode = MODE_NONE;
+        return this;
     }
 
-    public void setMessage(CharSequence message){
+    public Dialog message(CharSequence message){
         if(mMessage == null){
             mMessage = new TextView(getContext());
             mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
@@ -103,58 +101,65 @@ public class SimpleDialog extends Dialog {
             mMode = MODE_MESSAGE;
             setContentView(mScrollView);
         }
+        return this;
     }
 
-    public void setMessage(int id){
-        setMessage(id == 0 ? null : getContext().getResources().getString(id));
+    public Dialog message(int id){
+        return message(id == 0 ? null : getContext().getResources().getString(id));
     }
 
-    public void setMessageTextAppearance(int resId){
+    public Dialog messageTextAppearance(int resId){
         if(mMessageTextAppearanceId != resId){
             mMessageTextAppearanceId = resId;
             if(mMessage != null)
                 mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
         }
+        return this;
     }
 
-    public void setMessageTextColor(int color){
+    public Dialog messageTextColor(int color){
         if(mMessageTextColor != color){
             mMessageTextColor = color;
             if(mMessage != null)
                 mMessage.setTextColor(color);
         }
+        return this;
     }
 
-    public void setRadioButtonStyle(int resId){
+    public Dialog radioButtonStyle(int resId){
         if(mRadioButtonStyle != resId){
             mRadioButtonStyle = resId;
             if(mAdapter != null && mMode == MODE_ITEMS)
                 mAdapter.notifyDataSetChanged();
         }
+        return this;
     }
 
-    public void setCheckBoxStyle(int resId){
+    public Dialog checkBoxStyle(int resId){
         if(mCheckBoxStyle != resId){
             mCheckBoxStyle = resId;
             if(mAdapter != null && mMode == MODE_MULTI_ITEMS)
                 mAdapter.notifyDataSetChanged();
         }
+        return this;
     }
 
-    public void setItemHeight(int height){
+    public Dialog itemHeight(int height){
         if(mItemHeight != height){
             mItemHeight = height;
             if(mAdapter != null)
                 mAdapter.notifyDataSetChanged();
         }
+        return this;
     }
 
-    public void setItemTextAppearance(int resId){
+    public Dialog itemTextAppearance(int resId){
         if(mItemTextAppearance != resId){
             mItemTextAppearance = resId;
             if(mAdapter != null)
                 mAdapter.notifyDataSetChanged();
         }
+        return this;
     }
 
     private void initListView(){
@@ -172,22 +177,32 @@ public class SimpleDialog extends Dialog {
         mListView.setAdapter(mAdapter);
     }
 
-    public void setItems(CharSequence[] items, int selectedIndex){
+    public Dialog items(CharSequence[] items, int selectedIndex){
         if(mListView == null)
             initListView();
 
         mMode = MODE_ITEMS;
         mAdapter.setItems(items, selectedIndex);
         setContentView(mListView);
+        return this;
     }
 
-    public void setMultiChoiceItems(CharSequence[] items, int... selectedIndexes){
+    public Dialog multiChoiceItems(CharSequence[] items, int... selectedIndexes){
         if(mListView == null)
             initListView();
 
         mMode = MODE_MULTI_ITEMS;
         mAdapter.setItems(items, selectedIndexes);
         setContentView(mListView);
+        return this;
+    }
+
+    public int[] getSelectedIndexes(){
+        return mAdapter == null ? null : mAdapter.getSelectedIndexes();
+    }
+
+    public int getSelectedIndex(){
+        return mAdapter == null ? -1 : mAdapter.getLastSelectedIndex();
     }
 
     private class InternalScrollView extends ScrollView{
@@ -201,7 +216,7 @@ public class SimpleDialog extends Dialog {
             super.onLayout(changed, l, t, r, b);
 
             View child = getChildAt(0);
-            setShowDivider(child != null && child.getMeasuredHeight() > getMeasuredHeight() - getPaddingTop() - getPaddingBottom());
+            showDivider(child != null && child.getMeasuredHeight() > getMeasuredHeight() - getPaddingTop() - getPaddingBottom());
         }
     }
 
@@ -232,7 +247,7 @@ public class SimpleDialog extends Dialog {
             for(int i = 0; i < childCount; i++)
                 totalHeight += getChildAt(i).getMeasuredHeight();
 
-            setShowDivider(totalHeight > getMeasuredHeight() || (totalHeight == getMeasuredHeight() && getAdapter().getCount() > childCount));
+            showDivider(totalHeight > getMeasuredHeight() || (totalHeight == getMeasuredHeight() && getAdapter().getCount() > childCount));
         }
 
     }
@@ -259,6 +274,30 @@ public class SimpleDialog extends Dialog {
                 }
 
             notifyDataSetChanged();
+        }
+
+        public int getLastSelectedIndex(){
+            return mLastSelectedIndex;
+        }
+
+        public int[] getSelectedIndexes(){
+            int count = 0;
+            for(int i = 0; i < mSelected.length; i++)
+                if(mSelected[i])
+                    count++;
+
+            if(count == 0)
+                return null;
+
+            int[] result = new int[count];
+            count = 0;
+            for(int i = 0; i < mSelected.length; i++)
+                if(mSelected[i]){
+                    result[count] = i;
+                    count++;
+                }
+
+            return result;
         }
 
         @Override
@@ -295,8 +334,7 @@ public class SimpleDialog extends Dialog {
             else
                 ((RadioButton) v).setCheckedImmediately(mSelected[position]);
 
-            if(mMode == MODE_ITEMS)
-                v.setOnCheckedChangeListener(this);
+            v.setOnCheckedChangeListener(this);
 
             return v;
         }
@@ -304,15 +342,17 @@ public class SimpleDialog extends Dialog {
         @Override
         public void onCheckedChanged(android.widget.CompoundButton v, boolean isChecked) {
             int position = (Integer)v.getTag();
-            if(isChecked){
-                if(mLastSelectedIndex != position) {
-                    CompoundButton child = (CompoundButton) mListView.getChildAt(mLastSelectedIndex - mListView.getFirstVisiblePosition());
-                    if(child != null)
-                        child.setChecked(false);
-                    mSelected[mLastSelectedIndex] = false;
-                    mSelected[position] = true;
-                    mLastSelectedIndex = position;
-                }
+            if(mSelected[position] != isChecked)
+                mSelected[position] = isChecked;
+
+            if(mMode == MODE_ITEMS && isChecked && mLastSelectedIndex != position){
+                mSelected[mLastSelectedIndex] = false;
+
+                CompoundButton child = (CompoundButton) mListView.getChildAt(mLastSelectedIndex - mListView.getFirstVisiblePosition());
+                if(child != null)
+                    child.setChecked(false);
+
+                mLastSelectedIndex = position;
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.rey.material.demo;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,10 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.rey.material.app.Dialog;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.drawable.RevealDrawable;
-import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.Button;
 
 public class ButtonFragment extends Fragment{
@@ -98,18 +95,19 @@ public class ButtonFragment extends Fragment{
 
                 final SimpleDialog dialog = new SimpleDialog(getActivity());
                 dialog.applyStyle(R.style.SimpleDialog);
-                dialog.setTitle("This is titlte");
-//                dialog.setMessage("This is a message");
-                dialog.setItems(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
-//                dialog.setMultiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
-                dialog.setNegativeAction("CANCEL");
-                dialog.setPositiveAction("ACCEPT");
-                dialog.setNegativeActionClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+                dialog.title("This is titlte");
+//                dialog.message("This is a message");
+                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
+                dialog.setCanceledOnTouchOutside(true);
+//                dialog.multiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
+//                dialog.negativeAction("CANCEL");
+//                dialog.positiveAction("ACCEPT");
+//                dialog.negativeActionClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
                 dialog.show();
 			}
 			

@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ScrollView;
 
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
@@ -29,6 +28,7 @@ import com.rey.material.widget.TextView;
 
 /**
  * Created by Rey on 12/10/2014.
+ * TODO: fix divider bug, touch on container layout
  */
 public class Dialog extends android.app.Dialog{
 
@@ -48,6 +48,8 @@ public class Dialog extends android.app.Dialog{
     protected int mActionOuterPadding;
     protected int mActionMinWidth;
     protected int mActionPadding;
+    protected int mDialogHorizontalPadding;
+    protected int mDialogVerticalPadding;
 
     private boolean mLayoutActionVertical = false;
 
@@ -70,6 +72,8 @@ public class Dialog extends android.app.Dialog{
         mActionOuterHeight = ThemeUtil.dpToPx(context, 48);
         mActionPadding = ThemeUtil.dpToPx(context, 8);
         mActionOuterPadding = ThemeUtil.dpToPx(context, 16);
+        mDialogHorizontalPadding = ThemeUtil.dpToPx(context, 40);
+        mDialogVerticalPadding = ThemeUtil.dpToPx(context, 24);
 
         mBackground = new CardView(context);
         mContainer = new ContainerFrameLayout(context);
@@ -96,9 +100,9 @@ public class Dialog extends android.app.Dialog{
         super.setContentView(mContainer);
     }
 
-    public void applyStyle(int resId){
+    public Dialog applyStyle(int resId){
         if(resId == 0)
-            return;
+            return this;
 
         Context context = getContext();
         TypedArray a = context.obtainStyledAttributes(resId, R.styleable.Dialog);
@@ -116,77 +120,79 @@ public class Dialog extends android.app.Dialog{
         else
             layout_height = a.getInteger(R.styleable.Dialog_android_layout_height, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        setLayoutParams(layout_width, layout_height);
+        layoutParams(layout_width, layout_height);
 
-        setDimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
-        setBackgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, 0xFFFFFFFF));/**/
-        setMaxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
-        setElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, 0));
-        setCornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, 0));
+        dimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
+        backgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, 0xFFFFFFFF));/**/
+        maxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
+        elevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, 0));
+        cornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, 0));
 
-        setTitleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
+        titleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_titleTextColor) != TypedValue.TYPE_NULL)
-            setTitleColor(a.getColor(R.styleable.Dialog_di_titleTextColor, 0));
+            titleColor(a.getColor(R.styleable.Dialog_di_titleTextColor, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionBackground) != TypedValue.TYPE_NULL)
-            setActionBackground(a.getResourceId(R.styleable.Dialog_di_actionBackground, 0));
+            actionBackground(a.getResourceId(R.styleable.Dialog_di_actionBackground, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionRipple) != TypedValue.TYPE_NULL)
-            setActionRipple(a.getResourceId(R.styleable.Dialog_di_actionRipple, 0));
+            actionRipple(a.getResourceId(R.styleable.Dialog_di_actionRipple, 0));
 
-        setActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_actionTextAppearance, R.style.TextAppearance_AppCompat_Button));
+        actionTextAppearance(a.getResourceId(R.styleable.Dialog_di_actionTextAppearance, R.style.TextAppearance_AppCompat_Button));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionTextColor) != TypedValue.TYPE_NULL)
-            setActionTextColor(a.getColorStateList(R.styleable.Dialog_di_actionTextColor));
+            actionTextColor(a.getColorStateList(R.styleable.Dialog_di_actionTextColor));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionBackground) != TypedValue.TYPE_NULL)
-            setPositiveActionBackground(a.getResourceId(R.styleable.Dialog_di_positiveActionBackground, 0));
+            positiveActionBackground(a.getResourceId(R.styleable.Dialog_di_positiveActionBackground, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionRipple) != TypedValue.TYPE_NULL)
-            setPositiveActionRipple(a.getResourceId(R.styleable.Dialog_di_positiveActionRipple, 0));
+            positiveActionRipple(a.getResourceId(R.styleable.Dialog_di_positiveActionRipple, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextAppearance) != TypedValue.TYPE_NULL)
-            setPositiveActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_positiveActionTextAppearance, 0));
+            positiveActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_positiveActionTextAppearance, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextColor) != TypedValue.TYPE_NULL)
-            setPositiveActionTextColor(a.getColorStateList(R.styleable.Dialog_di_positiveActionTextColor));
+            positiveActionTextColor(a.getColorStateList(R.styleable.Dialog_di_positiveActionTextColor));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionBackground) != TypedValue.TYPE_NULL)
-            setNegativeActionBackground(a.getResourceId(R.styleable.Dialog_di_negativeActionBackground, 0));
+            negativeActionBackground(a.getResourceId(R.styleable.Dialog_di_negativeActionBackground, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionRipple) != TypedValue.TYPE_NULL)
-            setNegativeActionRipple(a.getResourceId(R.styleable.Dialog_di_negativeActionRipple, 0));
+            negativeActionRipple(a.getResourceId(R.styleable.Dialog_di_negativeActionRipple, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextAppearance) != TypedValue.TYPE_NULL)
-            setNegativeActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_negativeActionTextAppearance, 0));
+            negativeActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_negativeActionTextAppearance, 0));
 
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextColor) != TypedValue.TYPE_NULL)
-            setNegativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
+            negativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
 
-        setDividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
-        setDividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
+        dividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
+        dividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
         setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
         setCanceledOnTouchOutside(a.getBoolean(R.styleable.Dialog_di_canceledOnTouchOutside, true));
 
         a.recycle();
-
+        return this;
     }
 
-    public void clearContent(){
-        setTitle(0);
-        setPositiveAction(0);
-        setPositiveActionClickListener(null);
-        setNegativeAction(0);
-        setNegativeActionClickListener(null);
+    public Dialog clearContent(){
+        title(0);
+        positiveAction(0);
+        positiveActionClickListener(null);
+        negativeAction(0);
+        negativeActionClickListener(null);
         setContentView(null);
+        return this;
     }
 
-    public void setLayoutParams(int width, int height){
+    public Dialog layoutParams(int width, int height){
         mLayoutWidth = width;
         mLayoutHeight = height;
+        return this;
     }
 
-    public void setDimAmount(float amount){
+    public Dialog dimAmount(float amount){
         Window window = getWindow();
         if(amount > 0f){
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -196,176 +202,212 @@ public class Dialog extends android.app.Dialog{
         }
         else
             window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    }/**/
-
-    public void setBackgroundColor(int color){
-        mBackground.setCardBackgroundColor(color);
+        return this;
     }
 
-    public void setElevation(float radius){
+    public Dialog backgroundColor(int color){
+        mBackground.setCardBackgroundColor(color);
+        return this;
+    }
+
+    public Dialog elevation(float radius){
         if(mBackground.getMaxCardElevation() < radius)
             mBackground.setMaxCardElevation(radius);
 
         mBackground.setCardElevation(radius);
+        return this;
     }
 
-    public void setMaxElevation(float radius){
+    public Dialog maxElevation(float radius){
         mBackground.setMaxCardElevation(radius);
+        return this;
     }
 
-    public void setCornerRadius(float radius){
+    public Dialog cornerRadius(float radius){
         mBackground.setRadius(radius);
+        return this;
     }
 
-    public void setDividerColor(int color){
+    public Dialog dividerColor(int color){
         mContainer.setDividerColor(color);
+        return this;
     }
 
-    public void setDividerHeight(int height){
+    public Dialog dividerHeight(int height){
         mContainer.setDividerHeight(height);
+        return this;
     }
 
-    @Override
-    public void setTitle(CharSequence title){
+    public Dialog title(CharSequence title){
         mTitle.setText(title);
         mTitle.setVisibility(TextUtils.isEmpty(title) ? View.GONE : View.VISIBLE);
+        return this;
+    }
+
+    public Dialog title(int id){
+        return title(id == 0 ? null : getContext().getResources().getString(id));
     }
 
     @Override
-    public void setTitle(int id){
-        setTitle(id == 0 ? null : getContext().getResources().getString(id));
+    public void setTitle(CharSequence title) {
+        title(title);
     }
 
-    public void setTitleColor(int color){
+    @Override
+    public void setTitle(int titleId) {
+        title(titleId);
+    }
+
+    public Dialog titleColor(int color){
         mTitle.setTextColor(color);
+        return this;
     }
 
-    public void setTitleTextAppearance(int resId){
+    public Dialog titleTextAppearance(int resId){
         mTitle.setTextAppearance(getContext(), resId);
+        return this;
     }
 
-    public void setActionBackground(int id){
-        setPositiveActionBackground(id);
-        setNegativeActionBackground(id);
+    public Dialog actionBackground(int id){
+        positiveActionBackground(id);
+        negativeActionBackground(id);
+        return this;
     }
 
-    public void setActionBackground(Drawable drawable){
-        setPositiveActionBackground(drawable);
-        setNegativeActionBackground(drawable);
+    public Dialog actionBackground(Drawable drawable){
+        positiveActionBackground(drawable);
+        negativeActionBackground(drawable);
+        return this;
     }
 
-    public void setActionRipple(int resId){
-        setPositiveActionRipple(resId);
-        setNegativeActionRipple(resId);
+    public Dialog actionRipple(int resId){
+        positiveActionRipple(resId);
+        negativeActionRipple(resId);
+        return this;
     }
 
-    public void setActionTextAppearance(int resId){
-        setPositiveActionTextAppearance(resId);
-        setNegativeActionTextAppearance(resId);
+    public Dialog actionTextAppearance(int resId){
+        positiveActionTextAppearance(resId);
+        negativeActionTextAppearance(resId);
+        return this;
     }
 
-    public void setActionTextColor(ColorStateList color){
-        this.setPositiveActionTextColor(color);
-        setNegativeActionTextColor(color);
+    public Dialog actionTextColor(ColorStateList color){
+        this.positiveActionTextColor(color);
+        negativeActionTextColor(color);
+        return this;
     }
 
-    public void setActionTextColor(int color){
-        setPositiveActionTextColor(color);
-        setNegativeActionTextColor(color);
+    public Dialog actionTextColor(int color){
+        positiveActionTextColor(color);
+        negativeActionTextColor(color);
+        return this;
     }
 
-    public void setPositiveAction(CharSequence action){
+    public Dialog positiveAction(CharSequence action){
         mPositiveAction.setText(action);
         mPositiveAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
+        return this;
     }
 
-    public void setPositiveAction(int id){
-        setPositiveAction(id == 0 ? null : getContext().getResources().getString(id));
+    public Dialog positiveAction(int id){
+        return positiveAction(id == 0 ? null : getContext().getResources().getString(id));
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void setPositiveActionBackground(Drawable drawable){
+    public Dialog positiveActionBackground(Drawable drawable){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mPositiveAction.setBackground(drawable);
         else
             mPositiveAction.setBackgroundDrawable(drawable);
+        return this;
     }
 
-    public void setPositiveActionBackground(int id){
-        setPositiveActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
+    public Dialog positiveActionBackground(int id){
+        return positiveActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
-    public void setPositiveActionRipple(int resId){
+    public Dialog positiveActionRipple(int resId){
         RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
-        setPositiveActionBackground(drawable);
+        return positiveActionBackground(drawable);
     }
 
-    public void setPositiveActionTextAppearance(int resId){
+    public Dialog positiveActionTextAppearance(int resId){
         mPositiveAction.setTextAppearance(getContext(), resId);
+        return this;
     }
 
-    public void setPositiveActionTextColor(ColorStateList color){
+    public Dialog positiveActionTextColor(ColorStateList color){
         mPositiveAction.setTextColor(color);
+        return this;
     }
 
-    public void setPositiveActionTextColor(int color){
+    public Dialog positiveActionTextColor(int color){
         mPositiveAction.setTextColor(color);
+        return this;
     }
 
-    public void setPositiveActionClickListener(View.OnClickListener listener){
+    public Dialog positiveActionClickListener(View.OnClickListener listener){
         mPositiveAction.setOnClickListener(listener);
+        return this;
     }
 
-    public void setNegativeAction(CharSequence action){
+    public Dialog negativeAction(CharSequence action){
         mNegativeAction.setText(action);
         mNegativeAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
+        return this;
     }
 
-    public void setNegativeAction(int id){
-        setNegativeAction(id == 0 ? null : getContext().getResources().getString(id));
+    public Dialog negativeAction(int id){
+        return negativeAction(id == 0 ? null : getContext().getResources().getString(id));
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
-    public void setNegativeActionBackground(Drawable drawable){
+    public Dialog negativeActionBackground(Drawable drawable){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mNegativeAction.setBackground(drawable);
         else
             mNegativeAction.setBackgroundDrawable(drawable);
+        return this;
     }
 
-    public void setNegativeActionBackground(int id){
-        setNegativeActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
+    public Dialog negativeActionBackground(int id){
+        return negativeActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
-    public void setNegativeActionRipple(int resId){
+    public Dialog negativeActionRipple(int resId){
         RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
-        setNegativeActionBackground(drawable);
+        return negativeActionBackground(drawable);
     }
 
-    public void setNegativeActionTextAppearance(int resId){
+    public Dialog negativeActionTextAppearance(int resId){
         mNegativeAction.setTextAppearance(getContext(), resId);
+        return this;
     }
 
-    public void setNegativeActionTextColor(ColorStateList color){
+    public Dialog negativeActionTextColor(ColorStateList color){
         mNegativeAction.setTextColor(color);
+        return this;
     }
 
-    public void setNegativeActionTextColor(int color){
+    public Dialog negativeActionTextColor(int color){
         mNegativeAction.setTextColor(color);
+        return this;
     }
 
-    public void setNegativeActionClickListener(View.OnClickListener listener){
+    public Dialog negativeActionClickListener(View.OnClickListener listener){
         mNegativeAction.setOnClickListener(listener);
+        return this;
     }
 
-    public void setShowDivider(boolean show){
+    public Dialog showDivider(boolean show){
         mContainer.setShowDivider(show);
+        return this;
     }
 
-    @Override
-    public void setContentView(View v){
+    public Dialog contentView(View v){
         if(mContent != v) {
             if(mContent != null)
                 mContainer.removeView(mContent);
@@ -375,22 +417,28 @@ public class Dialog extends android.app.Dialog{
 
         if(mContent != null)
             mContainer.addView(mContent);
+
+        return this;
+    }
+
+    @Override
+    public void setContentView(View v){
+        contentView(v);
     }
 
     @Override
     public void setContentView(int layoutId){
         View v = LayoutInflater.from(getContext()).inflate(layoutId, null);
-        setContentView(v);
+        contentView(v);
     }
 
     @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
-        setContentView(view);
+    public void setContentView(View v, ViewGroup.LayoutParams params) {
+        contentView(v);
     }
 
     private class ContainerFrameLayout extends FrameLayout{
 
-        private Point mWindowSize;
         private Paint mDividerPaint;
         private float mDividerPos = -1f;
         private boolean mShowDivider = false;
@@ -401,6 +449,8 @@ public class Dialog extends android.app.Dialog{
             mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mDividerPaint.setStyle(Paint.Style.STROKE);
             setWillNotDraw(false);
+
+            setBackgroundColor(0xFFFF0000);
         }
 
         public void setDividerColor(int color){
@@ -420,27 +470,26 @@ public class Dialog extends android.app.Dialog{
             }
         }
 
-        private Point getWindowSize(){
-            if(mWindowSize == null)
-                mWindowSize = new Point();
-
-//            View v = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
-//            mWindowSize.set(v.getRight() - v.getLeft(), v.getBottom() - v.getTop());
-
-            Display display = getWindow().getWindowManager().getDefaultDisplay();
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
-                display.getSize(mWindowSize);
-            else
-                mWindowSize.set(display.getWidth(), display.getHeight());
-
-            return mWindowSize;
-        }
-
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            Point windowSize = getWindowSize();
-            int maxWidth = windowSize.x - mBackground.getPaddingLeft() - mBackground.getPaddingRight();
-            int maxHeight = windowSize.y - mBackground.getPaddingTop() - mBackground.getPaddingBottom();
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
+            //skip second measure so it doesn't reduce max size.
+            if(widthSize == getMeasuredWidth() && heightSize == getMeasuredHeight() && widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY){
+                setMeasuredDimension(widthSize, heightSize);
+                return;
+            }
+
+            int paddingLeft = Math.max(mDialogHorizontalPadding, mBackground.getPaddingLeft());
+            int paddingRight = Math.max(mDialogHorizontalPadding, mBackground.getPaddingRight());
+            int paddingTop = Math.max(mDialogVerticalPadding, mBackground.getPaddingTop());
+            int paddingBottom = Math.max(mDialogVerticalPadding, mBackground.getPaddingBottom());
+
+            int maxWidth = widthSize - paddingLeft - paddingRight;
+            int maxHeight = heightSize - paddingTop - paddingBottom;
 
             int width = mLayoutWidth == ViewGroup.LayoutParams.MATCH_PARENT ? maxWidth : mLayoutWidth;
             int height = mLayoutHeight == ViewGroup.LayoutParams.MATCH_PARENT ? maxHeight : mLayoutHeight;
@@ -528,12 +577,9 @@ public class Dialog extends android.app.Dialog{
                     mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
             }
 
-            int dialogWidth = width + mBackground.getPaddingLeft() + mBackground.getPaddingRight();
-            int dialogHeight = height + mBackground.getPaddingTop() + mBackground.getPaddingBottom();
-            mBackground.measure(MeasureSpec.makeMeasureSpec(dialogWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dialogHeight, MeasureSpec.EXACTLY));
+            mBackground.measure(MeasureSpec.makeMeasureSpec(width + mBackground.getPaddingLeft() + mBackground.getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height + mBackground.getPaddingTop() + mBackground.getPaddingBottom(), MeasureSpec.EXACTLY));
 
-            setMeasuredDimension(dialogWidth, dialogHeight);
-
+            setMeasuredDimension(width + paddingLeft + paddingRight, height + paddingTop + paddingBottom);
         }
 
         @Override
@@ -543,12 +589,17 @@ public class Dialog extends android.app.Dialog{
             int childRight = right - left;
             int childBottom = bottom - top;
 
-            mBackground.layout(childLeft, childTop, childRight, childBottom);
+            int paddingLeft = Math.max(mDialogHorizontalPadding, mBackground.getPaddingLeft());
+            int paddingRight = Math.max(mDialogHorizontalPadding, mBackground.getPaddingRight());
+            int paddingTop = Math.max(mDialogVerticalPadding, mBackground.getPaddingTop());
+            int paddingBottom = Math.max(mDialogVerticalPadding, mBackground.getPaddingBottom());
 
-            childLeft += mBackground.getPaddingLeft();
-            childTop += mBackground.getPaddingTop();
-            childRight -= mBackground.getPaddingRight();
-            childBottom -= mBackground.getPaddingBottom();
+            mBackground.layout(childLeft + paddingLeft - mBackground.getPaddingLeft(), childTop + paddingTop - mBackground.getPaddingTop(), childRight - paddingRight + mBackground.getPaddingRight(), childBottom - paddingBottom + mBackground.getPaddingBottom());
+
+            childLeft += paddingLeft;
+            childTop += paddingRight;
+            childRight -= paddingTop;
+            childBottom -= paddingBottom;
 
             if(mTitle.getVisibility() == View.VISIBLE) {
                 mTitle.layout(childLeft, childTop, childRight, childTop + mTitle.getMeasuredHeight());

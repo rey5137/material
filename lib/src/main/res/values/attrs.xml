@@ -261,6 +261,7 @@
         <attr name="sb_actionRipple" format="reference"/>
         <attr name="sb_inAnimation" format="reference"/>
         <attr name="sb_outAnimation" format="reference"/>
+        <attr name="sb_removeOnDismiss" format="boolean" />
     </declare-styleable>
     
     <declare-styleable name="FloatingActionButton">

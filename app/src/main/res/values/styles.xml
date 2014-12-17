@@ -312,8 +312,8 @@
     <!-- Dialog -->
 
     <style name="SimpleDialog">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">200dp</item>
         <item name="di_dimAmount">0.5</item>
         <item name="di_backgroundColor">#FFFFFFFF</item>
         <item name="di_elevation">4dp</item>
@@ -341,8 +341,8 @@
     </style>
 
     <style name="DialogRadioButton" parent="RadioButtonDrawableDefault">
-        <item name="rbd_width">32dp</item>
-        <item name="rbd_height">32dp</item>
+        <item name="rbd_width">22dp</item>
+        <item name="rbd_height">22dp</item>
         <item name="rbd_strokeSize">2dp</item>
         <item name="rbd_radius">10dp</item>
         <item name="rbd_innerRadius">5dp</item>
@@ -350,8 +350,8 @@
     </style>
 
     <style name="DialogCheckBox" parent="CheckBoxDrawableDefault">
-        <item name="cbd_width">32dp</item>
-        <item name="cbd_height">32dp</item>
+        <item name="cbd_width">22dp</item>
+        <item name="cbd_height">22dp</item>
         <item name="cbd_boxSize">20dp</item>
         <item name="cbd_cornerRadius">2dp</item>
         <item name="cbd_strokeSize">2dp</item>
