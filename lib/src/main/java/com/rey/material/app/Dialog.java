@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -28,7 +29,6 @@ import com.rey.material.widget.TextView;
 
 /**
  * Created by Rey on 12/10/2014.
- * TODO: fix divider bug, touch on container layout
  */
 public class Dialog extends android.app.Dialog{
 
@@ -52,6 +52,9 @@ public class Dialog extends android.app.Dialog{
     protected int mDialogVerticalPadding;
 
     private boolean mLayoutActionVertical = false;
+
+    private boolean mCancelable = true;
+    private boolean mCanceledOnTouchOutside = true;
 
     public Dialog(Context context) {
         super(context, android.R.style.Theme_Panel);
@@ -87,11 +90,13 @@ public class Dialog extends android.app.Dialog{
         mNegativeAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNegativeAction.setBackgroundResource(0);
 
-
         mContainer.addView(mBackground);
         mContainer.addView(mTitle);
         mContainer.addView(mPositiveAction);
         mContainer.addView(mNegativeAction);
+
+        cancelable(true);
+        canceledOnTouchOutside(true);
 
         applyStyle(style);
 
@@ -421,6 +426,28 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    public Dialog cancelable(boolean cancelable){
+        super.setCancelable(cancelable);
+        mCancelable = cancelable;
+        return this;
+    }
+
+    public Dialog canceledOnTouchOutside(boolean cancel){
+        super.setCanceledOnTouchOutside(cancel);
+        mCanceledOnTouchOutside = cancel;
+        return this;
+    }
+
+    @Override
+    public void setCancelable(boolean flag) {
+        cancelable(flag);
+    }
+
+    @Override
+    public void setCanceledOnTouchOutside(boolean cancel) {
+        canceledOnTouchOutside(cancel);
+    }
+
     @Override
     public void setContentView(View v){
         contentView(v);
@@ -442,6 +469,7 @@ public class Dialog extends android.app.Dialog{
         private Paint mDividerPaint;
         private float mDividerPos = -1f;
         private boolean mShowDivider = false;
+        private boolean mClickOutside = false;
 
         public ContainerFrameLayout(Context context) {
             super(context);
@@ -449,8 +477,6 @@ public class Dialog extends android.app.Dialog{
             mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mDividerPaint.setStyle(Paint.Style.STROKE);
             setWillNotDraw(false);
-
-            setBackgroundColor(0xFFFF0000);
         }
 
         public void setDividerColor(int color){
@@ -477,7 +503,7 @@ public class Dialog extends android.app.Dialog{
             int widthMode = MeasureSpec.getMode(widthMeasureSpec);
             int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
-            //skip second measure so it doesn't reduce max size.
+            //skip second measure.
             if(widthSize == getMeasuredWidth() && heightSize == getMeasuredHeight() && widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY){
                 setMeasuredDimension(widthSize, heightSize);
                 return;
@@ -562,44 +588,30 @@ public class Dialog extends android.app.Dialog{
             else
                 nonContentHeight += (positiveActionHeight > 0 || negativeActionWidth > 0 ? mActionOuterHeight : 0);
 
-            if(height == ViewGroup.LayoutParams.WRAP_CONTENT){
-                height = contentHeight + nonContentHeight;
+            if(height == ViewGroup.LayoutParams.WRAP_CONTENT)
+                height = Math.min(maxHeight, contentHeight + nonContentHeight);
 
-                if(height > maxHeight){
-                    if(contentHeight > 0)
-                        mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(maxHeight - nonContentHeight, MeasureSpec.EXACTLY));
-
-                    height = maxHeight;
-                }
-            }
-            else{
-                if(contentHeight > 0 && contentHeight != height - nonContentHeight)
-                    mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
-            }
+            if(contentHeight > 0)
+                mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
 
             mBackground.measure(MeasureSpec.makeMeasureSpec(width + mBackground.getPaddingLeft() + mBackground.getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height + mBackground.getPaddingTop() + mBackground.getPaddingBottom(), MeasureSpec.EXACTLY));
 
-            setMeasuredDimension(width + paddingLeft + paddingRight, height + paddingTop + paddingBottom);
+            setMeasuredDimension(widthSize, heightSize);
         }
 
         @Override
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-            int childLeft = 0;
-            int childTop = 0;
-            int childRight = right - left;
-            int childBottom = bottom - top;
+            int childLeft = (right - left - mBackground.getMeasuredWidth()) / 2;
+            int childTop = (bottom - top - mBackground.getMeasuredHeight()) / 2;
+            int childRight = childLeft + mBackground.getMeasuredWidth();
+            int childBottom = childTop + mBackground.getMeasuredHeight();
 
-            int paddingLeft = Math.max(mDialogHorizontalPadding, mBackground.getPaddingLeft());
-            int paddingRight = Math.max(mDialogHorizontalPadding, mBackground.getPaddingRight());
-            int paddingTop = Math.max(mDialogVerticalPadding, mBackground.getPaddingTop());
-            int paddingBottom = Math.max(mDialogVerticalPadding, mBackground.getPaddingBottom());
+            mBackground.layout(childLeft, childTop, childRight, childBottom);
 
-            mBackground.layout(childLeft + paddingLeft - mBackground.getPaddingLeft(), childTop + paddingTop - mBackground.getPaddingTop(), childRight - paddingRight + mBackground.getPaddingRight(), childBottom - paddingBottom + mBackground.getPaddingBottom());
-
-            childLeft += paddingLeft;
-            childTop += paddingRight;
-            childRight -= paddingTop;
-            childBottom -= paddingBottom;
+            childLeft += mBackground.getPaddingLeft();
+            childTop += mBackground.getPaddingRight();
+            childRight -= mBackground.getPaddingTop();
+            childBottom -= mBackground.getPaddingBottom();
 
             if(mTitle.getVisibility() == View.VISIBLE) {
                 mTitle.layout(childLeft, childTop, childRight, childTop + mTitle.getMeasuredHeight());
@@ -652,10 +664,45 @@ public class Dialog extends android.app.Dialog{
         public void draw(Canvas canvas) {
             super.draw(canvas);
 
-            if(mShowDivider)
-                canvas.drawLine(mBackground.getPaddingLeft(), mDividerPos, mBackground.getWidth() - mBackground.getPaddingRight(), mDividerPos, mDividerPaint);
+            if(mShowDivider && (mPositiveAction.getVisibility() == View.VISIBLE || mNegativeAction.getVisibility() == View.VISIBLE))
+                canvas.drawLine(mBackground.getLeft() + mBackground.getPaddingLeft(), mDividerPos, mBackground.getRight() - mBackground.getPaddingRight(), mDividerPos, mDividerPaint);
         }
 
+        private boolean isOutsideDialog(float x, float y){
+            return x < mBackground.getLeft() + mBackground.getPaddingLeft() || x > mBackground.getRight() - mBackground.getPaddingRight() || y < mBackground.getTop() + mBackground.getPaddingTop() || y > mBackground.getBottom() - mBackground.getPaddingBottom();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            boolean handled = super.onTouchEvent(event);
+
+            if(handled)
+                return true;
+
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    if(isOutsideDialog(event.getX(), event.getY())){
+                        mClickOutside = true;
+                        return true;
+                    }
+                    return false;
+                case MotionEvent.ACTION_MOVE:
+                    return mClickOutside;
+                case MotionEvent.ACTION_CANCEL:
+                    mClickOutside = false;
+                    return false;
+                case MotionEvent.ACTION_UP:
+                    if(mClickOutside && isOutsideDialog(event.getX(), event.getY())){
+                        mClickOutside = false;
+                        if(mCancelable && mCanceledOnTouchOutside)
+                            dismiss();
+                        return true;
+                    }
+                    return false;
+            }
+
+            return false;
+        }
     }
 
 }

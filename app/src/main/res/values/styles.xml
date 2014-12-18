@@ -313,10 +313,10 @@
 
     <style name="SimpleDialog">
         <item name="android:layout_width">200dp</item>
-        <item name="android:layout_height">200dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="di_dimAmount">0.5</item>
         <item name="di_backgroundColor">#FFFFFFFF</item>
-        <item name="di_elevation">4dp</item>
+        <item name="di_elevation">8dp</item>
         <item name="di_maxElevation">8dp</item>
         <item name="di_cornerRadius">2dp</item>
         <item name="di_titleTextAppearance">@style/TextAppearance.AppCompat.Title</item>

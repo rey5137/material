@@ -96,18 +96,18 @@ public class ButtonFragment extends Fragment{
                 final SimpleDialog dialog = new SimpleDialog(getActivity());
                 dialog.applyStyle(R.style.SimpleDialog);
                 dialog.title("This is titlte");
-//                dialog.message("This is a message");
-                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
-                dialog.setCanceledOnTouchOutside(true);
+                dialog.message("This is a message");
+//                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
+                dialog.canceledOnTouchOutside(true);
 //                dialog.multiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
-//                dialog.negativeAction("CANCEL");
-//                dialog.positiveAction("ACCEPT");
-//                dialog.negativeActionClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
+                dialog.negativeAction("CANCEL");
+                dialog.positiveAction("ACCEPT");
+                dialog.negativeActionClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
                 dialog.show();
 			}
 			

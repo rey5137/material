@@ -231,7 +231,7 @@ public class SimpleDialog extends Dialog {
             int heightMode = MeasureSpec.getMode(heightMeasureSpec);
             if(heightMode == MeasureSpec.UNSPECIFIED){
                 if(mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
-                    heightMeasureSpec = MeasureSpec.makeMeasureSpec(mItemHeight * getAdapter().getCount(), MeasureSpec.EXACTLY);
+                    heightMeasureSpec = MeasureSpec.makeMeasureSpec(mItemHeight * getAdapter().getCount() + getPaddingTop() + getPaddingBottom(), MeasureSpec.EXACTLY);
             }
 
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
