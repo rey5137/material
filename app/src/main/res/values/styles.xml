@@ -357,5 +357,14 @@
         <item name="cbd_strokeSize">2dp</item>
         <item name="cbd_animDuration">300</item>
     </style>
+
+    <style name="TimePicker" >
+        <item name="tp_backgroundColor">#ffcacdcf</item>
+        <item name="tp_selectionColor">#FF009688</item>
+        <item name="tp_selectionRadius">16dp</item>
+        <item name="tp_tickSize">1dp</item>
+        <item name="tp_textSize">14sp</item>
+        <item name="tp_textColor">#FF000000</item>
+    </style>
     
 </resources>

@@ -77,14 +77,14 @@ public class ButtonFragment extends Fragment{
 		final int duration = 2000;
 		final boolean out = true;
 		
-		final View a = v.findViewById(R.id.button_v);
-		final RevealDrawable drawable = new RevealDrawable(color1);
-		a.setBackgroundDrawable(drawable);
-
-		a.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
+//		final View a = v.findViewById(R.id.button_v);
+//		final RevealDrawable drawable = new RevealDrawable(color1);
+//		a.setBackgroundDrawable(drawable);
+//
+//		a.setOnClickListener(new View.OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
 //				RevealDrawable.ColorChangeTask task1 = new RevealDrawable.ColorChangeTask(color1, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
 //				RevealDrawable.ColorChangeTask task2 = new RevealDrawable.ColorChangeTask(color2, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
 //
@@ -92,26 +92,26 @@ public class ButtonFragment extends Fragment{
 //					drawable.changeColor(task2, task1, task2);
 //				else
 //					drawable.changeColor(task1, task2, task1);
-
-                final SimpleDialog dialog = new SimpleDialog(getActivity());
-                dialog.applyStyle(R.style.SimpleDialog);
-                dialog.title("This is titlte");
-                dialog.message("This is a message");
-//                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
-                dialog.canceledOnTouchOutside(true);
-//                dialog.multiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
-                dialog.negativeAction("CANCEL");
-                dialog.positiveAction("ACCEPT");
-                dialog.negativeActionClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-			}
-			
-		});
+//
+//                final SimpleDialog dialog = new SimpleDialog(getActivity());
+//                dialog.applyStyle(R.style.SimpleDialog);
+//                dialog.title("This is titlte");
+//                dialog.message("This is a message");
+////                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
+//                dialog.canceledOnTouchOutside(true);
+////                dialog.multiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
+//                dialog.negativeAction("CANCEL");
+//                dialog.positiveAction("ACCEPT");
+//                dialog.negativeActionClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                dialog.show();
+//			}
+//
+//		});
 		
 		return v;
 	}

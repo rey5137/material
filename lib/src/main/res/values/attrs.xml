@@ -329,4 +329,15 @@
         <attr name="di_itemHeight" format="dimension|reference" />
         <attr name="di_itemTextAppearance" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="TimePicker">
+        <attr name="tp_backgroundColor" format="color|reference" />
+        <attr name="tp_selectionColor" format="color|reference" />
+        <attr name="tp_selectionRadius" format="dimension|reference" />
+        <attr name="tp_tickSize" format="dimension|reference" />
+        <attr name="tp_textSize" format="dimension|reference" />
+        <attr name="tp_textColor" format="color|reference" />
+        <attr name="tp_animDuration" format="integer|reference" />
+        <attr name="tp_interpolator" format="reference" />
+    </declare-styleable>
 </resources>

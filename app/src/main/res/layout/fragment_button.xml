@@ -12,11 +12,11 @@
 	    android:orientation="vertical"
 	    android:gravity="center">
 	    
-        <View
-            android:id="@+id/button_v"
-            android:layout_width="match_parent"
-            android:layout_height="128dp"
-            android:layout_marginTop="16dp"/>   
+        <com.rey.material.widget.TimePicker
+            style="@style/TimePicker"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:padding="8dp"/>
 	    	        
 	    <TextView 
 			android:layout_width="match_parent"
