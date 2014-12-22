@@ -13,6 +13,7 @@
 	    android:gravity="center">
 	    
         <com.rey.material.widget.TimePicker
+            android:id="@+id/button_tp"
             style="@style/TimePicker"
             android:layout_width="256dp"
             android:layout_height="256dp"

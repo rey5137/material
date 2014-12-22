@@ -338,6 +338,13 @@
         <attr name="tp_textSize" format="dimension|reference" />
         <attr name="tp_textColor" format="color|reference" />
         <attr name="tp_animDuration" format="integer|reference" />
-        <attr name="tp_interpolator" format="reference" />
+        <attr name="tp_inInterpolator" format="reference" />
+        <attr name="tp_outInterpolator" format="reference" />
+        <attr name="tp_mode" format="integer">
+            <enum name="hour" value="0" />
+            <enum name="minute" value="1" />
+        </attr>
+        <attr name="tp_hour" format="integer"/>
+        <attr name="tp_minute" format="integer"/>
     </declare-styleable>
 </resources>

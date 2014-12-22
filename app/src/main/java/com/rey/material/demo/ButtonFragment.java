@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.drawable.RevealDrawable;
 import com.rey.material.widget.Button;
+import com.rey.material.widget.TimePicker;
 
 public class ButtonFragment extends Fragment{
 
@@ -68,51 +69,24 @@ public class ButtonFragment extends Fragment{
 		bt_raise_wave_color.setOnClickListener(listener_delay);
 		bt_float_color.setOnClickListener(listener_delay);
 		bt_float_wave_color.setOnClickListener(listener_delay);
-				
-//		Spinner spn = (Spinner)v.findViewById(R.id.button_spn);
-//		spn.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.row_spn, R.id.row_spn_tv, new String[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"}));
-		
-		final int color1 = 0xFF0000FF;
-		final int color2 = 0x00FF0000;
-		final int duration = 2000;
-		final boolean out = true;
-		
-//		final View a = v.findViewById(R.id.button_v);
-//		final RevealDrawable drawable = new RevealDrawable(color1);
-//		a.setBackgroundDrawable(drawable);
-//
-//		a.setOnClickListener(new View.OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				RevealDrawable.ColorChangeTask task1 = new RevealDrawable.ColorChangeTask(color1, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
-//				RevealDrawable.ColorChangeTask task2 = new RevealDrawable.ColorChangeTask(color2, duration, null, a.getWidth() / 2f, a.getHeight() / 2f, out);
-//
-//				if(drawable.getCurColor() == color1)
-//					drawable.changeColor(task2, task1, task2);
-//				else
-//					drawable.changeColor(task1, task2, task1);
-//
-//                final SimpleDialog dialog = new SimpleDialog(getActivity());
-//                dialog.applyStyle(R.style.SimpleDialog);
-//                dialog.title("This is titlte");
-//                dialog.message("This is a message");
-////                dialog.items(new CharSequence[]{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"}, 1);
-//                dialog.canceledOnTouchOutside(true);
-////                dialog.multiChoiceItems(new CharSequence[]{"Item 1", "Item 2", "Item 3"}, 1, 2);
-//                dialog.negativeAction("CANCEL");
-//                dialog.positiveAction("ACCEPT");
-//                dialog.negativeActionClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.show();
-//			}
-//
-//		});
-		
+
+
+        final TimePicker tp = (TimePicker)v.findViewById(R.id.button_tp);
+
+        bt_flat.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                tp.setMode(TimePicker.MODE_HOUR, true);
+            }
+        });
+
+        bt_flat_color.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                tp.setMode(TimePicker.MODE_MINUTE, true);
+            }
+        });
+
 		return v;
 	}
 
