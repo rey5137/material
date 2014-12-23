@@ -364,7 +364,9 @@
         <item name="tp_selectionRadius">16dp</item>
         <item name="tp_tickSize">1dp</item>
         <item name="tp_textSize">14sp</item>
+        <item name="android:textStyle">italic</item>
         <item name="tp_textColor">#FF000000</item>
+        <item name="tp_textHighlightColor">#FFFFFFFF</item>
         <item name="tp_animDuration">@android:integer/config_mediumAnimTime</item>
         <item name="tp_inInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="tp_outInterpolator">@android:anim/decelerate_interpolator</item>

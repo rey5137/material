@@ -335,8 +335,11 @@
         <attr name="tp_selectionColor" format="color|reference" />
         <attr name="tp_selectionRadius" format="dimension|reference" />
         <attr name="tp_tickSize" format="dimension|reference" />
+        <attr name="android:fontFamily" />
+        <attr name="android:textStyle" />
         <attr name="tp_textSize" format="dimension|reference" />
         <attr name="tp_textColor" format="color|reference" />
+        <attr name="tp_textHighlightColor" format="color|reference" />
         <attr name="tp_animDuration" format="integer|reference" />
         <attr name="tp_inInterpolator" format="reference" />
         <attr name="tp_outInterpolator" format="reference" />

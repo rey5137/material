@@ -11,7 +11,15 @@
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
 	    android:gravity="center">
-	    
+
+        <com.rey.material.widget.CircleCheckedTextView
+            android:id="@+id/button_test"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:textColor="#FFFFFFFF"
+            android:text="AM"
+            android:checked="true"/>
+
         <com.rey.material.widget.TimePicker
             android:id="@+id/button_tp"
             style="@style/TimePicker"

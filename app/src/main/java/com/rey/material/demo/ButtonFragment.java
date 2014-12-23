@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.drawable.RevealDrawable;
 import com.rey.material.widget.Button;
+import com.rey.material.widget.CircleCheckedTextView;
 import com.rey.material.widget.TimePicker;
 
 public class ButtonFragment extends Fragment{
@@ -86,6 +87,14 @@ public class ButtonFragment extends Fragment{
                 tp.setMode(TimePicker.MODE_MINUTE, true);
             }
         });
+
+//        final CircleCheckedTextView test = (CircleCheckedTextView)v.findViewById(R.id.button_test);
+//        test.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                test.setChecked(!test.isChecked());
+//            }
+//        });
 
 		return v;
 	}

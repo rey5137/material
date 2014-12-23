@@ -21,6 +21,7 @@ import android.view.animation.Interpolator;
 import com.rey.material.R;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.TypefaceUtil;
 import com.rey.material.util.ViewUtil;
 
 /**
@@ -32,8 +33,10 @@ public class TimePicker extends View{
     private int mSelectionColor;
     private int mSelectionRadius;
     private int mTickSize;
+    private Typeface mTypeface;
     private int mTextSize;
     private int mTextColor;
+    private int mTextHighlightColor;
 
     private int mAnimDuration;
     private Interpolator mInInterpolator;
@@ -47,8 +50,6 @@ public class TimePicker extends View{
     private PointF mCenterPoint;
     private float mOuterRadius;
     private float mInnerRadius;
-
-    private float mCurAngle;
 
     private float[] mLocations = new float[48];
     private Rect mRect;
@@ -106,7 +107,8 @@ public class TimePicker extends View{
         mSelectionRadius = a.getDimensionPixelOffset(R.styleable.TimePicker_tp_selectionRadius, ThemeUtil.dpToPx(context, 8));
         mTickSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_tickSize, ThemeUtil.dpToPx(context, 1));
         mTextSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_textSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material));
-        mTextColor = a.getColor(R.styleable.TimePicker_tp_textColor, 0xFFFFFFFF);
+        mTextColor = a.getColor(R.styleable.TimePicker_tp_textColor, 0xFF000000);
+        mTextHighlightColor = a.getColor(R.styleable.TimePicker_tp_textHighlightColor, 0xFFFFFFFF);
         mAnimDuration = a.getInteger(R.styleable.TimePicker_tp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         int resId = a.getResourceId(R.styleable.TimePicker_tp_inInterpolator, 0);
         mInInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
@@ -116,21 +118,17 @@ public class TimePicker extends View{
         setHour(a.getInteger(R.styleable.TimePicker_tp_hour, 0));
         setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, 0));
 
+        String familyName = a.getString(R.styleable.TimePicker_android_fontFamily);
+        int style = a.getInteger(R.styleable.TimePicker_android_textStyle, Typeface.NORMAL);
+
+        mTypeface = TypefaceUtil.load(context, familyName, style);
+
         a.recycle();
     }
 
     public void setMode(int mode, boolean animation){
         if(mMode != mode){
             mMode = mode;
-
-            if(mMode == MODE_HOUR){
-                double angle = -Math.PI / 3 + Math.PI / 6 * mHour;
-                setAngle(angle > 0 ? (float)angle : (float)(angle + Math.PI * 2));
-            }
-            else if(mMode == MODE_MINUTE){
-                double angle = -Math.PI / 2 + Math.PI / 30 * mMinute;
-                setAngle(angle > 0 ? (float)angle : (float)(angle + Math.PI * 2));
-            }
 
             if(animation)
                 startAnimation();
@@ -149,10 +147,8 @@ public class TimePicker extends View{
             if(mOnTimeChangedListener != null)
                 mOnTimeChangedListener.onHourChanged(old, mHour);
 
-            if(mMode == MODE_HOUR){
-                double angle = -Math.PI / 3 + Math.PI / 6 * mHour;
-                setAngle((float)angle);
-            }
+            if(mMode == MODE_HOUR)
+                invalidate();
         }
     }
 
@@ -166,10 +162,8 @@ public class TimePicker extends View{
             if(mOnTimeChangedListener != null)
                 mOnTimeChangedListener.onMinuteChanged(old, mMinute);
 
-            if(mMode == MODE_MINUTE){
-                double angle = -Math.PI / 2 + Math.PI / 30 * mMinute;
-                setAngle((float)angle);
-            }
+            if(mMode == MODE_MINUTE)
+                invalidate();
         }
     }
 
@@ -177,10 +171,26 @@ public class TimePicker extends View{
         mOnTimeChangedListener = listener;
     }
 
-    private void setAngle(float angle){
-        if(mCurAngle != angle){
-            mCurAngle = angle;
-            invalidate();
+    private float getAngle(int value, int mode){
+        switch (mode){
+            case MODE_HOUR:
+                return (float)(-Math.PI / 3 + Math.PI / 6 * value);
+            case MODE_MINUTE:
+                return (float)(-Math.PI / 2 + Math.PI / 30 * value);
+            default:
+                return 0f;
+        }
+    }
+
+    private int getSelectedTick(int value, int mode){
+        switch (mode){
+            case MODE_HOUR:
+                return value;
+            case MODE_MINUTE:
+                if(value % 5 == 0)
+                    return (value == 0) ? 23 : (value / 5 + 11);
+            default:
+                return -1;
         }
     }
 
@@ -205,7 +215,7 @@ public class TimePicker extends View{
         float x, y;
 
         mPaint.setTextSize(mTextSize);
-        mPaint.setTypeface(Typeface.DEFAULT);
+        mPaint.setTypeface(mTypeface);
         mPaint.setTextAlign(Paint.Align.CENTER);
 
         for(int i = 0; i < TICKS.length; i++){
@@ -232,6 +242,8 @@ public class TimePicker extends View{
         mOuterRadius = size / 2f;
         mCenterPoint.set(left + mOuterRadius, top + mOuterRadius);
         mInnerRadius = mOuterRadius - mSelectionRadius - ThemeUtil.dpToPx(getContext(), 4);
+
+        calculateTextLocation();
     }
 
     private int getPointedValue(float x, float y){
@@ -301,73 +313,134 @@ public class TimePicker extends View{
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mOuterRadius, mPaint);
 
-        mPaint.setColor(mSelectionColor);
-        float x = mCenterPoint.x + (float)Math.cos(mCurAngle) * mInnerRadius;
-        float y = mCenterPoint.y + (float)Math.sin(mCurAngle) * mInnerRadius;
-        canvas.drawCircle(x, y, mSelectionRadius, mPaint);
-
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(mTickSize);
-        x -= (float)Math.cos(mCurAngle) * mSelectionRadius;
-        y -= (float)Math.sin(mCurAngle) * mSelectionRadius;
-        canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
-
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(mTextColor);
-        canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mTickSize * 2, mPaint);
-
-        calculateTextLocation();
-
-        mPaint.setTextSize(mTextSize);
-        mPaint.setTypeface(Typeface.DEFAULT);
-        mPaint.setTextAlign(Paint.Align.CENTER);
-
         if(!mRunning){
-            if(mMode == MODE_HOUR)
-                for(int i = 0; i < 12; i++)
-                    canvas.drawText(TICKS[i], mLocations[i * 2], mLocations[i * 2 + 1], mPaint);
-            else if(mMode == MODE_MINUTE)
-                for(int i = 12; i < 24; i++)
-                    canvas.drawText(TICKS[i], mLocations[i * 2], mLocations[i * 2 + 1], mPaint);
+            float angle;
+            int selectedTick;
+            int start;
+
+            if(mMode == MODE_HOUR){
+                angle = getAngle(mHour, MODE_HOUR);
+                selectedTick = getSelectedTick(mHour, MODE_HOUR);
+                start = 0;
+            }
+            else{
+                angle = getAngle(mMinute, MODE_MINUTE);
+                selectedTick = getSelectedTick(mMinute, MODE_MINUTE);
+                start = 12;
+            }
+
+            mPaint.setColor(mSelectionColor);
+            float x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
+            float y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+            canvas.drawCircle(x, y, mSelectionRadius, mPaint);
+
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(mTickSize);
+            x -= (float)Math.cos(angle) * mSelectionRadius;
+            y -= (float)Math.sin(angle) * mSelectionRadius;
+            canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
+
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setColor(mTextColor);
+            canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mTickSize * 2, mPaint);
+
+            mPaint.setTextSize(mTextSize);
+            mPaint.setTypeface(mTypeface);
+            mPaint.setTextAlign(Paint.Align.CENTER);
+
+            int index;
+            for(int i = 0; i < 12; i++) {
+                index = start + i;
+                mPaint.setColor(index == selectedTick ? mTextHighlightColor : mTextColor);
+                canvas.drawText(TICKS[index], mLocations[index * 2], mLocations[index * 2 + 1], mPaint);
+            }
         }
         else{
             float maxOffset = mOuterRadius - mInnerRadius + mTextSize / 2;
-            float outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * maxOffset;
-            float inOffset = (1f - mInInterpolator.getInterpolation(mAnimProgress)) * maxOffset;
+            int textOutColor = ColorUtil.getColor(mTextColor, 1f - mAnimProgress);
+            int textHighlightOutColor= ColorUtil.getColor(mTextHighlightColor, 1f - mAnimProgress);
+            int textInColor = ColorUtil.getColor(mTextColor, mAnimProgress);
+            int textHighlightInColor= ColorUtil.getColor(mTextHighlightColor, mAnimProgress);
+            float outOffset;
+            float inOffset;
+            float outAngle;
+            float inAngle;
+            int outStart;
+            int inStart;
+            int outSelectedTick;
+            int inSelectedTick;
+
+            if(mMode == MODE_MINUTE){
+                outAngle = getAngle(mHour, MODE_HOUR);
+                inAngle = getAngle(mMinute, MODE_MINUTE);
+                outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * maxOffset;
+                inOffset = (1f - mInInterpolator.getInterpolation(mAnimProgress)) * -maxOffset;
+                outStart = 0;
+                inStart = 12;
+                outSelectedTick = getSelectedTick(mHour, MODE_HOUR);
+                inSelectedTick = getSelectedTick(mMinute, MODE_MINUTE);
+            }
+            else{
+                outAngle = getAngle(mMinute, MODE_MINUTE);
+                inAngle = getAngle(mHour, MODE_HOUR);
+                outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * -maxOffset;
+                inOffset = (1f - mInInterpolator.getInterpolation(mAnimProgress)) * maxOffset;
+                outStart = 12;
+                inStart = 0;
+                outSelectedTick = getSelectedTick(mMinute, MODE_MINUTE);
+                inSelectedTick = getSelectedTick(mHour, MODE_HOUR);
+            }
+
+            mPaint.setColor(ColorUtil.getColor(mSelectionColor, 1f - mAnimProgress));
+            float x = mCenterPoint.x + (float)Math.cos(outAngle) * (mInnerRadius + outOffset);
+            float y = mCenterPoint.y + (float)Math.sin(outAngle) * (mInnerRadius + outOffset);
+            canvas.drawCircle(x, y, mSelectionRadius, mPaint);
+
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(mTickSize);
+            x -= (float)Math.cos(outAngle) * mSelectionRadius;
+            y -= (float)Math.sin(outAngle) * mSelectionRadius;
+            canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
+
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setColor(ColorUtil.getColor(mSelectionColor, mAnimProgress));
+            x = mCenterPoint.x + (float)Math.cos(inAngle) * (mInnerRadius + inOffset);
+            y = mCenterPoint.y + (float)Math.sin(inAngle) * (mInnerRadius + inOffset);
+            canvas.drawCircle(x, y, mSelectionRadius, mPaint);
+
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(mTickSize);
+            x -= (float)Math.cos(inAngle) * mSelectionRadius;
+            y -= (float)Math.sin(inAngle) * mSelectionRadius;
+            canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
+
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setColor(mTextColor);
+            canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mTickSize * 2, mPaint);
+
+            mPaint.setTextSize(mTextSize);
+            mPaint.setTypeface(mTypeface);
+            mPaint.setTextAlign(Paint.Align.CENTER);
 
             double step = Math.PI / 6;
             double angle = -Math.PI / 3;
-            float offset;
-
-            if(mMode == MODE_MINUTE){
-                offset = outOffset;
-                mPaint.setColor(ColorUtil.getColor(mTextColor, 1f - mAnimProgress));
-            }
-            else{
-                offset = inOffset;
-                mPaint.setColor(ColorUtil.getColor(mTextColor, mAnimProgress));
-            }
+            int index;
 
             for(int i = 0; i < 12; i++){
-                x = mLocations[i * 2] + (float)Math.cos(angle) * offset;
-                y = mLocations[i * 2 + 1] + (float)Math.sin(angle) * offset;
-                canvas.drawText(TICKS[i], x, y, mPaint);
+                index = i + outStart;
+                x = mLocations[index * 2] + (float)Math.cos(angle) * outOffset;
+                y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * outOffset;
+                mPaint.setColor(index == outSelectedTick ? textHighlightOutColor : textOutColor);
+                canvas.drawText(TICKS[index], x, y, mPaint);
                 angle += step;
             }
 
-            if(mMode == MODE_MINUTE){
-                offset = inOffset;
-                mPaint.setColor(ColorUtil.getColor(mTextColor, mAnimProgress));
-            }
-            else{
-                offset = outOffset;
-                mPaint.setColor(ColorUtil.getColor(mTextColor, 1f - mAnimProgress));
-            }
-
-            for(int i = 12; i < 24; i++) {
-                x = mLocations[i * 2] - (float)Math.cos(angle) * offset;
-                y = mLocations[i * 2 + 1] - (float)Math.sin(angle) * offset;
-                canvas.drawText(TICKS[i], x, y, mPaint);
+            for(int i = 0; i < 12; i++){
+                index = i + inStart;
+                x = mLocations[index * 2] + (float)Math.cos(angle) * inOffset;
+                y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * inOffset;
+                mPaint.setColor(index == inSelectedTick ? textHighlightInColor : textInColor);
+                canvas.drawText(TICKS[index], x, y, mPaint);
                 angle += step;
             }
         }
@@ -415,7 +488,6 @@ public class TimePicker extends View{
 
         invalidate();
     }
-
 
     @Override
     protected Parcelable onSaveInstanceState() {
