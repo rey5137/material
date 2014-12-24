@@ -126,6 +126,69 @@ public class TimePicker extends View{
         a.recycle();
     }
 
+    public void applyStyle(int styleId){
+        Context context = getContext();
+        TypedArray a = context.obtainStyledAttributes(styleId, R.styleable.TimePicker);
+        mBackgroundColor = a.getColor(R.styleable.TimePicker_tp_backgroundColor, ColorUtil.getColor(ThemeUtil.colorPrimary(context, 0xFF000000), 0.25f));
+        mSelectionColor = a.getColor(R.styleable.TimePicker_tp_selectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
+        mSelectionRadius = a.getDimensionPixelOffset(R.styleable.TimePicker_tp_selectionRadius, ThemeUtil.dpToPx(context, 8));
+        mTickSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_tickSize, ThemeUtil.dpToPx(context, 1));
+        mTextSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_textSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material));
+        mTextColor = a.getColor(R.styleable.TimePicker_tp_textColor, 0xFF000000);
+        mTextHighlightColor = a.getColor(R.styleable.TimePicker_tp_textHighlightColor, 0xFFFFFFFF);
+        mAnimDuration = a.getInteger(R.styleable.TimePicker_tp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        int resId = a.getResourceId(R.styleable.TimePicker_tp_inInterpolator, 0);
+        mInInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
+        resId = a.getResourceId(R.styleable.TimePicker_tp_outInterpolator, 0);
+        mOutInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
+        setMode(a.getInteger(R.styleable.TimePicker_tp_mode, MODE_HOUR), false);
+        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, 0));
+        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, 0));
+
+        String familyName = a.getString(R.styleable.TimePicker_android_fontFamily);
+        int style = a.getInteger(R.styleable.TimePicker_android_textStyle, Typeface.NORMAL);
+
+        mTypeface = TypefaceUtil.load(context, familyName, style);
+
+        a.recycle();
+    }
+
+    public int getBackgroundColor(){
+        return mBackgroundColor;
+    }
+
+    public int getSelectionColor(){
+        return mSelectionColor;
+    }
+
+    public Typeface getTypeface(){
+        return mTypeface;
+    }
+
+    public int getTextSize(){
+        return mTextSize;
+    }
+
+    public int getTextColor(){
+        return mTextColor;
+    }
+
+    public int getTextHighlightColor(){
+        return mTextHighlightColor;
+    }
+
+    public int getAnimDuration(){
+        return mAnimDuration;
+    }
+
+    public Interpolator getInInterpolator(){
+        return mInInterpolator;
+    }
+
+    public Interpolator getOutInterpolator(){
+        return mOutInterpolator;
+    }
+
     public void setMode(int mode, boolean animation){
         if(mMode != mode){
             mMode = mode;

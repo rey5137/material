@@ -1814,7 +1814,7 @@ public class EditText extends FrameLayout {
      *
      * @attr ref android.R.styleable#TextView_elegantTextHeight
      */
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public void setElegantTextHeight (boolean elegant){
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 			mInputView.setElegantTextHeight(elegant);
@@ -1863,7 +1863,7 @@ public class EditText extends FrameLayout {
      *
      * @attr ref android.R.styleable#TextView_fontFeatureSettings
      */
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public void setFontFeatureSettings (String fontFeatureSettings){
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 			mInputView.setFontFeatureSettings(fontFeatureSettings);

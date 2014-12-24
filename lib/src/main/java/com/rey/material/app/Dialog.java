@@ -84,6 +84,8 @@ public class Dialog extends android.app.Dialog{
         mPositiveAction = new Button(context);
         mNegativeAction = new Button(context);
 
+        mBackground.setPreventCornerOverlap(false);
+
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
         mPositiveAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mPositiveAction.setBackgroundResource(0);
@@ -98,11 +100,14 @@ public class Dialog extends android.app.Dialog{
         cancelable(true);
         canceledOnTouchOutside(true);
 
+        clearContent();
+        onCreate();
         applyStyle(style);
 
-        clearContent();
-
         super.setContentView(mContainer);
+    }
+
+    protected void onCreate(){
     }
 
     public Dialog applyStyle(int resId){
@@ -438,6 +443,16 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    public Dialog contentMargin(int margin){
+        mContainer.setContentMargin(margin);
+        return this;
+    }
+
+    public Dialog contentMargin(int left, int top, int right, int bottom){
+        mContainer.setContentMargin(left, top, right, bottom);
+        return this;
+    }
+
     @Override
     public void setCancelable(boolean flag) {
         cancelable(flag);
@@ -471,12 +486,28 @@ public class Dialog extends android.app.Dialog{
         private boolean mShowDivider = false;
         private boolean mClickOutside = false;
 
+        private int mContentMarginLeft;
+        private int mContentMarginTop;
+        private int mContentMarginRight;
+        private int mContentMarginBottom;
+
         public ContainerFrameLayout(Context context) {
             super(context);
 
             mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mDividerPaint.setStyle(Paint.Style.STROKE);
             setWillNotDraw(false);
+        }
+
+        public void setContentMargin(int margin){
+            setContentMargin(margin, margin, margin, margin);
+        }
+
+        public void setContentMargin(int left, int top, int right, int bottom){
+            mContentMarginLeft = left;
+            mContentMarginTop = top;
+            mContentMarginRight = right;
+            mContentMarginBottom = bottom;
         }
 
         public void setDividerColor(int color){
@@ -520,13 +551,15 @@ public class Dialog extends android.app.Dialog{
             int width = mLayoutWidth == ViewGroup.LayoutParams.MATCH_PARENT ? maxWidth : mLayoutWidth;
             int height = mLayoutHeight == ViewGroup.LayoutParams.MATCH_PARENT ? maxHeight : mLayoutHeight;
 
-            int widthMs = MeasureSpec.makeMeasureSpec(width == ViewGroup.LayoutParams.WRAP_CONTENT ? maxWidth : width, MeasureSpec.AT_MOST);
-            int heightMs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+            int widthMs;
+            int heightMs;
 
             int titleWidth = 0;
-            int titleHeight = mContentPadding;
+            int titleHeight = 0;
 
             if(mTitle.getVisibility() == View.VISIBLE){
+                widthMs = MeasureSpec.makeMeasureSpec(width == ViewGroup.LayoutParams.WRAP_CONTENT ? maxWidth : width, MeasureSpec.AT_MOST);
+                heightMs = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST);
                 mTitle.measure(widthMs, heightMs);
                 titleWidth = mTitle.getMeasuredWidth();
                 titleHeight = mTitle.getMeasuredHeight();
@@ -536,6 +569,8 @@ public class Dialog extends android.app.Dialog{
             int contentHeight = 0;
 
             if(mContent != null){
+                widthMs = MeasureSpec.makeMeasureSpec((width == ViewGroup.LayoutParams.WRAP_CONTENT ? maxWidth : width) - mContentMarginLeft - mContentMarginRight, MeasureSpec.AT_MOST);
+                heightMs = MeasureSpec.makeMeasureSpec(maxHeight - mContentMarginTop - mContentMarginBottom, MeasureSpec.AT_MOST);
                 mContent.measure(widthMs, heightMs);
                 contentWidth = mContent.getMeasuredWidth();
                 contentHeight = mContent.getMeasuredHeight();
@@ -578,11 +613,11 @@ public class Dialog extends android.app.Dialog{
             int actionBarWidth = positiveActionWidth + negativeActionWidth + mActionOuterPadding * 2 + (positiveActionWidth >= 0 && negativeActionWidth >= 0 ? mActionPadding : 0);
 
             if(width == ViewGroup.LayoutParams.WRAP_CONTENT)
-                width = Math.min(maxWidth, Math.max(titleWidth, Math.max(contentWidth, actionBarWidth)));
+                width = Math.min(maxWidth, Math.max(titleWidth, Math.max(contentWidth + mContentMarginLeft + mContentMarginRight, actionBarWidth)));
 
             mLayoutActionVertical = actionBarWidth > width;
 
-            int nonContentHeight = titleHeight + mActionPadding;
+            int nonContentHeight = titleHeight + mActionPadding + mContentMarginTop + mContentMarginBottom;
             if(mLayoutActionVertical)
                 nonContentHeight += (positiveActionHeight > 0 ? mActionOuterHeight : 0) + (negativeActionHeight > 0 ? mActionOuterHeight : 0);
             else
@@ -591,8 +626,8 @@ public class Dialog extends android.app.Dialog{
             if(height == ViewGroup.LayoutParams.WRAP_CONTENT)
                 height = Math.min(maxHeight, contentHeight + nonContentHeight);
 
-            if(contentHeight > 0)
-                mContent.measure(MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
+            if(mContent != null)
+                mContent.measure(MeasureSpec.makeMeasureSpec(width - mContentMarginLeft - mContentMarginRight, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
 
             mBackground.measure(MeasureSpec.makeMeasureSpec(width + mBackground.getPaddingLeft() + mBackground.getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height + mBackground.getPaddingTop() + mBackground.getPaddingBottom(), MeasureSpec.EXACTLY));
 
@@ -609,16 +644,14 @@ public class Dialog extends android.app.Dialog{
             mBackground.layout(childLeft, childTop, childRight, childBottom);
 
             childLeft += mBackground.getPaddingLeft();
-            childTop += mBackground.getPaddingRight();
-            childRight -= mBackground.getPaddingTop();
+            childTop += mBackground.getPaddingTop();
+            childRight -= mBackground.getPaddingRight();
             childBottom -= mBackground.getPaddingBottom();
 
             if(mTitle.getVisibility() == View.VISIBLE) {
                 mTitle.layout(childLeft, childTop, childRight, childTop + mTitle.getMeasuredHeight());
                 childTop += mTitle.getMeasuredHeight();
             }
-            else
-                childTop += mContentPadding;
 
             childBottom -= mActionPadding;
 
@@ -657,7 +690,7 @@ public class Dialog extends android.app.Dialog{
             mDividerPos = childBottom - mDividerPaint.getStrokeWidth() / 2f;
 
             if(mContent != null)
-                mContent.layout(childLeft, childTop, childRight, childBottom);
+                mContent.layout(childLeft + mContentMarginLeft, childTop + mContentMarginTop, childRight - mContentMarginRight, childBottom - mContentMarginBottom);
         }
 
         @Override/**/

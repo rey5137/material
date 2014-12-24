@@ -53,8 +53,15 @@ public class SimpleDialog extends Dialog {
     }
 
     @Override
+    protected void onCreate() {
+    }
+
+    @Override
     public Dialog applyStyle(int resId) {
         super.applyStyle(resId);
+
+        if(resId == 0)
+            return this;
 
         TypedArray a = getContext().obtainStyledAttributes(resId, R.styleable.SimpleDialog);
 
@@ -80,21 +87,30 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    public Dialog title(CharSequence title){
+        boolean titleVisible = !TextUtils.isEmpty(title);
+        contentMargin(mContentPadding, titleVisible ? 0 : mContentPadding, mContentPadding, 0);
+        return super.title(title);
+    }
+
+    private void initScrollView(){
+        mMessage = new TextView(getContext());
+        mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
+        mMessage.setTextColor(mMessageTextColor);
+        mMessage.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+
+        mScrollView = new InternalScrollView(getContext());
+        mScrollView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
+        mScrollView.setClipToPadding(false);
+        mScrollView.setFillViewport(true);
+        mScrollView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+
+        mScrollView.addView(mMessage);
+    }
+
     public Dialog message(CharSequence message){
-        if(mMessage == null){
-            mMessage = new TextView(getContext());
-            mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
-            mMessage.setTextColor(mMessageTextColor);
-            mMessage.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
-
-            mScrollView = new InternalScrollView(getContext());
-            mScrollView.setPadding(mContentPadding, 0, mContentPadding, mContentPadding - mActionPadding);
-            mScrollView.setClipToPadding(false);
-            mScrollView.setFillViewport(true);
-            mScrollView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
-
-            mScrollView.addView(mMessage);
-        }
+        if(mScrollView == null)
+            initScrollView();
 
         mMessage.setText(message);
         if(!TextUtils.isEmpty(message)) {
@@ -169,7 +185,7 @@ public class SimpleDialog extends Dialog {
         mListView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         mListView.setClipToPadding(false);
         mListView.setSelector(BlankDrawable.getInstance());
-        mListView.setPadding(mContentPadding, 0, mContentPadding, mContentPadding - mActionPadding);
+        mListView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
         mListView.setVerticalFadingEdgeEnabled(false);
         mListView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
 

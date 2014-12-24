@@ -358,18 +358,23 @@
         <item name="cbd_animDuration">300</item>
     </style>
 
-    <style name="TimePicker" >
-        <item name="tp_backgroundColor">#ffcacdcf</item>
+    <style name="TimePickerDialog" parent="SimpleDialog">
+        <item name="tp_headerHeight">120dp</item>
+        <item name="tp_backgroundColor">#FFECEFF1</item>
         <item name="tp_selectionColor">#FF009688</item>
         <item name="tp_selectionRadius">16dp</item>
         <item name="tp_tickSize">1dp</item>
         <item name="tp_textSize">14sp</item>
-        <item name="android:textStyle">italic</item>
+        <item name="tp_textTimeSize">24sp</item>
+        <item name="android:textStyle">normal</item>
         <item name="tp_textColor">#FF000000</item>
+        <item name="tp_textTimeColor">#90FFFFFF</item>
         <item name="tp_textHighlightColor">#FFFFFFFF</item>
         <item name="tp_animDuration">@android:integer/config_mediumAnimTime</item>
         <item name="tp_inInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="tp_outInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="tp_am">AM</item>
+        <item name="tp_pm">PM</item>
     </style>
     
 </resources>

@@ -350,4 +350,12 @@
         <attr name="tp_hour" format="integer"/>
         <attr name="tp_minute" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="TimePickerDialog">
+        <attr name="tp_headerHeight" format="dimension|reference" />
+        <attr name="tp_textTimeColor" format="color|reference" />
+        <attr name="tp_textTimeSize" format="dimension|reference" />
+        <attr name="tp_am" format="string|reference"/>
+        <attr name="tp_pm" format="string|reference"/>
+    </declare-styleable>
 </resources>

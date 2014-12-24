@@ -120,7 +120,7 @@ public class FloatingActionButton extends Button {
 			requestLayout();
 	}
 	
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	public float getElevation() {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -129,7 +129,7 @@ public class FloatingActionButton extends Button {
 		return mBackground.getShadowSize();
 	}
 	
-	@TargetApi(Build.VERSION_CODES.L)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	public void setElevation(float elevation) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

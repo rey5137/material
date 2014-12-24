@@ -10,10 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.rey.material.app.SimpleDialog;
-import com.rey.material.drawable.RevealDrawable;
+import com.rey.material.app.TimePickerDialog;
 import com.rey.material.widget.Button;
-import com.rey.material.widget.CircleCheckedTextView;
-import com.rey.material.widget.TimePicker;
 
 public class ButtonFragment extends Fragment{
 
@@ -72,29 +70,29 @@ public class ButtonFragment extends Fragment{
 		bt_float_wave_color.setOnClickListener(listener_delay);
 
 
-        final TimePicker tp = (TimePicker)v.findViewById(R.id.button_tp);
-
         bt_flat.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                tp.setMode(TimePicker.MODE_HOUR, true);
+                TimePickerDialog dialog = new TimePickerDialog(getActivity());
+                dialog.applyStyle(R.style.TimePickerDialog)
+                        .positiveAction("OK")
+                        .negativeAction("CANCEL")
+                        .show();
             }
         });
 
         bt_flat_color.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                tp.setMode(TimePicker.MODE_MINUTE, true);
+                SimpleDialog dialog = new SimpleDialog(getActivity());
+                dialog.message("This is a message")
+                        .title("Title")
+                        .applyStyle(R.style.SimpleDialog)
+                        .positiveAction("OK")
+                        .negativeAction("CANCEL")
+                        .show();
             }
         });
-
-//        final CircleCheckedTextView test = (CircleCheckedTextView)v.findViewById(R.id.button_test);
-//        test.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                test.setChecked(!test.isChecked());
-//            }
-//        });
 
 		return v;
 	}
