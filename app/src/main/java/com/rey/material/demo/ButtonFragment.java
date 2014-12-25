@@ -74,7 +74,8 @@ public class ButtonFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 TimePickerDialog dialog = new TimePickerDialog(getActivity());
-                dialog.applyStyle(R.style.TimePickerDialog)
+                dialog.hour(11).minute(30).am(false)
+                        .applyStyle(R.style.TimePickerDialog)
                         .positiveAction("OK")
                         .negativeAction("CANCEL")
                         .show();

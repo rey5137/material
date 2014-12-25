@@ -66,6 +66,9 @@ public class TimePicker extends View{
     private boolean mEdited = false;
 
     public interface OnTimeChangedListener{
+
+        public void onModeChanged(int mode);
+
         public void onHourChanged(int oldValue, int newValue);
 
         public void onMinuteChanged(int oldValue, int newValue);
@@ -142,8 +145,8 @@ public class TimePicker extends View{
         resId = a.getResourceId(R.styleable.TimePicker_tp_outInterpolator, 0);
         mOutInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
         setMode(a.getInteger(R.styleable.TimePicker_tp_mode, MODE_HOUR), false);
-        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, 0));
-        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, 0));
+        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, mHour));
+        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, mMinute));
 
         String familyName = a.getString(R.styleable.TimePicker_android_fontFamily);
         int style = a.getInteger(R.styleable.TimePicker_android_textStyle, Typeface.NORMAL);
@@ -189,9 +192,24 @@ public class TimePicker extends View{
         return mOutInterpolator;
     }
 
+    public int getMode(){
+        return mMode;
+    }
+
+    public int getHour(){
+        return mHour;
+    }
+
+    public int getMinute(){
+        return mMinute;
+    }
+
     public void setMode(int mode, boolean animation){
         if(mMode != mode){
             mMode = mode;
+
+            if(mOnTimeChangedListener != null)
+                mOnTimeChangedListener.onModeChanged(mMode);
 
             if(animation)
                 startAnimation();

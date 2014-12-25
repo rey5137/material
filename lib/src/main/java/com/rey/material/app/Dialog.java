@@ -57,13 +57,11 @@ public class Dialog extends android.app.Dialog{
     private boolean mCanceledOnTouchOutside = true;
 
     public Dialog(Context context) {
-        super(context, android.R.style.Theme_Panel);
-
-        init(context, 0);
+        this(context, 0);
     }
 
     public Dialog(Context context, int style) {
-        super(context, android.R.style.Theme_Panel);
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
 
         init(context, style);
     }
