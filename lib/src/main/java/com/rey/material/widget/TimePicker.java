@@ -327,10 +327,12 @@ public class TimePicker extends View{
         calculateTextLocation();
     }
 
-    private int getPointedValue(float x, float y){
-        float radius = (float)Math.sqrt(Math.pow(x - mCenterPoint.x, 2) + Math.pow(y - mCenterPoint.y, 2));
-        if(radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
-            return -1;
+    private int getPointedValue(float x, float y, boolean isDown){
+        if(isDown) {
+            float radius = (float) Math.sqrt(Math.pow(x - mCenterPoint.x, 2) + Math.pow(y - mCenterPoint.y, 2));
+            if (radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
+                return -1;
+        }
 
         float angle = (float)Math.atan2(y - mCenterPoint.y, x - mCenterPoint.x);
         if(angle < 0)
@@ -352,7 +354,7 @@ public class TimePicker extends View{
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                int value = getPointedValue(event.getX(), event.getY());
+                int value = getPointedValue(event.getX(), event.getY(), true);
                 if(value < 0)
                     return false;
                 else if(mMode == MODE_HOUR)
@@ -362,7 +364,7 @@ public class TimePicker extends View{
                 mEdited = true;
                 return true;
             case MotionEvent.ACTION_MOVE:
-                value = getPointedValue(event.getX(), event.getY());
+                value = getPointedValue(event.getX(), event.getY(), false);
                 if(value < 0)
                     return true;
                 else if(mMode == MODE_HOUR)

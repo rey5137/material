@@ -87,6 +87,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    @Override
     public Dialog title(CharSequence title){
         boolean titleVisible = !TextUtils.isEmpty(title);
         contentMargin(mContentPadding, titleVisible ? 0 : mContentPadding, mContentPadding, 0);
@@ -108,7 +109,7 @@ public class SimpleDialog extends Dialog {
         mScrollView.addView(mMessage);
     }
 
-    public Dialog message(CharSequence message){
+    public SimpleDialog message(CharSequence message){
         if(mScrollView == null)
             initScrollView();
 
@@ -120,11 +121,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog message(int id){
+    public SimpleDialog message(int id){
         return message(id == 0 ? null : getContext().getResources().getString(id));
     }
 
-    public Dialog messageTextAppearance(int resId){
+    public SimpleDialog messageTextAppearance(int resId){
         if(mMessageTextAppearanceId != resId){
             mMessageTextAppearanceId = resId;
             if(mMessage != null)
@@ -133,7 +134,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog messageTextColor(int color){
+    public SimpleDialog messageTextColor(int color){
         if(mMessageTextColor != color){
             mMessageTextColor = color;
             if(mMessage != null)
@@ -142,7 +143,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog radioButtonStyle(int resId){
+    public SimpleDialog radioButtonStyle(int resId){
         if(mRadioButtonStyle != resId){
             mRadioButtonStyle = resId;
             if(mAdapter != null && mMode == MODE_ITEMS)
@@ -151,7 +152,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog checkBoxStyle(int resId){
+    public SimpleDialog checkBoxStyle(int resId){
         if(mCheckBoxStyle != resId){
             mCheckBoxStyle = resId;
             if(mAdapter != null && mMode == MODE_MULTI_ITEMS)
@@ -160,7 +161,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog itemHeight(int height){
+    public SimpleDialog itemHeight(int height){
         if(mItemHeight != height){
             mItemHeight = height;
             if(mAdapter != null)
@@ -169,7 +170,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog itemTextAppearance(int resId){
+    public SimpleDialog itemTextAppearance(int resId){
         if(mItemTextAppearance != resId){
             mItemTextAppearance = resId;
             if(mAdapter != null)
@@ -193,7 +194,7 @@ public class SimpleDialog extends Dialog {
         mListView.setAdapter(mAdapter);
     }
 
-    public Dialog items(CharSequence[] items, int selectedIndex){
+    public SimpleDialog items(CharSequence[] items, int selectedIndex){
         if(mListView == null)
             initListView();
 
@@ -203,7 +204,7 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
-    public Dialog multiChoiceItems(CharSequence[] items, int... selectedIndexes){
+    public SimpleDialog multiChoiceItems(CharSequence[] items, int... selectedIndexes){
         if(mListView == null)
             initListView();
 

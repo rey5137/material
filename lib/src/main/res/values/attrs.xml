@@ -358,4 +358,20 @@
         <attr name="tp_am" format="string|reference"/>
         <attr name="tp_pm" format="string|reference"/>
     </declare-styleable>
+
+    <declare-styleable name="YearPicker">
+        <attr name="dp_yearMin" format="integer"/>
+        <attr name="dp_yearMax" format="integer"/>
+        <attr name="dp_year" format="integer"/>
+        <attr name="dp_yearTextHighlightColor" format="color|reference" />
+        <attr name="dp_yearTextColor" format="color|reference" />
+        <attr name="dp_yearTextSize" format="dimension|reference" />
+        <attr name="dp_yearItemHeight" format="dimension|reference" />
+        <attr name="dp_yearSelectionColor" format="color|reference" />
+        <attr name="dp_animDuration" format="integer|reference" />
+        <attr name="dp_inInterpolator" format="reference" />
+        <attr name="dp_outInterpolator" format="reference" />
+        <attr name="android:fontFamily" />
+        <attr name="android:textStyle" />
+    </declare-styleable>
 </resources>

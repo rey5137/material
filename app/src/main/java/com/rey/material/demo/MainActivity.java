@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.rey.material.app.Dialog;
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.TabPageIndicator;
@@ -41,7 +42,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private Toolbar toolbar;
 	private NavigationDrawerDrawable mNavigatorDrawable;
 	
-	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS};
+	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 		
-		vp.setCurrentItem(1);
+		vp.setCurrentItem(mItems.length - 1);
 		
 //		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
 //		fab.show(this, 100, 100, Gravity.LEFT);		
@@ -135,7 +136,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	    BUTTONS ("Buttons"),
 	    SWITCHES ("Switches"),
 	    TEXTFIELDS ("Textfields"),
-	    SNACKBARS ("Snackbars");
+	    SNACKBARS ("Snackbars"),
+        DIALOGS ("Dialogs");
 	    private final String name;       
 
 	    private Tab(String s) {
@@ -240,6 +242,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.TEXTFIELDS, fragment);
     					else if(fragment instanceof SnackbarFragment)
     						setFragment(Tab.SNACKBARS, fragment);
+                        else if(fragment instanceof DialogFragment)
+                            setFragment(Tab.DIALOGS, fragment);
     				}
     			}
     		}
@@ -273,6 +277,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					case SNACKBARS:
 						mFragments[position] = SnackbarFragment.newInstance();
 						break;
+                    case DIALOGS:
+                        mFragments[position] = DialogFragment.newInstance();
+                        break;
 				}
 			}
 						

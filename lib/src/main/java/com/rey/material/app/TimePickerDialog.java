@@ -25,6 +25,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.rey.material.R;
+import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.TimePicker;
@@ -97,7 +98,7 @@ public class TimePickerDialog extends Dialog{
     }
 
     public TimePickerDialog am(boolean am){
-        mTimePickerLayout.setAm(am);
+        mTimePickerLayout.setAm(am, false);
         return this;
     }
 
@@ -155,168 +156,6 @@ public class TimePickerDialog extends Dialog{
             mBackground.setAnimEnable(false);
             setChecked(checked);
             mBackground.setAnimEnable(true);
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            if (getMeasuredWidth() != getMeasuredHeight()) {
-                int size = Math.min(getMeasuredWidth(), getMeasuredHeight());
-                int spec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
-                super.onMeasure(spec, spec);
-            }
-        }
-
-        private class CircleDrawable extends Drawable implements Animatable {
-
-            private boolean mRunning = false;
-            private long mStartTime;
-            private float mAnimProgress;
-            private int mAnimDuration = 1000;
-            private Interpolator mInInterpolator = new DecelerateInterpolator();
-            private Interpolator mOutInterpolator = new DecelerateInterpolator();
-
-            private Paint mPaint;
-
-            private float mX;
-            private float mY;
-            private float mRadius;
-
-            private boolean mVisible;
-            private boolean mInEditMode = false;
-            private boolean mAnimEnable = true;
-
-            public CircleDrawable() {
-                mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                mPaint.setStyle(Paint.Style.FILL);
-            }
-
-            public void setInEditMode(boolean b) {
-                mInEditMode = b;
-            }
-
-            public void setAnimEnable(boolean b) {
-                mAnimEnable = b;
-            }
-
-            public void setColor(int color) {
-                mPaint.setColor(color);
-                invalidateSelf();
-            }
-
-            public void setAnimDuration(int duration) {
-                mAnimDuration = duration;
-            }
-
-            public void setInterpolator(Interpolator in, Interpolator out) {
-                mInInterpolator = in;
-                mOutInterpolator = out;
-            }
-
-            @Override
-            public boolean isStateful() {
-                return true;
-            }
-
-            @Override
-            protected boolean onStateChange(int[] state) {
-                boolean visible = ViewUtil.hasState(state, android.R.attr.state_checked) || ViewUtil.hasState(state, android.R.attr.state_pressed);
-
-                if (mVisible != visible) {
-                    mVisible = visible;
-                    if (!mInEditMode && mAnimEnable)
-                        start();
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            protected void onBoundsChange(Rect bounds) {
-                mX = bounds.exactCenterX();
-                mY = bounds.exactCenterY();
-                mRadius = Math.min(bounds.width(), bounds.height()) / 2f;
-            }
-
-            @Override
-            public void draw(Canvas canvas) {
-                if (!mRunning) {
-                    if (mVisible)
-                        canvas.drawCircle(mX, mY, mRadius, mPaint);
-                } else {
-                    float radius = mVisible ? mInInterpolator.getInterpolation(mAnimProgress) * mRadius : (1f - mOutInterpolator.getInterpolation(mAnimProgress)) * mRadius;
-                    canvas.drawCircle(mX, mY, radius, mPaint);
-                }
-            }
-
-            @Override
-            public void setAlpha(int alpha) {
-                mPaint.setAlpha(alpha);
-            }
-
-            @Override
-            public void setColorFilter(ColorFilter cf) {
-                mPaint.setColorFilter(cf);
-            }
-
-            @Override
-            public int getOpacity() {
-                return PixelFormat.TRANSLUCENT;
-            }
-
-            private void resetAnimation() {
-                mStartTime = SystemClock.uptimeMillis();
-                mAnimProgress = 0f;
-            }
-
-            @Override
-            public void start() {
-                resetAnimation();
-                scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
-                invalidateSelf();
-            }
-
-            @Override
-            public void stop() {
-                mRunning = false;
-                unscheduleSelf(mUpdater);
-                invalidateSelf();
-            }
-
-            @Override
-            public boolean isRunning() {
-                return mRunning;
-            }
-
-            @Override
-            public void scheduleSelf(Runnable what, long when) {
-                mRunning = true;
-                super.scheduleSelf(what, when);
-            }
-
-            private final Runnable mUpdater = new Runnable() {
-
-                @Override
-                public void run() {
-                    update();
-                }
-
-            };
-
-            private void update() {
-                long curTime = SystemClock.uptimeMillis();
-                mAnimProgress = Math.min(1f, (float) (curTime - mStartTime) / mAnimDuration);
-
-                if (mAnimProgress == 1f)
-                    mRunning = false;
-
-                if (isRunning())
-                    scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
-
-                invalidateSelf();
-            }
-
         }
 
     }
@@ -456,11 +295,17 @@ public class TimePickerDialog extends Dialog{
             return mTimePicker.getMinute();
         }
 
-        public void setAm(boolean am){
+        public void setAm(boolean am, boolean animation){
             if(mIsAm != am){
                 mIsAm = am;
-                mAmView.setChecked(mIsAm);
-                mPmView.setChecked(!mIsAm);
+                if(animation) {
+                    mAmView.setChecked(mIsAm);
+                    mPmView.setChecked(!mIsAm);
+                }
+                else{
+                    mAmView.setCheckedImmediately(mIsAm);
+                    mPmView.setCheckedImmediately(!mIsAm);
+                }
                 mMidday = mIsAm ? mAmView.getText().toString() : mPmView.getText().toString();
                 invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
@@ -479,7 +324,7 @@ public class TimePickerDialog extends Dialog{
 
         @Override
         public void onClick(View v) {
-            setAm(v == mAmView);
+            setAm(v == mAmView, true);
         }
 
         @Override
@@ -539,7 +384,7 @@ public class TimePickerDialog extends Dialog{
                 mAmView.measure(spec, spec);
                 mPmView.measure(spec, spec);
 
-                spec = MeasureSpec.makeMeasureSpec(halfWidth, MeasureSpec.EXACTLY);
+                spec = MeasureSpec.makeMeasureSpec(Math.min(halfWidth, heightSize), MeasureSpec.EXACTLY);
                 mTimePicker.measure(spec, spec);
 
                 setMeasuredDimension(widthSize, heightSize);
@@ -608,12 +453,14 @@ public class TimePickerDialog extends Dialog{
                 mTimePicker.layout(childLeft, childTop, childRight, childBottom);
             }
             else{
+                int paddingHorizontal = (childRight / 2 - mTimePicker.getMeasuredWidth()) / 2;
                 int paddingVertical = (childBottom - mTimePicker.getMeasuredHeight()) / 2;
-                mTimePicker.layout(childRight - mTimePicker.getMeasuredWidth(), childTop + paddingVertical, childRight, childTop + paddingVertical + mTimePicker.getMeasuredHeight());
+                mTimePicker.layout(childRight - paddingHorizontal - mTimePicker.getMeasuredWidth(), childTop + paddingVertical, childRight - paddingHorizontal, childTop + paddingVertical + mTimePicker.getMeasuredHeight());
 
-                int paddingHorizontal = mContentPadding + mActionPadding;
+                childRight = childRight / 2;
+
+                paddingHorizontal = mContentPadding + mActionPadding;
                 paddingVertical = mContentPadding - mActionPadding;
-                childRight -= mTimePicker.getMeasuredWidth();
                 mAmView.layout(childLeft + paddingHorizontal, childBottom - paddingVertical - mCheckBoxSize, childLeft + paddingHorizontal + mCheckBoxSize, childBottom - paddingVertical);
                 mPmView.layout(childRight - paddingHorizontal - mCheckBoxSize, childBottom - paddingVertical - mCheckBoxSize, childRight - paddingHorizontal, childBottom - paddingVertical);
             }
