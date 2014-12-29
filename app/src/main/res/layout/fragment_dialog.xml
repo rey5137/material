@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.rey.material.widget.YearPicker
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="#30000000"/>
+    <com.rey.material.widget.MonthView
+        android:id="@+id/dialog_v"
+        android:layout_width="210dp"
+        android:layout_height="240dp"
+        android:background="#19000000"
+        android:layout_gravity="center"/>
 
 </FrameLayout>
 

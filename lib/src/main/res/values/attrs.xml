@@ -12,8 +12,18 @@
     <attr name="pv_secondaryProgress" format="float"/>   
     
     <attr name="ripple" format="reference"/> 
-    <attr name="delayClick" format="boolean"/> 
-    
+    <attr name="delayClick" format="boolean"/>
+
+    <attr name="dp_textHighlightColor" format="color|reference" />
+    <attr name="dp_textColor" format="color|reference" />
+    <attr name="dp_selectionColor" format="color|reference" />
+    <attr name="dp_animDuration" format="integer|reference" />
+    <attr name="dp_inInterpolator" format="reference" />
+    <attr name="dp_outInterpolator" format="reference" />
+    <attr name="dp_yearMin" format="integer"/>
+    <attr name="dp_yearMax" format="integer"/>
+    <attr name="dp_year" format="integer"/>
+
     <declare-styleable name="CircularProgressDrawable">        
         <attr name="cpd_padding" format="reference|dimension"/> 
         <attr name="cpd_initialAngle" format="reference|integer"/> 
@@ -360,17 +370,31 @@
     </declare-styleable>
 
     <declare-styleable name="YearPicker">
-        <attr name="dp_yearMin" format="integer"/>
-        <attr name="dp_yearMax" format="integer"/>
-        <attr name="dp_year" format="integer"/>
-        <attr name="dp_yearTextHighlightColor" format="color|reference" />
-        <attr name="dp_yearTextColor" format="color|reference" />
+        <attr name="dp_yearMin" />
+        <attr name="dp_yearMax" />
+        <attr name="dp_year" />
         <attr name="dp_yearTextSize" format="dimension|reference" />
         <attr name="dp_yearItemHeight" format="dimension|reference" />
-        <attr name="dp_yearSelectionColor" format="color|reference" />
-        <attr name="dp_animDuration" format="integer|reference" />
-        <attr name="dp_inInterpolator" format="reference" />
-        <attr name="dp_outInterpolator" format="reference" />
+        <attr name="dp_textHighlightColor" />
+        <attr name="dp_textColor" />
+        <attr name="dp_selectionColor" />
+        <attr name="dp_animDuration" />
+        <attr name="dp_inInterpolator" />
+        <attr name="dp_outInterpolator" />
+        <attr name="android:fontFamily" />
+        <attr name="android:textStyle" />
+    </declare-styleable>
+
+    <declare-styleable name="MonthView">
+        <attr name="dp_dayTextSize" format="dimension|reference" />
+        <attr name="dp_textLabelColor" format="color|reference" />
+        <attr name="dp_textDisableColor" format="color|reference" />
+        <attr name="dp_textHighlightColor" />
+        <attr name="dp_textColor" />
+        <attr name="dp_selectionColor" />
+        <attr name="dp_animDuration" />
+        <attr name="dp_inInterpolator" />
+        <attr name="dp_outInterpolator" />
         <attr name="android:fontFamily" />
         <attr name="android:textStyle" />
     </declare-styleable>

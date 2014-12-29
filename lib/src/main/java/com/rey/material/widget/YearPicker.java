@@ -7,6 +7,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -109,12 +112,12 @@ public class YearPicker extends ListView{
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.YearPicker, defStyleAttr, defStyleRes);
         mTextSize = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_title_material));
         int year = a.getInteger(R.styleable.YearPicker_dp_year, -1);
-        int yearMin = a.getInteger(R.styleable.YearPicker_dp_yearMin, -1);
-        int yearMax = a.getInteger(R.styleable.YearPicker_dp_yearMax, -1);
+        int yearMin = a.getInteger(R.styleable.YearPicker_dp_yearMin, mAdapter.getMinYear());
+        int yearMax = a.getInteger(R.styleable.YearPicker_dp_yearMax, mAdapter.getMaxYear());
         mItemHeight = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearItemHeight, ThemeUtil.dpToPx(context, 48));
-        mTextColors[0] = a.getColor(R.styleable.YearPicker_dp_yearTextColor, 0xFF000000);
-        mTextColors[1] = a.getColor(R.styleable.YearPicker_dp_yearTextHighlightColor, 0xFFFFFFFF);
-        mSelectionColor = a.getColor(R.styleable.YearPicker_dp_yearSelectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
+        mTextColors[0] = a.getColor(R.styleable.YearPicker_dp_textColor, 0xFF000000);
+        mTextColors[1] = a.getColor(R.styleable.YearPicker_dp_textHighlightColor, 0xFFFFFFFF);
+        mSelectionColor = a.getColor(R.styleable.YearPicker_dp_selectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
         mAnimDuration = a.getInteger(R.styleable.YearPicker_dp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         int resId = a.getResourceId(R.styleable.YearPicker_dp_inInterpolator, 0);
         if(resId != 0)
@@ -133,10 +136,7 @@ public class YearPicker extends ListView{
 
         a.recycle();
 
-        if(yearMin < 0)
-            yearMin = 1990;
-
-        if(yearMax < 0 || yearMax < yearMin)
+        if(yearMax < yearMin)
             yearMax = Integer.MAX_VALUE;
 
         if(year < 0){
@@ -146,10 +146,22 @@ public class YearPicker extends ListView{
 
         year = Math.max(yearMin, Math.min(yearMax, year));
 
-        mAdapter.setYearRange(yearMin, yearMax);
+        setYearRange(yearMin, yearMax);
+        setYear(year);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void setYearRange(int min, int max){
+        mAdapter.setYearRange(min, max);
+    }
+
+    public void setYear(int year){
         mAdapter.setYear(year);
         setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - 1, 0);
-        mAdapter.notifyDataSetChanged();
+    }
+
+    public int getYear(){
+        return mAdapter.getYear();
     }
 
     public void setOnYearChangedListener(OnYearChangedListener listener){
@@ -181,11 +193,19 @@ public class YearPicker extends ListView{
 
     private class YearAdapter extends BaseAdapter implements View.OnClickListener{
 
-        private int mMinYear = 0;
+        private int mMinYear = 1990;
         private int mMaxYear = Integer.MAX_VALUE;
         private int mCurYear;
 
         public YearAdapter(){}
+
+        public int getMinYear(){
+            return mMinYear;
+        }
+
+        public int getMaxYear(){
+            return mMaxYear;
+        }
 
         public void setYearRange(int min, int max){
             if(mMinYear != min || mMaxYear != max){
@@ -305,5 +325,77 @@ public class YearPicker extends ListView{
             mBackground.setAnimEnable(true);
         }
 
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+
+        ss.yearMin = mAdapter.getMinYear();
+        ss.yearMax = mAdapter.getMaxYear();
+        ss.year = mAdapter.getYear();
+
+        return ss;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        setYearRange(ss.yearMin, ss.yearMax);
+        setYear(ss.year);
+    }
+
+    static class SavedState extends BaseSavedState {
+        int yearMin;
+        int yearMax;
+        int year;
+
+        /**
+         * Constructor called from {@link Switch#onSaveInstanceState()}
+         */
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        private SavedState(Parcel in) {
+            super(in);
+            yearMin = in.readInt();
+            yearMax = in.readInt();
+            year = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeValue(yearMin);
+            out.writeValue(yearMax);
+            out.writeValue(year);
+        }
+
+        @Override
+        public String toString() {
+            return "YearPicker.SavedState{"
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + " yearMin=" + yearMin
+                    + " yearMax=" + yearMax
+                    + " year=" + year + "}";
+        }
+
+        public static final Creator<SavedState> CREATOR
+                = new Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }
