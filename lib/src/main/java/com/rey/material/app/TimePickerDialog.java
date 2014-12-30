@@ -237,7 +237,7 @@ public class TimePickerDialog extends Dialog{
             TypedArray a = context.obtainStyledAttributes(resId, R.styleable.TimePickerDialog);
             mHeaderHeight = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_headerHeight, ThemeUtil.dpToPx(context, 120));
             mTextTimeColor = a.getColor(R.styleable.TimePickerDialog_tp_textTimeColor, 0xFF000000);
-            mTextTimeSize = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_textTimeSize, ThemeUtil.spToPx(context, 24));
+            mTextTimeSize = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_textTimeSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material));
             String am = a.getString(R.styleable.TimePickerDialog_tp_am);
             String pm = a.getString(R.styleable.TimePickerDialog_tp_pm);
             a.recycle();

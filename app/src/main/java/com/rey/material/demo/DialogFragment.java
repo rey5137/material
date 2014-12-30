@@ -7,12 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.rey.material.app.SimpleDialog;
-import com.rey.material.app.TimePickerDialog;
-import com.rey.material.widget.Button;
-import com.rey.material.widget.MonthView;
+import com.rey.material.widget.DatePicker;
 
 import java.util.Calendar;
 
@@ -29,11 +25,9 @@ public class DialogFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_dialog, container, false);
 
-        MonthView mv = (MonthView)v.findViewById(R.id.dialog_v);
-        mv.setMonth(Calendar.DECEMBER, 2014);
-        mv.setSelectedDay(10, false);
-        mv.setToday(29);
-        mv.setAvailableDay(5, 30);
+        DatePicker dp = (DatePicker)v.findViewById(R.id.dialog_v);
+        dp.setDayRange(1, Calendar.JANUARY, 2014, 31, Calendar.DECEMBER, 2014);
+        dp.setDay(20, Calendar.DECEMBER, 2014);
 
 		return v;
 	}

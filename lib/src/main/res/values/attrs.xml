@@ -14,16 +14,6 @@
     <attr name="ripple" format="reference"/> 
     <attr name="delayClick" format="boolean"/>
 
-    <attr name="dp_textHighlightColor" format="color|reference" />
-    <attr name="dp_textColor" format="color|reference" />
-    <attr name="dp_selectionColor" format="color|reference" />
-    <attr name="dp_animDuration" format="integer|reference" />
-    <attr name="dp_inInterpolator" format="reference" />
-    <attr name="dp_outInterpolator" format="reference" />
-    <attr name="dp_yearMin" format="integer"/>
-    <attr name="dp_yearMax" format="integer"/>
-    <attr name="dp_year" format="integer"/>
-
     <declare-styleable name="CircularProgressDrawable">        
         <attr name="cpd_padding" format="reference|dimension"/> 
         <attr name="cpd_initialAngle" format="reference|integer"/> 
@@ -369,6 +359,22 @@
         <attr name="tp_pm" format="string|reference"/>
     </declare-styleable>
 
+    <attr name="dp_textHighlightColor" format="color|reference" />
+    <attr name="dp_textColor" format="color|reference" />
+    <attr name="dp_selectionColor" format="color|reference" />
+    <attr name="dp_animDuration" format="integer|reference" />
+    <attr name="dp_inInterpolator" format="reference" />
+    <attr name="dp_outInterpolator" format="reference" />
+    <attr name="dp_yearMin" format="integer"/>
+    <attr name="dp_monthMin" format="integer"/>
+    <attr name="dp_dayMin" format="integer"/>
+    <attr name="dp_yearMax" format="integer"/>
+    <attr name="dp_monthMax" format="integer"/>
+    <attr name="dp_dayMax" format="integer"/>
+    <attr name="dp_year" format="integer"/>
+    <attr name="dp_month" format="integer"/>
+    <attr name="dp_day" format="integer"/>
+
     <declare-styleable name="YearPicker">
         <attr name="dp_yearMin" />
         <attr name="dp_yearMax" />
@@ -385,7 +391,16 @@
         <attr name="android:textStyle" />
     </declare-styleable>
 
-    <declare-styleable name="MonthView">
+    <declare-styleable name="DatePicker">
+        <attr name="dp_yearMin" />
+        <attr name="dp_monthMin" />
+        <attr name="dp_dayMin" />
+        <attr name="dp_yearMax" />
+        <attr name="dp_monthMax" />
+        <attr name="dp_dayMax" />
+        <attr name="dp_year" />
+        <attr name="dp_month" />
+        <attr name="dp_day" />
         <attr name="dp_dayTextSize" format="dimension|reference" />
         <attr name="dp_textLabelColor" format="color|reference" />
         <attr name="dp_textDisableColor" format="color|reference" />
@@ -397,5 +412,15 @@
         <attr name="dp_outInterpolator" />
         <attr name="android:fontFamily" />
         <attr name="android:textStyle" />
+    </declare-styleable>
+
+    <declare-styleable name="DatePickerDialog">
+        <attr name="dp_headerPrimaryHeight" format="dimension|reference" />
+        <attr name="dp_headerPrimaryColor" format="color|reference" />
+        <attr name="dp_headerSecondaryHeight" format="dimension|reference" />
+        <attr name="dp_headerSecondaryColor" format="color|reference" />
+        <attr name="dp_headerPrimaryTextSize" format="dimension|reference" />
+        <attr name="dp_headerSecondaryTextSize" format="dimension|reference" />
+        <attr name="dp_textHeaderColor" format="dimension|reference" />
     </declare-styleable>
 </resources>

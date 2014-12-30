@@ -113,7 +113,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 		
-		vp.setCurrentItem(mItems.length - 1);
+		vp.setCurrentItem(1);
 		
 //		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
 //		fab.show(this, 100, 100, Gravity.LEFT);		

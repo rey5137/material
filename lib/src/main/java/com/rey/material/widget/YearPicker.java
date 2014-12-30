@@ -45,6 +45,8 @@ public class YearPicker extends ListView{
 
     private int mItemRealHeight = -1;
     private int mPadding;
+    private int mPositionShift;
+    private int mDistanceShift;
 
     private Paint mPaint;
 
@@ -111,7 +113,7 @@ public class YearPicker extends ListView{
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.YearPicker, defStyleAttr, defStyleRes);
         mTextSize = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_title_material));
-        int year = a.getInteger(R.styleable.YearPicker_dp_year, -1);
+        int year = a.getInteger(R.styleable.YearPicker_dp_year, mAdapter.getYear());
         int yearMin = a.getInteger(R.styleable.YearPicker_dp_yearMin, mAdapter.getMinYear());
         int yearMax = a.getInteger(R.styleable.YearPicker_dp_yearMax, mAdapter.getMaxYear());
         mItemHeight = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearItemHeight, ThemeUtil.dpToPx(context, 48));
@@ -157,7 +159,7 @@ public class YearPicker extends ListView{
 
     public void setYear(int year){
         mAdapter.setYear(year);
-        setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - 1, 0);
+        setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - mPositionShift, mDistanceShift);
     }
 
     public int getYear(){
@@ -191,11 +193,20 @@ public class YearPicker extends ListView{
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        float shift = (h / (float)mItemRealHeight - 1) / 2;
+        mPositionShift = (int)Math.floor(shift);
+        mPositionShift = shift > mPositionShift ? mPositionShift + 1 : mPositionShift;
+        mDistanceShift = (int)((shift - mPositionShift) * mItemRealHeight) - getPaddingTop();
+        setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - mPositionShift, mDistanceShift);
+    }
+
     private class YearAdapter extends BaseAdapter implements View.OnClickListener{
 
         private int mMinYear = 1990;
-        private int mMaxYear = Integer.MAX_VALUE;
-        private int mCurYear;
+        private int mMaxYear = Integer.MAX_VALUE - 1;
+        private int mCurYear = -1;
 
         public YearAdapter(){}
 
@@ -221,7 +232,7 @@ public class YearPicker extends ListView{
 
         @Override
         public int getCount(){
-            return mMaxYear - mMinYear;
+            return mMaxYear - mMinYear + 1;
         }
 
         @Override

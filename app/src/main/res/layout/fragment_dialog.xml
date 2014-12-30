@@ -4,12 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.rey.material.widget.MonthView
+    <com.rey.material.widget.DatePicker
         android:id="@+id/dialog_v"
-        android:layout_width="210dp"
-        android:layout_height="240dp"
+        android:layout_width="242dp"
+        android:layout_height="272dp"
         android:background="#19000000"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"/>
 
 </FrameLayout>
 

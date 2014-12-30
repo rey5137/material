@@ -9,9 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.rey.material.app.DatePickerDialog;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.app.TimePickerDialog;
 import com.rey.material.widget.Button;
+import com.rey.material.widget.DatePicker;
+
+import java.util.Calendar;
 
 public class ButtonFragment extends Fragment{
 
@@ -85,9 +89,9 @@ public class ButtonFragment extends Fragment{
         bt_flat_color.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                SimpleDialog dialog = new SimpleDialog(getActivity());
-                dialog.message("This is a message")
-                        .title("Title")
+                DatePickerDialog dialog = new DatePickerDialog(getActivity());
+                dialog.dayRange(1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014)
+                        .day(20, Calendar.DECEMBER, 2010)
                         .applyStyle(R.style.SimpleDialog)
                         .positiveAction("OK")
                         .negativeAction("CANCEL")
