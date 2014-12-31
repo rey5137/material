@@ -8,36 +8,34 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 
 import com.rey.material.R;
+import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
 import com.rey.material.util.ViewUtil;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Stack;
 
 /**
- * Created by Rey on 12/30/2014.
+ * Created by Rey on 12/31/2014.
  */
-public class DatePicker extends ViewPager{
+public class DatePicker extends ListView implements AbsListView.OnScrollListener{
 
     private Typeface mTypeface;
     private int mTextSize;
@@ -50,16 +48,20 @@ public class DatePicker extends ViewPager{
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
 
+    private Paint mPaint;
+    private float mDayHeight;
+    private float mDayWidth;
+    private int mDayPadding;
+    private float mSelectionRadius;
+    private float mMonthBaseWidth;
+    private float mMonthBaseHeight;
+    private int mMonthRealWidth;
+    private int mMonthRealHeight;
+
     private Calendar mCalendar;
     private boolean mIsMondayFirst;
     private String[] mLabels = new String[7];
-
     private static String[] mDayTexts;
-
-    private int mPaddingLeft;
-    private int mPaddingTop;
-    private int mPaddingRight;
-    private int mPaddingBottom;
 
     private MonthAdapter mAdapter;
 
@@ -68,6 +70,24 @@ public class DatePicker extends ViewPager{
     }
 
     private OnDateChangedListener mOnDateChangedListener;
+
+    protected static final int SCROLL_DURATION = 250;
+    protected static final int SCROLL_CHANGE_DELAY = 40;
+
+    public static int LIST_TOP_OFFSET = -1;
+
+    protected Handler mHandler = new Handler();
+
+    protected int mCurrentScrollState = 0;
+    protected long mPreviousScrollPosition;
+    protected int mPreviousScrollState = 0;
+    protected float mFriction = 1.0F;
+    protected ScrollStateRunnable mScrollStateChangedRunnable = new ScrollStateRunnable();
+
+    private int mPaddingLeft;
+    private int mPaddingTop;
+    private int mPaddingRight;
+    private int mPaddingBottom;
 
     public DatePicker(Context context) {
         super(context);
@@ -94,6 +114,22 @@ public class DatePicker extends ViewPager{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        setSelector(BlankDrawable.getInstance());
+        setCacheColorHint(0);
+        setDivider(null);
+        setItemsCanFocus(true);
+        setFastScrollEnabled(false);
+        setVerticalScrollBarEnabled(false);
+        setOnScrollListener(this);
+        setFadingEdgeLength(0);
+        setFrictionIfSupported(ViewConfiguration.getScrollFriction() * mFriction);
+
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+
+        mDayPadding = ThemeUtil.dpToPx(context, 4);
+
         mCalendar = Calendar.getInstance();
         mIsMondayFirst = mCalendar.getFirstDayOfWeek() == Calendar.MONDAY;
 
@@ -134,11 +170,149 @@ public class DatePicker extends ViewPager{
             mOutInterpolator = AnimationUtils.loadInterpolator(context, resId);
         else
             mOutInterpolator = new DecelerateInterpolator();
-        String familyName = a.getString(R.styleable.DatePicker_android_fontFamily);
-        int style = a.getInteger(R.styleable.DatePicker_android_textStyle, Typeface.NORMAL);
-
+        String familyName = a.getString(R.styleable.DatePicker_dp_fontFamily);
+        int style = a.getInteger(R.styleable.DatePicker_dp_textStyle, Typeface.NORMAL);
         mTypeface = TypefaceUtil.load(context, familyName, style);
+        int padding = a.getDimensionPixelSize(R.styleable.DatePicker_android_padding, -1);
+        if(padding >= 0)
+            setContentPadding(padding, padding, padding, padding);
+        mPaddingLeft = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingLeft, mPaddingLeft);
+        mPaddingTop = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingTop, mPaddingTop);
+        mPaddingRight = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingRight, mPaddingRight);
+        mPaddingBottom = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingBottom, mPaddingBottom);
+
         a.recycle();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void setFrictionIfSupported(float friction) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            setFriction(friction);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private boolean goTo(int month, int year, boolean animate, boolean forceScroll) {
+        final int position = mAdapter.positionOfMonth(month, year);
+
+        View child;
+        int i = 0;
+        int top;
+        // Find a child that's completely in the view
+        do {
+            child = getChildAt(i++);
+            if (child == null)
+                break;
+            top = child.getTop();
+        } while (top < 0);
+
+        // Compute the first and last position visible
+        int selectedPosition = (child != null) ? getPositionForView(child) : 0;
+
+        // Check if the selected day is now outside of our visible range
+        // and if so scroll to the month that contains it
+        if (position != selectedPosition || forceScroll) {
+            mPreviousScrollState = OnScrollListener.SCROLL_STATE_FLING;
+            if (animate && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                smoothScrollToPositionFromTop(position, LIST_TOP_OFFSET, SCROLL_DURATION);
+                return true;
+            } else
+                postSetSelection(position);
+        }
+        return false;
+    }
+
+    private void postSetSelection(final int position) {
+        clearFocus();
+        post(new Runnable() {
+            public void run() {
+                DatePicker.this.setSelection(position);
+            }
+        });
+        onScrollStateChanged(this, 0);
+    }
+
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        MonthView child = (MonthView) view.getChildAt(0);
+        if (child == null)
+            return;
+
+        // Figure out where we are
+        mPreviousScrollPosition = getFirstVisiblePosition() * child.getHeight() - child.getBottom();
+        mPreviousScrollState = mCurrentScrollState;
+    }
+
+    public void onScrollStateChanged(AbsListView absListView, int scroll) {
+        mScrollStateChangedRunnable.doScrollStateChange(absListView, scroll);
+    }
+
+    private void measureBaseSize(){
+        mPaint.setTextSize(mTextSize);
+        mPaint.setTypeface(mTypeface);
+        mMonthBaseWidth = mPaint.measureText("88", 0, 2) + mDayPadding * 2;
+
+        Rect bounds = new Rect();
+        mPaint.getTextBounds("88", 0, 2 ,bounds);
+        mMonthBaseHeight = bounds.height();
+    }
+
+    private void measureMonthView(int widthMeasureSpec, int heightMeasureSpec) {
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        measureBaseSize();
+
+        int size = Math.round(Math.max(mMonthBaseWidth, mMonthBaseHeight));
+
+        int width = size * 7 + mPaddingLeft + mPaddingRight;
+        int height = Math.round(size * 7 + mMonthBaseHeight + mDayPadding * 2 + mPaddingTop + mPaddingBottom);
+
+        switch (widthMode){
+            case MeasureSpec.AT_MOST:
+                width = Math.min(width, widthSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                width = widthSize;
+                break;
+        }
+
+        switch (heightMode){
+            case MeasureSpec.AT_MOST:
+                height = Math.min(height, heightSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                height = heightSize;
+                break;
+        }
+
+        mMonthRealWidth = width;
+        mMonthRealHeight = height;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        measureMonthView(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        mDayWidth = (w - mPaddingLeft - mPaddingRight) / 7f;
+        mDayHeight = (h - mMonthBaseHeight - mDayPadding * 2 - mPaddingTop - mPaddingBottom) / 7f;
+        mSelectionRadius = Math.min(mDayWidth, mDayHeight) / 2f;
+    }
+
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+        super.setPadding(0, 0, 0, 0);
+    }
+
+    public void setContentPadding(int left, int top, int right, int bottom){
+        mPaddingLeft = left;
+        mPaddingTop = top;
+        mPaddingRight = right;
+        mPaddingBottom = bottom;
     }
 
     private String getDayText(int day){
@@ -155,30 +329,13 @@ public class DatePicker extends ViewPager{
         return mDayTexts[day - 1];
     }
 
-    @Override
-    public void setPadding(int left, int top, int right, int bottom) {
-        mPaddingLeft = left;
-        mPaddingTop = top;
-        mPaddingRight = right;
-        mPaddingBottom = bottom;
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void setPaddingRelative(int start, int top, int end, int bottom) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && getLayoutDirection() == LAYOUT_DIRECTION_RTL)
-            setPadding(end, top, start, bottom);
-        else
-            setPadding(start, top, end, bottom);
-    }
-
     public void setDayRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
         mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
     public void setDay(int day, int month, int year){
         mAdapter.setDay(day, month, year, false);
-        setCurrentItem(mAdapter.positionOfMonth(month, year));
+        goTo(month, year, false, true);
     }
 
     public void setOnDateChangedListener(OnDateChangedListener listener){
@@ -225,19 +382,59 @@ public class DatePicker extends ViewPager{
         return mTextDisableColor;
     }
 
+    private class ScrollStateRunnable implements Runnable {
+        private int mNewState;
+
+        /**
+         * Sets up the runnable with a short delay in case the scroll state
+         * immediately changes again.
+         *
+         * @param view The list view that changed state
+         * @param scrollState The new state it changed to
+         */
+        public void doScrollStateChange(AbsListView view, int scrollState) {
+            mHandler.removeCallbacks(this);
+            mNewState = scrollState;
+            mHandler.postDelayed(this, SCROLL_CHANGE_DELAY);
+        }
+
+        @Override
+        public void run() {
+            mCurrentScrollState = mNewState;
+            // Fix the position after a scroll or a fling ends
+            if (mNewState == OnScrollListener.SCROLL_STATE_IDLE && mPreviousScrollState != OnScrollListener.SCROLL_STATE_IDLE && mPreviousScrollState != OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                mPreviousScrollState = mNewState;
+
+                int i = 0;
+                View child = getChildAt(i);
+                while(child != null && child.getBottom() <= 0)
+                    child = getChildAt(++i);
+                if (child == null)
+                    return;
+
+                int firstPosition = getFirstVisiblePosition();
+                int lastPosition = getLastVisiblePosition();
+                boolean scroll = firstPosition != 0 && lastPosition != getCount() - 1;
+                final int top = child.getTop();
+                final int bottom = child.getBottom();
+                final int midpoint = getHeight() / 2;
+                if (scroll && top < LIST_TOP_OFFSET) {
+                    if (bottom > midpoint)
+                        smoothScrollBy(top, SCROLL_DURATION);
+                    else
+                        smoothScrollBy(bottom, SCROLL_DURATION);
+                }
+            }
+            else
+                mPreviousScrollState = mNewState;
+        }
+    }
+
     private class MonthView extends View {
 
         private long mStartTime;
         private float mAnimProgress;
         private boolean mRunning;
-
-        private Paint mPaint;
-        private float mBaseWidth;
-        private float mBaseHeight;
-        private float mRowHeight;
-        private float mColWidth;
-        private int mPadding;
-        private float mSelectionRadius;
 
         private int mTouchedDay = -1;
 
@@ -255,11 +452,6 @@ public class DatePicker extends ViewPager{
         public MonthView(Context context) {
             super(context);
 
-            mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setTextAlign(Paint.Align.CENTER);
-
-            mPadding = ThemeUtil.dpToPx(context, 4);
             setWillNotDraw(false);
         }
 
@@ -311,56 +503,9 @@ public class DatePicker extends ViewPager{
             mMonthText = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + mYear;
         }
 
-        private void measureBaseSize(){
-            mPaint.setTextSize(mTextSize);
-            mPaint.setTypeface(mTypeface);
-            mBaseWidth = mPaint.measureText("88", 0, 2) + mPadding * 2;
-
-            Rect bounds = new Rect();
-            mPaint.getTextBounds("88", 0, 2 ,bounds);
-            mBaseHeight = bounds.height();
-        }
-
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
-            measureBaseSize();
-
-            int size = Math.round(Math.max(mBaseWidth, mBaseHeight));
-
-            int width = size * 7 + getPaddingLeft() + getPaddingRight();
-            int height = Math.round(size * 7 + mBaseHeight + mPadding * 2 + getPaddingTop() + getPaddingBottom());
-
-            switch (widthMode){
-                case MeasureSpec.AT_MOST:
-                    width = Math.min(width, widthSize);
-                    break;
-                case MeasureSpec.EXACTLY:
-                    width = widthSize;
-                    break;
-            }
-
-            switch (heightMode){
-                case MeasureSpec.AT_MOST:
-                    height = Math.min(height, heightSize);
-                    break;
-                case MeasureSpec.EXACTLY:
-                    height = heightSize;
-                    break;
-            }
-
-            setMeasuredDimension(width, height);
-        }
-
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            mColWidth = (w - getPaddingLeft() - getPaddingRight()) / 7f;
-            mRowHeight = (h - mBaseHeight - mPadding * 2 - getPaddingTop() - getPaddingBottom()) / 7f;
-            mSelectionRadius = Math.min(mColWidth, mRowHeight) / 2f;
+            setMeasuredDimension(mMonthRealWidth, mMonthRealHeight);
         }
 
         @Override
@@ -369,21 +514,21 @@ public class DatePicker extends ViewPager{
             //draw month text
             mPaint.setTextSize(mTextSize);
             mPaint.setTypeface(mTypeface);
-            float x = 3.5f * mColWidth + getPaddingLeft();
-            float y = mPadding * 2 + mBaseHeight;
+            float x = 3.5f * mDayWidth + getPaddingLeft();
+            float y = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop();
             mPaint.setFakeBoldText(true);
             mPaint.setColor(mTextColor);
             canvas.drawText(mMonthText, x, y, mPaint);
 
             //draw selection
             float paddingLeft = getPaddingLeft();
-            float paddingTop = mPadding * 2 + mBaseHeight + getPaddingTop();
+            float paddingTop = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop();
             if(mSelectedDay > 0){
                 int col = (mFirstDayCol + mSelectedDay - 1) % 7;
                 int row = (mFirstDayCol + mSelectedDay - 1) / 7 + 1;
 
-                x = (col + 0.5f) * mColWidth + paddingLeft;
-                y = (row + 0.5f) * mRowHeight + paddingTop;
+                x = (col + 0.5f) * mDayWidth + paddingLeft;
+                y = (row + 0.5f) * mDayHeight + paddingTop;
                 float radius = mRunning ? mInInterpolator.getInterpolation(mAnimProgress) * mSelectionRadius : mSelectionRadius;
                 mPaint.setColor(mSelectionColor);
                 canvas.drawCircle(x, y, radius, mPaint);
@@ -393,8 +538,8 @@ public class DatePicker extends ViewPager{
                 int col = (mFirstDayCol + mPreviousSelectedDay - 1) % 7;
                 int row = (mFirstDayCol + mPreviousSelectedDay - 1) / 7 + 1;
 
-                x = (col + 0.5f) * mColWidth + paddingLeft;
-                y = (row + 0.5f) * mRowHeight + paddingTop;
+                x = (col + 0.5f) * mDayWidth + paddingLeft;
+                y = (row + 0.5f) * mDayHeight + paddingTop;
                 float radius = (1f - mOutInterpolator.getInterpolation(mAnimProgress)) * mSelectionRadius;
                 mPaint.setColor(mSelectionColor);
                 canvas.drawCircle(x, y, radius, mPaint);
@@ -403,9 +548,9 @@ public class DatePicker extends ViewPager{
             //draw label
             mPaint.setFakeBoldText(false);
             mPaint.setColor(mTextLabelColor);
-            paddingTop += (mRowHeight + mBaseHeight) / 2f;
+            paddingTop += (mDayHeight + mMonthBaseHeight) / 2f;
             for(int i = 0; i < 7; i++){
-                x = (i + 0.5f) * mColWidth + paddingLeft;
+                x = (i + 0.5f) * mDayWidth + paddingLeft;
                 y = paddingTop;
                 int index = mIsMondayFirst ? (i == 6 ? 0 : i - 1) : i;
                 canvas.drawText(mLabels[index], x, y, mPaint);
@@ -425,8 +570,8 @@ public class DatePicker extends ViewPager{
                 else
                     mPaint.setColor(mTextColor);
 
-                x = (col + 0.5f) * mColWidth + paddingLeft;
-                y = row * mRowHeight + paddingTop;
+                x = (col + 0.5f) * mDayWidth + paddingLeft;
+                y = row * mDayHeight + paddingTop;
 
                 canvas.drawText(getDayText(day), x, y, mPaint);
                 col++;
@@ -438,12 +583,12 @@ public class DatePicker extends ViewPager{
         }
 
         private int getTouchedDay(float x, float y){
-            float paddingTop = mPadding * 2 + mBaseHeight + getPaddingTop() + mRowHeight;
+            float paddingTop = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop() + mDayHeight;
             if(x < getPaddingLeft() || x > getWidth() - getPaddingRight() || y < paddingTop || y > getHeight() - getPaddingBottom())
                 return -1;
 
-            int col = (int)Math.floor((x - getPaddingLeft()) / mColWidth);
-            int row = (int)Math.floor((y - paddingTop) / mRowHeight);
+            int col = (int)Math.floor((x - getPaddingLeft()) / mDayWidth);
+            int row = (int)Math.floor((y - paddingTop) / mDayHeight);
             int maxDay = mMaxAvailDay > 0 ? Math.min(mMaxAvailDay, mMaxDay) : mMaxDay;
 
             int day = row * 7 + col - mFirstDayCol + 1;
@@ -519,7 +664,7 @@ public class DatePicker extends ViewPager{
 
     }
 
-    private class MonthAdapter extends RecyclerPagerAdapter{
+    private class MonthAdapter extends BaseAdapter{
         private int mDay = -1;
         private int mMonth = -1;
         private int mYear = -1;
@@ -556,7 +701,7 @@ public class DatePicker extends ViewPager{
 
         public void setDay(int day, int month, int year, boolean animation){
             if(mMonth != month || mYear != year) {
-                MonthView v = getView(positionOfMonth(mMonth, mYear));
+                MonthView v = (MonthView)getChildAt(positionOfMonth(mMonth, mYear) - getFirstVisiblePosition());
                 if (v != null)
                     v.setSelectedDay(-1, false);
 
@@ -568,7 +713,7 @@ public class DatePicker extends ViewPager{
                 mMonth = month;
                 mYear = year;
 
-                v = getView(positionOfMonth(mMonth, mYear));
+                v = (MonthView)getChildAt(positionOfMonth(mMonth, mYear) - getFirstVisiblePosition());
                 if(v != null)
                     v.setSelectedDay(mDay, animation);
 
@@ -580,7 +725,7 @@ public class DatePicker extends ViewPager{
 
                 mDay = day;
 
-                MonthView v = getView(positionOfMonth(mMonth, mYear));
+                MonthView v = (MonthView)getChildAt(positionOfMonth(mMonth, mYear) - getFirstVisiblePosition());
                 if(v != null)
                     v.setSelectedDay(mDay, animation);
 
@@ -605,16 +750,6 @@ public class DatePicker extends ViewPager{
             return mYear;
         }
 
-        private MonthView getView(int position){
-            for(int i = getChildCount() - 1; i >= 0; i--){
-                View v = getChildAt(i);
-                if((Integer)v.getTag(RecyclerPagerAdapter.TAG) == position)
-                    return (MonthView)v;
-            }
-
-            return null;
-        }
-
         private void calToday(){
             mCalendar.setTimeInMillis(System.currentTimeMillis());
             mToday = mCalendar.get(Calendar.DAY_OF_MONTH);
@@ -628,12 +763,17 @@ public class DatePicker extends ViewPager{
         }
 
         @Override
-        protected Object getItem(int position) {
+        public Object getItem(int position) {
             return position + mMinMonthValue;
         }
 
         @Override
-        protected View getView(int position, View convertView, ViewGroup parent) {
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
             MonthView v = (MonthView)convertView;
             if(v == null){
                 v = new MonthView(parent.getContext());
@@ -654,98 +794,7 @@ public class DatePicker extends ViewPager{
             v.setAvailableDay(minDay, maxDay);
             v.setSelectedDay(day, false);
 
-            System.out.println("get: " + position + " " + v);
-
             return v;
         }
-
-    }
-
-    public static abstract class RecyclerPagerAdapter extends PagerAdapter {
-
-        ArrayList<Integer> mInstantiatedPositions = new ArrayList<>();
-
-        private Stack<Reference<View>> mRecycler = new Stack<>();
-
-        public static final int TAG = R.id.action_bar;
-
-        private void putViewToRecycler(View v){
-            synchronized (mRecycler){
-                mRecycler.push(new WeakReference<View>(v));
-            }
-        }
-
-        private View getViewFromRecycler(){
-            View v = null;
-            synchronized (mRecycler) {
-                while (v == null && !mRecycler.isEmpty())
-                    v = mRecycler.pop().get();
-            }
-            return v;
-        }
-
-        @Override
-        public final void startUpdate(ViewGroup container) {
-            mInstantiatedPositions.clear();
-        }
-
-        @Override
-        public final Object instantiateItem(ViewGroup container, int position) {
-            mInstantiatedPositions.add(position);
-            return position;
-        }
-
-        @Override
-        public final void destroyItem(ViewGroup container, int position, Object object) {
-            //remove view attached to this object and put it to recycler.
-            System.out.println("destroy: " + position + " " + object);
-            for(int i = container.getChildCount() - 1; i >= 0; i --){
-                View v = container.getChildAt(i);
-                System.out.println(v + " " + v.getTag(TAG) + "  " + isViewFromObject(v, object));
-                if(isViewFromObject(v, object)){
-                    container.removeView(v);
-                    putViewToRecycler(v);
-                    System.out.println("destroyed: " + position + " " + v);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public final void finishUpdate(ViewGroup container) {
-            // Render views and attach them to the container. Page views are reused
-            // whenever possible.
-            for (Integer pos : mInstantiatedPositions) {
-                View convertView = getViewFromRecycler();
-
-                if (convertView != null) {
-                    // Re-add existing view before rendering so that we can make change inside getView()
-                    container.addView(convertView);
-                    convertView = getView(pos, convertView, container);
-                } else {
-                    convertView = getView(pos, convertView, container);
-                    container.addView(convertView);
-                }
-
-                convertView.requestLayout();
-                convertView.invalidate();
-                convertView.forceLayout();
-
-                // Set another tag id to not break ViewHolder pattern
-                convertView.setTag(TAG, pos);
-            }
-
-            mInstantiatedPositions.clear();
-        }
-
-        @Override
-        public final boolean isViewFromObject(View view, Object object) {
-            return view.getTag(TAG) != null && ((Integer)view.getTag(TAG)).intValue() == ((Integer)object).intValue();
-        }
-
-        protected abstract Object getItem(int position);
-
-        protected abstract View getView(int position, View convertView, ViewGroup parent);
-
     }
 }

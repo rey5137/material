@@ -335,8 +335,13 @@
         <attr name="tp_selectionColor" format="color|reference" />
         <attr name="tp_selectionRadius" format="dimension|reference" />
         <attr name="tp_tickSize" format="dimension|reference" />
-        <attr name="android:fontFamily" />
-        <attr name="android:textStyle" />
+        <attr name="tp_fontFamily" format="string|reference"/>
+        <attr name="tp_textStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
         <attr name="tp_textSize" format="dimension|reference" />
         <attr name="tp_textColor" format="color|reference" />
         <attr name="tp_textHighlightColor" format="color|reference" />
@@ -374,6 +379,13 @@
     <attr name="dp_year" format="integer"/>
     <attr name="dp_month" format="integer"/>
     <attr name="dp_day" format="integer"/>
+    <attr name="dp_fontFamily" format="string|reference"/>
+    <attr name="dp_textStyle" format="integer">
+        <enum name="normal" value="0" />
+        <enum name="bold" value="1" />
+        <enum name="italic" value="2" />
+        <enum name="bold_italic" value="3" />
+    </attr>
 
     <declare-styleable name="YearPicker">
         <attr name="dp_yearMin" />
@@ -387,8 +399,8 @@
         <attr name="dp_animDuration" />
         <attr name="dp_inInterpolator" />
         <attr name="dp_outInterpolator" />
-        <attr name="android:fontFamily" />
-        <attr name="android:textStyle" />
+        <attr name="dp_fontFamily" />
+        <attr name="dp_textStyle" />
     </declare-styleable>
 
     <declare-styleable name="DatePicker">
@@ -410,8 +422,13 @@
         <attr name="dp_animDuration" />
         <attr name="dp_inInterpolator" />
         <attr name="dp_outInterpolator" />
-        <attr name="android:fontFamily" />
-        <attr name="android:textStyle" />
+        <attr name="dp_fontFamily" />
+        <attr name="dp_textStyle" />
+        <attr name="android:padding" />
+        <attr name="android:paddingLeft" />
+        <attr name="android:paddingTop" />
+        <attr name="android:paddingRight" />
+        <attr name="android:paddingBottom" />
     </declare-styleable>
 
     <declare-styleable name="DatePickerDialog">

@@ -366,7 +366,7 @@
         <item name="tp_tickSize">1dp</item>
         <item name="tp_textSize">@dimen/abc_text_size_caption_material</item>
         <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
-        <item name="android:textStyle">normal</item>
+        <item name="tp_textStyle">normal</item>
         <item name="tp_textColor">#FF000000</item>
         <item name="tp_textTimeColor">#90FFFFFF</item>
         <item name="tp_textHighlightColor">#FFFFFFFF</item>

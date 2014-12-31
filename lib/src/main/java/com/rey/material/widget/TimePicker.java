@@ -129,8 +129,8 @@ public class TimePicker extends View{
         setHour(a.getInteger(R.styleable.TimePicker_tp_hour, 0));
         setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, 0));
 
-        String familyName = a.getString(R.styleable.TimePicker_android_fontFamily);
-        int style = a.getInteger(R.styleable.TimePicker_android_textStyle, Typeface.NORMAL);
+        String familyName = a.getString(R.styleable.TimePicker_tp_fontFamily);
+        int style = a.getInteger(R.styleable.TimePicker_tp_textStyle, Typeface.NORMAL);
 
         mTypeface = TypefaceUtil.load(context, familyName, style);
 

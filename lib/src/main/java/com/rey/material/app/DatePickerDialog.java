@@ -106,7 +106,7 @@ public class DatePickerDialog extends Dialog {
             mYearPicker = new YearPicker(context);
             mDatePicker = new DatePicker(context);
             mYearPicker.setPadding(mPadding, mPadding, mPadding, mPadding);
-//            mDatePicker.setPadding(mPadding, mPadding, mPadding, mPadding);
+            mDatePicker.setContentPadding(mPadding, mPadding, mPadding, mPadding);
 
             addView(mYearPicker);
             addView(mDatePicker);

@@ -131,8 +131,8 @@ public class YearPicker extends ListView{
             mOutInterpolator = AnimationUtils.loadInterpolator(context, resId);
         else
             mOutInterpolator = new DecelerateInterpolator();
-        String familyName = a.getString(R.styleable.YearPicker_android_fontFamily);
-        int style = a.getInteger(R.styleable.YearPicker_android_textStyle, Typeface.NORMAL);
+        String familyName = a.getString(R.styleable.YearPicker_dp_fontFamily);
+        int style = a.getInteger(R.styleable.YearPicker_dp_textStyle, Typeface.NORMAL);
 
         mTypeface = TypefaceUtil.load(context, familyName, style);
 
