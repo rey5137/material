@@ -91,8 +91,8 @@ public class ButtonFragment extends Fragment{
             public void onClick(View v) {
                 DatePickerDialog dialog = new DatePickerDialog(getActivity());
                 dialog.dayRange(1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014)
-                        .day(20, Calendar.DECEMBER, 2010)
-                        .applyStyle(R.style.SimpleDialog)
+                        .day(20, Calendar.JANUARY, 2010)
+                        .applyStyle(R.style.DatePickerDialog)
                         .positiveAction("OK")
                         .negativeAction("CANCEL")
                         .show();

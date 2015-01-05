@@ -73,8 +73,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
     protected static final int SCROLL_DURATION = 250;
     protected static final int SCROLL_CHANGE_DELAY = 40;
-
-    public static int LIST_TOP_OFFSET = -1;
+    protected static final int LIST_TOP_OFFSET = -1;
 
     protected Handler mHandler = new Handler();
 
@@ -190,47 +189,45 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             setFriction(friction);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private boolean goTo(int month, int year, boolean animate, boolean forceScroll) {
-        final int position = mAdapter.positionOfMonth(month, year);
+//    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+//    private boolean goTo(int month, int year, boolean animate, boolean forceScroll) {
+//        final int position = mAdapter.positionOfMonth(month, year);
+//
+//        View child;
+//        int i = 0;
+//        int top;
+//        // Find a child that's completely in the view
+//        do {
+//            child = getChildAt(i++);
+//            if (child == null)
+//                break;
+//            top = child.getTop();
+//        } while (top < 0);
+//
+//        // Compute the first and last position visible
+//        int selectedPosition = (child != null) ? getPositionForView(child) : 0;
+//
+//        // Check if the selected day is now outside of our visible range
+//        // and if so scroll to the month that contains it
+//        if (position != selectedPosition || forceScroll) {
+//            mPreviousScrollState = OnScrollListener.SCROLL_STATE_FLING;
+//            if (animate && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//                smoothScrollToPositionFromTop(position, LIST_TOP_OFFSET, SCROLL_DURATION);
+//                return true;
+//            } else{
+//                clearFocus();
+//                post(new Runnable() {
+//                    public void run() {
+//                        DatePicker.this.setSelection(position);
+//                    }
+//                });
+//                onScrollStateChanged(this, 0);
+//            }
+//        }
+//        return false;
+//    }
 
-        View child;
-        int i = 0;
-        int top;
-        // Find a child that's completely in the view
-        do {
-            child = getChildAt(i++);
-            if (child == null)
-                break;
-            top = child.getTop();
-        } while (top < 0);
-
-        // Compute the first and last position visible
-        int selectedPosition = (child != null) ? getPositionForView(child) : 0;
-
-        // Check if the selected day is now outside of our visible range
-        // and if so scroll to the month that contains it
-        if (position != selectedPosition || forceScroll) {
-            mPreviousScrollState = OnScrollListener.SCROLL_STATE_FLING;
-            if (animate && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                smoothScrollToPositionFromTop(position, LIST_TOP_OFFSET, SCROLL_DURATION);
-                return true;
-            } else
-                postSetSelection(position);
-        }
-        return false;
-    }
-
-    private void postSetSelection(final int position) {
-        clearFocus();
-        post(new Runnable() {
-            public void run() {
-                DatePicker.this.setSelection(position);
-            }
-        });
-        onScrollStateChanged(this, 0);
-    }
-
+    @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         MonthView child = (MonthView) view.getChildAt(0);
         if (child == null)
@@ -241,6 +238,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mPreviousScrollState = mCurrentScrollState;
     }
 
+    @Override
     public void onScrollStateChanged(AbsListView absListView, int scroll) {
         mScrollStateChangedRunnable.doScrollStateChange(absListView, scroll);
     }
@@ -333,9 +331,14 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
+    public void goTo(int month, int year){
+        final int position = mAdapter.positionOfMonth(month, year);
+        setSelectionFromTop(position, 0);
+    }
+
     public void setDay(int day, int month, int year){
         mAdapter.setDay(day, month, year, false);
-        goTo(month, year, false, true);
+        goTo(month, year);
     }
 
     public void setOnDateChangedListener(OnDateChangedListener listener){
@@ -380,6 +383,10 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
     public int getTextDisableColor(){
         return mTextDisableColor;
+    }
+
+    public Calendar getCalendar(){
+        return mCalendar;
     }
 
     private class ScrollStateRunnable implements Runnable {

@@ -376,5 +376,15 @@
         <item name="tp_am">AM</item>
         <item name="tp_pm">PM</item>
     </style>
+
+    <style name="DatePickerDialog" parent="SimpleDialog">
+        <item name="dp_headerPrimaryHeight">144dp</item>
+        <item name="dp_headerSecondaryHeight">32dp</item>
+        <item name="dp_selectionColor">#FF009688</item>
+        <item name="dp_headerSecondaryColor">#FF00796B</item>
+        <item name="dp_headerPrimaryTextSize">@dimen/abc_text_size_display_2_material</item>
+        <item name="dp_headerSecondaryTextSize">@dimen/abc_text_size_headline_material</item>
+        <item name="dp_textHeaderColor">#90FFFFFF</item>
+    </style>
     
 </resources>

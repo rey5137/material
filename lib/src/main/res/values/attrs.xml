@@ -438,6 +438,6 @@
         <attr name="dp_headerSecondaryColor" format="color|reference" />
         <attr name="dp_headerPrimaryTextSize" format="dimension|reference" />
         <attr name="dp_headerSecondaryTextSize" format="dimension|reference" />
-        <attr name="dp_textHeaderColor" format="dimension|reference" />
+        <attr name="dp_textHeaderColor" format="color|reference" />
     </declare-styleable>
 </resources>
