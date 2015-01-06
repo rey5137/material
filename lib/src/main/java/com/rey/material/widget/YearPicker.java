@@ -1,8 +1,10 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -13,8 +15,10 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -65,6 +69,8 @@ public class YearPicker extends ListView{
 
     private int[] mTextColors = new int[2];
 
+    private float mAlpha;
+
     public YearPicker(Context context) {
         super(context);
 
@@ -90,6 +96,7 @@ public class YearPicker extends ListView{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        setWillNotDraw(false);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
 
@@ -200,6 +207,52 @@ public class YearPicker extends ListView{
         mPositionShift = shift > mPositionShift ? mPositionShift + 1 : mPositionShift;
         mDistanceShift = (int)((shift - mPositionShift) * mItemRealHeight) - getPaddingTop();
         setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - mPositionShift, mDistanceShift);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void setAlpha(float alpha) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            super.setAlpha(alpha);
+            invalidate();
+        }
+        else{
+            if(mAlpha != alpha){
+                mAlpha = alpha;
+                AlphaAnimation anim = new AlphaAnimation(mAlpha, mAlpha);
+                anim.setDuration(0);
+                startAnimation(anim);
+                invalidate();
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public float getAlpha() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) ? super.getAlpha() : mAlpha;
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        if(getAlpha() != 0f)
+            super.draw(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if(getAlpha() == 0f)
+            return false;
+
+        return super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if(getAlpha() == 0f)
+            return false;
+
+        return super.dispatchTouchEvent(ev);
     }
 
     private class YearAdapter extends BaseAdapter implements View.OnClickListener{

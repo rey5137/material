@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.internal.view.SupportMenu;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.rey.material.app.Dialog;
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.TabPageIndicator;
@@ -118,7 +118,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 //		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
 //		fab.show(this, 100, 100, Gravity.LEFT);		
 	}
-	
+
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		new MenuInflater(this).inflate(R.menu.menu_main, menu);

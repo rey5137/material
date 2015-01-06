@@ -137,11 +137,11 @@ public class DatePickerDialog extends Dialog {
             mDatePicker.setContentPadding(mPadding, mPadding, mPadding, mPadding);
             mDatePicker.setOnDateChangedListener(this);
 
-            addView(mYearPicker);
             addView(mDatePicker);
+            addView(mYearPicker);
 
-            mYearPicker.setVisibility(mDateSelectMode ? View.GONE : View.VISIBLE);
-            mDatePicker.setVisibility(mDateSelectMode ? View.VISIBLE : View.GONE);
+            mYearPicker.setAlpha(mDateSelectMode ? 0f : 1f);
+            mDatePicker.setAlpha(mDateSelectMode ? 1f : 0f);
 
             setWillNotDraw(false);
         }
@@ -150,17 +150,9 @@ public class DatePickerDialog extends Dialog {
             if(mDateSelectMode != enable){
                 mDateSelectMode = enable;
 
-                mYearPicker.setVisibility(mDateSelectMode ? View.GONE : View.VISIBLE);
-                mDatePicker.setVisibility(mDateSelectMode ? View.VISIBLE : View.GONE);
-
-                if(mDatePicker.getVisibility() == View.VISIBLE)
-                    postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDatePicker.goTo(mDatePicker.getMonth(), mDatePicker.getYear());
-                            System.out.println("asd " + mDatePicker.getMonth() + " " + mDatePicker.getYear());
-                        }
-                    }, 1000);
+                mYearPicker.setAlpha(mDateSelectMode ? 0f : 1f);
+                mDatePicker.setAlpha(mDateSelectMode ? 1f : 0f);
+                invalidate(0, 0, mHeaderRealWidth, mHeaderPrimaryRealHeight + mHeaderSecondaryHeight);
             }
         }
 
@@ -220,6 +212,9 @@ public class DatePickerDialog extends Dialog {
                 mMonth = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
                 mDay = String.format(DAY_FORMART, newDay);
                 mYear = String.valueOf(newYear);
+
+                if(oldMonth != newMonth || oldYear != newYear)
+                    mDatePicker.goTo(newMonth, newYear);
             }
 
             mLocationDirty = true;

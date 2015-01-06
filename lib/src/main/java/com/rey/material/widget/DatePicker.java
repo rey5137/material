@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.DrawFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -89,6 +91,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mPaddingRight;
     private int mPaddingBottom;
 
+    protected PositionScroller mPositionScroller = new PositionScroller();
+    private float mAlpha;
+
     public DatePicker(Context context) {
         super(context);
 
@@ -114,6 +119,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        setWillNotDraw(false);
         setSelector(BlankDrawable.getInstance());
         setCacheColorHint(0);
         setDivider(null);
@@ -189,44 +195,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             setFriction(friction);
     }
-
-//    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-//    private boolean goTo(int month, int year, boolean animate, boolean forceScroll) {
-//        final int position = mAdapter.positionOfMonth(month, year);
-//
-//        View child;
-//        int i = 0;
-//        int top;
-//        // Find a child that's completely in the view
-//        do {
-//            child = getChildAt(i++);
-//            if (child == null)
-//                break;
-//            top = child.getTop();
-//        } while (top < 0);
-//
-//        // Compute the first and last position visible
-//        int selectedPosition = (child != null) ? getPositionForView(child) : 0;
-//
-//        // Check if the selected day is now outside of our visible range
-//        // and if so scroll to the month that contains it
-//        if (position != selectedPosition || forceScroll) {
-//            mPreviousScrollState = OnScrollListener.SCROLL_STATE_FLING;
-//            if (animate && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//                smoothScrollToPositionFromTop(position, LIST_TOP_OFFSET, SCROLL_DURATION);
-//                return true;
-//            } else{
-//                clearFocus();
-//                post(new Runnable() {
-//                    public void run() {
-//                        DatePicker.this.setSelection(position);
-//                    }
-//                });
-//                onScrollStateChanged(this, 0);
-//            }
-//        }
-//        return false;
-//    }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -307,6 +275,52 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         super.setPadding(0, 0, 0, 0);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void setAlpha(float alpha) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            super.setAlpha(alpha);
+            invalidate();
+        }
+        else{
+            if(mAlpha != alpha){
+                mAlpha = alpha;
+                AlphaAnimation anim = new AlphaAnimation(mAlpha, mAlpha);
+                anim.setDuration(0);
+                startAnimation(anim);
+                invalidate();
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public float getAlpha() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) ? super.getAlpha() : mAlpha;
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        if(getAlpha() != 0f)
+            super.draw(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if(getAlpha() == 0f)
+            return false;
+
+        return super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if(getAlpha() == 0f)
+            return false;
+
+        return super.dispatchTouchEvent(ev);
+    }
+
     public void setContentPadding(int left, int top, int right, int bottom){
         mPaddingLeft = left;
         mPaddingTop = top;
@@ -332,204 +346,16 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void goTo(int month, int year){
-        int targetPos = mAdapter.positionOfMonth(month, year);
-//        int firstPos = getFirstVisiblePosition();
-//        View v = getChildAt(0);
-//        int top = v == null ? 0 : v.getTop();
-//        int distance = (targetPos - firstPos) * mMonthRealHeight - top;
-//        System.out.println(targetPos + " " + firstPos + " " + mMonthRealHeight + " " + top + " " + distance);
-//        smoothScrollBy(distance, 200);
-//        smoothScrollToPosition(targetPos);
-
-        PositionScroller scroller = new PositionScroller();
-        scroller.start(targetPos);
-    }
-
-    class PositionScroller implements Runnable {
-        private static final int SCROLL_DURATION = 1;
-
-        private static final int MOVE_DOWN_POS = 1;
-        private static final int MOVE_UP_POS = 2;
-
-        private int mMode;
-        private int mTargetPos;
-        private int mBoundPos;
-        private int mLastSeenPos;
-        private int mScrollDuration;
-        private final int mExtraScroll;
-
-        private int mOffsetFromTop;
-
-        PositionScroller() {
-            mExtraScroll = ViewConfiguration.get(getContext()).getScaledFadingEdgeLength();
-        }
-
-        public void start(final int position) {
-            stop();
-
-            final int childCount = getChildCount();
-            if (childCount == 0) {
-                // Can't scroll without children.
-                return;
-            }
-
-            final int firstPos = getFirstVisiblePosition();
-            final int lastPos = firstPos + childCount - 1;
-
-            int viewTravelCount;
-            int clampedPosition = Math.max(0, Math.min(getCount() - 1, position));
-            if (clampedPosition < firstPos) {
-                viewTravelCount = firstPos - clampedPosition + 1;
-                mMode = MOVE_UP_POS;
-            } else if (clampedPosition > lastPos) {
-                viewTravelCount = clampedPosition - lastPos + 1;
-                mMode = MOVE_DOWN_POS;
-            } else {
-                scrollToVisible(clampedPosition, INVALID_POSITION, SCROLL_DURATION);
-                return;
-            }
-
-            if (viewTravelCount > 0) {
-                mScrollDuration = SCROLL_DURATION / viewTravelCount;
-            } else {
-                mScrollDuration = SCROLL_DURATION;
-            }
-            mTargetPos = clampedPosition;
-            mBoundPos = INVALID_POSITION;
-            mLastSeenPos = INVALID_POSITION;
-
-            postOnAnimation(this);
-        }
-
-        /**
-         * Scroll such that targetPos is in the visible padded region without scrolling
-         * boundPos out of view. Assumes targetPos is onscreen.
-         */
-        private void scrollToVisible(int targetPos, int boundPos, int duration) {
-            final int firstPos = getFirstVisiblePosition();
-            final int childCount = getChildCount();
-            final int lastPos = firstPos + childCount - 1;
-            final int paddedTop = getPaddingTop();
-            final int paddedBottom = getHeight() - getPaddingBottom();
-
-            if (targetPos < firstPos || targetPos > lastPos) {
-                Log.w("asd", "scrollToVisible called with targetPos " + targetPos +
-                        " not visible [" + firstPos + ", " + lastPos + "]");
-            }
-            if (boundPos < firstPos || boundPos > lastPos) {
-                // boundPos doesn't matter, it's already offscreen.
-                boundPos = INVALID_POSITION;
-            }
-
-            final View targetChild = getChildAt(targetPos - firstPos);
-            final int targetTop = targetChild.getTop();
-            final int targetBottom = targetChild.getBottom();
-            int scrollBy = 0;
-
-            if (targetBottom > paddedBottom) {
-                scrollBy = targetBottom - paddedBottom;
-            }
-            if (targetTop < paddedTop) {
-                scrollBy = targetTop - paddedTop;
-            }
-
-            if (scrollBy == 0) {
-                return;
-            }
-
-            if (boundPos >= 0) {
-                final View boundChild = getChildAt(boundPos - firstPos);
-                final int boundTop = boundChild.getTop();
-                final int boundBottom = boundChild.getBottom();
-                final int absScroll = Math.abs(scrollBy);
-
-                if (scrollBy < 0 && boundBottom + absScroll > paddedBottom) {
-                    // Don't scroll the bound view off the bottom of the screen.
-                    scrollBy = Math.max(0, boundBottom - paddedBottom);
-                } else if (scrollBy > 0 && boundTop - absScroll < paddedTop) {
-                    // Don't scroll the bound view off the top of the screen.
-                    scrollBy = Math.min(0, boundTop - paddedTop);
-                }
-            }
-
-            smoothScrollBy(scrollBy, duration);
-        }
-
-        public void stop() {
-            removeCallbacks(this);
-        }
-
-        @Override
-        public void run() {
-            final int listHeight = getHeight();
-            final int firstPos = getFirstVisiblePosition();
-
-            switch (mMode) {
-                case MOVE_DOWN_POS: {
-                    final int lastViewIndex = getChildCount() - 1;
-                    final int lastPos = firstPos + lastViewIndex;
-
-                    if (lastViewIndex < 0) {
-                        return;
-                    }
-
-                    if (lastPos == mLastSeenPos) {
-                        // No new views, let things keep going.
-                        postOnAnimation(this);
-                        return;
-                    }
-
-                    final View lastView = getChildAt(lastViewIndex);
-                    final int lastViewHeight = lastView.getHeight();
-                    final int lastViewTop = lastView.getTop();
-                    final int lastViewPixelsShowing = listHeight - lastViewTop;
-                    final int extraScroll = lastPos < mAdapter.getCount() - 1 ?
-                            Math.max(getPaddingBottom(), mExtraScroll) : getPaddingBottom();
-
-                    final int scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
-                    smoothScrollBy(scrollBy, mScrollDuration);
-
-                    mLastSeenPos = lastPos;
-                    if (lastPos < mTargetPos) {
-                        postOnAnimation(this);
-                    }
-                    break;
-                }
-                case MOVE_UP_POS: {
-                    if (firstPos == mLastSeenPos) {
-                        // No new views, let things keep going.
-                        postOnAnimation(this);
-                        return;
-                    }
-
-                    final View firstView = getChildAt(0);
-                    if (firstView == null) {
-                        return;
-                    }
-                    final int firstViewTop = firstView.getTop();
-                    final int extraScroll = firstPos > 0 ?
-                            Math.max(mExtraScroll, getPaddingTop()) : getPaddingTop();
-
-                    smoothScrollBy(firstViewTop - extraScroll, mScrollDuration);
-
-                    mLastSeenPos = firstPos;
-
-                    if (firstPos > mTargetPos) {
-                        postOnAnimation(this);
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
+        int position = mAdapter.positionOfMonth(month, year);
+        setSelectionFromTop(position, 0);
+        mPositionScroller.start(position);
     }
 
     public void setDay(int day, int month, int year){
         mAdapter.setDay(day, month, year, false);
-        final int position = mAdapter.positionOfMonth(month, year);
-        setSelectionFromTop(position, 0);
+        goTo(month, year);
     }
 
     public void setOnDateChangedListener(OnDateChangedListener listener){
@@ -625,6 +451,136 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             }
             else
                 mPreviousScrollState = mNewState;
+        }
+    }
+
+    class PositionScroller implements Runnable {
+        private static final int SCROLL_DURATION = 25;
+
+        private static final int MOVE_DOWN_POS = 1;
+        private static final int MOVE_UP_POS = 2;
+
+        private int mMode;
+        private int mTargetPos;
+        private int mLastSeenPos;
+        private final int mExtraScroll;
+
+        PositionScroller() {
+            mExtraScroll = ViewConfiguration.get(getContext()).getScaledFadingEdgeLength();
+        }
+
+        public void start(final int position) {
+            stop();
+
+            final int childCount = getChildCount();
+            if (childCount == 0)
+                return;
+
+            final int firstPos = getFirstVisiblePosition();
+            final int lastPos = firstPos + childCount - 1;
+
+            if (position < firstPos)
+                mMode = MOVE_UP_POS;
+            else if (position > lastPos)
+                mMode = MOVE_DOWN_POS;
+            else {
+                scrollToVisible(position);
+                return;
+            }
+
+            mTargetPos = position;
+            mLastSeenPos = INVALID_POSITION;
+
+            postOnAnimation(this);
+        }
+
+        /**
+         * Scroll such that targetPos is in the visible padded region without scrolling
+         * boundPos out of view. Assumes targetPos is onscreen.
+         */
+        private void scrollToVisible(int targetPos) {
+            final int firstPos = getFirstVisiblePosition();
+            final int paddedTop = getPaddingTop();
+            final int paddedBottom = getHeight() - getPaddingBottom();
+
+            final View targetChild = getChildAt(targetPos - firstPos);
+            final int targetTop = targetChild.getTop();
+            final int targetBottom = targetChild.getBottom();
+            int scrollBy = 0;
+
+            if (targetBottom > paddedBottom)
+                scrollBy = targetBottom - paddedBottom;
+
+            if (targetTop < paddedTop)
+                scrollBy = targetTop - paddedTop;
+
+            if (scrollBy == 0)
+                return;
+
+            smoothScrollBy(scrollBy, SCROLL_DURATION);
+        }
+
+        public void stop() {
+            removeCallbacks(this);
+        }
+
+        @Override
+        public void run() {
+            final int listHeight = getHeight();
+            final int firstPos = getFirstVisiblePosition();
+
+            switch (mMode) {
+                case MOVE_DOWN_POS: {
+                    final int lastViewIndex = getChildCount() - 1;
+                    final int lastPos = firstPos + lastViewIndex;
+
+                    if (lastViewIndex < 0)
+                        return;
+
+                    if (lastPos == mLastSeenPos) {
+                        // No new views, let things keep going.
+                        postOnAnimation(this);
+                        return;
+                    }
+
+                    final View lastView = getChildAt(lastViewIndex);
+                    final int lastViewHeight = mMonthRealHeight;
+                    final int lastViewTop = lastView == null ? 0 : lastView.getTop();
+                    final int lastViewPixelsShowing = listHeight - lastViewTop;
+                    final int extraScroll = lastPos < getCount() - 1 ? Math.max(getPaddingBottom(), mExtraScroll) : getPaddingBottom();
+
+                    final int scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
+                    smoothScrollBy(scrollBy, SCROLL_DURATION);
+
+                    System.out.println("scroll by: " + scrollBy + " " + lastPos + " " + mTargetPos);
+
+                    mLastSeenPos = lastPos;
+                    if (lastPos < mTargetPos)
+                        postOnAnimation(this);
+                    break;
+                }
+                case MOVE_UP_POS:
+                    if (firstPos == mLastSeenPos) {
+                        // No new views, let things keep going.
+                        postOnAnimation(this);
+                        return;
+                    }
+
+                    final View firstView = getChildAt(0);
+                    final int firstViewTop = firstView == null ? 0 : firstView.getTop();
+                    final int extraScroll = firstPos > 0 ? Math.max(mExtraScroll, getPaddingTop()) : getPaddingTop();
+
+                    final int scrollBy = firstViewTop - extraScroll;
+                    smoothScrollBy(scrollBy, SCROLL_DURATION);
+
+                    System.out.println("scroll by: " + scrollBy + " " + firstPos + " " + mTargetPos);
+
+                    mLastSeenPos = firstPos;
+
+                    if (firstPos > mTargetPos)
+                        postOnAnimation(this);
+                    break;
+            }
         }
     }
 
