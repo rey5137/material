@@ -30,8 +30,6 @@ public class DatePickerDialog extends Dialog {
     private DatePickerLayout mDatePickerLayout;
     private float mCornerRadius;
 
-    private static final String BASE_TEXT = "0";
-
     public DatePickerDialog(Context context) {
         super(context);
     }
@@ -119,6 +117,9 @@ public class DatePickerDialog extends Dialog {
         private float mCenterY;
         private float mSecondWidth;
 
+        private static final String BASE_TEXT = "0";
+        private static final String DAY_FORMART = "%02d";
+
         public DatePickerLayout(Context context) {
             super(context);
 
@@ -127,7 +128,7 @@ public class DatePickerDialog extends Dialog {
             mPaint.setTextAlign(Paint.Align.CENTER);
             mRect = new RectF();
             mHeaderSecondaryBackground = new Path();
-            mPadding = ThemeUtil.dpToPx(context, 16);
+            mPadding = ThemeUtil.dpToPx(context, 8);
 
             mYearPicker = new YearPicker(context);
             mDatePicker = new DatePicker(context);
@@ -217,7 +218,7 @@ public class DatePickerDialog extends Dialog {
 
                 mWeekDay = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
                 mMonth = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
-                mDay = String.valueOf(newDay);
+                mDay = String.format(DAY_FORMART, newDay);
                 mYear = String.valueOf(newYear);
             }
 
@@ -250,6 +251,23 @@ public class DatePickerDialog extends Dialog {
 
                 setMeasuredDimension(widthSize, heightSize);
             }
+            else{
+                if(heightMode == MeasureSpec.AT_MOST){
+                    int ws = MeasureSpec.makeMeasureSpec(widthSize / 2, MeasureSpec.EXACTLY);
+                    int hs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                    mDatePicker.measure(ws, hs);
+                    mYearPicker.measure(ws, ws);
+                }
+                else{
+                    int height = Math.max(heightSize, mDatePicker.getMeasuredHeight());
+                    int ws = MeasureSpec.makeMeasureSpec(widthSize / 2, MeasureSpec.EXACTLY);
+                    int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+                    mDatePicker.measure(ws, hs);
+                    mYearPicker.measure(ws, hs);
+                }
+
+                setMeasuredDimension(widthSize, heightSize);
+            }
         }
 
         @Override
@@ -274,6 +292,22 @@ public class DatePickerDialog extends Dialog {
                     mHeaderSecondaryBackground.close();
                 }
             }
+            else{
+                mHeaderRealWidth = w / 2;
+                mHeaderPrimaryRealHeight = h - mHeaderSecondaryHeight;
+                mHeaderSecondaryBackground.reset();
+                if(mCornerRadius == 0)
+                    mHeaderSecondaryBackground.addRect(0, 0, mHeaderRealWidth, mHeaderSecondaryHeight, Path.Direction.CW);
+                else{
+                    mHeaderSecondaryBackground.moveTo(0, mHeaderSecondaryHeight);
+                    mHeaderSecondaryBackground.lineTo(0, mCornerRadius);
+                    mRect.set(0, 0, mCornerRadius * 2, mCornerRadius * 2);
+                    mHeaderSecondaryBackground.arcTo(mRect, 180f, 90f, false);
+                    mHeaderSecondaryBackground.lineTo(mHeaderRealWidth, 0);
+                    mHeaderSecondaryBackground.lineTo(mHeaderRealWidth, mHeaderSecondaryHeight);
+                    mHeaderSecondaryBackground.close();
+                }
+            }
 
         }
 
@@ -286,11 +320,13 @@ public class DatePickerDialog extends Dialog {
 
             boolean isPortrait = getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
-            if(isPortrait){
+            if(isPortrait)
                 childTop += mHeaderPrimaryRealHeight + mHeaderSecondaryHeight;
-                mDatePicker.layout(childLeft, childTop, childRight, childBottom);
-                mYearPicker.layout(childLeft, childTop, childRight, childBottom);
-            }
+            else
+                childLeft += mHeaderRealWidth;
+
+            mDatePicker.layout(childLeft, childTop, childRight, childBottom);
+            mYearPicker.layout(childLeft, childTop, childRight, childBottom);
         }
 
         private void measureHeaderText(){

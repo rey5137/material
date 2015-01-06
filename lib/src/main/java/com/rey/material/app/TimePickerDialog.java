@@ -182,6 +182,7 @@ public class TimePickerDialog extends Dialog{
 
         private static final String TIME_DIVIDER = ":";
         private static final String BASE_TEXT = "0";
+        private static final String MINUTE_FORMART = "%02d";
 
         private boolean mLocationDirty = true;
         private float mBaseY;
@@ -344,7 +345,7 @@ public class TimePickerDialog extends Dialog{
 
         @Override
         public void onMinuteChanged(int oldValue, int newValue) {
-            mMinute = String.format("%02d", newValue);
+            mMinute = String.format(MINUTE_FORMART, newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
