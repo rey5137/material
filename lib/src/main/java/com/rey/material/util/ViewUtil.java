@@ -12,7 +12,6 @@ public class ViewUtil {
 
     @SuppressLint("NewApi")
     public static int generateViewId() {
-
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
             for (;;) {
                 final int result = sNextGeneratedId.get();
@@ -25,8 +24,7 @@ public class ViewUtil {
             }
         } 
         else
-            return android.view.View.generateViewId();        
-
+            return android.view.View.generateViewId();
     }
     
     public static boolean hasState(int[] states, int state){

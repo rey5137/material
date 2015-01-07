@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -219,9 +220,7 @@ public class YearPicker extends ListView{
         else{
             if(mAlpha != alpha){
                 mAlpha = alpha;
-                AlphaAnimation anim = new AlphaAnimation(mAlpha, mAlpha);
-                anim.setDuration(0);
-                startAnimation(anim);
+                ViewCompat.setAlpha(this, alpha);
                 invalidate();
             }
         }

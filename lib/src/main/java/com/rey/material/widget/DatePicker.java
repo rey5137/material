@@ -4,20 +4,18 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.DrawFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -52,12 +50,12 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private Interpolator mOutInterpolator;
 
     private Paint mPaint;
+    private float mDayBaseWidth;
+    private float mDayBaseHeight;
     private float mDayHeight;
     private float mDayWidth;
     private int mDayPadding;
     private float mSelectionRadius;
-    private float mMonthBaseWidth;
-    private float mMonthBaseHeight;
     private int mMonthRealWidth;
     private int mMonthRealHeight;
 
@@ -215,11 +213,11 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private void measureBaseSize(){
         mPaint.setTextSize(mTextSize);
         mPaint.setTypeface(mTypeface);
-        mMonthBaseWidth = mPaint.measureText("88", 0, 2) + mDayPadding * 2;
+        mDayBaseWidth = mPaint.measureText("88", 0, 2) + mDayPadding * 2;
 
         Rect bounds = new Rect();
         mPaint.getTextBounds("88", 0, 2 ,bounds);
-        mMonthBaseHeight = bounds.height();
+        mDayBaseHeight = bounds.height();
     }
 
     private void measureMonthView(int widthMeasureSpec, int heightMeasureSpec) {
@@ -230,10 +228,10 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
         measureBaseSize();
 
-        int size = Math.round(Math.max(mMonthBaseWidth, mMonthBaseHeight));
+        int size = Math.round(Math.max(mDayBaseWidth, mDayBaseHeight));
 
         int width = size * 7 + mPaddingLeft + mPaddingRight;
-        int height = Math.round(size * 7 + mMonthBaseHeight + mDayPadding * 2 + mPaddingTop + mPaddingBottom);
+        int height = Math.round(size * 7 + mDayBaseHeight + mDayPadding * 2 + mPaddingTop + mPaddingBottom);
 
         switch (widthMode){
             case MeasureSpec.AT_MOST:
@@ -266,7 +264,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mDayWidth = (w - mPaddingLeft - mPaddingRight) / 7f;
-        mDayHeight = (h - mMonthBaseHeight - mDayPadding * 2 - mPaddingTop - mPaddingBottom) / 7f;
+        mDayHeight = (h - mDayBaseHeight - mDayPadding * 2 - mPaddingTop - mPaddingBottom) / 7f;
         mSelectionRadius = Math.min(mDayWidth, mDayHeight) / 2f;
     }
 
@@ -285,9 +283,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         else{
             if(mAlpha != alpha){
                 mAlpha = alpha;
-                AlphaAnimation anim = new AlphaAnimation(mAlpha, mAlpha);
-                anim.setDuration(0);
-                startAnimation(anim);
+                ViewCompat.setAlpha(this, alpha);
                 invalidate();
             }
         }
@@ -669,14 +665,14 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             mPaint.setTextSize(mTextSize);
             mPaint.setTypeface(mTypeface);
             float x = 3.5f * mDayWidth + getPaddingLeft();
-            float y = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop();
+            float y = mDayPadding * 2 + mDayBaseHeight + getPaddingTop();
             mPaint.setFakeBoldText(true);
             mPaint.setColor(mTextColor);
             canvas.drawText(mMonthText, x, y, mPaint);
 
             //draw selection
             float paddingLeft = getPaddingLeft();
-            float paddingTop = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop();
+            float paddingTop = mDayPadding * 2 + mDayBaseHeight + getPaddingTop();
             if(mSelectedDay > 0){
                 int col = (mFirstDayCol + mSelectedDay - 1) % 7;
                 int row = (mFirstDayCol + mSelectedDay - 1) / 7 + 1;
@@ -702,7 +698,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             //draw label
             mPaint.setFakeBoldText(false);
             mPaint.setColor(mTextLabelColor);
-            paddingTop += (mDayHeight + mMonthBaseHeight) / 2f;
+            paddingTop += (mDayHeight + mDayBaseHeight) / 2f;
             for(int i = 0; i < 7; i++){
                 x = (i + 0.5f) * mDayWidth + paddingLeft;
                 y = paddingTop;
@@ -737,7 +733,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         }
 
         private int getTouchedDay(float x, float y){
-            float paddingTop = mDayPadding * 2 + mMonthBaseHeight + getPaddingTop() + mDayHeight;
+            float paddingTop = mDayPadding * 2 + mDayBaseHeight + getPaddingTop() + mDayHeight;
             if(x < getPaddingLeft() || x > getWidth() - getPaddingRight() || y < paddingTop || y > getHeight() - getPaddingBottom())
                 return -1;
 

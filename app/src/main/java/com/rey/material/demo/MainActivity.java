@@ -1,13 +1,9 @@
 package com.rey.material.demo;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.internal.view.SupportMenu;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,9 +21,13 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.rey.material.app.ToolbarHelper;
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.TabPageIndicator;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
@@ -39,7 +40,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private DrawerAdapter mDrawerAdapter;
 	private PagerAdapter mPagerAdapter;
 	
-	private Toolbar toolbar;
+	private Toolbar mToolbar;
+    private ToolbarHelper mToolbarHelper;
 	private NavigationDrawerDrawable mNavigatorDrawable;
 	
 	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
@@ -53,22 +55,23 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		dl_navigator = (DrawerLayout)findViewById(R.id.main_dl);
 		fl_drawer = (FrameLayout)findViewById(R.id.main_fl_drawer);
 		lv_drawer = (ListView)findViewById(R.id.main_lv_drawer);
-		toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
 		vp = (ViewPager)findViewById(R.id.main_vp);
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
 		
-		setSupportActionBar(toolbar);
+		setSupportActionBar(mToolbar);
 		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, R.style.NavigationDrawerDrawable).build();
-		toolbar.setNavigationIcon(mNavigatorDrawable);
+		mToolbar.setNavigationIcon(mNavigatorDrawable);
+        mToolbarHelper = new ToolbarHelper(this, mToolbar, R.id.tb_group_contextual, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
 		
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dl_navigator.openDrawer(fl_drawer);
-			}
-			
-		});
+		mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dl_navigator.openDrawer(fl_drawer);
+            }
+
+        });
 		
 		dl_navigator.setDrawerListener(new DrawerLayout.DrawerListener() {
 			
@@ -119,15 +122,33 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 //		fab.show(this, 100, 100, Gravity.LEFT);		
 	}
 
-
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		new MenuInflater(this).inflate(R.menu.menu_main, menu);
+        mToolbarHelper.createMenu(R.menu.menu_main);
 		return true;
 	}
 
-	@Override
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mToolbarHelper.onPrepareMenu();
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.tb_contextual:
+                mToolbarHelper.setContextualMode(true);
+                break;
+            case R.id.tb_done:
+            case R.id.tb_done_all:
+                mToolbarHelper.setContextualMode(false);
+                break;
+        }
+        return true;
+    }
+
+    @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		vp.setCurrentItem(position);
 		dl_navigator.closeDrawer(fl_drawer);

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
         
     <item
-        android:id="@+id/ab_bt_thumb"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_thumb_up"
-        android:title="Thumb up"/>
+        android:id="@+id/tb_contextual"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_visibility_white_36dp"
+        android:title="Contextual mode"/>
+
+    <item
+        android:id="@+id/tb_refresh"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_autorenew_white_36dp"
+        android:title="Refresh"/>
+
+    <group
+        android:id="@+id/tb_group_contextual">
+
+        <item
+            android:id="@+id/tb_done"
+            app:showAsAction="always"
+            android:icon="@drawable/ic_done_white_36dp"
+            android:title="Done"/>
+
+        <item
+            android:id="@+id/tb_done_all"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_done_all_white_36dp"
+            android:title="Done all"/>
+
+    </group>
     
 </menu>
