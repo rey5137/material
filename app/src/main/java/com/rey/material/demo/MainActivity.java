@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.rey.material.app.ToolbarHelper;
+import com.rey.material.app.ToolbarManager;
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.TabPageIndicator;
@@ -41,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private PagerAdapter mPagerAdapter;
 	
 	private Toolbar mToolbar;
-    private ToolbarHelper mToolbarHelper;
+    private ToolbarManager mToolbarHelper;
 	private NavigationDrawerDrawable mNavigatorDrawable;
 	
 	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
@@ -62,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		setSupportActionBar(mToolbar);
 		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, R.style.NavigationDrawerDrawable).build();
 		mToolbar.setNavigationIcon(mNavigatorDrawable);
-        mToolbarHelper = new ToolbarHelper(this, mToolbar, R.id.tb_group_contextual, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarHelper = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
 		
 		mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
 
@@ -138,11 +137,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.tb_contextual:
-                mToolbarHelper.setContextualMode(true);
+                mToolbarHelper.setCurrentGroup(R.id.tb_group_contextual);
                 break;
             case R.id.tb_done:
             case R.id.tb_done_all:
-                mToolbarHelper.setContextualMode(false);
+                mToolbarHelper.setCurrentGroup(0);
                 break;
         }
         return true;
