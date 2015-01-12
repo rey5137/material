@@ -39,6 +39,7 @@ public class Dialog extends android.app.Dialog{
     private TextView mTitle;
     private Button mPositiveAction;
     private Button mNegativeAction;
+    private Button mNeutralAction;
     private View mContent;
     private CardView mBackground;
 
@@ -81,6 +82,7 @@ public class Dialog extends android.app.Dialog{
         mTitle = new TextView(context);
         mPositiveAction = new Button(context);
         mNegativeAction = new Button(context);
+        mNeutralAction = new Button(context);
 
         mBackground.setPreventCornerOverlap(false);
 
@@ -89,11 +91,14 @@ public class Dialog extends android.app.Dialog{
         mPositiveAction.setBackgroundResource(0);
         mNegativeAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNegativeAction.setBackgroundResource(0);
+        mNeutralAction.setPadding(mActionPadding, 0, mActionPadding, 0);
+        mNeutralAction.setBackgroundResource(0);
 
         mContainer.addView(mBackground);
         mContainer.addView(mTitle);
         mContainer.addView(mPositiveAction);
         mContainer.addView(mNegativeAction);
+        mContainer.addView(mNeutralAction);
 
         cancelable(true);
         canceledOnTouchOutside(true);
@@ -175,6 +180,18 @@ public class Dialog extends android.app.Dialog{
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextColor) != TypedValue.TYPE_NULL)
             negativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
 
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionBackground) != TypedValue.TYPE_NULL)
+            neutralActionBackground(a.getResourceId(R.styleable.Dialog_di_neutralActionBackground, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionRipple) != TypedValue.TYPE_NULL)
+            neutralActionRipple(a.getResourceId(R.styleable.Dialog_di_neutralActionRipple, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionTextAppearance) != TypedValue.TYPE_NULL)
+            neutralActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_neutralActionTextAppearance, 0));
+
+        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionTextColor) != TypedValue.TYPE_NULL)
+            neutralActionTextColor(a.getColorStateList(R.styleable.Dialog_di_neutralActionTextColor));
+
         dividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
         dividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
         setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
@@ -190,6 +207,8 @@ public class Dialog extends android.app.Dialog{
         positiveActionClickListener(null);
         negativeAction(0);
         negativeActionClickListener(null);
+        neutralAction(0);
+        neutralActionClickListener(null);
         setContentView(null);
         return this;
     }
@@ -279,36 +298,42 @@ public class Dialog extends android.app.Dialog{
     public Dialog actionBackground(int id){
         positiveActionBackground(id);
         negativeActionBackground(id);
+        neutralActionBackground(id);
         return this;
     }
 
     public Dialog actionBackground(Drawable drawable){
         positiveActionBackground(drawable);
         negativeActionBackground(drawable);
+        neutralActionBackground(drawable);
         return this;
     }
 
     public Dialog actionRipple(int resId){
         positiveActionRipple(resId);
         negativeActionRipple(resId);
+        neutralActionRipple(resId);
         return this;
     }
 
     public Dialog actionTextAppearance(int resId){
         positiveActionTextAppearance(resId);
         negativeActionTextAppearance(resId);
+        neutralActionTextAppearance(resId);
         return this;
     }
 
     public Dialog actionTextColor(ColorStateList color){
-        this.positiveActionTextColor(color);
+        positiveActionTextColor(color);
         negativeActionTextColor(color);
+        neutralActionTextColor(color);
         return this;
     }
 
     public Dialog actionTextColor(int color){
         positiveActionTextColor(color);
         negativeActionTextColor(color);
+        neutralActionTextColor(color);
         return this;
     }
 
@@ -407,6 +432,55 @@ public class Dialog extends android.app.Dialog{
 
     public Dialog negativeActionClickListener(View.OnClickListener listener){
         mNegativeAction.setOnClickListener(listener);
+        return this;
+    }
+
+    public Dialog neutralAction(CharSequence action){
+        mNeutralAction.setText(action);
+        mNeutralAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
+        return this;
+    }
+
+    public Dialog neutralAction(int id){
+        return neutralAction(id == 0 ? null : getContext().getResources().getString(id));
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @SuppressWarnings("deprecation")
+    public Dialog neutralActionBackground(Drawable drawable){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            mNeutralAction.setBackground(drawable);
+        else
+            mNeutralAction.setBackgroundDrawable(drawable);
+        return this;
+    }
+
+    public Dialog neutralActionBackground(int id){
+        return neutralActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
+    }
+
+    public Dialog neutralActionRipple(int resId){
+        RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
+        return neutralActionBackground(drawable);
+    }
+
+    public Dialog neutralActionTextAppearance(int resId){
+        mNeutralAction.setTextAppearance(getContext(), resId);
+        return this;
+    }
+
+    public Dialog neutralActionTextColor(ColorStateList color){
+        mNeutralAction.setTextColor(color);
+        return this;
+    }
+
+    public Dialog neutralActionTextColor(int color){
+        mNeutralAction.setTextColor(color);
+        return this;
+    }
+
+    public Dialog neutralActionClickListener(View.OnClickListener listener){
+        mNeutralAction.setOnClickListener(listener);
         return this;
     }
 
@@ -574,8 +648,8 @@ public class Dialog extends android.app.Dialog{
                 contentHeight = mContent.getMeasuredHeight();
             }
 
+            int visibleActions = 0;
             int positiveActionWidth = 0;
-            int positiveActionHeight = 0;
 
             if(mPositiveAction.getVisibility() == View.VISIBLE){
                 widthMs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -583,16 +657,16 @@ public class Dialog extends android.app.Dialog{
                 mPositiveAction.measure(widthMs, heightMs);
 
                 positiveActionWidth = mPositiveAction.getMeasuredWidth();
-                positiveActionHeight = mPositiveAction.getMeasuredHeight();
 
                 if(positiveActionWidth < mActionMinWidth){
                     mPositiveAction.measure(MeasureSpec.makeMeasureSpec(mActionMinWidth, MeasureSpec.EXACTLY), heightMs);
                     positiveActionWidth = mActionMinWidth;
                 }
+
+                visibleActions++;
             }
 
             int negativeActionWidth = 0;
-            int negativeActionHeight = 0;
 
             if(mNegativeAction.getVisibility() == View.VISIBLE){
                 widthMs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -600,15 +674,33 @@ public class Dialog extends android.app.Dialog{
                 mNegativeAction.measure(widthMs, heightMs);
 
                 negativeActionWidth = mNegativeAction.getMeasuredWidth();
-                negativeActionHeight = mNegativeAction.getMeasuredHeight();
 
                 if(negativeActionWidth < mActionMinWidth){
                     mNegativeAction.measure(MeasureSpec.makeMeasureSpec(mActionMinWidth, MeasureSpec.EXACTLY), heightMs);
                     negativeActionWidth = mActionMinWidth;
                 }
+
+                visibleActions++;
             }
 
-            int actionBarWidth = positiveActionWidth + negativeActionWidth + mActionOuterPadding * 2 + (positiveActionWidth >= 0 && negativeActionWidth >= 0 ? mActionPadding : 0);
+            int neutralActionWidth = 0;
+
+            if(mNeutralAction.getVisibility() == View.VISIBLE){
+                widthMs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                heightMs = MeasureSpec.makeMeasureSpec(mActionHeight, MeasureSpec.EXACTLY);
+                mNeutralAction.measure(widthMs, heightMs);
+
+                neutralActionWidth = mNeutralAction.getMeasuredWidth();
+
+                if(neutralActionWidth < mActionMinWidth){
+                    mNeutralAction.measure(MeasureSpec.makeMeasureSpec(mActionMinWidth, MeasureSpec.EXACTLY), heightMs);
+                    neutralActionWidth = mActionMinWidth;
+                }
+
+                visibleActions++;
+            }
+
+            int actionBarWidth = positiveActionWidth + negativeActionWidth + neutralActionWidth + mActionOuterPadding * 2 + mActionPadding * Math.max(0, visibleActions - 1);
 
             if(width == ViewGroup.LayoutParams.WRAP_CONTENT)
                 width = Math.min(maxWidth, Math.max(titleWidth, Math.max(contentWidth + mContentMarginLeft + mContentMarginRight, actionBarWidth)));
@@ -617,9 +709,9 @@ public class Dialog extends android.app.Dialog{
 
             int nonContentHeight = titleHeight + mActionPadding + mContentMarginTop + mContentMarginBottom;
             if(mLayoutActionVertical)
-                nonContentHeight += (positiveActionHeight > 0 ? mActionOuterHeight : 0) + (negativeActionHeight > 0 ? mActionOuterHeight : 0);
+                nonContentHeight += mActionOuterHeight * visibleActions;
             else
-                nonContentHeight += (positiveActionHeight > 0 || negativeActionWidth > 0 ? mActionOuterHeight : 0);
+                nonContentHeight += (visibleActions > 0) ? mActionOuterHeight : 0;
 
             if(height == ViewGroup.LayoutParams.WRAP_CONTENT)
                 height = Math.min(maxHeight, contentHeight + nonContentHeight);
@@ -656,6 +748,11 @@ public class Dialog extends android.app.Dialog{
             int temp = (mActionOuterHeight - mActionHeight) / 2;
 
             if(mLayoutActionVertical){
+                if(mNeutralAction.getVisibility() == View.VISIBLE){
+                    mNeutralAction.layout(childRight - mActionOuterPadding - mNeutralAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
+                    childBottom -= mActionOuterHeight;
+                }
+
                 if(mNegativeAction.getVisibility() == View.VISIBLE){
                     mNegativeAction.layout(childRight - mActionOuterPadding - mNegativeAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
                     childBottom -= mActionOuterHeight;
@@ -668,16 +765,23 @@ public class Dialog extends android.app.Dialog{
             }
             else{
                 int actionRight = childRight - mActionOuterPadding;
+                int actionTop = childBottom - mActionOuterHeight + temp;
+                int actionBottom = childBottom - temp;
                 boolean hasAction = false;
 
                 if(mPositiveAction.getVisibility() == View.VISIBLE){
-                    mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, actionRight, childBottom - temp);
+                    mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
                     actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
                     hasAction = true;
                 }
 
                 if(mNegativeAction.getVisibility() == View.VISIBLE) {
-                    mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, actionRight, childBottom - temp);
+                    mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                    hasAction = true;
+                }
+
+                if(mNeutralAction.getVisibility() == View.VISIBLE) {
+                    mNeutralAction.layout(childLeft + mActionOuterPadding, actionTop, childLeft + mActionOuterPadding + mNeutralAction.getMeasuredWidth(), actionBottom);
                     hasAction = true;
                 }
 
@@ -691,11 +795,11 @@ public class Dialog extends android.app.Dialog{
                 mContent.layout(childLeft + mContentMarginLeft, childTop + mContentMarginTop, childRight - mContentMarginRight, childBottom - mContentMarginBottom);
         }
 
-        @Override/**/
+        @Override
         public void draw(Canvas canvas) {
             super.draw(canvas);
 
-            if(mShowDivider && (mPositiveAction.getVisibility() == View.VISIBLE || mNegativeAction.getVisibility() == View.VISIBLE))
+            if(mShowDivider && (mPositiveAction.getVisibility() == View.VISIBLE || mNegativeAction.getVisibility() == View.VISIBLE || mNeutralAction.getVisibility() == View.VISIBLE))
                 canvas.drawLine(mBackground.getLeft() + mBackground.getPaddingLeft(), mDividerPos, mBackground.getRight() - mBackground.getPaddingRight(), mDividerPos, mDividerPaint);
         }
 

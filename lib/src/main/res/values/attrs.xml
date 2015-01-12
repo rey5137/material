@@ -315,6 +315,10 @@
         <attr name="di_negativeActionRipple" format="reference" />
         <attr name="di_negativeActionTextAppearance" format="reference" />
         <attr name="di_negativeActionTextColor" format="color|reference" />
+        <attr name="di_neutralActionBackground" format="reference" />
+        <attr name="di_neutralActionRipple" format="reference" />
+        <attr name="di_neutralActionTextAppearance" format="reference" />
+        <attr name="di_neutralActionTextColor" format="color|reference" />
         <attr name="di_dividerColor" format="color|reference" />
         <attr name="di_dividerHeight" format="dimension|reference" />
         <attr name="di_cancelable" format="boolean" />

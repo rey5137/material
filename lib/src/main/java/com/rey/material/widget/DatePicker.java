@@ -535,7 +535,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
                     if (lastPos == mLastSeenPos) {
                         // No new views, let things keep going.
-                        postOnAnimation(this);
+                        ViewCompat.postOnAnimation(DatePicker.this, this);
                         return;
                     }
 
@@ -548,17 +548,15 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
                     final int scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
                     smoothScrollBy(scrollBy, SCROLL_DURATION);
 
-                    System.out.println("scroll by: " + scrollBy + " " + lastPos + " " + mTargetPos);
-
                     mLastSeenPos = lastPos;
                     if (lastPos < mTargetPos)
-                        postOnAnimation(this);
+                        ViewCompat.postOnAnimation(DatePicker.this, this);
                     break;
                 }
                 case MOVE_UP_POS:
                     if (firstPos == mLastSeenPos) {
                         // No new views, let things keep going.
-                        postOnAnimation(this);
+                        ViewCompat.postOnAnimation(DatePicker.this, this);
                         return;
                     }
 
@@ -569,12 +567,10 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
                     final int scrollBy = firstViewTop - extraScroll;
                     smoothScrollBy(scrollBy, SCROLL_DURATION);
 
-                    System.out.println("scroll by: " + scrollBy + " " + firstPos + " " + mTargetPos);
-
                     mLastSeenPos = firstPos;
 
                     if (firstPos > mTargetPos)
-                        postOnAnimation(this);
+                        ViewCompat.postOnAnimation(DatePicker.this, this);
                     break;
             }
         }
