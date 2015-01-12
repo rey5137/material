@@ -342,7 +342,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void goTo(int month, int year){
         int position = mAdapter.positionOfMonth(month, year);
         setSelectionFromTop(position, 0);

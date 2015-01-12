@@ -840,4 +840,17 @@ public class Dialog extends android.app.Dialog{
         }
     }
 
+    public static class Builder implements DialogFragment.Builder{
+
+        int styleId;
+
+        public Builder(int styleId){
+            this.styleId = styleId;
+        }
+
+        @Override
+        public Dialog build(Context context) {
+            return new Dialog(context, styleId);
+        }
+    }
 }

@@ -77,7 +77,7 @@
         <item name="lmd_strokeSize">3dp</item>
         <item name="lmd_strokeColor">#FFFFFFFF</item>
         <item name="lmd_strokeCap">butt</item>
-        <item name="lmd_strokeJoin">mitter</item>
+        <item name="lmd_strokeJoin">miter</item>
         <item name="lmd_clockwise">true</item>
     </style>
     
@@ -148,5 +148,33 @@
         <item name="ripple">@style/TouchRippleDrawableDefault</item>
         <item name="delayClick">false</item>
     </style>
-    
+
+    <style name="DialogDefault">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="di_dimAmount">0.5</item>
+        <item name="di_backgroundColor">#FFFFFFFF</item>
+        <item name="di_elevation">4dp</item>
+        <item name="di_maxElevation">4dp</item>
+        <item name="di_cornerRadius">2dp</item>
+        <item name="di_titleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
+        <item name="di_titleTextColor">@color/abc_primary_text_material_light</item>
+        <item name="di_actionRipple">@style/WaveRippleDrawableDefault</item>
+        <item name="di_actionTextAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="di_actionTextColor">?attr/colorPrimary</item>
+        <item name="di_messageTextAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="di_messageTextColor">@color/abc_secondary_text_material_light</item>
+        <item name="di_dividerColor">#1E000000</item>
+        <item name="di_dividerHeight">1dp</item>
+        <item name="di_cancelable">true</item>
+        <item name="di_canceledOnTouchOutside">true</item>
+    </style>
+
+    <style name="SimpleDialogDefault" parent="DialogDefault">
+        <item name="di_radioButtonStyle">@style/RadioButtonDrawableDefault</item>
+        <item name="di_checkBoxStyle">@style/CheckBoxDrawableDefault</item>
+        <item name="di_itemTextAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="di_itemHeight">48dp</item>
+    </style>
+
 </resources>

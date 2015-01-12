@@ -14,10 +14,12 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
@@ -70,6 +72,7 @@ public class YearPicker extends ListView{
 
     private int[] mTextColors = new int[2];
 
+    protected PositionScroller mPositionScroller = new PositionScroller();
     private float mAlpha;
 
     public YearPicker(Context context) {
@@ -165,9 +168,19 @@ public class YearPicker extends ListView{
         mAdapter.setYearRange(min, max);
     }
 
+    public void goTo(int year){
+        int position = mAdapter.positionOfYear(year) - mPositionShift;
+        int offset = mDistanceShift;
+        if(position < 0){
+            position = 0;
+            offset = 0;
+        }
+        setSelectionFromTop(position, offset);
+        mPositionScroller.startWithOffset(position, offset);
+    }
+
     public void setYear(int year){
         mAdapter.setYear(year);
-        setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - mPositionShift, mDistanceShift);
     }
 
     public int getYear(){
@@ -460,5 +473,88 @@ public class YearPicker extends ListView{
                 return new SavedState[size];
             }
         };
+    }
+
+    class PositionScroller implements Runnable {
+        private static final int SCROLL_DURATION = 25;
+
+        private int mTargetPos;
+        private int mLastSeenPos;
+        private int mOffsetFromTop;
+
+        PositionScroller() {}
+
+        public void startWithOffset(final int position, int offset) {
+            stop();
+
+            final int childCount = getChildCount();
+            if (childCount == 0)
+                return;
+
+            offset += getPaddingTop();
+
+            mTargetPos = Math.max(0, Math.min(getCount() - 1, position));
+            mOffsetFromTop = offset;
+            mLastSeenPos = INVALID_POSITION;
+
+            final int firstPos = getFirstVisiblePosition();
+            final int lastPos = firstPos + childCount - 1;
+
+            if(mTargetPos >= firstPos && mTargetPos <= lastPos) {
+                // On-screen, just scroll.
+                final int targetTop = getChildAt(mTargetPos - firstPos).getTop();
+                smoothScrollBy(targetTop - offset, SCROLL_DURATION);
+                return;
+            }
+
+            mLastSeenPos = INVALID_POSITION;
+
+            postOnAnimation(this);
+        }
+
+        public void stop() {
+            removeCallbacks(this);
+        }
+
+        @Override
+        public void run() {
+            final int firstPos = getFirstVisiblePosition();
+
+            if (mLastSeenPos == firstPos) {
+                // No new views, let things keep going.
+                ViewCompat.postOnAnimation(YearPicker.this, this);
+                return;
+            }
+
+            mLastSeenPos = firstPos;
+
+            final int childCount = getChildCount();
+            final int position = mTargetPos;
+            final int lastPos = firstPos + childCount - 1;
+
+            int viewTravelCount = 0;
+            if (position < firstPos)
+                viewTravelCount = firstPos - position + 1;
+            else if (position > lastPos)
+                viewTravelCount = position - lastPos;
+
+            // Estimate how many screens we should travel
+            final float screenTravelCount = (float) viewTravelCount / childCount;
+            final float modifier = Math.min(Math.abs(screenTravelCount), 1.f);
+            if (position < firstPos) {
+                final int distance = (int) (-getHeight() * modifier);
+                smoothScrollBy(distance, SCROLL_DURATION);
+                ViewCompat.postOnAnimation(YearPicker.this, this);
+            } else if (position > lastPos) {
+                final int distance = (int) (getHeight() * modifier);
+                smoothScrollBy(distance, SCROLL_DURATION);
+                ViewCompat.postOnAnimation(YearPicker.this, this);
+            } else {
+                // On-screen, just scroll.
+                final int targetTop = getChildAt(position - firstPos).getTop();
+                final int distance = targetTop - mOffsetFromTop;
+                smoothScrollBy(distance, SCROLL_DURATION);
+            }
+        }
     }
 }

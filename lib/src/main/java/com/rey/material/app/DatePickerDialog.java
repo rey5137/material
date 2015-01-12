@@ -9,14 +9,12 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.rey.material.R;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.DatePicker;
-import com.rey.material.widget.TimePicker;
 import com.rey.material.widget.YearPicker;
 
 import java.util.Calendar;
@@ -29,6 +27,12 @@ public class DatePickerDialog extends Dialog {
 
     private DatePickerLayout mDatePickerLayout;
     private float mCornerRadius;
+
+    public interface OnDateChangedListener{
+        public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear);
+    }
+
+    private OnDateChangedListener mOnDateChangedListener;
 
     public DatePickerDialog(Context context) {
         super(context);
@@ -77,6 +81,23 @@ public class DatePickerDialog extends Dialog {
         return this;
     }
 
+    public DatePickerDialog onDateChangedListener(OnDateChangedListener listener){
+        mOnDateChangedListener = listener;
+        return this;
+    }
+
+    public int getDay(){
+        return mDatePickerLayout.getDay();
+    }
+
+    public int getMonth(){
+        return mDatePickerLayout.getMonth();
+    }
+
+    public int getYear(){
+        return mDatePickerLayout.getYear();
+    }
+
     private class DatePickerLayout extends FrameLayout implements DatePicker.OnDateChangedListener, YearPicker.OnYearChangedListener {
 
         private YearPicker mYearPicker;
@@ -118,7 +139,7 @@ public class DatePickerDialog extends Dialog {
         private float mSecondWidth;
 
         private static final String BASE_TEXT = "0";
-        private static final String DAY_FORMART = "%02d";
+        private static final String DAY_FORMAT = "%02d";
 
         public DatePickerLayout(Context context) {
             super(context);
@@ -185,6 +206,18 @@ public class DatePickerDialog extends Dialog {
             mDatePicker.setDay(day, month, year);
         }
 
+        public int getDay(){
+            return mDatePicker.getDay();
+        }
+
+        public int getMonth(){
+            return mDatePicker.getMonth();
+        }
+
+        public int getYear(){
+            return mDatePicker.getYear();
+        }
+
         @Override
         public void onYearChanged(int oldYear, int newYear) {
             mDatePicker.setDay(mDatePicker.getDay(), mDatePicker.getMonth(), newYear);
@@ -192,9 +225,12 @@ public class DatePickerDialog extends Dialog {
 
         @Override
         public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear) {
-            mYearPicker.setOnYearChangedListener(null);
-            mYearPicker.setYear(newYear);
-            mYearPicker.setOnYearChangedListener(this);
+            if(mYearPicker.getAlpha() == 0f) {
+                mYearPicker.setOnYearChangedListener(null);
+                mYearPicker.setYear(newYear);
+                mYearPicker.goTo(newYear);
+                mYearPicker.setOnYearChangedListener(this);
+            }
 
             if(newDay < 0 || newMonth < 0 || newYear < 0){
                 mWeekDay = null;
@@ -210,7 +246,7 @@ public class DatePickerDialog extends Dialog {
 
                 mWeekDay = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
                 mMonth = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
-                mDay = String.format(DAY_FORMART, newDay);
+                mDay = String.format(DAY_FORMAT, newDay);
                 mYear = String.valueOf(newYear);
 
                 if(oldMonth != newMonth || oldYear != newYear)
@@ -219,6 +255,9 @@ public class DatePickerDialog extends Dialog {
 
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderPrimaryRealHeight + mHeaderSecondaryHeight);
+
+            if(mOnDateChangedListener != null)
+                mOnDateChangedListener.onDateChanged(oldDay, oldMonth, oldYear, newDay, newMonth, newYear);
         }
 
         @Override

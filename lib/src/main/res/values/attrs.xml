@@ -119,7 +119,7 @@
 	        <enum name="square" value="0x00000002" />
         </attr>
         <attr name="lmd_strokeJoin" format="integer">
-            <enum name="mitter" value="0x00000000" />
+            <enum name="miter" value="0x00000000" />
 	        <enum name="round" value="0x00000001" />
 	        <enum name="bevel" value="0x00000002" />
         </attr>
