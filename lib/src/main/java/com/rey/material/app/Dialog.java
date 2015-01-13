@@ -6,13 +6,13 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -840,17 +840,99 @@ public class Dialog extends android.app.Dialog{
         }
     }
 
-    public static class Builder implements DialogFragment.Builder{
+    public static class Builder implements DialogFragment.Builder, Parcelable{
 
-        int styleId;
+        protected int mStyleId;
+        protected CharSequence mTitle;
+        protected CharSequence mPositive;
+        protected CharSequence mNegative;
+        protected CharSequence mNeutral;
+
+        public Builder(){}
 
         public Builder(int styleId){
-            this.styleId = styleId;
+            mStyleId = styleId;
+        }
+
+        public Builder style(int styleId){
+            mStyleId = styleId;
+            return this;
+        }
+
+        public Builder title(CharSequence title){
+            mTitle = title;
+            return this;
+        }
+
+        public Builder positiveAction(CharSequence action){
+            mPositive = action;
+            return this;
+        }
+
+        public Builder negativeAction(CharSequence action){
+            mNegative = action;
+            return this;
+        }
+
+        public Builder neutralAction(CharSequence action){
+            mNeutral = action;
+            return this;
         }
 
         @Override
         public Dialog build(Context context) {
+            Dialog dialog = onBuild(context, mStyleId);
+
+            dialog.title(mTitle)
+                    .positiveAction(mPositive)
+                    .negativeAction(mNegative)
+                    .neutralAction(mNeutral);
+
+            return dialog;
+        }
+
+        protected Dialog onBuild(Context context, int styleId){
             return new Dialog(context, styleId);
         }
+
+        protected Builder(Parcel in) {
+            mStyleId = in.readInt();
+            mTitle = (CharSequence)in.readParcelable(null);
+            mPositive = (CharSequence)in.readParcelable(null);
+            mNegative = (CharSequence)in.readParcelable(null);
+            mNeutral = (CharSequence)in.readParcelable(null);
+
+            onReadFromParcel(in);
+        }
+
+        protected void onReadFromParcel(Parcel in){}
+
+        protected void onWriteToParcel(Parcel dest, int flags){}
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(mStyleId);
+            dest.writeValue(mTitle);
+            dest.writeValue(mPositive);
+            dest.writeValue(mNegative);
+            dest.writeValue(mNeutral);
+            onWriteToParcel(dest, flags);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Parcelable.Creator<Builder> CREATOR = new Parcelable.Creator<Builder>() {
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
+
     }
 }

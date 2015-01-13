@@ -26,8 +26,8 @@ public class DialogFragment extends Fragment{
 		View v = inflater.inflate(R.layout.fragment_dialog, container, false);
 
         DatePicker dp = (DatePicker)v.findViewById(R.id.dialog_v);
-        dp.setDayRange(1, Calendar.JANUARY, 2014, 31, Calendar.DECEMBER, 2014);
-        dp.setDay(20, Calendar.DECEMBER, 2014);
+        dp.setDateRange(1, Calendar.JANUARY, 2014, 31, Calendar.DECEMBER, 2014);
+        dp.setDate(20, Calendar.DECEMBER, 2014);
 
 		return v;
 	}

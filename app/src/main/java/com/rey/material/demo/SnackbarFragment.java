@@ -48,10 +48,11 @@ public class SnackbarFragment extends Fragment{
 									.minWidth(0)
 									.maxWidth(0)
 									.height(ThemeUtil.dpToPx(getActivity(), 48))
+                                    .maxHeight(0)
 									.marginLeft(0)
 									.marginBottom(0)
 									.verticalPadding(0)
-									.show(getActivity());
+									.show();
 							break;
 						case R.id.snackbar_bt_mobile_multi:
 							mSnackBar.text("This is multi-line snackbar.\nIt will auto-close after 5s.")
@@ -62,11 +63,12 @@ public class SnackbarFragment extends Fragment{
 									.minWidth(0)
 									.maxWidth(0)
 									.height(SnackBar.WRAP_CONTENT)
+                                    .maxHeight(ThemeUtil.dpToPx(getActivity(), 80))
 									.marginLeft(0)
 									.marginBottom(0)
 									.verticalPadding(ThemeUtil.dpToPx(getActivity(), 12))
 									.duration(5000)
-									.show(getActivity());
+									.show();
 							break;
 						case R.id.snackbar_bt_tablet_single:
 							mSnackBar.text("This is single-line snackbar.")
@@ -76,10 +78,11 @@ public class SnackbarFragment extends Fragment{
 									.minWidth(ThemeUtil.dpToPx(getActivity(), 288))
 									.maxWidth(ThemeUtil.dpToPx(getActivity(), 568))
 									.height(ThemeUtil.dpToPx(getActivity(), 48))
+                                    .maxHeight(0)
 									.marginLeft(ThemeUtil.dpToPx(getActivity(), 16))
 									.marginBottom(ThemeUtil.dpToPx(getActivity(), 16))
 									.verticalPadding(0)
-									.show(getActivity());
+									.show();
 							break;
 						case R.id.snackbar_bt_tablet_multi:
 							mSnackBar.text("This is multi-line snackbar.\nIt will auto-close after 5s.")
@@ -90,11 +93,12 @@ public class SnackbarFragment extends Fragment{
 									.minWidth(ThemeUtil.dpToPx(getActivity(), 288))
 									.maxWidth(ThemeUtil.dpToPx(getActivity(), 568))
 									.height(SnackBar.WRAP_CONTENT)
+                                    .maxHeight(ThemeUtil.dpToPx(getActivity(), 80))
 									.marginLeft(ThemeUtil.dpToPx(getActivity(), 16))
 									.marginBottom(ThemeUtil.dpToPx(getActivity(), 16))
 									.verticalPadding(ThemeUtil.dpToPx(getActivity(), 12))
 									.duration(5000)
-									.show(getActivity());
+									.show();
 							break;
 					}
 				}				
@@ -107,7 +111,7 @@ public class SnackbarFragment extends Fragment{
 		bt_tablet_single.setOnClickListener(listener);
 		bt_tablet_multi.setOnClickListener(listener);
 		
-		mSnackBar = SnackBar.make(getActivity()).applyStyle(R.style.SnackBar);
+		mSnackBar = ((MainActivity)getActivity()).getSnackBar();
 				
 		return v;
 	}

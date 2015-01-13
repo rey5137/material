@@ -138,7 +138,7 @@
         <item name="sb_actionTextColor">#FFF7FF41</item>
         <item name="sb_inAnimation">@anim/abc_slide_in_bottom</item>
         <item name="sb_outAnimation">@anim/abc_slide_out_bottom</item>
-        <item name="sb_removeOnDismiss">true</item>
+        <item name="sb_removeOnDismiss">false</item>
     </style>
     
     <style name="FloatingActionButtonDefault">

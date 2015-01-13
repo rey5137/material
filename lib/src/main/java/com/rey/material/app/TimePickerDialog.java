@@ -14,6 +14,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
@@ -546,5 +548,79 @@ public class TimePickerDialog extends Dialog{
 
             return false;
         }
+    }
+
+    public static class Builder extends Dialog.Builder{
+
+        private int mHour;
+        private int mMinute;
+        private boolean mAm;
+
+        public Builder(){
+            super();
+            Calendar cal = Calendar.getInstance();
+            mHour = cal.get(Calendar.HOUR);
+            mMinute = cal.get(Calendar.MINUTE);
+            mAm = cal.get(Calendar.AM_PM) == Calendar.AM;
+        }
+
+        public Builder(int styleId, int hour, int minute, boolean am){
+            super(styleId);
+            mHour = hour;
+            mMinute = minute;
+            mAm = am;
+        }
+
+        public Builder hour(int hour){
+            mHour = hour;
+            return this;
+        }
+
+        public Builder minute(int minute){
+            mMinute = minute;
+            return this;
+        }
+
+        public Builder am(boolean am){
+            mAm = am;
+            return this;
+        }
+
+        @Override
+        protected Dialog onBuild(Context context, int styleId) {
+            TimePickerDialog dialog = new TimePickerDialog(context, styleId);
+            dialog.hour(mHour)
+                    .minute(mMinute)
+                    .am(mAm);
+            return dialog;
+        }
+
+        private Builder(Parcel in){
+            super(in);
+        }
+
+        @Override
+        protected void onWriteToParcel(Parcel dest, int flags) {
+            dest.writeInt(mHour);
+            dest.writeInt(mMinute);
+            dest.writeInt(mAm ? 1 : 0);
+        }
+
+        @Override
+        protected void onReadFromParcel(Parcel in) {
+            mHour = in.readInt();
+            mMinute = in.readInt();
+            mAm = in.readInt() == 1;
+        }
+
+        public static final Parcelable.Creator<Builder> CREATOR = new Parcelable.Creator<Builder>() {
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
     }
 }

@@ -338,7 +338,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         return mDayTexts[day - 1];
     }
 
-    public void setDayRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
+    public void setDateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
         mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
@@ -348,7 +348,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mPositionScroller.start(position);
     }
 
-    public void setDay(int day, int month, int year){
+    public void setDate(int day, int month, int year){
         mAdapter.setDay(day, month, year, false);
         goTo(month, year);
     }
@@ -701,7 +701,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
                 canvas.drawText(mLabels[index], x, y, mPaint);
             }
 
-            //draw day text
+            //draw date text
             int col = mFirstDayCol;
             int row = 1;
             int maxDay = mMaxAvailDay > 0 ? Math.min(mMaxAvailDay, mMaxDay) : mMaxDay;

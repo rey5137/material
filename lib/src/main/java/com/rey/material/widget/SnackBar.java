@@ -42,6 +42,8 @@ public class SnackBar extends FrameLayout {
 	private int mMarginBottom;
 	private int mWidth;
 	private int mHeight;
+    private int mMaxHeight;
+    private int mMinHeight;
 	private int mInAnimationId;
 	private int mOutAnimationId;
 	private long mDuration = -1;
@@ -131,6 +133,8 @@ public class SnackBar extends FrameLayout {
             setBackgroundDrawable(mBackground);
 
         setClickable(true);
+
+        applyStyle(attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -171,6 +175,12 @@ public class SnackBar extends FrameLayout {
 				height = heightSize;
 				break;
 		}
+
+        if(mMaxHeight > 0)
+            height = Math.min(mMaxHeight, height);
+
+        if(mMinHeight > 0)
+            height = Math.max(mMinHeight, height);
 				
 		setMeasuredDimension(width, height);
 	}
@@ -189,12 +199,12 @@ public class SnackBar extends FrameLayout {
 		else			
 			mText.layout(childLeft, childTop, childRight, childBottom);
 	}		
-	
+
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public SnackBar applyStyle(int resId){
+	public void applyStyle(AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		Context context = getContext();
-		TypedArray a = context.obtainStyledAttributes(null, R.styleable.SnackBar, 0, resId);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
 		
 		int backgroundColor = a.getColor(R.styleable.SnackBar_sb_backgroundColor, 0xFF323232);
 		int backgroundRadius = a.getDimensionPixelSize(R.styleable.SnackBar_sb_backgroundCornerRadius, 0);			
@@ -278,10 +288,14 @@ public class SnackBar extends FrameLayout {
 			actionTextAppearance(actionTextAppearance);
 		actionTextSize(actionTextSize);
 		actionTextColor(actionTextColor != null ? actionTextColor : ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFF000000)));		
-		actionRipple(actionRipple);			
-		return this;
+		actionRipple(actionRipple);
 	}
-	
+
+    public SnackBar applyStyle(int resId){
+        applyStyle(null, 0, resId);
+        return this;
+    }
+
 	public SnackBar text(CharSequence text){
 		mText.setText(text);
 		return this;
@@ -434,6 +448,16 @@ public class SnackBar extends FrameLayout {
 		mHeight = height;
 		return this;
 	}
+
+    public SnackBar maxHeight(int height){
+        mMaxHeight = height;
+        return this;
+    }
+
+    public SnackBar minHeight(int height){
+        mMinHeight = height;
+        return this;
+    }
 	
 	public SnackBar marginLeft(int size){
 		mMarginLeft = size;
@@ -492,7 +516,7 @@ public class SnackBar extends FrameLayout {
             params.leftMargin = mMarginLeft;
             params.bottomMargin = mMarginBottom;
         }
-        else{
+        else if(parent instanceof RelativeLayout){
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
 
             params.width = mWidth;

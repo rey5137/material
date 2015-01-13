@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.rey.material.app.ToolbarManager;
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
 import java.lang.reflect.Field;
@@ -42,6 +43,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private Toolbar mToolbar;
     private ToolbarManager mToolbarHelper;
 	private NavigationDrawerDrawable mNavigatorDrawable;
+    private SnackBar mSnackBar;
 	
 	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
@@ -57,7 +59,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
 		vp = (ViewPager)findViewById(R.id.main_vp);
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
-		
+        mSnackBar = (SnackBar)findViewById(R.id.main_sn);
+
 		setSupportActionBar(mToolbar);
 		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, R.style.NavigationDrawerDrawable).build();
 		mToolbar.setNavigationIcon(mNavigatorDrawable);
@@ -86,7 +89,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			}
 			
 			@Override
-			public void onDrawerOpened(View v) {}
+			public void onDrawerOpened(View v) {
+                mSnackBar.dismiss();
+            }
 			
 			@Override
 			public void onDrawerClosed(View v) {}
@@ -104,7 +109,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 			@Override
 			public void onPageSelected(int position) {
-				mDrawerAdapter.setSelected(mItems[position]);				
+				mDrawerAdapter.setSelected(mItems[position]);
+                mSnackBar.dismiss();
 			}
 			
 			@Override
@@ -116,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		});
 		
 		vp.setCurrentItem(1);
-		
+
 //		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
 //		fab.show(this, 100, 100, Gravity.LEFT);		
 	}
@@ -152,7 +158,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		vp.setCurrentItem(position);
 		dl_navigator.closeDrawer(fl_drawer);
 	}
-		
+
+    public SnackBar getSnackBar(){
+        return mSnackBar;
+    }
+
 	public enum Tab {
 	    PROGRESS ("Progresses"),
 	    BUTTONS ("Buttons"),

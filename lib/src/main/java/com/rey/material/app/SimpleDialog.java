@@ -2,6 +2,8 @@ package com.rey.material.app;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -39,10 +41,10 @@ public class SimpleDialog extends Dialog {
 
     private int mMode;
 
-    private static final int MODE_NONE = 0;
-    private static final int MODE_MESSAGE = 1;
-    private static final int MODE_ITEMS = 2;
-    private static final int MODE_MULTI_ITEMS = 3;
+    protected static final int MODE_NONE = 0;
+    protected static final int MODE_MESSAGE = 1;
+    protected static final int MODE_ITEMS = 2;
+    protected static final int MODE_MULTI_ITEMS = 3;
 
     public SimpleDialog(Context context) {
         super(context);
@@ -70,10 +72,10 @@ public class SimpleDialog extends Dialog {
         if(ThemeUtil.getType(a, R.styleable.SimpleDialog_di_messageTextColor) != TypedValue.TYPE_NULL)
             messageTextColor(a.getColor(R.styleable.SimpleDialog_di_messageTextColor, 0));
 
-        mRadioButtonStyle = a.getResourceId(R.styleable.SimpleDialog_di_radioButtonStyle, 0);
-        mCheckBoxStyle = a.getResourceId(R.styleable.SimpleDialog_di_checkBoxStyle, 0);
-        mItemHeight = a.getDimensionPixelSize(R.styleable.SimpleDialog_di_itemHeight, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mItemTextAppearance = a.getResourceId(R.styleable.SimpleDialog_di_itemTextAppearance, R.style.TextAppearance_AppCompat_Body1);
+        radioButtonStyle(a.getResourceId(R.styleable.SimpleDialog_di_radioButtonStyle, 0));
+        checkBoxStyle(a.getResourceId(R.styleable.SimpleDialog_di_checkBoxStyle, 0));
+        itemHeight(a.getDimensionPixelSize(R.styleable.SimpleDialog_di_itemHeight, ViewGroup.LayoutParams.WRAP_CONTENT));
+        itemTextAppearance(a.getResourceId(R.styleable.SimpleDialog_di_itemTextAppearance, R.style.TextAppearance_AppCompat_Body1));
 
         a.recycle();
 
@@ -372,5 +374,125 @@ public class SimpleDialog extends Dialog {
                 mLastSelectedIndex = position;
             }
         }
+    }
+
+    public static class Builder extends Dialog.Builder{
+
+        private int mMode;
+        private CharSequence mMessage;
+        private CharSequence[] mItems;
+        private int[] mSelectedIndexes;
+
+        public Builder(){}
+
+        public Builder message(CharSequence message){
+            mMode = MODE_MESSAGE;
+            mMessage = message;
+            return this;
+        }
+
+        public Builder items(CharSequence[] items, int selectedIndex){
+            mMode = MODE_ITEMS;
+            mItems = items;
+            mSelectedIndexes = new int[]{selectedIndex};
+            return this;
+        }
+
+        public Builder multiChoiceItems(CharSequence[] items, int... selectedIndexes){
+            mMode = MODE_MULTI_ITEMS;
+            mItems = items;
+            mSelectedIndexes = selectedIndexes;
+            return this;
+        }
+
+        @Override
+        protected Dialog onBuild(Context context, int styleId) {
+            SimpleDialog dialog = new SimpleDialog(context, styleId);
+
+            switch (mMode){
+                case MODE_MESSAGE:
+                    dialog.message(mMessage);
+                    break;
+                case MODE_ITEMS:
+                    dialog.items(mItems, mSelectedIndexes == null ? 0 : mSelectedIndexes[0]);
+                    break;
+                case MODE_MULTI_ITEMS:
+                    dialog.multiChoiceItems(mItems, mSelectedIndexes);
+                    break;
+            }
+
+            return dialog;
+        }
+
+        private Builder(Parcel in) {
+            super(in);
+        }
+
+        @Override
+        protected void onReadFromParcel(Parcel in) {
+            mMode = in.readInt();
+            switch (mMode){
+                case MODE_MESSAGE:
+                    mMessage = (CharSequence)in.readParcelable(null);
+                    break;
+                case MODE_ITEMS: {
+                    Parcelable[] values = in.readParcelableArray(null);
+                    if (values != null && values.length > 0) {
+                        mItems = new CharSequence[values.length];
+                        for (int i = 0; i < mItems.length; i++)
+                            mItems[i] = (CharSequence) values[i];
+                    } else
+                        mItems = null;
+                    mSelectedIndexes = new int[]{in.readInt()};
+                    break;
+                }
+                case MODE_MULTI_ITEMS: {
+                    Parcelable[] values = in.readParcelableArray(null);
+                    if (values != null && values.length > 0) {
+                        mItems = new CharSequence[values.length];
+                        for (int i = 0; i < mItems.length; i++)
+                            mItems[i] = (CharSequence) values[i];
+                    } else
+                        mItems = null;
+                    int length = in.readInt();
+                    if(length > 0) {
+                        mSelectedIndexes = new int[length];
+                        in.readIntArray(mSelectedIndexes);
+                    }
+                    break;
+                }
+            }
+        }
+
+        @Override
+        protected void onWriteToParcel(Parcel dest, int flags) {
+            dest.writeInt(mMode);
+            switch (mMode){
+                case MODE_MESSAGE:
+                    dest.writeValue(mMessage);
+                    break;
+                case MODE_ITEMS:
+                    dest.writeArray(mItems);
+                    dest.writeInt(mSelectedIndexes == null ? 0 : mSelectedIndexes[0]);
+                    break;
+                case MODE_MULTI_ITEMS:
+                    dest.writeArray(mItems);
+                    int length = mSelectedIndexes == null ? 0 : mSelectedIndexes.length;
+                    dest.writeInt(length);
+                    if(length > 0)
+                        dest.writeIntArray(mSelectedIndexes);
+                    break;
+                }
+            }
+
+        public static final Parcelable.Creator<Builder> CREATOR = new Parcelable.Creator<Builder>() {
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
     }
 }

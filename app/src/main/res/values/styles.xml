@@ -282,6 +282,7 @@
         <item name="sb_actionTextAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
         <item name="sb_actionTextColor">#FFF7FF41</item>
         <item name="sb_actionRipple">@style/MenuItemRippleStyle</item>
+        <item name="sb_removeOnDismiss">false</item>
     </style>
     
     <!-- SnackBar Style -->
@@ -305,7 +306,7 @@
         <item name="lmd_strokeSize">3dp</item>
         <item name="lmd_strokeColor">#FFFFFFFF</item>
         <item name="lmd_strokeCap">butt</item>
-        <item name="lmd_strokeJoin">mitter</item>
+        <item name="lmd_strokeJoin">miter</item>
         <item name="lmd_clockwise">true</item>
     </style>
 

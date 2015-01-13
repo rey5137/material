@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.rey.material.app.DatePickerDialog;
-import com.rey.material.app.SimpleDialog;
-import com.rey.material.app.TimePickerDialog;
+import com.rey.material.app.*;
+import com.rey.material.app.DialogFragment;
 import com.rey.material.widget.Button;
-import com.rey.material.widget.DatePicker;
 
 import java.util.Calendar;
 
@@ -77,25 +75,22 @@ public class ButtonFragment extends Fragment{
         bt_flat.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                TimePickerDialog dialog = new TimePickerDialog(getActivity());
-                dialog.hour(11).minute(30).am(false)
-                        .applyStyle(R.style.TimePickerDialog)
-                        .positiveAction("OK")
-                        .negativeAction("CANCEL")
-                        .show();
+                TimePickerDialog.Builder builder = new TimePickerDialog.Builder(R.style.TimePickerDialog, 11, 30, false);
+                builder.positiveAction("OK")
+                        .negativeAction("CANCEL");
+                com.rey.material.app.DialogFragment fragment = DialogFragment.newInstance(builder);
+                fragment.show(getFragmentManager(), null);
             }
         });
 
         bt_flat_color.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                DatePickerDialog dialog = new DatePickerDialog(getActivity());
-                dialog.dayRange(1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014)
-                        .day(20, Calendar.JANUARY, 2010)
-                        .applyStyle(R.style.DatePickerDialog)
-                        .positiveAction("OK")
-                        .negativeAction("CANCEL")
-                        .show();
+                DatePickerDialog.Builder builder = new DatePickerDialog.Builder(R.style.DatePickerDialog, 1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014, 20, Calendar.JANUARY, 2010);
+                builder.positiveAction("OK")
+                        .negativeAction("CANCEL");
+                com.rey.material.app.DialogFragment fragment = DialogFragment.newInstance(builder);
+                fragment.show(getFragmentManager(), null);
             }
         });
 
