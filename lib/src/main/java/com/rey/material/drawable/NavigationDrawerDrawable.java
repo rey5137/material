@@ -26,8 +26,8 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
 		mLineDrawable.setCallback(this);
 	}
 	
-	public void switchIconState(boolean animation){
-		mLineDrawable.switchLineState((getIconState() + 1) % 2, animation);
+	public void switchIconState(int state, boolean animation){
+		mLineDrawable.switchLineState(state, animation);
 	}
 	
 	public int getIconState(){

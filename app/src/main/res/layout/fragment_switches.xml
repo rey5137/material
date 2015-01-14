@@ -100,14 +100,14 @@
 		    android:text="Switch"/>
 	    
 	    <com.rey.material.widget.Switch
-            style="@style/SwitchDefault"
+            style="@style/Material.Widget.Switch"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:checked="false"/>
 	    
 	    <com.rey.material.widget.Switch
-            style="@style/SwitchDefault"
+            style="@style/Material.Widget.Switch"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:gravity="center"

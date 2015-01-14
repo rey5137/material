@@ -312,9 +312,6 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	
 	@Override
 	public void start() {
-		if(isRunning()) 
-			return;
-						
 		resetAnimation();
 		
 		scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);

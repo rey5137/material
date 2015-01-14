@@ -272,7 +272,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.SWITCHES, fragment);
     					else if(fragment instanceof TextfieldFragment)
     						setFragment(Tab.TEXTFIELDS, fragment);
-    					else if(fragment instanceof SnackbarFragment)
+    					else if(fragment instanceof SnackBarFragment)
     						setFragment(Tab.SNACKBARS, fragment);
                         else if(fragment instanceof DialogFragment)
                             setFragment(Tab.DIALOGS, fragment);
@@ -307,7 +307,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 						mFragments[position] = TextfieldFragment.newInstance();
 						break;
 					case SNACKBARS:
-						mFragments[position] = SnackbarFragment.newInstance();
+						mFragments[position] = SnackBarFragment.newInstance();
 						break;
                     case DIALOGS:
                         mFragments[position] = DialogFragment.newInstance();

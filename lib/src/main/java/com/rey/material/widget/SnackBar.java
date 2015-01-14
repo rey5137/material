@@ -202,7 +202,7 @@ public class SnackBar extends FrameLayout {
 
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	public void applyStyle(AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	private void applyStyle(AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		Context context = getContext();
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
 		
@@ -211,17 +211,19 @@ public class SnackBar extends FrameLayout {
 		int horizontalPadding = a.getDimensionPixelSize(R.styleable.SnackBar_sb_horizontalPadding, ThemeUtil.dpToPx(context, 24));
 		int verticalPadding = a.getDimensionPixelSize(R.styleable.SnackBar_sb_verticalPadding, 0);
 		TypedValue value = a.peekValue(R.styleable.SnackBar_sb_width);
-		if(value.type == TypedValue.TYPE_INT_DEC)
+		if(value != null && value.type == TypedValue.TYPE_INT_DEC)
 			mWidth = a.getInteger(R.styleable.SnackBar_sb_width, MATCH_PARENT);
 		else
 			mWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_width, MATCH_PARENT);		
 		int minWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_minWidth, 0);
 		int maxWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_maxWidth, 0);
 		value = a.peekValue(R.styleable.SnackBar_sb_height);
-		if(value.type == TypedValue.TYPE_INT_DEC)
+		if(value != null && value.type == TypedValue.TYPE_INT_DEC)
 			mHeight = a.getInteger(R.styleable.SnackBar_sb_height, WRAP_CONTENT);
 		else
-			mHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_height, WRAP_CONTENT);	
+			mHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_height, WRAP_CONTENT);
+        int minHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_minHeight, 0);
+        int maxHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_maxHeight, 0);
 		mMarginLeft = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginLeft, 0);
 		mMarginBottom = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginBottom, 0);
 		int textSize = a.getDimensionPixelSize(R.styleable.SnackBar_sb_textSize, 0);
@@ -235,7 +237,7 @@ public class SnackBar extends FrameLayout {
 		int actionTextSize = a.getDimensionPixelSize(R.styleable.SnackBar_sb_actionTextSize, 0);
 		ColorStateList actionTextColor;
 		value = a.peekValue(R.styleable.SnackBar_sb_actionTextColor);
-		if(value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT)
+		if(value != null && value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT)
 			actionTextColor = ColorStateList.valueOf(a.getColor(R.styleable.SnackBar_sb_actionTextColor, 0xFF000000));
 		else
 			actionTextColor = a.getColorStateList(R.styleable.SnackBar_sb_actionTextColor);
@@ -266,6 +268,10 @@ public class SnackBar extends FrameLayout {
 			minWidth(minWidth);
 		if(maxWidth > 0)
 			maxWidth(maxWidth);
+        if(minHeight > 0)
+            minHeight(minHeight);
+        if(maxHeight > 0)
+            maxHeight(maxHeight);
 		switch (ellipsize) {
 			case 1:
 				ellipsize(TruncateAt.START);
@@ -286,9 +292,12 @@ public class SnackBar extends FrameLayout {
 		
 		if(textAppearance != 0)
 			actionTextAppearance(actionTextAppearance);
-		actionTextSize(actionTextSize);
-		actionTextColor(actionTextColor != null ? actionTextColor : ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFF000000)));		
-		actionRipple(actionRipple);
+        if(actionTextSize > 0)
+		    actionTextSize(actionTextSize);
+        if(actionTextColor != null)
+		    actionTextColor(actionTextColor);
+        if(actionRipple != 0)
+		    actionRipple(actionRipple);
 	}
 
     public SnackBar applyStyle(int resId){

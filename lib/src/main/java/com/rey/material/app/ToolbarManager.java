@@ -34,7 +34,7 @@ public class ToolbarManager {
 
     public interface OnToolbarGroupChangedListener {
 
-        public void onToolbarGroupChanged(int groupId);
+        public void onToolbarGroupChanged(int oldGroupId, int groupId);
 
     }
 
@@ -103,13 +103,13 @@ public class ToolbarManager {
         }
     }
 
-    private void dispatchOnToolbarGroupChanged(int groupId){
+    private void dispatchOnToolbarGroupChanged(int oldGroupId, int groupId){
         for(int i = mListeners.size() - 1; i >= 0; i--){
             WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
             if(ref.get() == null)
                 mListeners.remove(i);
             else
-                ref.get().onToolbarGroupChanged(groupId);
+                ref.get().onToolbarGroupChanged(oldGroupId, groupId);
         }
     }
 
@@ -119,9 +119,10 @@ public class ToolbarManager {
 
     public void setCurrentGroup(int groupId){
         if(mCurrentGroup != groupId){
+            int oldGroupId = mCurrentGroup;
             mCurrentGroup = groupId;
             mGroupChanged = true;
-            dispatchOnToolbarGroupChanged(mCurrentGroup);
+            dispatchOnToolbarGroupChanged(oldGroupId, mCurrentGroup);
             animateOut();
         }
     }

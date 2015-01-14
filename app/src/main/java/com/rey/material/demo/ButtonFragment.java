@@ -75,7 +75,7 @@ public class ButtonFragment extends Fragment{
         bt_flat.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                TimePickerDialog.Builder builder = new TimePickerDialog.Builder(R.style.TimePickerDialog, 11, 30, false);
+                TimePickerDialog.Builder builder = new TimePickerDialog.Builder(R.style.Material_App_Dialog_TimePicker_Light, 11, 30, false);
                 builder.positiveAction("OK")
                         .negativeAction("CANCEL");
                 com.rey.material.app.DialogFragment fragment = DialogFragment.newInstance(builder);
@@ -86,7 +86,7 @@ public class ButtonFragment extends Fragment{
         bt_flat_color.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                DatePickerDialog.Builder builder = new DatePickerDialog.Builder(R.style.DatePickerDialog, 1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014, 20, Calendar.JANUARY, 2010);
+                DatePickerDialog.Builder builder = new DatePickerDialog.Builder(R.style.Material_App_Dialog_DatePicker_Light, 1, Calendar.JANUARY, 2000, 31, Calendar.DECEMBER, 2014, 20, Calendar.JANUARY, 2010);
                 builder.positiveAction("OK")
                         .negativeAction("CANCEL");
                 com.rey.material.app.DialogFragment fragment = DialogFragment.newInstance(builder);

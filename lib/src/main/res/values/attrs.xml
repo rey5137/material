@@ -240,7 +240,9 @@
         <attr name="sb_height" format="reference|dimension|integer">
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />	  
-        </attr>    
+        </attr>
+        <attr name="sb_minHeight" format="reference|dimension"/>
+        <attr name="sb_maxHeight" format="reference|dimension"/>
         <attr name="sb_marginLeft" format="reference|dimension"/>
         <attr name="sb_marginBottom" format="reference|dimension"/>
         <attr name="sb_textSize" format="reference|dimension"/>

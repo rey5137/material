@@ -246,10 +246,10 @@ public class TimePickerDialog extends Dialog{
             a.recycle();
 
             if(am == null)
-                am = DateUtils.getAMPMString(Calendar.AM);
+                am = DateUtils.getAMPMString(Calendar.AM).toUpperCase();
 
             if(pm == null)
-                pm = DateUtils.getAMPMString(Calendar.PM);
+                pm = DateUtils.getAMPMString(Calendar.PM).toUpperCase();
 
             int[][] states = new int[][]{
                     new int[]{-android.R.attr.state_checked},
