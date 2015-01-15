@@ -118,7 +118,7 @@ public class EditText extends FrameLayout {
 		if(mDividerColors == null){
 			int[][] states = new int[][]{
 					new int[]{-android.R.attr.state_focused},
-					new int[]{android.R.attr.state_focused},
+					new int[]{android.R.attr.state_focused, android.R.attr.state_enabled},
 			};
 			int[] colors = new int[]{
 					ThemeUtil.colorControlNormal(context, 0xFF000000),
@@ -129,7 +129,7 @@ public class EditText extends FrameLayout {
 		}
 		
 		if(mDividerErrorColors == null)
-			mDividerErrorColors = ColorStateList.valueOf(ThemeUtil.colorControlHighlight(context, 0xFFFF0000));
+			mDividerErrorColors = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFFFF0000));
 		
 		int dividerHeight = a.getDimensionPixelSize(R.styleable.EditText_et_dividerHeight, 0);
 		int dividerPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerPadding, 0);
@@ -158,12 +158,14 @@ public class EditText extends FrameLayout {
 			int labelEllipsize = a.getInteger(R.styleable.EditText_et_labelEllipsize, 0);
 			mLabelInAnimId = a.getResourceId(R.styleable.EditText_et_labelInAnim, 0);
 			mLabelOutAnimId = a.getResourceId(R.styleable.EditText_et_labelOutAnim, 0);
-			
-			mLabelView.setPadding(0, 0, 0, labelPadding);
+
+            mLabelView.setPadding(0, 0, 0, labelPadding);
+            if(labelTextAppearance > 0)
+                mLabelView.setTextAppearance(context, labelTextAppearance);
+			if(labelTextSize > 0)
 			mLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
-			mLabelView.setTextColor(labelTextColor);
-			if(labelTextAppearance > 0)
-				mLabelView.setTextAppearance(context, labelTextAppearance);
+            if(labelTextColor != null)
+			    mLabelView.setTextColor(labelTextColor);
 			
 			switch (labelEllipsize) {
 				case 1:
@@ -395,6 +397,11 @@ public class EditText extends FrameLayout {
 	}
 	
 	/* public method of EditText */
+
+    @Override
+    public void setEnabled(boolean enabled){
+        mInputView.setEnabled(enabled);
+    }
 	
 	/**
      * Convenience for {@link android.text.Selection#extendSelection}.
@@ -882,8 +889,9 @@ public class EditText extends FrameLayout {
      * @see #setLetterSpacing(float)
      * @see android.graphics.Paint#setLetterSpacing
      */
-	public float getLetterSpacing (){
-		return mInputView.getLetterSpacing();
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public float getLetterSpacing (){
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? mInputView.getLetterSpacing() : 0;
 	}
 	
 	/**

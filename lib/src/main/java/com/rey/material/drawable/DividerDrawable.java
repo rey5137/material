@@ -136,7 +136,7 @@ public class DividerDrawable extends Drawable implements Animatable{
 		int color = mColorStateList.getColorForState(state, mCurColor);		
 				
 		if(mCurColor != color){
-			if(!mInEditMode && mAnimEnable){
+			if(!mInEditMode && mAnimEnable && mEnable){
 				mPrevColor = isRunning() ? mPrevColor : mCurColor;
 				mCurColor = color;	
 				start();				
