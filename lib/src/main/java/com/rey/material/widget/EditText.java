@@ -102,7 +102,8 @@ public class EditText extends FrameLayout {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 	
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	@SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditText, defStyleAttr, defStyleRes);
 		

@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ import com.rey.material.widget.TabPageIndicator;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -41,8 +42,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private PagerAdapter mPagerAdapter;
 	
 	private Toolbar mToolbar;
-    private ToolbarManager mToolbarHelper;
-	private NavigationDrawerDrawable mNavigatorDrawable;
+    private ToolbarManager mToolbarManager;
     private SnackBar mSnackBar;
 	
 	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
@@ -62,41 +62,29 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
 		setSupportActionBar(mToolbar);
-		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, R.style.NavigationDrawerDrawable).build();
-		mToolbar.setNavigationIcon(mNavigatorDrawable);
-        mToolbarHelper = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
-		
-		mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
+            @Override
+            public void onNavigationClick() {
+                if(mToolbarManager.getCurrentGroup() != 0)
+                    mToolbarManager.setCurrentGroup(0);
+                else
+                    dl_navigator.openDrawer(Gravity.START);
+            }
 
             @Override
-            public void onClick(View v) {
-                dl_navigator.openDrawer(fl_drawer);
+            public boolean isBackState() {
+                return super.isBackState() || mToolbarManager.getCurrentGroup() != 0;
+            }
+
+            @Override
+            protected boolean shouldSyncDrawerSlidingProgress() {
+                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == 0;
             }
 
         });
-		
-		dl_navigator.setDrawerListener(new DrawerLayout.DrawerListener() {
-			
-			@Override
-			public void onDrawerStateChanged(int state) {}
-			
-			@Override
-			public void onDrawerSlide(View v, float factor) {				
-				if(dl_navigator.isDrawerOpen(GravityCompat.START))
-					mNavigatorDrawable.setIconState(NavigationDrawerDrawable.STATE_DRAWER, 1f - factor);
-				else
-					mNavigatorDrawable.setIconState(NavigationDrawerDrawable.STATE_ARROW, factor);
-			}
-			
-			@Override
-			public void onDrawerOpened(View v) {
-                mSnackBar.dismiss();
-            }
-			
-			@Override
-			public void onDrawerClosed(View v) {}
-			
-		});
+
+        mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();
 		lv_drawer.setAdapter(mDrawerAdapter);		
@@ -122,32 +110,34 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		});
 		
 		vp.setCurrentItem(1);
-
-//		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
-//		fab.show(this, 100, 100, Gravity.LEFT);		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-        mToolbarHelper.createMenu(R.menu.menu_main);
+        mToolbarManager.createMenu(R.menu.menu_main);
 		return true;
 	}
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        mToolbarHelper.onPrepareMenu();
+        mToolbarManager.onPrepareMenu();
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onToolbarGroupChanged(int oldGroupId, int groupId) {
+        mToolbarManager.notifyNavigationStateChanged();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.tb_contextual:
-                mToolbarHelper.setCurrentGroup(R.id.tb_group_contextual);
+                mToolbarManager.setCurrentGroup(R.id.tb_group_contextual);
                 break;
             case R.id.tb_done:
             case R.id.tb_done_all:
-                mToolbarHelper.setCurrentGroup(0);
+                mToolbarManager.setCurrentGroup(0);
                 break;
         }
         return true;

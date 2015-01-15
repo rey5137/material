@@ -1,9 +1,13 @@
 package com.rey.material.app;
 
 import android.os.Build;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,12 +15,16 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
+ * A Manager class to help handling Toolbar used as ActionBar in ActionBarActivity.
+ * It help grouping ActionItem in Toolbar and only show the items of current group.
+ * It also help manager state of navigation icon.
  * Created by Rey on 1/6/2015.
  */
 public class ToolbarManager {
@@ -67,6 +75,8 @@ public class ToolbarManager {
         }
     };
 
+    private NavigationManager mNavigationManager;
+
     public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
         mActivity = activity;
         mToolbar = toolbar;
@@ -83,6 +93,9 @@ public class ToolbarManager {
         mAnimator = new SimpleAnimator(animIn, animOut);
     }
 
+    /**
+     * Register a listener for current group changed event. Note that it doesn't hold any strong reference to listener, so don't use anonymous listener.
+     */
     public void registerOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
         for(int i = mListeners.size() - 1; i >= 0; i--){
             WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
@@ -95,6 +108,10 @@ public class ToolbarManager {
         mListeners.add(new WeakReference<OnToolbarGroupChangedListener>(listener));
     }
 
+    /**
+     * Unregister a listener.
+     * @param listener
+     */
     public void unregisterOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
         for(int i = mListeners.size() - 1; i >= 0; i--){
             WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
@@ -127,6 +144,10 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * This funcction should be called in onCreateOptionsMenu of Activity or Fragment to inflate a new menu.
+     * @param menuId
+     */
     public void createMenu(int menuId){
         mToolbar.inflateMenu(menuId);
         mMenuDataChanged = true;
@@ -150,6 +171,39 @@ public class ToolbarManager {
 
             mMenuDataChanged = false;
         }
+    }
+
+    /**
+     * Set a NavigationManager to manage navigation icon state.
+     */
+    public void setNavigationManager(NavigationManager navigationManager){
+        mNavigationManager = navigationManager;
+    }
+
+    /**
+     * Notify the current state of navigation icon is invalid. It should update the state immediately without showing animation.
+     */
+    public void notifyNavigationStateInvalidated(){
+        if(mNavigationManager != null)
+            mNavigationManager.notifyStateInvalidated();
+    }
+
+    /**
+     * Notify the current state of navigation icon is invalid. It should update the state immediately without showing animation.
+     */
+    public void notifyNavigationStateChanged(){
+        if(mNavigationManager != null)
+            mNavigationManager.notifyStateChanged();
+    }
+
+    /**
+     * Notify the progress of animation between 2 states changed. Use this function to sync the progress with another animation.
+     * @param isBackState the current state (the end state of animation) is back state or not.
+     * @param progress the current progress of animation.
+     */
+    public void notifyNavigationStateProgressChanged(boolean isBackState, float progress){
+        if(mNavigationManager != null)
+            mNavigationManager.notifyStateProgressChanged(isBackState, progress);
     }
 
     private ToolbarRippleDrawable getBackground(){
@@ -265,5 +319,157 @@ public class ToolbarManager {
         public Animation getInAnimation(View v, int position) {
             return AnimationUtils.loadAnimation(mToolbar.getContext(), mAnimationIn);
         }
+    }
+
+    public static abstract class NavigationManager{
+
+        protected NavigationDrawerDrawable mNavigationIcon;
+        protected Toolbar mToolbar;
+
+        /**
+         * @param styleId the style res of navigation icon.
+         */
+        public NavigationManager(int styleId, Toolbar toolbar){
+            mToolbar = toolbar;
+            mNavigationIcon = new NavigationDrawerDrawable.Builder(mToolbar.getContext(), styleId).build();
+            mToolbar.setNavigationIcon(mNavigationIcon);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    onNavigationClick();
+                }
+            });
+        }
+
+        /**
+         * Check if current state of navigation icon is back state or not.
+         * @return
+         */
+        public abstract boolean isBackState();
+
+        /**
+         * Hangle event click navigation icon. Subclass should override this function.
+         */
+        public abstract void onNavigationClick();
+
+        /**
+         * Notify the current state of navigation icon is invalid. It should update the state immediately without showing animation.
+         */
+        public void notifyStateInvalidated(){
+            mNavigationIcon.switchIconState(isBackState() ? NavigationDrawerDrawable.STATE_ARROW : NavigationDrawerDrawable.STATE_DRAWER, false);
+        }
+
+        /**
+         * Notify the current state of navigation icon is changed. It should update the state with animation.
+         */
+        public void notifyStateChanged(){
+            mNavigationIcon.switchIconState(isBackState() ? NavigationDrawerDrawable.STATE_ARROW : NavigationDrawerDrawable.STATE_DRAWER, true);
+        }
+
+        /**
+         * Notify the progress of animation between 2 states changed. Use this function to sync the progress with another animation.
+         * @param isBackState the current state (the end state of animation) is back state or not.
+         * @param progress the current progress of animation.
+         */
+        public void notifyStateProgressChanged(boolean isBackState, float progress){
+            mNavigationIcon.setIconState(isBackState ? NavigationDrawerDrawable.STATE_ARROW : NavigationDrawerDrawable.STATE_DRAWER, progress);
+        }
+
+    }
+
+    /**
+     * A Base Navigation Manager that handle navigation state between fragment changing and navigation drawer.
+     * If you want to handle state in another case, you should override isBackState(),  shouldSyncDrawerSlidingProgress(), and call notify notifyStateChanged() if need.
+      */
+    public static class BaseNavigationManager extends NavigationManager{
+        protected DrawerLayout mDrawerLayout;
+        protected FragmentManager mFragmentManager;
+
+        /**
+         *
+         * @param styledId the style res of navigation icon.
+         * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
+         */
+        public BaseNavigationManager(int styledId, ActionBarActivity activity, Toolbar toolbar, DrawerLayout drawerLayout){
+            super(styledId, toolbar);
+            mDrawerLayout = drawerLayout;
+            mFragmentManager = activity.getSupportFragmentManager();
+
+            if(mDrawerLayout != null)
+                mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+                        BaseNavigationManager.this.onDrawerSlide(drawerView, slideOffset);
+                    }
+
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        BaseNavigationManager.this.onDrawerOpened(drawerView);
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        BaseNavigationManager.this.onDrawerClosed(drawerView);
+                    }
+
+                    @Override
+                    public void onDrawerStateChanged(int newState) {
+                        BaseNavigationManager.this.onDrawerStateChanged(newState);
+                    }
+
+                });
+
+            mFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    onFragmentChanged();
+                }
+            });
+
+        }
+
+        @Override
+        public boolean isBackState() {
+            return mFragmentManager.getBackStackEntryCount() > 1 || (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(Gravity.START));
+        }
+
+        @Override
+        public void onNavigationClick() {}
+
+        /**
+         * Check if should sync progress of drawer sliding animation with navigation state changing animation.
+         */
+        protected boolean shouldSyncDrawerSlidingProgress(){
+            if(mFragmentManager.getBackStackEntryCount() > 1)
+                return false;
+
+            return true;
+        }
+
+        protected void onFragmentChanged(){
+            notifyStateChanged();
+        }
+
+        /**
+         * Handling onDrawerSlide event of DrawerLayout. It'll sync progress of drawer sliding animation with navigation state changing animation if needed.
+         * If you also want to handle this event, make sure to call super method.
+         */
+        protected void onDrawerSlide(View drawerView, float slideOffset){
+            if(!shouldSyncDrawerSlidingProgress())
+                return;
+
+            if(mDrawerLayout.isDrawerOpen(GravityCompat.START))
+                notifyStateProgressChanged(false, 1f - slideOffset);
+            else
+                notifyStateProgressChanged(true, slideOffset);
+        }
+
+        protected void onDrawerOpened(View drawerView){}
+
+        protected void onDrawerClosed(View drawerView) {}
+
+        protected void onDrawerStateChanged(int newState) {}
+
     }
 }
