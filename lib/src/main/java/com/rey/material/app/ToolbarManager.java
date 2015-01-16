@@ -384,6 +384,7 @@ public class ToolbarManager {
     public static class BaseNavigationManager extends NavigationManager{
         protected DrawerLayout mDrawerLayout;
         protected FragmentManager mFragmentManager;
+        protected boolean mSyncDrawerSlidingProgress = false;
 
         /**
          *
@@ -426,7 +427,6 @@ public class ToolbarManager {
                     onFragmentChanged();
                 }
             });
-
         }
 
         @Override
@@ -456,7 +456,7 @@ public class ToolbarManager {
          * If you also want to handle this event, make sure to call super method.
          */
         protected void onDrawerSlide(View drawerView, float slideOffset){
-            if(!shouldSyncDrawerSlidingProgress())
+            if(!mSyncDrawerSlidingProgress)
                 return;
 
             if(mDrawerLayout.isDrawerOpen(GravityCompat.START))
@@ -469,7 +469,13 @@ public class ToolbarManager {
 
         protected void onDrawerClosed(View drawerView) {}
 
-        protected void onDrawerStateChanged(int newState) {}
+        /**
+         * Handling onDrawerStateChanged event of DrawerLayout. It'll check if should sync progress of drawer sliding animation with navigation state changing animation.
+         * If you also want to handle this event, make sure to call super method.
+         */
+        protected void onDrawerStateChanged(int newState) {
+            mSyncDrawerSlidingProgress = (newState == DrawerLayout.STATE_DRAGGING || newState == DrawerLayout.STATE_SETTLING) && shouldSyncDrawerSlidingProgress();
+        }
 
     }
 }

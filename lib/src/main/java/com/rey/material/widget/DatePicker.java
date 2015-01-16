@@ -369,6 +369,13 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         return mAdapter.getYear();
     }
 
+    public String getFormatedDate(DateFormat formatter){
+        mCalendar.set(Calendar.YEAR, mAdapter.getYear());
+        mCalendar.set(Calendar.MONTH, mAdapter.getMonth());
+        mCalendar.set(Calendar.DAY_OF_MONTH, mAdapter.getDay());
+        return formatter.format(mCalendar.getTime());
+    }
+
     public int getSelectionColor(){
         return mSelectionColor;
     }

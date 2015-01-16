@@ -133,8 +133,8 @@ public class Spinner extends ViewGroup {
         mArrowDrawable = new ArrowDrawable(ArrowDrawable.MODE_DOWN, mArrowSize, arrowColor, arrowAnimDuration, arrowInterpolator, arrowClockwise);
         mArrowDrawable.setCallback(this);
         
-        mDividerHeight = a.getDimensionPixelSize(R.styleable.Spinner_spn_dividerHeight, 0);
-        mDividerPadding = a.getDimensionPixelSize(R.styleable.Spinner_spn_dividerPadding, 0);
+        mDividerHeight = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerHeight, 0);
+        mDividerPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerPadding, 0);
         int dividerAnimDuration = a.getInteger(R.styleable.Spinner_spn_dividerAnimDuration, 0);
         ColorStateList dividerColor = a.getColorStateList(R.styleable.Spinner_spn_dividerColor);
         if(dividerColor == null)
@@ -561,9 +561,6 @@ public class Spinner extends ViewGroup {
         int position;
         boolean showDropdown;
 
-        /**
-         * Constructor called from {@link AbsSpinnerCompat#onSaveInstanceState()}
-         */
         SavedState(Parcelable superState) {
             super(superState);
         }

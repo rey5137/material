@@ -132,7 +132,7 @@ public class EditText extends FrameLayout {
 		if(mDividerErrorColors == null)
 			mDividerErrorColors = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFFFF0000));
 		
-		int dividerHeight = a.getDimensionPixelSize(R.styleable.EditText_et_dividerHeight, 0);
+		int dividerHeight = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerHeight, 0);
 		int dividerPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerPadding, 0);
 		int dividerAnimDuration = a.getInteger(R.styleable.EditText_et_dividerAnimDuration, context.getResources().getInteger(android.R.integer.config_shortAnimTime));
 		mDivider = new DividerDrawable(dividerHeight, mDividerColors, dividerAnimDuration);

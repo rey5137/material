@@ -283,7 +283,7 @@
         <item name="di_titleTextColor">@color/abc_primary_text_material_dark</item>
         <item name="di_actionRipple">@style/Material.Drawable.Ripple.Wave</item>
         <item name="di_actionTextAppearance">@style/TextAppearance.AppCompat.Button</item>
-        <item name="di_actionTextColor">?attr/colorPrimary</item>
+        <item name="di_actionTextColor">?attr/colorControlActivated</item>
         <item name="di_dividerColor">#1E999999</item>
         <item name="di_dividerHeight">1dp</item>
         <item name="di_cancelable">true</item>

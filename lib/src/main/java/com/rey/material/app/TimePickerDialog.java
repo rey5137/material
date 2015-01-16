@@ -587,6 +587,11 @@ public class TimePickerDialog extends Dialog{
         }
 
         @Override
+        public Dialog.Builder contentView(int layoutId) {
+            return this;
+        }
+
+        @Override
         protected Dialog onBuild(Context context, int styleId) {
             TimePickerDialog dialog = new TimePickerDialog(context, styleId);
             dialog.hour(mHour)
@@ -595,7 +600,7 @@ public class TimePickerDialog extends Dialog{
             return dialog;
         }
 
-        private Builder(Parcel in){
+        protected Builder(Parcel in){
             super(in);
         }
 

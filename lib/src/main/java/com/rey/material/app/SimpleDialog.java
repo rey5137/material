@@ -45,6 +45,13 @@ public class SimpleDialog extends Dialog {
     protected static final int MODE_MESSAGE = 1;
     protected static final int MODE_ITEMS = 2;
     protected static final int MODE_MULTI_ITEMS = 3;
+    protected static final int MODE_CUSTOM = 4;
+
+    public interface OnSelectionChangedListener{
+        public void onSelectionChanged(int index, boolean selected);
+    }
+
+    private OnSelectionChangedListener mOnSelectionChangedListener;
 
     public SimpleDialog(Context context) {
         super(context);
@@ -96,29 +103,52 @@ public class SimpleDialog extends Dialog {
         return super.title(title);
     }
 
-    private void initScrollView(){
-        mMessage = new TextView(getContext());
-        mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
-        mMessage.setTextColor(mMessageTextColor);
-        mMessage.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+    @Override
+    public Dialog contentView(View v) {
+        if(mScrollView == null)
+            initScrollView();
 
+        if(mScrollView.getChildAt(0) != v && v != null) {
+            mScrollView.removeAllViews();
+            mScrollView.addView(v);
+            mMode = MODE_CUSTOM;
+            super.contentView(mScrollView);
+        }
+
+        return this;
+    }
+
+    private void initScrollView(){
         mScrollView = new InternalScrollView(getContext());
         mScrollView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
         mScrollView.setClipToPadding(false);
         mScrollView.setFillViewport(true);
         mScrollView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+    }
 
-        mScrollView.addView(mMessage);
+    private void initMessageView(){
+        mMessage = new TextView(getContext());
+        mMessage.setTextAppearance(getContext(), mMessageTextAppearanceId);
+        mMessage.setTextColor(mMessageTextColor);
+        mMessage.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
     }
 
     public SimpleDialog message(CharSequence message){
         if(mScrollView == null)
             initScrollView();
 
+        if(mMessage == null)
+            initMessageView();
+
+        if(mScrollView.getChildAt(0) != mMessage) {
+            mScrollView.removeAllViews();
+            mScrollView.addView(mMessage);
+        }
+
         mMessage.setText(message);
         if(!TextUtils.isEmpty(message)) {
             mMode = MODE_MESSAGE;
-            setContentView(mScrollView);
+            super.contentView(mScrollView);
         }
         return this;
     }
@@ -202,7 +232,7 @@ public class SimpleDialog extends Dialog {
 
         mMode = MODE_ITEMS;
         mAdapter.setItems(items, selectedIndex);
-        setContentView(mListView);
+        super.contentView(mListView);
         return this;
     }
 
@@ -212,7 +242,12 @@ public class SimpleDialog extends Dialog {
 
         mMode = MODE_MULTI_ITEMS;
         mAdapter.setItems(items, selectedIndexes);
-        setContentView(mListView);
+        super.contentView(mListView);
+        return this;
+    }
+
+    public SimpleDialog onSelectionChangedListener(OnSelectionChangedListener listener){
+        mOnSelectionChangedListener = listener;
         return this;
     }
 
@@ -220,8 +255,16 @@ public class SimpleDialog extends Dialog {
         return mAdapter == null ? null : mAdapter.getSelectedIndexes();
     }
 
+    public CharSequence[] getSelectedValues(){
+        return mAdapter.getSelectedValues();
+    }
+
     public int getSelectedIndex(){
         return mAdapter == null ? -1 : mAdapter.getLastSelectedIndex();
+    }
+
+    public CharSequence getSelectedValue(){
+        return mAdapter.getLastSelectedValue();
     }
 
     private class InternalScrollView extends ScrollView{
@@ -299,6 +342,10 @@ public class SimpleDialog extends Dialog {
             return mLastSelectedIndex;
         }
 
+        public CharSequence getLastSelectedValue(){
+            return mItems[mLastSelectedIndex];
+        }
+
         public int[] getSelectedIndexes(){
             int count = 0;
             for(int i = 0; i < mSelected.length; i++)
@@ -313,6 +360,26 @@ public class SimpleDialog extends Dialog {
             for(int i = 0; i < mSelected.length; i++)
                 if(mSelected[i]){
                     result[count] = i;
+                    count++;
+                }
+
+            return result;
+        }
+
+        public CharSequence[] getSelectedValues(){
+            int count = 0;
+            for(int i = 0; i < mSelected.length; i++)
+                if(mSelected[i])
+                    count++;
+
+            if(count == 0)
+                return null;
+
+            CharSequence[] result = new CharSequence[count];
+            count = 0;
+            for(int i = 0; i < mSelected.length; i++)
+                if(mSelected[i]){
+                    result[count] = mItems[i];
                     count++;
                 }
 
@@ -361,11 +428,18 @@ public class SimpleDialog extends Dialog {
         @Override
         public void onCheckedChanged(android.widget.CompoundButton v, boolean isChecked) {
             int position = (Integer)v.getTag();
-            if(mSelected[position] != isChecked)
+            if(mSelected[position] != isChecked) {
                 mSelected[position] = isChecked;
+
+                if(mOnSelectionChangedListener != null)
+                    mOnSelectionChangedListener.onSelectionChanged(position, mSelected[position]);
+            }
 
             if(mMode == MODE_ITEMS && isChecked && mLastSelectedIndex != position){
                 mSelected[mLastSelectedIndex] = false;
+
+                if(mOnSelectionChangedListener != null)
+                    mOnSelectionChangedListener.onSelectionChanged(mLastSelectedIndex, false);
 
                 CompoundButton child = (CompoundButton) mListView.getChildAt(mLastSelectedIndex - mListView.getFirstVisiblePosition());
                 if(child != null)
@@ -384,6 +458,10 @@ public class SimpleDialog extends Dialog {
         private int[] mSelectedIndexes;
 
         public Builder(){}
+
+        public Builder(int styleId){
+            super(styleId);
+        }
 
         public Builder message(CharSequence message){
             mMode = MODE_MESSAGE;
@@ -424,7 +502,7 @@ public class SimpleDialog extends Dialog {
             return dialog;
         }
 
-        private Builder(Parcel in) {
+        protected Builder(Parcel in) {
             super(in);
         }
 

@@ -75,6 +75,9 @@ public class DividerDrawable extends Drawable implements Animatable{
 	
 	@Override
 	public void draw(Canvas canvas) {
+        if(mHeight == 0)
+            return;
+
 		Rect bounds = getBounds();
 		float y = bounds.bottom - mHeight / 2;
 		

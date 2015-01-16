@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -22,7 +21,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.rey.material.app.ToolbarManager;
-import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
@@ -264,7 +262,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.TEXTFIELDS, fragment);
     					else if(fragment instanceof SnackBarFragment)
     						setFragment(Tab.SNACKBARS, fragment);
-                        else if(fragment instanceof DialogFragment)
+                        else if(fragment instanceof DialogsFragment)
                             setFragment(Tab.DIALOGS, fragment);
     				}
     			}
@@ -300,7 +298,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 						mFragments[position] = SnackBarFragment.newInstance();
 						break;
                     case DIALOGS:
-                        mFragments[position] = DialogFragment.newInstance();
+                        mFragments[position] = DialogsFragment.newInstance();
                         break;
 				}
 			}

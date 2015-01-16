@@ -19,6 +19,7 @@ import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.DatePicker;
 import com.rey.material.widget.YearPicker;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -98,6 +99,10 @@ public class DatePickerDialog extends Dialog {
 
     public int getYear(){
         return mDatePickerLayout.getYear();
+    }
+
+    public String getFormatedDate(DateFormat formatter){
+        return mDatePickerLayout.getFormatedDate(formatter);
     }
 
     private class DatePickerLayout extends FrameLayout implements DatePicker.OnDateChangedListener, YearPicker.OnYearChangedListener {
@@ -218,6 +223,10 @@ public class DatePickerDialog extends Dialog {
 
         public int getYear(){
             return mDatePicker.getYear();
+        }
+
+        public String getFormatedDate(DateFormat formatter){
+            return mDatePicker.getFormatedDate(formatter);
         }
 
         @Override
@@ -504,7 +513,11 @@ public class DatePickerDialog extends Dialog {
         private int mYear;
 
         public Builder(){
-            super();
+            this(0);
+        }
+
+        public Builder(int styleId){
+            super(styleId);
             Calendar cal = Calendar.getInstance();
             mDay = cal.get(Calendar.DAY_OF_MONTH);
             mMonth = cal.get(Calendar.MONTH);
@@ -548,6 +561,11 @@ public class DatePickerDialog extends Dialog {
         }
 
         @Override
+        public Dialog.Builder contentView(int layoutId) {
+            return this;
+        }
+
+        @Override
         protected Dialog onBuild(Context context, int styleId) {
             DatePickerDialog dialog = new DatePickerDialog(context, styleId);
 
@@ -557,7 +575,7 @@ public class DatePickerDialog extends Dialog {
             return dialog;
         }
 
-        private Builder(Parcel in){
+        protected Builder(Parcel in){
             super(in);
         }
 

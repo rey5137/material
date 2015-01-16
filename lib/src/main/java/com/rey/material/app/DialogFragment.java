@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 /**
  * Created by Rey on 1/12/2015.
@@ -11,12 +12,42 @@ import android.support.annotation.NonNull;
 public class DialogFragment extends android.support.v4.app.DialogFragment{
 
     public interface Builder{
-        public Dialog build(Context context);
+        public com.rey.material.app.Dialog build(Context context);
+
+        /**
+         * Handle click event on Positive Action.
+         */
+        public void onPositiveActionClicked(DialogFragment fragment);
+
+        /**
+         * Handle click event on Negative Action.
+         */
+        public void onNegativeActionClicked(DialogFragment fragment);
+
+        /**
+         * Handle click event on Neutral Action.
+         */
+        public void onNeutralActionClicked(DialogFragment fragment);
     }
 
     protected static final String ARG_BUILDER = "arg_builder";
 
     protected Builder mBuilder;
+
+    private View.OnClickListener mActionListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(mBuilder == null)
+                return;
+
+            if(v.getId() == Dialog.ACTION_POSITIVE)
+                mBuilder.onPositiveActionClicked(DialogFragment.this);
+            else if(v.getId() == Dialog.ACTION_NEGATIVE)
+                mBuilder.onNegativeActionClicked(DialogFragment.this);
+            else if(v.getId() == Dialog.ACTION_NEUTRAL)
+                mBuilder.onNeutralActionClicked(DialogFragment.this);
+        }
+    };
     
     public static DialogFragment newInstance(Builder builder){
         DialogFragment fragment = new DialogFragment();
@@ -27,7 +58,11 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return mBuilder == null ? new Dialog(getActivity()) : mBuilder.build(getActivity());
+        com.rey.material.app.Dialog dialog = mBuilder == null ? new Dialog(getActivity()) : mBuilder.build(getActivity());
+        dialog.positiveActionClickListener(mActionListener)
+                .negativeActionClickListener(mActionListener)
+                .negativeActionClickListener(mActionListener);
+        return dialog;
     }
 
     @Override
@@ -44,4 +79,5 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
         if(mBuilder != null && mBuilder instanceof Parcelable)
             outState.putParcelable(ARG_BUILDER, (Parcelable)mBuilder);
     }
+
 }

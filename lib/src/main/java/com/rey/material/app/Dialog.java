@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.TextView;
 
@@ -57,6 +58,10 @@ public class Dialog extends android.app.Dialog{
     private boolean mCancelable = true;
     private boolean mCanceledOnTouchOutside = true;
 
+    public static final int ACTION_POSITIVE = ViewUtil.generateViewId();
+    public static final int ACTION_NEGATIVE = ViewUtil.generateViewId();
+    public static final int ACTION_NEUTRAL = ViewUtil.generateViewId();
+
     public Dialog(Context context) {
         this(context, 0);
     }
@@ -87,10 +92,13 @@ public class Dialog extends android.app.Dialog{
         mBackground.setPreventCornerOverlap(false);
 
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
+        mPositiveAction.setId(ACTION_POSITIVE);
         mPositiveAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mPositiveAction.setBackgroundResource(0);
+        mNegativeAction.setId(ACTION_NEGATIVE);
         mNegativeAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNegativeAction.setBackgroundResource(0);
+        mNeutralAction.setId(ACTION_NEUTRAL);
         mNeutralAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNeutralAction.setBackgroundResource(0);
 
@@ -193,7 +201,7 @@ public class Dialog extends android.app.Dialog{
             neutralActionTextColor(a.getColorStateList(R.styleable.Dialog_di_neutralActionTextColor));
 
         dividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
-        dividerHeight(a.getDimensionPixelSize(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
+        dividerHeight(a.getDimensionPixelOffset(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
         setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
         setCanceledOnTouchOutside(a.getBoolean(R.styleable.Dialog_di_canceledOnTouchOutside, true));
 
@@ -209,7 +217,7 @@ public class Dialog extends android.app.Dialog{
         negativeActionClickListener(null);
         neutralAction(0);
         neutralActionClickListener(null);
-        setContentView(null);
+        contentView(null);
         return this;
     }
 
@@ -503,6 +511,14 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    public Dialog contentView(int layoutId){
+        if(layoutId == 0)
+            return this;
+
+        View v = LayoutInflater.from(getContext()).inflate(layoutId, null);
+        return contentView(v);
+    }
+
     public Dialog cancelable(boolean cancelable){
         super.setCancelable(cancelable);
         mCancelable = cancelable;
@@ -542,8 +558,7 @@ public class Dialog extends android.app.Dialog{
 
     @Override
     public void setContentView(int layoutId){
-        View v = LayoutInflater.from(getContext()).inflate(layoutId, null);
-        contentView(v);
+        contentView(layoutId);
     }
 
     @Override
@@ -843,6 +858,7 @@ public class Dialog extends android.app.Dialog{
     public static class Builder implements DialogFragment.Builder, Parcelable{
 
         protected int mStyleId;
+        protected int mContentViewId;
         protected CharSequence mTitle;
         protected CharSequence mPositive;
         protected CharSequence mNegative;
@@ -856,6 +872,11 @@ public class Dialog extends android.app.Dialog{
 
         public Builder style(int styleId){
             mStyleId = styleId;
+            return this;
+        }
+
+        public Builder contentView(int layoutId){
+            mContentViewId = layoutId;
             return this;
         }
 
@@ -880,6 +901,15 @@ public class Dialog extends android.app.Dialog{
         }
 
         @Override
+        public void onPositiveActionClicked(DialogFragment fragment) {}
+
+        @Override
+        public void onNegativeActionClicked(DialogFragment fragment) {}
+
+        @Override
+        public void onNeutralActionClicked(DialogFragment fragment) {}
+
+        @Override
         public Dialog build(Context context) {
             Dialog dialog = onBuild(context, mStyleId);
 
@@ -887,6 +917,9 @@ public class Dialog extends android.app.Dialog{
                     .positiveAction(mPositive)
                     .negativeAction(mNegative)
                     .neutralAction(mNeutral);
+
+            if(mContentViewId != 0)
+                dialog.contentView(mContentViewId);
 
             return dialog;
         }
@@ -897,6 +930,7 @@ public class Dialog extends android.app.Dialog{
 
         protected Builder(Parcel in) {
             mStyleId = in.readInt();
+            mContentViewId = in.readInt();
             mTitle = (CharSequence)in.readParcelable(null);
             mPositive = (CharSequence)in.readParcelable(null);
             mNegative = (CharSequence)in.readParcelable(null);
@@ -912,6 +946,7 @@ public class Dialog extends android.app.Dialog{
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(mStyleId);
+            dest.writeInt(mContentViewId);
             dest.writeValue(mTitle);
             dest.writeValue(mPositive);
             dest.writeValue(mNegative);
