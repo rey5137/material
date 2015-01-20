@@ -59,7 +59,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
-		setSupportActionBar(mToolbar);
         mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
         mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
             @Override
@@ -81,7 +80,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
 
         });
-
         mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();

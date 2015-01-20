@@ -77,20 +77,17 @@ public class ToolbarManager {
 
     private NavigationManager mNavigationManager;
 
+    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
+        this(activity, toolbar, defaultGroupId, rippleStyle, new SimpleAnimator(animIn, animOut));
+    }
+
     public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
         mActivity = activity;
         mToolbar = toolbar;
         mCurrentGroup = defaultGroupId;
         mRippleStyle = rippleStyle;
         mAnimator = animator;
-    }
-
-    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
-        mActivity = activity;
-        mToolbar = toolbar;
-        mCurrentGroup = defaultGroupId;
-        mRippleStyle = rippleStyle;
-        mAnimator = new SimpleAnimator(animIn, animOut);
+        mActivity.setSupportActionBar(toolbar);
     }
 
     /**
@@ -206,6 +203,10 @@ public class ToolbarManager {
             mNavigationManager.notifyStateProgressChanged(isBackState, progress);
     }
 
+    public boolean isNavigationBackState(){
+        return mNavigationManager != null && mNavigationManager.isBackState();
+    }
+
     private ToolbarRippleDrawable getBackground(){
         if(mBuilder == null)
             mBuilder = new ToolbarRippleDrawable.Builder(mToolbar.getContext(), mRippleStyle);
@@ -301,7 +302,7 @@ public class ToolbarManager {
         public Animation getInAnimation(View v, int position);
     }
 
-    private class SimpleAnimator implements Animator{
+    private static class SimpleAnimator implements Animator{
         private int mAnimationIn;
         private int mAnimationOut;
 
@@ -312,12 +313,12 @@ public class ToolbarManager {
 
         @Override
         public Animation getOutAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(mToolbar.getContext(), mAnimationOut);
+            return AnimationUtils.loadAnimation(v.getContext(), mAnimationOut);
         }
 
         @Override
         public Animation getInAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(mToolbar.getContext(), mAnimationIn);
+            return AnimationUtils.loadAnimation(v.getContext(), mAnimationIn);
         }
     }
 
