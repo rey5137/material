@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.rey.material.app.ToolbarManager;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.widget.FloatingActionButton;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
@@ -42,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private Toolbar mToolbar;
     private ToolbarManager mToolbarManager;
     private SnackBar mSnackBar;
-	
+
 	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
@@ -105,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 		
-		vp.setCurrentItem(1);
+		vp.setCurrentItem(3);
 	}
 
 	@Override

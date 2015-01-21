@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.rey.material.app.*;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.widget.Button;
+import com.rey.material.widget.FloatingActionButton;
 
 import java.util.Calendar;
 
@@ -36,10 +37,10 @@ public class ButtonFragment extends Fragment{
 		Button bt_raise_color = (Button)v.findViewById(R.id.button_bt_raise_color);
 		Button bt_raise_wave = (Button)v.findViewById(R.id.button_bt_raise_wave);
 		Button bt_raise_wave_color = (Button)v.findViewById(R.id.button_bt_raise_wave_color);
-		Button bt_float = (Button)v.findViewById(R.id.button_bt_float);
-		Button bt_float_color = (Button)v.findViewById(R.id.button_bt_float_color);
-		Button bt_float_wave = (Button)v.findViewById(R.id.button_bt_float_wave);
-		Button bt_float_wave_color = (Button)v.findViewById(R.id.button_bt_float_wave_color);
+		FloatingActionButton bt_float = (FloatingActionButton)v.findViewById(R.id.button_bt_float);
+        FloatingActionButton bt_float_color = (FloatingActionButton)v.findViewById(R.id.button_bt_float_color);
+        FloatingActionButton bt_float_wave = (FloatingActionButton)v.findViewById(R.id.button_bt_float_wave);
+        FloatingActionButton bt_float_wave_color = (FloatingActionButton)v.findViewById(R.id.button_bt_float_wave_color);
 									
 		View.OnClickListener listener = new View.OnClickListener() {
 			

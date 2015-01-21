@@ -1,13 +1,22 @@
 package com.rey.material.demo;
 
+import com.rey.material.drawable.ContactChipDrawable;
+import com.rey.material.text.style.ContactChipSpan;
+import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.EditText;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class TextfieldFragment extends Fragment{
 
@@ -68,7 +77,16 @@ public class TextfieldFragment extends Fragment{
 			}
 			
 		});
-		
+
+        EditText a = (EditText) v.findViewById(R.id.textfield_tv);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append("Test 1234567");
+        ContactChipSpan span = new ContactChipSpan("Harry Potter", ThemeUtil.dpToPx(getActivity(), 32), ThemeUtil.dpToPx(getActivity(), 128), ThemeUtil.dpToPx(getActivity(), 8), ThemeUtil.dpToPx(getActivity(), 12), Typeface.DEFAULT, 0xFF7A7A7A, ThemeUtil.spToPx(getActivity(), 16), 0xFFE7E7E7);
+        Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.ic_user);
+        span.setImage(icon);
+        ssb.setSpan(span, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        a.setText(ssb, TextView.BufferType.SPANNABLE);
+
 		return v;
 	}
 

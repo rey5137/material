@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -166,11 +167,13 @@ public class FloatingActionButton extends Button {
 		
 		mIcon = icon;
 		mIcon.setCallback(this);
+        invalidate();
 	}
 	
 	@Override
 	public void setBackgroundColor(int color){
 		mBackground.setColor(color);
+        invalidate();
 	}
 		
 	public void show(Activity activity, int x, int y, int gravity){		
@@ -199,7 +202,9 @@ public class FloatingActionButton extends Button {
 	
 	public void updateLocation(int x, int y, int gravity){
 		if(getParent() != null)
-			updateParams(x, y, gravity, getLayoutParams());		
+			updateParams(x, y, gravity, getLayoutParams());
+        else
+            Log.v(FloatingActionButton.class.getSimpleName(), "updateLocation() is called without parent");
 	}
 	
 	private void updateParams(int x, int y, int gravity, ViewGroup.LayoutParams params){		
@@ -236,6 +241,8 @@ public class FloatingActionButton extends Button {
 				setTopMargin(params, (int)(y - mBackground.getPaddingTop()));
 				break;
 		}
+
+        setLayoutParams(params);
 	}
 		
 	private void setLeftMargin(ViewGroup.LayoutParams params, int value){
@@ -243,6 +250,8 @@ public class FloatingActionButton extends Button {
 			((FrameLayout.LayoutParams)params).leftMargin = value;
 		else if(params instanceof RelativeLayout.LayoutParams)
 			((RelativeLayout.LayoutParams)params).leftMargin = value;
+        else
+            Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
 	}
 	
 	private void setTopMargin(ViewGroup.LayoutParams params, int value){
@@ -250,6 +259,8 @@ public class FloatingActionButton extends Button {
 			((FrameLayout.LayoutParams)params).topMargin = value;
 		else if(params instanceof RelativeLayout.LayoutParams)
 			((RelativeLayout.LayoutParams)params).topMargin = value;
+        else
+            Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
 	}
 	
 	public void dismiss(){

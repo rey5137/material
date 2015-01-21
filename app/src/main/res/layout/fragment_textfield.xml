@@ -11,7 +11,19 @@
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
 	    android:padding="8dp">
-	    
+
+        <com.rey.material.widget.EditText
+            style="@style/Material.Widget.EditText.Light"
+            android:id="@+id/textfield_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF000000"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            android:inputType="text"
+            android:hint="Input with label"
+            app:et_inputId="@+id/textfield_et_label_input"
+            app:et_supportMode="none" />
+
         <com.rey.material.widget.EditText
             style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_label"

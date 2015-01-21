@@ -191,30 +191,23 @@
 	        android:orientation="horizontal"
 	        android:weightSum="1.0"
 	        android:gravity="center">
-	        
-	        <com.rey.material.widget.Button
-		        android:id="@+id/button_bt_float"
-		        android:layout_width="76dp"
-		        android:layout_height="78dp"
-		        android:textColor="#FF000000"
-		        android:text="+"
-		        android:textSize="30sp"
-		        app:ripple="@style/FloatButtonRippleStyle"
-		        app:delayClick="false"/>
-	        
+
+            <com.rey.material.widget.FloatingActionButton
+                style="@style/FloatingActionButton"
+                android:id="@+id/button_bt_float"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
 	        <View
 	            android:layout_width="100dp"
 		        android:layout_height="1dp"/>
-	        
-	        <com.rey.material.widget.Button
-		        android:id="@+id/button_bt_float_color"
-		        android:layout_width="76dp"
-		        android:layout_height="78dp"
-		        android:textColor="#FFFFFFFF"
-		        android:text="+"
-		        android:textSize="30sp"
-		        app:ripple="@style/FloatColorButtonRippleStyle"
-		        app:delayClick="true"/>        
+
+            <com.rey.material.widget.FloatingActionButton
+                style="@style/FloatingColorActionButton"
+                android:id="@+id/button_bt_float_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
 	    </LinearLayout>
 	    
 	    <LinearLayout 
@@ -224,31 +217,24 @@
 	        android:weightSum="1.0"
 	        android:gravity="center"
 	        android:padding="8dp">
-	        
-	        <com.rey.material.widget.Button
-		        android:id="@+id/button_bt_float_wave"
-		        android:layout_width="76dp"
-		        android:layout_height="78dp"
-		        android:textColor="#FF000000"
-		        android:text="+"
-		        android:textSize="30sp"
-		        app:ripple="@style/FloatWaveButtonRippleStyle"
-		        app:delayClick="false"/>
+
+            <com.rey.material.widget.FloatingActionButton
+                style="@style/FloatingWaveActionButton"
+                android:id="@+id/button_bt_float_wave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 	        
 	        <View
 	            android:layout_width="100dp"
 		        android:layout_height="1dp"/>
-	        
-	        <com.rey.material.widget.Button
-		        android:id="@+id/button_bt_float_wave_color"
-		        android:layout_width="76dp"
-		        android:layout_height="78dp"
-		        android:textColor="#FFFFFFFF"
-		        android:text="+"
-		        android:textSize="30sp"
-		        app:ripple="@style/FloatWaveColorButtonRippleStyle"
-		        app:delayClick="true"/>        
-	    </LinearLayout>
+
+            <com.rey.material.widget.FloatingActionButton
+                style="@style/FloatingWaveColorActionButton"
+                android:id="@+id/button_bt_float_wave_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
 	</LinearLayout>
     

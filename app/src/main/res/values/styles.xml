@@ -172,47 +172,7 @@
         <item name="rd_rightPadding">1dp</item>
         <item name="rd_bottomPadding">2dp</item>
     </style>
-    
-    <style name="FloatButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
-        <item name="rd_background">@drawable/bg_bt_float</item>
-        <item name="rd_maxRippleRadius">32dp</item>
-        <item name="rd_maskType">oval</item>
-        <item name="rd_leftPadding">2dp</item>
-        <item name="rd_topPadding">2dp</item>
-        <item name="rd_rightPadding">2dp</item>
-        <item name="rd_bottomPadding">4dp</item>
-    </style>
-    
-    <style name="FloatWaveButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
-        <item name="rd_background">@drawable/bg_bt_float</item>
-        <item name="rd_maskType">oval</item>
-        <item name="rd_leftPadding">2dp</item>
-        <item name="rd_topPadding">2dp</item>
-        <item name="rd_rightPadding">2dp</item>
-        <item name="rd_bottomPadding">4dp</item>
-    </style>
-    
-	<style name="FloatColorButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
-        <item name="rd_background">@drawable/bg_bt_float_color</item>
-        <item name="rd_rippleColor">#33000000</item>
-        <item name="rd_maxRippleRadius">32dp</item>
-        <item name="rd_maskType">oval</item>
-        <item name="rd_leftPadding">2dp</item>
-        <item name="rd_topPadding">2dp</item>
-        <item name="rd_rightPadding">2dp</item>
-        <item name="rd_bottomPadding">4dp</item>
-    </style>
-    
-	<style name="FloatWaveColorButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
-        <item name="rd_background">@drawable/bg_bt_float_color</item>
-        <item name="rd_rippleColor">#33000000</item>
-        <item name="rd_maskType">oval</item>
-        <item name="rd_leftPadding">2dp</item>
-        <item name="rd_topPadding">2dp</item>
-        <item name="rd_rightPadding">2dp</item>
-        <item name="rd_bottomPadding">4dp</item>
-    </style>
-    
+
 	<!-- Switch Style -->
 	
 	<style name="RadioButtonDrawable" parent="Material.Drawable.RadioButton"/>
@@ -222,16 +182,50 @@
     <!-- FloatingActionButton Style -->
 
     <style name="FloatingActionButton" parent="Material.Widget.FloatingActionButton.Light">
-        <item name="fab_radius">28dp</item>
+        <item name="fab_backgroundColor">#FFDFDFDF</item>
         <item name="fab_elevation">4dp</item>
-        <item name="fab_icon">@style/FloatingActionButtonIcon</item>
-        <item name="fab_iconSize">24dp</item>
+        <item name="fab_icon">@style/FloatingActionButtonIcon.Light</item>
         <item name="fab_autoSwitch">true</item>
-        <item name="ripple">@style/RaiseWaveColorButtonRippleStyle</item>
+        <item name="ripple">@style/Material.Drawable.Ripple.Touch.Light</item>
         <item name="delayClick">false</item>
     </style>
-    
-    <style name="FloatingActionButtonIcon">
+
+    <style name="FloatingWaveActionButton" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="fab_backgroundColor">#FFDFDFDF</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_icon">@style/FloatingActionButtonIcon.Light</item>
+        <item name="fab_autoSwitch">true</item>
+        <item name="ripple">@style/Material.Drawable.Ripple.Wave.Light</item>
+        <item name="delayClick">false</item>
+    </style>
+
+    <style name="FloatingColorActionButton" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="fab_backgroundColor">#FF2196F3</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_icon">@style/FloatingActionButtonIcon</item>
+        <item name="fab_autoSwitch">true</item>
+        <item name="ripple">@style/FloatingColorButtonRippleStyle</item>
+        <item name="delayClick">true</item>
+    </style>
+
+    <style name="FloatingWaveColorActionButton" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="fab_backgroundColor">#FF2196F3</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_icon">@style/FloatingActionButtonIcon</item>
+        <item name="fab_autoSwitch">true</item>
+        <item name="ripple">@style/FloatingWaveColorButtonRippleStyle</item>
+        <item name="delayClick">true</item>
+    </style>
+
+    <style name="FloatingColorButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="rd_rippleColor">#33000000</item>
+    </style>
+
+    <style name="FloatingWaveColorButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">#33000000</item>
+    </style>
+
+    <style name="FloatingActionButtonIcon" >
         <item name="lmd_state">@xml/fab_icon_states</item>
         <item name="lmd_curState">0</item>
         <item name="lmd_padding">2dp</item>
@@ -243,8 +237,9 @@
         <item name="lmd_strokeJoin">miter</item>
         <item name="lmd_clockwise">true</item>
     </style>
-
-    <!-- Dialog -->
-
     
+    <style name="FloatingActionButtonIcon.Light" parent="FloatingActionButtonIcon">
+        <item name="lmd_strokeColor">#FF000000</item>
+    </style>
+s
 </resources>

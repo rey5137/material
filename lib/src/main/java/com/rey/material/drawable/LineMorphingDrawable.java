@@ -162,7 +162,7 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	}
 	
 	public int getLineStateCount(){
-		return mStates.length;
+		return mStates == null ? 0 : mStates.length;
 	}
 	
 	public float getAnimProgress(){
