@@ -20,9 +20,11 @@
             android:textColor="#FF000000"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="text"
-            android:hint="Input with label"
-            app:et_inputId="@+id/textfield_et_label_input"
-            app:et_supportMode="none" />
+            android:hint="Contact"
+            app:et_inputId="@+id/textfield_et_contact_input"
+            app:et_supportMode="none"
+            app:et_autoCompleteMode="single"
+            android:completionThreshold="2"/>
 
         <com.rey.material.widget.EditText
             style="@style/Material.Widget.EditText.Light"
@@ -46,7 +48,7 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="textMultiLine"
             android:hint="Input with char counter"
-            app:et_inputId="@+id/textfield_et_cahr_counter_input"
+            app:et_inputId="@+id/textfield_et_char_counter_input"
             app:et_labelTextColor="@drawable/color_label"
             app:et_supportMode="charCounter"
             app:et_supportMaxChars="20"

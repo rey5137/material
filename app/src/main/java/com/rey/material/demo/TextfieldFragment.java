@@ -5,10 +5,14 @@ import com.rey.material.text.style.ContactChipSpan;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.EditText;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -16,7 +20,14 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import static android.provider.ContactsContract.CommonDataKinds.Phone;
 
 public class TextfieldFragment extends Fragment{
 
@@ -79,13 +90,8 @@ public class TextfieldFragment extends Fragment{
 		});
 
         EditText a = (EditText) v.findViewById(R.id.textfield_tv);
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
-        ssb.append("Test 1234567");
-        ContactChipSpan span = new ContactChipSpan("Harry Potter", ThemeUtil.dpToPx(getActivity(), 32), ThemeUtil.dpToPx(getActivity(), 128), ThemeUtil.dpToPx(getActivity(), 8), ThemeUtil.dpToPx(getActivity(), 12), Typeface.DEFAULT, 0xFF7A7A7A, ThemeUtil.spToPx(getActivity(), 16), 0xFFE7E7E7);
-        Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.ic_user);
-        span.setImage(icon);
-        ssb.setSpan(span, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        a.setText(ssb, TextView.BufferType.SPANNABLE);
+        ContactAdapter adapter = new ContactAdapter(getActivity());
+        a.setAdapter(adapter);
 
 		return v;
 	}
@@ -99,5 +105,103 @@ public class TextfieldFragment extends Fragment{
 	public void onResume() {
 		super.onResume();
 	}
-	
+
+
+    static class ContactAdapter extends BaseAdapter implements Filterable{
+
+        private Context mContext;
+
+        private static final String COLS[] = new String[]{
+                Phone.CONTACT_ID,
+                Phone.LOOKUP_KEY,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? Phone.DISPLAY_NAME_PRIMARY : Phone.DISPLAY_NAME,
+                Phone.NUMBER,
+        };
+
+        private ArrayList<ContactData> mItems;
+
+        public ContactAdapter(Context context){
+            mContext = context;
+        }
+
+        @Override
+        public int getCount() {
+            return mItems == null ? 0 : mItems.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mItems == null ? null : mItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            if(v == null)
+                v = LayoutInflater.from(mContext).inflate(R.layout.row_drawer, parent, false);
+
+            ContactData data = (ContactData)getItem(position);
+            ((TextView)v).setText(data.displayName + "-" + data.phoneNumber);
+
+            return v;
+        }
+
+        @Override
+        public Filter getFilter() {
+            return contactFilter;
+        }
+
+        Filter contactFilter = new Filter() {
+            @Override
+            public CharSequence convertResultToString(Object resultValue) {
+                ContactData data = (ContactData)resultValue;
+                return data.displayName + " " + data.phoneNumber;
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+
+                if(constraint != null){
+                    String selection = Phone.NUMBER + " LIKE ? OR " + COLS[2] + " LIKE ?";
+                    String[] selectionArgs = new String[]{"%" + constraint + "%", "%" + constraint + "%"};
+                    String sortOrder = COLS[2] + " COLLATE LOCALIZED ASC";
+                    Cursor cursor = mContext.getContentResolver().query(Phone.CONTENT_URI, COLS, selection, selectionArgs, sortOrder);
+                    if(cursor.getCount() > 0){
+                        ArrayList<ContactData> values = new ArrayList<>();
+                        while(cursor.moveToNext()){
+                            ContactData data = new ContactData();
+                            data.lockupKey = cursor.getString(cursor.getColumnIndex(COLS[1]));
+                            data.displayName = cursor.getString(cursor.getColumnIndex(COLS[2]));
+                            data.phoneNumber = cursor.getString(cursor.getColumnIndex(COLS[3]));
+                            values.add(data);
+                        }
+
+                        results.values = values;
+                        results.count = values.size();
+                    }
+                    cursor.close();
+                }
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mItems = (ArrayList<ContactData>)results.values;
+                notifyDataSetChanged();
+            }
+        };
+
+        static class ContactData{
+            String lockupKey;
+            String displayName;
+            String phoneNumber;
+        }
+    }
 }

@@ -43,8 +43,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
-import android.widget.FrameLayout;
-import android.widget.Scroller;
+import android.widget.*;
 
 import com.rey.material.R;
 import com.rey.material.drawable.DividerDrawable;
@@ -55,11 +54,16 @@ public class EditText extends FrameLayout {
 
 	private boolean mLabelEnable;
 	private int mSupportMode;
+    private int mAutoCompleteMode;
 	
 	public static final int SUPPORT_MODE_NONE 					= 0;
 	public static final int SUPPORT_MODE_HELPER 				= 1;
 	public static final int SUPPORT_MODE_HELPER_WITH_ERROR 		= 2;
 	public static final int SUPPORT_MODE_CHAR_COUNTER 			= 3;
+
+    public static final int AUTOCOMPLETE_MODE_NONE 				= 0;
+    public static final int AUTOCOMPLETE_MODE_SINGLE 			= 1;
+    public static final int AUTOCOMPLETE_MODE_MULTI      		= 2;
 	
 	private ColorStateList mDividerColors;
 	private ColorStateList mDividerErrorColors;
@@ -74,7 +78,7 @@ public class EditText extends FrameLayout {
 	private int mLabelOutAnimId;
 	
 	private LabelView mLabelView;
-	private InputView mInputView;
+	private android.widget.EditText mInputView;
 	private LabelView mSupportView;
 	private DividerDrawable mDivider;
 
@@ -109,10 +113,22 @@ public class EditText extends FrameLayout {
 		
 		mLabelEnable = a.getBoolean(R.styleable.EditText_et_labelEnable, false);
 		mSupportMode = a.getInteger(R.styleable.EditText_et_supportMode, SUPPORT_MODE_NONE);
-		
-		mInputView = new InputView(context, attrs, defStyleAttr);
+        mAutoCompleteMode = a.getInteger(R.styleable.EditText_et_autoCompleteMode, AUTOCOMPLETE_MODE_NONE);
+
+        switch (mAutoCompleteMode){
+            case AUTOCOMPLETE_MODE_SINGLE:
+                mInputView = new InternalAutoCompleteTextView(context, attrs, defStyleAttr);
+                break;
+            case AUTOCOMPLETE_MODE_MULTI:
+                mInputView = new InternalMultiAutoCompleteTextView(context, attrs, defStyleAttr);
+                break;
+            default:
+                mInputView = new InternalEditText(context, attrs, defStyleAttr);
+                break;
+        }
+
 		int inputId = a.getResourceId(R.styleable.EditText_et_inputId, 0);
-		mInputView.setId(inputId > 0 ? inputId : ViewUtil.generateViewId());
+		mInputView.setId(inputId != 0 ? inputId : ViewUtil.generateViewId());
 		mInputView.setFocusableInTouchMode(true);
 		mDividerColors = a.getColorStateList(R.styleable.EditText_et_dividerColor);
 		mDividerErrorColors = a.getColorStateList(R.styleable.EditText_et_dividerErrorColor);
@@ -396,7 +412,623 @@ public class EditText extends FrameLayout {
     			mSupportView.setText(String.valueOf(count));
 		}
 	}
-	
+
+    /* protected method of AutoCompleteTextView */
+
+    /**
+     * <p>Converts the selected item from the drop down list into a sequence
+     * of character that can be used in the edit box.</p>
+     *
+     * @param selectedItem the item selected by the user for completion
+     *
+     * @return a sequence of characters representing the selected suggestion
+     */
+    protected CharSequence convertSelectionToString(Object selectedItem) {
+        switch (mAutoCompleteMode){
+            case AUTOCOMPLETE_MODE_SINGLE:
+                return ((InternalAutoCompleteTextView)mInputView).superConvertSelectionToString(selectedItem);
+            case AUTOCOMPLETE_MODE_MULTI:
+                return ((InternalMultiAutoCompleteTextView)mInputView).superConvertSelectionToString(selectedItem);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * <p>Starts filtering the content of the drop down list. The filtering
+     * pattern is the content of the edit box. Subclasses should override this
+     * method to filter with a different pattern, for instance a substring of
+     * <code>text</code>.</p>
+     *
+     * @param text the filtering pattern
+     * @param keyCode the last character inserted in the edit box; beware that
+     * this will be null when text is being added through a soft input method.
+     */
+    protected void performFiltering(CharSequence text, int keyCode) {
+        switch (mAutoCompleteMode){
+            case AUTOCOMPLETE_MODE_SINGLE:
+                ((InternalAutoCompleteTextView)mInputView).superPerformFiltering(text, keyCode);
+                break;
+            case AUTOCOMPLETE_MODE_MULTI:
+                ((InternalMultiAutoCompleteTextView)mInputView).superPerformFiltering(text, keyCode);
+                break;
+        }
+    }
+
+    /**
+     * <p>Performs the text completion by replacing the current text by the
+     * selected item. Subclasses should override this method to avoid replacing
+     * the whole content of the edit box.</p>
+     *
+     * @param text the selected suggestion in the drop down list
+     */
+    protected void replaceText(CharSequence text) {
+        switch (mAutoCompleteMode){
+            case AUTOCOMPLETE_MODE_SINGLE:
+                ((InternalAutoCompleteTextView)mInputView).superReplaceText(text);
+                break;
+            case AUTOCOMPLETE_MODE_MULTI:
+                ((InternalMultiAutoCompleteTextView)mInputView).superReplaceText(text);
+                break;
+        }
+    }
+
+    /**
+     * Returns the Filter obtained from {@link Filterable#getFilter},
+     * or <code>null</code> if {@link #setAdapter} was not called with
+     * a Filterable.
+     */
+    protected Filter getFilter() {
+        switch (mAutoCompleteMode){
+            case AUTOCOMPLETE_MODE_SINGLE:
+                return ((InternalAutoCompleteTextView)mInputView).superGetFilter();
+            case AUTOCOMPLETE_MODE_MULTI:
+                return ((InternalMultiAutoCompleteTextView)mInputView).superGetFilter();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * <p>Starts filtering the content of the drop down list. The filtering
+     * pattern is the specified range of text from the edit box. Subclasses may
+     * override this method to filter with a different pattern, for
+     * instance a smaller substring of <code>text</code>.</p>
+     */
+    protected void performFiltering(CharSequence text, int start, int end, int keyCode) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_MULTI)
+            ((InternalMultiAutoCompleteTextView)mInputView).superPerformFiltering(text, start, end, keyCode);
+    }
+
+    /* public method of AutoCompleteTextView */
+
+    /**
+     * <p>Sets the optional hint text that is displayed at the bottom of the
+     * the matching list.  This can be used as a cue to the user on how to
+     * best use the list, or to provide extra information.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param hint the text to be displayed to the user
+     *
+     * @see #getCompletionHint()
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
+     */
+    public void setCompletionHint(CharSequence hint) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setCompletionHint(hint);
+    }
+
+    /**
+     * Gets the optional hint text displayed at the bottom of the the matching list.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return The hint text, if any
+     *
+     * @see #setCompletionHint(CharSequence)
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
+     */
+    public CharSequence getCompletionHint() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getCompletionHint();
+    }
+
+    /**
+     * <p>Returns the current width for the auto-complete drop down list. This can
+     * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
+     * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the width for the drop down list
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownWidth
+     */
+    public int getDropDownWidth() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getDropDownWidth();
+    }
+
+    /**
+     * <p>Sets the current width for the auto-complete drop down list. This can
+     * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
+     * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param width the width to use
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownWidth
+     */
+    public void setDropDownWidth(int width) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownWidth(width);
+    }
+
+    /**
+     * <p>Returns the current height for the auto-complete drop down list. This can
+     * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
+     * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
+     * of the drop down's content.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the height for the drop down list
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownHeight
+     */
+    public int getDropDownHeight() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getDropDownHeight();
+    }
+
+    /**
+     * <p>Sets the current height for the auto-complete drop down list. This can
+     * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
+     * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
+     * of the drop down's content.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param height the height to use
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownHeight
+     */
+    public void setDropDownHeight(int height) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownHeight(height);
+    }
+
+    /**
+     * <p>Returns the id for the view that the auto-complete drop down list is anchored to.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the view's id, or {@link View#NO_ID} if none specified
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownAnchor
+     */
+    public int getDropDownAnchor() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getDropDownAnchor();
+    }
+
+    /**
+     * <p>Sets the view to which the auto-complete drop down list should anchor. The view
+     * corresponding to this id will not be loaded until the next time it is needed to avoid
+     * loading a view which is not yet instantiated.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param id the id to anchor the drop down list view to
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_dropDownAnchor
+     */
+    public void setDropDownAnchor(int id) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownAnchor(id);
+    }
+
+    /**
+     * <p>Gets the background of the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the background drawable
+     *
+     * @attr ref android.R.styleable#PopupWindow_popupBackground
+     */
+    public Drawable getDropDownBackground() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getDropDownBackground();
+    }
+
+    /**
+     * <p>Sets the background of the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param d the drawable to set as the background
+     *
+     * @attr ref android.R.styleable#PopupWindow_popupBackground
+     */
+    public void setDropDownBackgroundDrawable(Drawable d) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownBackgroundDrawable(d);
+    }
+
+    /**
+     * <p>Sets the background of the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param id the id of the drawable to set as the background
+     *
+     * @attr ref android.R.styleable#PopupWindow_popupBackground
+     */
+    public void setDropDownBackgroundResource(int id) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownBackgroundResource(id);
+    }
+
+    /**
+     * <p>Sets the vertical offset used for the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param offset the vertical offset
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownVerticalOffset
+     */
+    public void setDropDownVerticalOffset(int offset) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownVerticalOffset(offset);
+    }
+
+    /**
+     * <p>Gets the vertical offset used for the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the vertical offset
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownVerticalOffset
+     */
+    public int getDropDownVerticalOffset() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getDropDownVerticalOffset();
+    }
+
+    /**
+     * <p>Sets the horizontal offset used for the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param offset the horizontal offset
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownHorizontalOffset
+     */
+    public void setDropDownHorizontalOffset(int offset) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setDropDownHorizontalOffset(offset);
+    }
+
+    /**
+     * <p>Gets the horizontal offset used for the auto-complete drop-down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the horizontal offset
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownHorizontalOffset
+     */
+    public int getDropDownHorizontalOffset() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getDropDownHorizontalOffset();
+    }
+
+    /**
+     * <p>Returns the number of characters the user must type before the drop
+     * down list is shown.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the minimum number of characters to type to show the drop down
+     *
+     * @see #setThreshold(int)
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_completionThreshold
+     */
+    public int getThreshold() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getThreshold();
+    }
+
+    /**
+     * <p>Specifies the minimum number of characters the user has to type in the
+     * edit box before the drop down list is shown.</p>
+     *
+     * <p>When <code>threshold</code> is less than or equals 0, a threshold of
+     * 1 is applied.</p>
+     *
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param threshold the number of characters to type before the drop down
+     *                  is shown
+     *
+     * @see #getThreshold()
+     *
+     * @attr ref android.R.styleable#AutoCompleteTextView_completionThreshold
+     */
+    public void setThreshold(int threshold) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setThreshold(threshold);
+    }
+
+    /**
+     * <p>Sets the listener that will be notified when the user clicks an item
+     * in the drop down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param l the item click listener
+     */
+    public void setOnItemClickListener(AdapterView.OnItemClickListener l) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setOnItemClickListener(l);
+    }
+
+    /**
+     * <p>Sets the listener that will be notified when the user selects an item
+     * in the drop down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param l the item selected listener
+     */
+    public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener l) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setOnItemSelectedListener(l);
+    }
+
+    /**
+     * <p>Returns the listener that is notified whenever the user clicks an item
+     * in the drop down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the item click listener
+     */
+    public AdapterView.OnItemClickListener getOnItemClickListener() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getOnItemClickListener();
+    }
+
+    /**
+     * <p>Returns the listener that is notified whenever the user selects an
+     * item in the drop down list.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the item selected listener
+     */
+    public AdapterView.OnItemSelectedListener getOnItemSelectedListener() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getOnItemSelectedListener();
+    }
+
+    /**
+     * <p>Returns a filterable list adapter used for auto completion.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return a data adapter used for auto completion
+     */
+    public ListAdapter getAdapter() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getAdapter();
+    }
+
+    /**
+     * <p>Changes the list of data used for auto completion. The provided list
+     * must be a filterable list adapter.</p>
+     *
+     * <p>The caller is still responsible for managing any resources used by the adapter.
+     * Notably, when the AutoCompleteTextView is closed or released, the adapter is not notified.
+     * A common case is the use of {@link android.widget.CursorAdapter}, which
+     * contains a {@link android.database.Cursor} that must be closed.  This can be done
+     * automatically (see
+     * {@link android.app.Activity#startManagingCursor(android.database.Cursor)
+     * startManagingCursor()}),
+     * or by manually closing the cursor when the AutoCompleteTextView is dismissed.</p>
+     *
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param adapter the adapter holding the auto completion data
+     *
+     * @see #getAdapter()
+     * @see android.widget.Filterable
+     * @see android.widget.ListAdapter
+     */
+    public <T extends ListAdapter & Filterable> void setAdapter(T adapter) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setAdapter(adapter);
+    }
+
+    /**
+     * Returns <code>true</code> if the amount of text in the field meets
+     * or exceeds the {@link #getThreshold} requirement.  You can override
+     * this to impose a different standard for when filtering will be
+     * triggered.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public boolean enoughToFilter() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return false;
+        return ((AutoCompleteTextView)mInputView).enoughToFilter();
+    }
+
+    /**
+     * <p>Indicates whether the popup menu is showing.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return true if the popup menu is showing, false otherwise
+     */
+    public boolean isPopupShowing() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return false;
+        return ((AutoCompleteTextView)mInputView).isPopupShowing();
+    }
+
+    /**
+     * <p>Clear the list selection.  This may only be temporary, as user input will often bring
+     * it back.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public void clearListSelection() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).clearListSelection();
+    }
+
+    /**
+     * Set the position of the dropdown view selection.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param position The position to move the selector to.
+     */
+    public void setListSelection(int position) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setListSelection(position);
+    }
+
+    /**
+     * Get the position of the dropdown view selection, if there is one.  Returns
+     * {@link android.widget.ListView#INVALID_POSITION ListView.INVALID_POSITION} if there is no dropdown or if
+     * there is no selection.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @return the position of the current selection, if there is one, or
+     * {@link android.widget.ListView#INVALID_POSITION ListView.INVALID_POSITION} if not.
+     *
+     * @see android.widget.ListView#getSelectedItemPosition()
+     */
+    public int getListSelection() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return 0;
+        return ((AutoCompleteTextView)mInputView).getListSelection();
+    }
+
+    /**
+     * <p>Performs the text completion by converting the selected item from
+     * the drop down list into a string, replacing the text box's content with
+     * this string and finally dismissing the drop down menu.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public void performCompletion() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).performCompletion();
+    }
+
+    /**
+     * Identifies whether the view is currently performing a text completion, so subclasses
+     * can decide whether to respond to text changed events.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public boolean isPerformingCompletion() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return false;
+        return ((AutoCompleteTextView)mInputView).isPerformingCompletion();
+    }
+
+    /** <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p> */
+    public void onFilterComplete(int count) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).onFilterComplete(count);
+    }
+
+    /**
+     * <p>Closes the drop down if present on screen.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public void dismissDropDown() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).dismissDropDown();
+    }
+
+    /**
+     * <p>Displays the drop down on screen.</p>
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public void showDropDown() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).showDropDown();
+    }
+
+    /**
+     * Sets the validator used to perform text validation.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @param validator The validator used to validate the text entered in this widget.
+     *
+     * @see #getValidator()
+     * @see #performValidation()
+     */
+    public void setValidator(AutoCompleteTextView.Validator validator) {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).setValidator(validator);
+    }
+
+    /**
+     * Returns the Validator set with {@link #setValidator},
+     * or <code>null</code> if it was not set.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
+     * @see #performValidation()
+     */
+    public AutoCompleteTextView.Validator getValidator() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return null;
+        return ((AutoCompleteTextView)mInputView).getValidator();
+    }
+
+    /**
+     * If a validator was set on this view and the current string is not valid,
+     * ask the validator to fix it.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     *
+     * @see #getValidator()
+     * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
+     */
+    public void performValidation() {
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return;
+        ((AutoCompleteTextView)mInputView).performValidation();
+    }
+
+    /**
+     * Sets the Tokenizer that will be used to determine the relevant
+     * range of the text where the user is typing.
+     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_MULTI</p>
+     */
+    public void setTokenizer(MultiAutoCompleteTextView.Tokenizer t) {
+        if(mAutoCompleteMode != AUTOCOMPLETE_MODE_MULTI)
+            return;
+        ((MultiAutoCompleteTextView)mInputView).setTokenizer(t);
+    }
+
 	/* public method of EditText */
 
     @Override
@@ -2651,17 +3283,17 @@ public class EditText extends FrameLayout {
 		
 	}
 	
-	private class InputView extends android.widget.EditText{
+	private class InternalEditText extends android.widget.EditText{
 
-		public InputView(Context context) {
+		public InternalEditText(Context context) {
 			super(context);
 		}
 		
-		public InputView(Context context, AttributeSet attrs) {
+		public InternalEditText(Context context, AttributeSet attrs) {
 			super(context, attrs);
 		}
 
-		public InputView(Context context, AttributeSet attrs, int defStyleAttr) {
+		public InternalEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 			super(context, attrs, defStyleAttr);
 		}
 
@@ -2676,5 +3308,138 @@ public class EditText extends FrameLayout {
 				mSupportView.refreshDrawableState();
 		}
 				
-	}	
+	}
+
+    private class InternalAutoCompleteTextView extends android.widget.AutoCompleteTextView{
+
+        public InternalAutoCompleteTextView(Context context) {
+            super(context);
+        }
+
+        public InternalAutoCompleteTextView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public InternalAutoCompleteTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+        @Override
+        public void refreshDrawableState() {
+            super.refreshDrawableState();
+
+            if(mLabelView != null)
+                mLabelView.refreshDrawableState();
+
+            if(mSupportView != null)
+                mSupportView.refreshDrawableState();
+        }
+
+        @Override
+        protected CharSequence convertSelectionToString(Object selectedItem) {
+            return EditText.this.convertSelectionToString(selectedItem);
+        }
+
+        @Override
+        protected void performFiltering(CharSequence text, int keyCode) {
+            EditText.this.performFiltering(text, keyCode);
+        }
+
+        @Override
+        protected void replaceText(CharSequence text) {
+            EditText.this.replaceText(text);
+        }
+
+        @Override
+        protected Filter getFilter() {
+            return EditText.this.getFilter();
+        }
+
+        CharSequence superConvertSelectionToString(Object selectedItem) {
+            return super.convertSelectionToString(selectedItem);
+        }
+
+        void superPerformFiltering(CharSequence text, int keyCode) {
+            super.performFiltering(text, keyCode);
+        }
+
+        void superReplaceText(CharSequence text) {
+            super.replaceText(text);
+        }
+
+        Filter superGetFilter() {
+            return super.getFilter();
+        }
+    }
+
+    private class InternalMultiAutoCompleteTextView extends android.widget.MultiAutoCompleteTextView{
+
+        public InternalMultiAutoCompleteTextView(Context context) {
+            super(context);
+        }
+
+        public InternalMultiAutoCompleteTextView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public InternalMultiAutoCompleteTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+        @Override
+        public void refreshDrawableState() {
+            super.refreshDrawableState();
+
+            if(mLabelView != null)
+                mLabelView.refreshDrawableState();
+
+            if(mSupportView != null)
+                mSupportView.refreshDrawableState();
+        }
+
+        @Override
+        protected CharSequence convertSelectionToString(Object selectedItem) {
+            return EditText.this.convertSelectionToString(selectedItem);
+        }
+
+        @Override
+        protected void performFiltering(CharSequence text, int keyCode) {
+            EditText.this.performFiltering(text, keyCode);
+        }
+
+        @Override
+        protected void replaceText(CharSequence text) {
+            EditText.this.replaceText(text);
+        }
+
+        @Override
+        protected Filter getFilter() {
+            return EditText.this.getFilter();
+        }
+
+        @Override
+        protected void performFiltering(CharSequence text, int start, int end, int keyCode){
+            EditText.this.performFiltering(text, start, end, keyCode);
+        }
+
+        CharSequence superConvertSelectionToString(Object selectedItem) {
+            return super.convertSelectionToString(selectedItem);
+        }
+
+        void superPerformFiltering(CharSequence text, int keyCode) {
+            super.performFiltering(text, keyCode);
+        }
+
+        void superReplaceText(CharSequence text) {
+            super.replaceText(text);
+        }
+
+        Filter superGetFilter() {
+            return super.getFilter();
+        }
+
+        void superPerformFiltering(CharSequence text, int start, int end, int keyCode){
+            super.performFiltering(text, start, end, keyCode);
+        }
+    }
 }

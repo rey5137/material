@@ -224,6 +224,11 @@
         <attr name="et_dividerHeight" format="reference|dimension"/>        
         <attr name="et_dividerPadding" format="reference|dimension"/> 
         <attr name="et_dividerAnimDuration" format="reference|integer"/>
+        <attr name="et_autoCompleteMode" format="integer">
+            <enum name="none"   value="0"/>
+            <enum name="single" value="1"/>
+            <enum name="multi"  value="2"/>
+        </attr>
     </declare-styleable>
     
     <declare-styleable name="SnackBar">
