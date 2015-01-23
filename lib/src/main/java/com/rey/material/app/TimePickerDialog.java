@@ -5,35 +5,27 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.rey.material.R;
 import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.TimePicker;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Rey on 12/24/2014.
@@ -184,7 +176,7 @@ public class TimePickerDialog extends Dialog{
 
         private static final String TIME_DIVIDER = ":";
         private static final String BASE_TEXT = "0";
-        private static final String MINUTE_FORMART = "%02d";
+        private static final String FORMART = "%02d";
 
         private boolean mLocationDirty = true;
         private float mBaseY;
@@ -221,8 +213,8 @@ public class TimePickerDialog extends Dialog{
             mAmView.setOnClickListener(this);
             mPmView.setOnClickListener(this);
 
-            mHour = String.valueOf(mTimePicker.getHour() + 1);
-            mMinute = String.format("%02d", mTimePicker.getMinute());
+            mHour = String.format(FORMART, mTimePicker.getHour());
+            mMinute = String.format(FORMART, mTimePicker.getMinute());
 
             addView(mTimePicker);
             addView(mAmView);
@@ -337,7 +329,7 @@ public class TimePickerDialog extends Dialog{
 
         @Override
         public void onHourChanged(int oldValue, int newValue) {
-            mHour = String.valueOf(newValue + 1);
+            mHour = String.format(FORMART, newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
@@ -347,7 +339,7 @@ public class TimePickerDialog extends Dialog{
 
         @Override
         public void onMinuteChanged(int oldValue, int newValue) {
-            mMinute = String.format(MINUTE_FORMART, newValue);
+            mMinute = String.format(FORMART, newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 

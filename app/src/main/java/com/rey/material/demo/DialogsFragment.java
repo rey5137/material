@@ -212,7 +212,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_time_light:
-                builder = new TimePickerDialog.Builder(R.style.Material_App_Dialog_TimePicker_Light, 2, 45, true){
+                builder = new TimePickerDialog.Builder(R.style.Material_App_Dialog_TimePicker_Light, 6, 00, true){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         TimePickerDialog dialog = (TimePickerDialog)fragment.getDialog();

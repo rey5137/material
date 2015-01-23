@@ -37,6 +37,7 @@ public class TimePicker extends View{
     private int mTextSize;
     private int mTextColor;
     private int mTextHighlightColor;
+    private boolean m24Hour = true;
 
     private int mAnimDuration;
     private Interpolator mInInterpolator;
@@ -50,10 +51,15 @@ public class TimePicker extends View{
     private PointF mCenterPoint;
     private float mOuterRadius;
     private float mInnerRadius;
+    private float mSecondInnerRadius;
 
-    private float[] mLocations = new float[48];
+    private float[] mLocations = new float[72];
     private Rect mRect;
-    private static final String[] TICKS = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "00"};
+    private static final String[] TICKS = new String[]{
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
+            "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "00",
+            "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "00"
+    };
 
     private int mMode = -1;
 
@@ -185,6 +191,10 @@ public class TimePicker extends View{
         return mMinute;
     }
 
+    public boolean is24Hour(){
+        return m24Hour;
+    }
+
     public void setMode(int mode, boolean animation){
         if(mMode != mode){
             mMode = mode;
@@ -200,7 +210,7 @@ public class TimePicker extends View{
     }
 
     public void setHour(int hour){
-        hour = Math.min(Math.max(hour, 0), 11);
+        hour = Math.min(Math.max(hour, 0), (m24Hour ? 23 : 11));
 
         if(mHour != hour){
             int old = mHour;
@@ -233,10 +243,19 @@ public class TimePicker extends View{
         mOnTimeChangedListener = listener;
     }
 
+    public void set24Hour(boolean b){
+        if(m24Hour != b){
+            m24Hour = b;
+            if(!m24Hour && mHour > 11)
+                setHour(mHour - 12);
+            calculateTextLocation();
+        }
+    }
+
     private float getAngle(int value, int mode){
         switch (mode){
             case MODE_HOUR:
-                return (float)(-Math.PI / 3 + Math.PI / 6 * value);
+                return (float)(-Math.PI / 2 + Math.PI / 6 * value);
             case MODE_MINUTE:
                 return (float)(-Math.PI / 2 + Math.PI / 30 * value);
             default:
@@ -247,10 +266,10 @@ public class TimePicker extends View{
     private int getSelectedTick(int value, int mode){
         switch (mode){
             case MODE_HOUR:
-                return value;
+                return value == 0 ? (m24Hour ? 23 : 11) : value - 1;
             case MODE_MINUTE:
                 if(value % 5 == 0)
-                    return (value == 0) ? 23 : (value / 5 + 11);
+                    return (value == 0) ? 35 : (value / 5 + 23);
             default:
                 return -1;
         }
@@ -272,6 +291,9 @@ public class TimePicker extends View{
     }
 
     private void calculateTextLocation(){
+        if(mCenterPoint == null)
+            return;
+
         double step = Math.PI / 6;
         double angle = -Math.PI / 3;
         float x, y;
@@ -280,16 +302,56 @@ public class TimePicker extends View{
         mPaint.setTypeface(mTypeface);
         mPaint.setTextAlign(Paint.Align.CENTER);
 
-        for(int i = 0; i < TICKS.length; i++){
-            x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
-            y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+        if(m24Hour){
+            for(int i = 0; i < 12; i++){
+                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                if(i == 0)
+                    mSecondInnerRadius = mInnerRadius - mSelectionRadius - mRect.height();
 
-            mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
-            mLocations[i * 2] = x;
-            mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+                x = mCenterPoint.x + (float)Math.cos(angle) * mSecondInnerRadius;
+                y = mCenterPoint.y + (float)Math.sin(angle) * mSecondInnerRadius;
 
-            angle += step;
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+
+                angle += step;
+            }
+
+            for(int i = 12; i < TICKS.length; i++){
+                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+
+                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+
+                angle += step;
+            }
         }
+        else{
+            for(int i = 0; i < 12; i++){
+                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+
+                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+
+                angle += step;
+            }
+
+            for(int i = 24; i < TICKS.length; i++){
+                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+
+                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+
+                angle += step;
+            }
+        }
+
     }
 
     @Override
@@ -309,9 +371,13 @@ public class TimePicker extends View{
     }
 
     private int getPointedValue(float x, float y, boolean isDown){
+        float radius = (float) Math.sqrt(Math.pow(x - mCenterPoint.x, 2) + Math.pow(y - mCenterPoint.y, 2));
         if(isDown) {
-            float radius = (float) Math.sqrt(Math.pow(x - mCenterPoint.x, 2) + Math.pow(y - mCenterPoint.y, 2));
-            if (radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
+            if(mMode == MODE_HOUR && m24Hour){
+                if (radius > mInnerRadius + mSelectionRadius || radius < mSecondInnerRadius - mSelectionRadius)
+                    return -1;
+            }
+            else if (radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
                 return -1;
         }
 
@@ -320,8 +386,25 @@ public class TimePicker extends View{
             angle += Math.PI * 2;
 
         if(mMode == MODE_HOUR){
-            int value = (int)Math.round(angle * 6 / Math.PI) + 2;
-            return value > 11 ? value - 12 : value;
+            if(m24Hour){
+                if(radius > mSecondInnerRadius + mSelectionRadius / 2){
+                    int value = (int) Math.round(angle * 6 / Math.PI) + 15;
+                    if(value == 24)
+                        return 0;
+                    else if(value > 24)
+                        return value - 12;
+                    else
+                        return value;
+                }
+                else{
+                    int value = (int) Math.round(angle * 6 / Math.PI) + 3;
+                    return value > 12 ? value - 12 : value;
+                }
+            }
+            else {
+                int value = (int) Math.round(angle * 6 / Math.PI) + 3;
+                return value > 11 ? value - 12 : value;
+            }
         }
         else if(mMode == MODE_MINUTE){
             int value = (int)Math.round(angle * 30 / Math.PI) + 15;
@@ -381,21 +464,27 @@ public class TimePicker extends View{
             float angle;
             int selectedTick;
             int start;
+            int length;
+            float radius;
 
             if(mMode == MODE_HOUR){
                 angle = getAngle(mHour, MODE_HOUR);
                 selectedTick = getSelectedTick(mHour, MODE_HOUR);
                 start = 0;
+                length = m24Hour ? 24 : 12;
+                radius = m24Hour && selectedTick < 12 ? mSecondInnerRadius : mInnerRadius;
             }
             else{
                 angle = getAngle(mMinute, MODE_MINUTE);
                 selectedTick = getSelectedTick(mMinute, MODE_MINUTE);
-                start = 12;
+                start = 24;
+                length = 12;
+                radius = mInnerRadius;
             }
 
             mPaint.setColor(mSelectionColor);
-            float x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
-            float y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
+            float x = mCenterPoint.x + (float)Math.cos(angle) * radius;
+            float y = mCenterPoint.y + (float)Math.sin(angle) * radius;
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
 
             mPaint.setStyle(Paint.Style.STROKE);
@@ -413,7 +502,7 @@ public class TimePicker extends View{
             mPaint.setTextAlign(Paint.Align.CENTER);
 
             int index;
-            for(int i = 0; i < 12; i++) {
+            for(int i = 0; i < length; i++) {
                 index = start + i;
                 mPaint.setColor(index == selectedTick ? mTextHighlightColor : mTextColor);
                 canvas.drawText(TICKS[index], mLocations[index * 2], mLocations[index * 2 + 1], mPaint);
@@ -431,33 +520,45 @@ public class TimePicker extends View{
             float inAngle;
             int outStart;
             int inStart;
+            int outLength;
+            int inLength;
             int outSelectedTick;
             int inSelectedTick;
+            float outRadius;
+            float inRadius;
 
             if(mMode == MODE_MINUTE){
                 outAngle = getAngle(mHour, MODE_HOUR);
                 inAngle = getAngle(mMinute, MODE_MINUTE);
                 outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * maxOffset;
                 inOffset = (1f - mInInterpolator.getInterpolation(mAnimProgress)) * -maxOffset;
-                outStart = 0;
-                inStart = 12;
                 outSelectedTick = getSelectedTick(mHour, MODE_HOUR);
                 inSelectedTick = getSelectedTick(mMinute, MODE_MINUTE);
+                outStart = 0;
+                outLength = m24Hour ? 24 : 12;
+                outRadius = m24Hour && outSelectedTick < 12 ? mSecondInnerRadius : mInnerRadius;
+                inStart = 24;
+                inLength = 12;
+                inRadius = mInnerRadius;
             }
             else{
                 outAngle = getAngle(mMinute, MODE_MINUTE);
                 inAngle = getAngle(mHour, MODE_HOUR);
                 outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * -maxOffset;
                 inOffset = (1f - mInInterpolator.getInterpolation(mAnimProgress)) * maxOffset;
-                outStart = 12;
-                inStart = 0;
                 outSelectedTick = getSelectedTick(mMinute, MODE_MINUTE);
                 inSelectedTick = getSelectedTick(mHour, MODE_HOUR);
+                outStart = 24;
+                outLength = 12;
+                outRadius = mInnerRadius;
+                inStart = 0;
+                inLength = m24Hour ? 24 : 12;
+                inRadius = m24Hour && inSelectedTick < 12 ? mSecondInnerRadius : mInnerRadius;
             }
 
             mPaint.setColor(ColorUtil.getColor(mSelectionColor, 1f - mAnimProgress));
-            float x = mCenterPoint.x + (float)Math.cos(outAngle) * (mInnerRadius + outOffset);
-            float y = mCenterPoint.y + (float)Math.sin(outAngle) * (mInnerRadius + outOffset);
+            float x = mCenterPoint.x + (float)Math.cos(outAngle) * (outRadius + outOffset);
+            float y = mCenterPoint.y + (float)Math.sin(outAngle) * (outRadius + outOffset);
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
 
             mPaint.setStyle(Paint.Style.STROKE);
@@ -468,8 +569,8 @@ public class TimePicker extends View{
 
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setColor(ColorUtil.getColor(mSelectionColor, mAnimProgress));
-            x = mCenterPoint.x + (float)Math.cos(inAngle) * (mInnerRadius + inOffset);
-            y = mCenterPoint.y + (float)Math.sin(inAngle) * (mInnerRadius + inOffset);
+            x = mCenterPoint.x + (float)Math.cos(inAngle) * (inRadius + inOffset);
+            y = mCenterPoint.y + (float)Math.sin(inAngle) * (inRadius + inOffset);
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
 
             mPaint.setStyle(Paint.Style.STROKE);
@@ -490,7 +591,7 @@ public class TimePicker extends View{
             double angle = -Math.PI / 3;
             int index;
 
-            for(int i = 0; i < 12; i++){
+            for(int i = 0; i < outLength; i++){
                 index = i + outStart;
                 x = mLocations[index * 2] + (float)Math.cos(angle) * outOffset;
                 y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * outOffset;
@@ -499,7 +600,7 @@ public class TimePicker extends View{
                 angle += step;
             }
 
-            for(int i = 0; i < 12; i++){
+            for(int i = 0; i < inLength; i++){
                 index = i + inStart;
                 x = mLocations[index * 2] + (float)Math.cos(angle) * inOffset;
                 y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * inOffset;
@@ -562,6 +663,7 @@ public class TimePicker extends View{
         ss.mode = mMode;
         ss.hour = mHour;
         ss.minute = mMinute;
+        ss.is24Hour = m24Hour;
 
         return ss;
     }
@@ -570,6 +672,7 @@ public class TimePicker extends View{
     protected void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
+        set24Hour(ss.is24Hour);
         setMode(ss.mode, false);
         setHour(ss.hour);
         setMinute(ss.minute);
@@ -579,6 +682,7 @@ public class TimePicker extends View{
         int mode;
         int hour;
         int minute;
+        boolean is24Hour;
 
         /**
          * Constructor called from {@link Switch#onSaveInstanceState()}
@@ -595,6 +699,7 @@ public class TimePicker extends View{
             mode = in.readInt();
             hour = in.readInt();
             minute = in.readInt();
+            is24Hour = in.readInt() == 1;
         }
 
         @Override
@@ -603,6 +708,7 @@ public class TimePicker extends View{
             out.writeValue(mode);
             out.writeValue(hour);
             out.writeValue(minute);
+            out.writeValue(is24Hour ? 1 : 0);
         }
 
         @Override
@@ -611,7 +717,8 @@ public class TimePicker extends View{
                     + Integer.toHexString(System.identityHashCode(this))
                     + " mode=" + mode
                     + " hour=" + hour
-                    + " minute=" + minute + "}";
+                    + " minute=" + minute
+                    + "24hour=" + is24Hour + "}";
         }
 
         public static final Creator<SavedState> CREATOR
