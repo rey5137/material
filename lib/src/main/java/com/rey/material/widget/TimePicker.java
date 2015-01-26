@@ -61,13 +61,13 @@ public class TimePicker extends View{
             "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "00"
     };
 
-    private int mMode = -1;
+    private int mMode = MODE_HOUR;
 
     public static final int MODE_HOUR = 0;
     public static final int MODE_MINUTE = 1;
 
-    private int mHour = -1;
-    private int mMinute = -1;
+    private int mHour = 0;
+    private int mMinute = 0;
 
     private boolean mEdited = false;
 
@@ -131,9 +131,10 @@ public class TimePicker extends View{
         mInInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
         resId = a.getResourceId(R.styleable.TimePicker_tp_outInterpolator, 0);
         mOutInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
-        setMode(a.getInteger(R.styleable.TimePicker_tp_mode, MODE_HOUR), false);
-        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, 0));
-        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, 0));
+        setMode(a.getInteger(R.styleable.TimePicker_tp_mode, mMode), false);
+        set24Hour(a.getBoolean(R.styleable.TimePicker_tp_24Hour, m24Hour));
+        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, mHour));
+        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, mMinute));
 
         String familyName = a.getString(R.styleable.TimePicker_tp_fontFamily);
         int style = a.getInteger(R.styleable.TimePicker_tp_textStyle, Typeface.NORMAL);
@@ -210,7 +211,10 @@ public class TimePicker extends View{
     }
 
     public void setHour(int hour){
-        hour = Math.min(Math.max(hour, 0), (m24Hour ? 23 : 11));
+        if(m24Hour)
+            hour = Math.max(hour, 0) % 24;
+        else
+            hour = Math.max(hour, 0) % 12;
 
         if(mHour != hour){
             int old = mHour;

@@ -363,6 +363,7 @@
             <enum name="hour" value="0" />
             <enum name="minute" value="1" />
         </attr>
+        <attr name="tp_24Hour" format="boolean"/>
         <attr name="tp_hour" format="integer"/>
         <attr name="tp_minute" format="integer"/>
     </declare-styleable>

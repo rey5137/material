@@ -20,6 +20,7 @@ import com.rey.material.widget.DatePicker;
 import com.rey.material.widget.YearPicker;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -101,8 +102,8 @@ public class DatePickerDialog extends Dialog {
         return mDatePickerLayout.getYear();
     }
 
-    public String getFormatedDate(DateFormat formatter){
-        return mDatePickerLayout.getFormatedDate(formatter);
+    public String getFormattedDate(DateFormat formatter){
+        return mDatePickerLayout.getFormattedDate(formatter);
     }
 
     private class DatePickerLayout extends FrameLayout implements DatePicker.OnDateChangedListener, YearPicker.OnYearChangedListener {
@@ -171,7 +172,16 @@ public class DatePickerDialog extends Dialog {
             mYearPicker.setAlpha(mDateSelectMode ? 0f : 1f);
             mDatePicker.setAlpha(mDateSelectMode ? 1f : 0f);
 
+            mMonthFirst = isMonthFirst();
+
             setWillNotDraw(false);
+        }
+
+        private boolean isMonthFirst(){
+            SimpleDateFormat format = (SimpleDateFormat)SimpleDateFormat.getDateInstance(SimpleDateFormat.FULL);
+            String pattern = format.toLocalizedPattern();
+
+            return pattern.indexOf("M") < pattern.indexOf("d");
         }
 
         public void setDateSelectMode(boolean enable){
@@ -225,8 +235,8 @@ public class DatePickerDialog extends Dialog {
             return mDatePicker.getYear();
         }
 
-        public String getFormatedDate(DateFormat formatter){
-            return mDatePicker.getFormatedDate(formatter);
+        public String getFormattedDate(DateFormat formatter){
+            return mDatePicker.getFormattedDate(formatter);
         }
 
         @Override

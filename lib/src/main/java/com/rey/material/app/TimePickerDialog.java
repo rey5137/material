@@ -25,6 +25,8 @@ import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.TimePicker;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -37,11 +39,8 @@ public class TimePickerDialog extends Dialog{
 
     public interface OnTimeChangedListener{
 
-        public void onAmChanged(boolean isAm);
+        public void onTimeChanged(int oldHour, int oldMinute, int newHour, int newMinute);
 
-        public void onHourChanged(int oldValue, int newValue);
-
-        public void onMinuteChanged(int oldValue, int newValue);
     }
 
     public TimePickerDialog(Context context) {
@@ -91,11 +90,6 @@ public class TimePickerDialog extends Dialog{
         return this;
     }
 
-    public TimePickerDialog am(boolean am){
-        mTimePickerLayout.setAm(am, false);
-        return this;
-    }
-
     public TimePickerDialog onTimeChangedListener(OnTimeChangedListener listener){
         mTimePickerLayout.setOnTimeChangedListener(listener);
         return this;
@@ -109,8 +103,8 @@ public class TimePickerDialog extends Dialog{
         return mTimePickerLayout.getMinute();
     }
 
-    public boolean isAm(){
-        return mTimePickerLayout.isAm();
+    public String getFormattedTime(DateFormat formatter){
+        return mTimePickerLayout.getFormattedTime(formatter);
     }
 
     private class CircleCheckedTextView extends android.widget.CheckedTextView {
@@ -176,7 +170,7 @@ public class TimePickerDialog extends Dialog{
 
         private static final String TIME_DIVIDER = ":";
         private static final String BASE_TEXT = "0";
-        private static final String FORMART = "%02d";
+        private static final String FORMAT = "%02d";
 
         private boolean mLocationDirty = true;
         private float mBaseY;
@@ -206,6 +200,7 @@ public class TimePickerDialog extends Dialog{
             mPmView = new CircleCheckedTextView(context);
             mTimePicker = new TimePicker(context);
 
+            mTimePicker.set24Hour(isDefault24Hour());
             mTimePicker.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding);
             mTimePicker.setOnTimeChangedListener(this);
             mAmView.setCheckedImmediately(mIsAm);
@@ -213,14 +208,18 @@ public class TimePickerDialog extends Dialog{
             mAmView.setOnClickListener(this);
             mPmView.setOnClickListener(this);
 
-            mHour = String.format(FORMART, mTimePicker.getHour());
-            mMinute = String.format(FORMART, mTimePicker.getMinute());
-
             addView(mTimePicker);
             addView(mAmView);
             addView(mPmView);
 
             setWillNotDraw(false);
+        }
+
+        private boolean isDefault24Hour(){
+            SimpleDateFormat format = (SimpleDateFormat)SimpleDateFormat.getTimeInstance(SimpleDateFormat.FULL);
+            String pattern = format.toLocalizedPattern();
+
+            return pattern.indexOf("k") >= 0;
         }
 
         public void applyStyle(int resId){
@@ -268,18 +267,29 @@ public class TimePickerDialog extends Dialog{
             mPmView.setText(pm);
 
             mPaint.setTypeface(mTimePicker.getTypeface());
-            mMidday = mIsAm ? mAmView.getText().toString() : mPmView.getText().toString();
+
+            mHour = String.format(FORMAT, !mTimePicker.is24Hour() && mTimePicker.getHour() == 0 ? 12 : mTimePicker.getHour());
+            mMinute = String.format(FORMAT, mTimePicker.getMinute());
+
+            if(!mTimePicker.is24Hour())
+                mMidday = mIsAm ? mAmView.getText().toString() : mPmView.getText().toString();
 
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
         }
 
         public void setHour(int hour){
+            if(!mTimePicker.is24Hour()){
+                if(hour > 11 && hour < 24)
+                    setAm(false, false);
+                else
+                    setAm(true, false);
+            }
             mTimePicker.setHour(hour);
         }
 
         public int getHour(){
-            return mTimePicker.getHour();
+            return mTimePicker.is24Hour() || mIsAm ? mTimePicker.getHour() : mTimePicker.getHour() + 12;
         }
 
         public void setMinute(int minute){
@@ -290,8 +300,13 @@ public class TimePickerDialog extends Dialog{
             return mTimePicker.getMinute();
         }
 
-        public void setAm(boolean am, boolean animation){
+        private void setAm(boolean am, boolean animation){
+            if(mTimePicker.is24Hour())
+                return;
+
             if(mIsAm != am){
+                int oldHour = getHour();
+
                 mIsAm = am;
                 if(animation) {
                     mAmView.setChecked(mIsAm);
@@ -305,12 +320,18 @@ public class TimePickerDialog extends Dialog{
                 invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
                 if(mOnTimeChangedListener != null)
-                    mOnTimeChangedListener.onAmChanged(mIsAm);
+                    mOnTimeChangedListener.onTimeChanged(oldHour, getMinute(), getHour(), getMinute());
             }
         }
 
-        public boolean isAm(){
-            return mIsAm;
+        public String getFormattedTime(DateFormat formatter){
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, getHour());
+            cal.set(Calendar.MINUTE, getMinute());
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            return formatter.format(cal.getTime());
         }
 
         public void setOnTimeChangedListener(OnTimeChangedListener listener){
@@ -329,22 +350,24 @@ public class TimePickerDialog extends Dialog{
 
         @Override
         public void onHourChanged(int oldValue, int newValue) {
-            mHour = String.format(FORMART, newValue);
+            int oldHour = mTimePicker.is24Hour() || mIsAm ? oldValue : oldValue + 12;
+
+            mHour = String.format(FORMAT, !mTimePicker.is24Hour() && newValue == 0 ? 12 : newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
             if(mOnTimeChangedListener != null)
-                mOnTimeChangedListener.onHourChanged(oldValue, newValue);
+                mOnTimeChangedListener.onTimeChanged(oldHour, getMinute(), getHour(), getMinute());
         }
 
         @Override
         public void onMinuteChanged(int oldValue, int newValue) {
-            mMinute = String.format(FORMART, newValue);
+            mMinute = String.format(FORMAT, newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 
             if(mOnTimeChangedListener != null)
-                mOnTimeChangedListener.onMinuteChanged(oldValue, newValue);
+                mOnTimeChangedListener.onTimeChanged(getHour(), oldValue, getHour(), newValue);
         }
 
         @Override
@@ -356,15 +379,25 @@ public class TimePickerDialog extends Dialog{
 
             boolean isPortrait = getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
+            int checkboxSize = mTimePicker.is24Hour() ? 0 : mCheckBoxSize;
+
             if(isPortrait){
                 if(heightMode == MeasureSpec.AT_MOST)
-                    heightSize = Math.min(heightSize, mCheckBoxSize + widthSize + mHeaderHeight);
+                    heightSize = Math.min(heightSize, checkboxSize + widthSize + mHeaderHeight);
 
-                int spec = MeasureSpec.makeMeasureSpec(mCheckBoxSize, MeasureSpec.EXACTLY);
-                mAmView.measure(spec, spec);
-                mPmView.measure(spec, spec);
+                if(checkboxSize > 0) {
+                    int spec = MeasureSpec.makeMeasureSpec(mCheckBoxSize, MeasureSpec.EXACTLY);
+                    mAmView.setVisibility(View.VISIBLE);
+                    mPmView.setVisibility(View.VISIBLE);
+                    mAmView.measure(spec, spec);
+                    mPmView.measure(spec, spec);
+                }
+                else{
+                    mAmView.setVisibility(View.GONE);
+                    mPmView.setVisibility(View.GONE);
+                }
 
-                spec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);
+                int spec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);
                 mTimePicker.measure(spec, spec);
 
                 setMeasuredDimension(widthSize, heightSize);
@@ -373,13 +406,21 @@ public class TimePickerDialog extends Dialog{
                 int halfWidth = widthSize / 2;
 
                 if(heightMode == MeasureSpec.AT_MOST)
-                    heightSize = Math.min(heightSize, Math.max(mCheckBoxSize + mHeaderHeight + mContentPadding, halfWidth));
+                    heightSize = Math.min(heightSize, Math.max(checkboxSize > 0 ? checkboxSize + mHeaderHeight + mContentPadding : mHeaderHeight, halfWidth));
 
-                int spec = MeasureSpec.makeMeasureSpec(mCheckBoxSize, MeasureSpec.EXACTLY);
-                mAmView.measure(spec, spec);
-                mPmView.measure(spec, spec);
+                if(checkboxSize > 0) {
+                    int spec = MeasureSpec.makeMeasureSpec(checkboxSize, MeasureSpec.EXACTLY);
+                    mAmView.setVisibility(View.VISIBLE);
+                    mPmView.setVisibility(View.VISIBLE);
+                    mAmView.measure(spec, spec);
+                    mPmView.measure(spec, spec);
+                }
+                else{
+                    mAmView.setVisibility(View.GONE);
+                    mPmView.setVisibility(View.GONE);
+                }
 
-                spec = MeasureSpec.makeMeasureSpec(Math.min(halfWidth, heightSize), MeasureSpec.EXACTLY);
+                int spec = MeasureSpec.makeMeasureSpec(Math.min(halfWidth, heightSize), MeasureSpec.EXACTLY);
                 mTimePicker.measure(spec, spec);
 
                 setMeasuredDimension(widthSize, heightSize);
@@ -391,10 +432,11 @@ public class TimePickerDialog extends Dialog{
             boolean isPortrait = getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
             mLocationDirty = true;
+            int checkboxSize = mTimePicker.is24Hour() ? 0 : mCheckBoxSize;
 
             if(isPortrait){
                 mHeaderRealWidth = w;
-                mHeaderRealHeight = h - mCheckBoxSize - w;
+                mHeaderRealHeight = h - checkboxSize - w;
                 mHeaderBackground.reset();
                 if(mCornerRadius == 0)
                     mHeaderBackground.addRect(0, 0, mHeaderRealWidth, mHeaderRealHeight, Path.Direction.CW);
@@ -412,7 +454,7 @@ public class TimePickerDialog extends Dialog{
             }
             else{
                 mHeaderRealWidth = w / 2;
-                mHeaderRealHeight = h - mCheckBoxSize - mContentPadding;
+                mHeaderRealHeight = checkboxSize > 0 ? h - checkboxSize - mContentPadding : h;
                 mHeaderBackground.reset();
                 if(mCornerRadius == 0)
                     mHeaderBackground.addRect(0, 0, mHeaderRealWidth, mHeaderRealHeight, Path.Direction.CW);
@@ -436,15 +478,19 @@ public class TimePickerDialog extends Dialog{
             int childBottom = bottom - top;
 
             boolean isPortrait = getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+            int checkboxSize = mTimePicker.is24Hour() ? 0 : mCheckBoxSize;
 
             if(isPortrait){
                 int paddingHorizontal = mContentPadding + mActionPadding;
                 int paddingVertical = mContentPadding - mActionPadding;
-                mAmView.layout(childLeft + paddingHorizontal, childBottom - paddingVertical - mCheckBoxSize, childLeft + paddingHorizontal + mCheckBoxSize, childBottom - paddingVertical);
-                mPmView.layout(childRight - paddingHorizontal - mCheckBoxSize, childBottom - paddingVertical - mCheckBoxSize, childRight - paddingHorizontal, childBottom - paddingVertical);
+
+                if(checkboxSize > 0) {
+                    mAmView.layout(childLeft + paddingHorizontal, childBottom - paddingVertical - checkboxSize, childLeft + paddingHorizontal + checkboxSize, childBottom - paddingVertical);
+                    mPmView.layout(childRight - paddingHorizontal - checkboxSize, childBottom - paddingVertical - checkboxSize, childRight - paddingHorizontal, childBottom - paddingVertical);
+                }
 
                 childTop += mHeaderRealHeight;
-                childBottom -= mCheckBoxSize;
+                childBottom -= checkboxSize;
                 mTimePicker.layout(childLeft, childTop, childRight, childBottom);
             }
             else{
@@ -452,12 +498,14 @@ public class TimePickerDialog extends Dialog{
                 int paddingVertical = (childBottom - mTimePicker.getMeasuredHeight()) / 2;
                 mTimePicker.layout(childRight - paddingHorizontal - mTimePicker.getMeasuredWidth(), childTop + paddingVertical, childRight - paddingHorizontal, childTop + paddingVertical + mTimePicker.getMeasuredHeight());
 
-                childRight = childRight / 2;
+                if(checkboxSize > 0){
+                    childRight = childRight / 2;
 
-                paddingHorizontal = mContentPadding + mActionPadding;
-                paddingVertical = mContentPadding - mActionPadding;
-                mAmView.layout(childLeft + paddingHorizontal, childBottom - paddingVertical - mCheckBoxSize, childLeft + paddingHorizontal + mCheckBoxSize, childBottom - paddingVertical);
-                mPmView.layout(childRight - paddingHorizontal - mCheckBoxSize, childBottom - paddingVertical - mCheckBoxSize, childRight - paddingHorizontal, childBottom - paddingVertical);
+                    paddingHorizontal = mContentPadding + mActionPadding;
+                    paddingVertical = mContentPadding - mActionPadding;
+                    mAmView.layout(childLeft + paddingHorizontal, childBottom - paddingVertical - checkboxSize, childLeft + paddingHorizontal + checkboxSize, childBottom - paddingVertical);
+                    mPmView.layout(childRight - paddingHorizontal - checkboxSize, childBottom - paddingVertical - checkboxSize, childRight - paddingHorizontal, childBottom - paddingVertical);
+                }
             }
         }
 
@@ -505,9 +553,11 @@ public class TimePickerDialog extends Dialog{
             mPaint.setColor(mTimePicker.getMode() == TimePicker.MODE_MINUTE ? mTimePicker.getTextHighlightColor() : mTextTimeColor);
             canvas.drawText(mMinute, mMinuteX, mBaseY, mPaint);
 
-            mPaint.setTextSize(mTimePicker.getTextSize());
-            mPaint.setColor(mTextTimeColor);
-            canvas.drawText(mMidday, mMiddayX, mBaseY, mPaint);
+            if(!mTimePicker.is24Hour()) {
+                mPaint.setTextSize(mTimePicker.getTextSize());
+                mPaint.setColor(mTextTimeColor);
+                canvas.drawText(mMidday, mMiddayX, mBaseY, mPaint);
+            }
         }
 
         private boolean isTouched(float left, float top, float right, float bottom, float x, float y){
@@ -546,35 +596,27 @@ public class TimePickerDialog extends Dialog{
 
         private int mHour;
         private int mMinute;
-        private boolean mAm;
 
         public Builder(){
             super();
             Calendar cal = Calendar.getInstance();
-            mHour = cal.get(Calendar.HOUR);
+            mHour = cal.get(Calendar.HOUR_OF_DAY);
             mMinute = cal.get(Calendar.MINUTE);
-            mAm = cal.get(Calendar.AM_PM) == Calendar.AM;
         }
 
-        public Builder(int styleId, int hour, int minute, boolean am){
+        public Builder(int styleId, int hourOfDay, int minute){
             super(styleId);
-            mHour = hour;
-            mMinute = minute;
-            mAm = am;
+            hour(hourOfDay);
+            minute(minute);
         }
 
         public Builder hour(int hour){
-            mHour = hour;
+            mHour = Math.min(Math.max(hour, 0), 24);
             return this;
         }
 
         public Builder minute(int minute){
             mMinute = minute;
-            return this;
-        }
-
-        public Builder am(boolean am){
-            mAm = am;
             return this;
         }
 
@@ -587,8 +629,7 @@ public class TimePickerDialog extends Dialog{
         protected Dialog onBuild(Context context, int styleId) {
             TimePickerDialog dialog = new TimePickerDialog(context, styleId);
             dialog.hour(mHour)
-                    .minute(mMinute)
-                    .am(mAm);
+                    .minute(mMinute);
             return dialog;
         }
 
@@ -600,14 +641,12 @@ public class TimePickerDialog extends Dialog{
         protected void onWriteToParcel(Parcel dest, int flags) {
             dest.writeInt(mHour);
             dest.writeInt(mMinute);
-            dest.writeInt(mAm ? 1 : 0);
         }
 
         @Override
         protected void onReadFromParcel(Parcel in) {
             mHour = in.readInt();
             mMinute = in.readInt();
-            mAm = in.readInt() == 1;
         }
 
         public static final Parcelable.Creator<Builder> CREATOR = new Parcelable.Creator<Builder>() {
