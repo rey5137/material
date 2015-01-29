@@ -49,7 +49,10 @@ public class Spinner extends ViewGroup {
 	private SpinnerAdapter mAdapter;
 	private OnItemClickListener mOnItemClickListener;
 	private OnItemSelectedListener mOnItemSelectedListener;
-	
+
+    private int mMinWidth;
+    private int mMinHeight;
+
 	private DropdownPopup mPopup;
 	private int mDropDownWidth;
 	
@@ -104,12 +107,16 @@ public class Spinner extends ViewGroup {
     }
 
 	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        setWillNotDraw(false);
 		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 				
 		TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 		
 		mGravity = a.getInt(R.styleable.Spinner_android_gravity, Gravity.CENTER);
-		
+
+        setMinimumWidth(a.getDimensionPixelOffset(R.styleable.Spinner_android_minWidth, 0));
+        setMinimumHeight(a.getDimensionPixelOffset(R.styleable.Spinner_android_minHeight, 0));
+
 		mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
 		mPopup.setModal(true);
 		mDropDownWidth = a.getLayoutDimension(R.styleable.Spinner_android_dropDownWidth, LayoutParams.WRAP_CONTENT);
@@ -137,8 +144,18 @@ public class Spinner extends ViewGroup {
         mDividerPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerPadding, 0);
         int dividerAnimDuration = a.getInteger(R.styleable.Spinner_spn_dividerAnimDuration, 0);
         ColorStateList dividerColor = a.getColorStateList(R.styleable.Spinner_spn_dividerColor);
-        if(dividerColor == null)
-        	dividerColor = ColorStateList.valueOf(ThemeUtil.colorControlNormal(context, 0xFF000000));
+        if(dividerColor == null){
+            int[][] states = new int[][]{
+                    new int[]{-android.R.attr.state_focused},
+                    new int[]{android.R.attr.state_focused, android.R.attr.state_enabled},
+            };
+            int[] colors = new int[]{
+                    ThemeUtil.colorControlNormal(context, 0xFF000000),
+                    ThemeUtil.colorControlActivated(context, 0xFF000000),
+            };
+
+            dividerColor = new ColorStateList(states, colors);
+        }
         
         if(mDividerHeight > 0){
         	mDividerDrawable = new DividerDrawable(mDividerHeight, dividerColor, dividerAnimDuration);
@@ -250,7 +267,19 @@ public class Spinner extends ViewGroup {
                 getChildAt(i).setEnabled(enabled);
         }
     }
-    
+
+    @Override
+    public void setMinimumHeight(int minHeight) {
+        mMinHeight = minHeight;
+        super.setMinimumHeight(minHeight);
+    }
+
+    @Override
+    public void setMinimumWidth(int minWidth) {
+        mMinWidth = minWidth;
+        super.setMinimumWidth(minWidth);
+    }
+
     public void setGravity(int gravity) {
         if (mGravity != gravity) {
             if ((gravity & Gravity.HORIZONTAL_GRAVITY_MASK) == 0) 
@@ -357,8 +386,8 @@ public class Spinner extends ViewGroup {
     		width = v.getMeasuredWidth();
     		height = v.getMeasuredHeight();
     	}
-    	
-    	setMeasuredDimension(width + getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth(), height + getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight());    	
+
+    	setMeasuredDimension(Math.max(mMinWidth, width + getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth()), Math.max(mMinHeight, height + getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight()));
     }
 
     @Override
@@ -504,7 +533,8 @@ public class Spinner extends ViewGroup {
             mPopup.show();
             final ListView lv = mPopup.getListView();
             if(lv != null){
-            	lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            	    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             	lv.setSelection(getSelectedItemPosition());
             }
             if(mArrowAnimSwitchMode)

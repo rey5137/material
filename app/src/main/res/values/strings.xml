@@ -1,4 +1,28 @@
 <resources>
 
     <string name="app_name">MaterialDemo</string>
+
+    <string name="rd_every">Every</string>
+    <string name="rd_day">day</string>
+    <string name="rd_days">days</string>
+    <string name="rd_week">week</string>
+    <string name="rd_weeks">weeks</string>
+    <string name="rd_month">month</string>
+    <string name="rd_months">months</string>
+    <string name="rd_year">year</string>
+    <string name="rd_years">years</string>
+    <string name="rd_forever">Forever</string>
+    <string name="rd_until">Until</string>
+    <string name="rd_until_full">Until a date</string>
+    <string name="rd_for">For</string>
+    <string name="rd_for_full">For a number of events</string>
+    <string name="rd_month_same_day">on the same day each month</string>
+    <string name="rd_month_last">on every last %s</string>
+    <string name="rd_month_first">on every first %s</string>
+    <string name="rd_month_second">on every second %s</string>
+    <string name="rd_month_third">on every third %s</string>
+    <string name="rd_month_fourth">on every fourth %s</string>
+    <string name="rd_event">event</string>
+    <string name="rd_events">events</string>
+
 </resources>

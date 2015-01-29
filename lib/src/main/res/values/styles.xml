@@ -481,4 +481,15 @@
         <item name="et_supportTextColor">@color/abc_secondary_text_material_light</item>
     </style>
 
+    <style name="Material.Widget.Spinner">
+        <item name="spn_dividerHeight">2dp</item>
+        <item name="spn_dividerPadding">8dp</item>
+        <item name="spn_dividerAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="spn_arrowColor">?attr/colorControlNormal</item>
+        <item name="spn_arrowSize">8dp</item>
+        <item name="spn_arrowPadding">8dp</item>
+        <item name="spn_popupItemAnimation">@anim/abc_slide_in_bottom</item>
+        <item name="spn_popupItemAnimOffset">200</item>
+    </style>
+
 </resources>

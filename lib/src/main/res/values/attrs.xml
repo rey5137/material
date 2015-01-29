@@ -285,6 +285,8 @@
     <declare-styleable name="Spinner">  
         <attr name="android:dropDownWidth" /> 
         <attr name="android:popupBackground" />
+        <attr name="android:minWidth"/>
+        <attr name="android:minHeight"/>
         <attr name="spn_popupItemAnimation" format="reference"/>
         <attr name="spn_popupItemAnimOffset" format="integer"/>
         <attr name="spn_arrowColor" format="reference|color"/>
