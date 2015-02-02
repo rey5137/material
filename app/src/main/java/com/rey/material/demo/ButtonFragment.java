@@ -72,6 +72,14 @@ public class ButtonFragment extends Fragment{
 		bt_float_color.setOnClickListener(listener_delay);
 		bt_float_wave_color.setOnClickListener(listener_delay);
 
+        bt_flat.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                RecurringPickerDialog dialog = new RecurringPickerDialog(getActivity(), R.style.Material_App_Dialog_Light);
+                dialog.show();
+            }
+        });
+
 		return v;
 	}
 

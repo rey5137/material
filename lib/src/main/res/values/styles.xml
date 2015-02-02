@@ -482,14 +482,23 @@
     </style>
 
     <style name="Material.Widget.Spinner">
+        <item name="spn_labelEnable">false</item>
+        <item name="spn_labelPadding">0dp</item>
+        <item name="spn_labelTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
+        <item name="spn_labelTextColor">@color/abc_secondary_text_material_dark</item>
+        <item name="spn_labelEllipsize">end</item>
         <item name="spn_dividerHeight">2dp</item>
         <item name="spn_dividerPadding">8dp</item>
         <item name="spn_dividerAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowColor">?attr/colorControlNormal</item>
-        <item name="spn_arrowSize">8dp</item>
+        <item name="spn_arrowSize">4dp</item>
         <item name="spn_arrowPadding">8dp</item>
         <item name="spn_popupItemAnimation">@anim/abc_slide_in_bottom</item>
-        <item name="spn_popupItemAnimOffset">200</item>
+        <item name="spn_popupItemAnimOffset">120</item>
+    </style>
+
+    <style name="Material.Widget.Spinner.Light" parent="Material.Widget.Spinner">
+        <item name="spn_labelTextColor">@color/abc_secondary_text_material_light</item>
     </style>
 
 </resources>

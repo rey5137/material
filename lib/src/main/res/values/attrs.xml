@@ -287,6 +287,18 @@
         <attr name="android:popupBackground" />
         <attr name="android:minWidth"/>
         <attr name="android:minHeight"/>
+        <attr name="spn_labelEnable" format="boolean"/>
+        <attr name="spn_labelPadding" format="reference|dimension"/>
+        <attr name="spn_labelTextSize" format="reference|dimension"/>
+        <attr name="spn_labelTextColor" format="reference|color"/>
+        <attr name="spn_labelTextAppearance" format="reference"/>
+        <attr name="spn_labelEllipsize" format="integer">
+            <enum name="start" value="0x00000001" />
+            <enum name="middle" value="0x00000002" />
+            <enum name="end" value="0x00000003" />
+            <enum name="marquee" value="0x00000004" />
+        </attr>
+        <attr name="spn_label" format="string|reference"/>
         <attr name="spn_popupItemAnimation" format="reference"/>
         <attr name="spn_popupItemAnimOffset" format="integer"/>
         <attr name="spn_arrowColor" format="reference|color"/>

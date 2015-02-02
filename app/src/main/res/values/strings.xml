@@ -2,6 +2,12 @@
 
     <string name="app_name">MaterialDemo</string>
 
+    <string name="rd_repeat">Repeat</string>
+    <string name="rd_daily">Daily</string>
+    <string name="rd_weekly">Weekly</string>
+    <string name="rd_monthly">Monthly</string>
+    <string name="rd_yearly">Yearly</string>
+    <string name="rd_none">None</string>
     <string name="rd_every">Every</string>
     <string name="rd_day">day</string>
     <string name="rd_days">days</string>

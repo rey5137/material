@@ -106,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 		
-		vp.setCurrentItem(mItems.length - 1);
+		vp.setCurrentItem(1);
 	}
 
 	@Override

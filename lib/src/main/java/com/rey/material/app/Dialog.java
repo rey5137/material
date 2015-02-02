@@ -618,14 +618,6 @@ public class Dialog extends android.app.Dialog{
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int widthSize = MeasureSpec.getSize(widthMeasureSpec);
             int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-
-            //skip second measure.
-            if(widthSize == getMeasuredWidth() && heightSize == getMeasuredHeight() && widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY){
-                setMeasuredDimension(widthSize, heightSize);
-                return;
-            }
 
             int paddingLeft = Math.max(mDialogHorizontalPadding, mBackground.getPaddingLeft());
             int paddingRight = Math.max(mDialogHorizontalPadding, mBackground.getPaddingRight());
@@ -864,6 +856,8 @@ public class Dialog extends android.app.Dialog{
         protected CharSequence mNegative;
         protected CharSequence mNeutral;
 
+        protected Dialog mDialog;
+
         public Builder(){}
 
         public Builder(int styleId){
@@ -911,17 +905,17 @@ public class Dialog extends android.app.Dialog{
 
         @Override
         public Dialog build(Context context) {
-            Dialog dialog = onBuild(context, mStyleId);
+            mDialog = onBuild(context, mStyleId);
 
-            dialog.title(mTitle)
+            mDialog.title(mTitle)
                     .positiveAction(mPositive)
                     .negativeAction(mNegative)
                     .neutralAction(mNeutral);
 
             if(mContentViewId != 0)
-                dialog.contentView(mContentViewId);
+                mDialog.contentView(mContentViewId);
 
-            return dialog;
+            return mDialog;
         }
 
         protected Dialog onBuild(Context context, int styleId){

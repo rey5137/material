@@ -510,7 +510,7 @@ public class DatePickerDialog extends Dialog {
 
     }
 
-    public static class Builder extends Dialog.Builder{
+    public static class Builder extends Dialog.Builder implements OnDateChangedListener {
 
         private int mMinDay;
         private int mMinMonth;
@@ -580,9 +580,15 @@ public class DatePickerDialog extends Dialog {
             DatePickerDialog dialog = new DatePickerDialog(context, styleId);
 
             dialog.dateRange(mMinDay, mMinMonth, mMinYear, mMaxDay, mMaxMonth, mMaxYear)
-                    .date(mDay, mMonth, mYear);
+                    .date(mDay, mMonth, mYear)
+                    .onDateChangedListener(this);
 
             return dialog;
+        }
+
+        @Override
+        public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear) {
+            date(newDay, newMonth, newYear);
         }
 
         protected Builder(Parcel in){
@@ -624,5 +630,7 @@ public class DatePickerDialog extends Dialog {
                 return new Builder[size];
             }
         };
+
+
     }
 }

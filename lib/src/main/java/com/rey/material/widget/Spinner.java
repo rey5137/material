@@ -11,11 +11,14 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.internal.widget.TintManager;
 import android.support.v7.internal.widget.TintTypedArray;
 import android.support.v7.internal.widget.ViewUtils;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +27,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -32,7 +36,7 @@ import com.rey.material.drawable.ArrowDrawable;
 import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.util.ThemeUtil;
 
-public class Spinner extends ViewGroup {
+public class Spinner extends FrameLayout {
 		
 	private static final int MAX_ITEMS_MEASURED = 15;
 	
@@ -45,7 +49,10 @@ public class Spinner extends ViewGroup {
 	public interface OnItemSelectedListener{
 		void onItemSelected(Spinner parent, View view, int position, long id);
 	}
-	
+
+    private boolean mLabelEnable;
+    private LabelView mLabelView;
+
 	private SpinnerAdapter mAdapter;
 	private OnItemClickListener mOnItemClickListener;
 	private OnItemSelectedListener mOnItemSelectedListener;
@@ -111,7 +118,48 @@ public class Spinner extends ViewGroup {
 		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 				
 		TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
-		
+
+        mLabelEnable = a.getBoolean(R.styleable.Spinner_spn_labelEnable, false);
+        if(mLabelEnable){
+            mLabelView = new LabelView(context);
+            mLabelView.setGravity(GravityCompat.START);
+            mLabelView.setSingleLine(true);
+            int labelPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_labelPadding, 0);
+            int labelTextSize = a.getDimensionPixelSize(R.styleable.Spinner_spn_labelTextSize, 0);
+            ColorStateList labelTextColor = a.getColorStateList(R.styleable.Spinner_spn_labelTextColor);
+            int labelTextAppearance = a.getResourceId(R.styleable.Spinner_spn_labelTextAppearance, 0);
+            int labelEllipsize = a.getInteger(R.styleable.Spinner_spn_labelEllipsize, 0);
+            String label = a.getString(R.styleable.Spinner_spn_label);
+
+            mLabelView.setText(label);
+            mLabelView.setPadding(0, 0, 0, labelPadding);
+            if(labelTextAppearance > 0)
+                mLabelView.setTextAppearance(context, labelTextAppearance);
+            if(labelTextSize > 0)
+                mLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
+            if(labelTextColor != null)
+                mLabelView.setTextColor(labelTextColor);
+
+            switch (labelEllipsize) {
+                case 1:
+                    mLabelView.setEllipsize(TextUtils.TruncateAt.START);
+                    break;
+                case 2:
+                    mLabelView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                    break;
+                case 3:
+                    mLabelView.setEllipsize(TextUtils.TruncateAt.END);
+                    break;
+                case 4:
+                    mLabelView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                    break;
+                default:
+                    mLabelView.setEllipsize(TextUtils.TruncateAt.END);
+                    break;
+            }
+            addView(mLabelView, 0, new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+
 		mGravity = a.getInt(R.styleable.Spinner_android_gravity, Gravity.CENTER);
 
         setMinimumWidth(a.getDimensionPixelOffset(R.styleable.Spinner_android_minWidth, 0));
@@ -177,11 +225,17 @@ public class Spinner extends ViewGroup {
 			super.addView(tv);
 		}
 		
-		setClickable(true);
+		setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                showPopup();
+            }
+        });
 	}
 	
 	public View getSelectedView() {
-		return getChildAt(0);
+        View v = getChildAt(getChildCount() - 1);
+		return v == mLabelView ? null : v;
 	}
 
 	public void setSelection(int position) {
@@ -192,7 +246,7 @@ public class Spinner extends ViewGroup {
 			mSelectedPosition = position;
 			
 			if(mOnItemSelectedListener != null)
-				mOnItemSelectedListener.onItemSelected(this, getSelectedView(), position, mAdapter == null ? -1 : mAdapter.getItemViewType(position));
+				mOnItemSelectedListener.onItemSelected(this, getSelectedView(), position, mAdapter == null ? -1 : mAdapter.getItemId(position));
 			
 			onDataInvalidated();
 		}
@@ -209,12 +263,12 @@ public class Spinner extends ViewGroup {
 	public void setAdapter(SpinnerAdapter adapter) {	
 		if(mAdapter != null)
 			mAdapter.unregisterDataSetObserver(mDataSetObserver);
-		
+
+        mRecycler.clear();
+
 		mAdapter = adapter;
 		mAdapter.registerDataSetObserver(mDataSetObserver);
 		onDataChanged();
-
-        mRecycler.clear();
         
         if (mPopup != null) 
             mPopup.setAdapter(new DropDownAdapter(adapter));
@@ -291,14 +345,7 @@ public class Spinner extends ViewGroup {
 
     @Override
     public int getBaseline() {
-        View child = null;
-
-        if (getChildCount() > 0)
-            child = getChildAt(0);
-        else if (mAdapter != null && mAdapter.getCount() > 0){
-            child = mAdapter.getView(0, null, this);
-            mRecycler.put(0, child);
-        }
+        View child = getSelectedView();
 
         if (child != null) {
             final int childBaseline = child.getBaseline();
@@ -306,7 +353,6 @@ public class Spinner extends ViewGroup {
         }
             
         return -1;
-        
     }
 
     @Override
@@ -347,11 +393,6 @@ public class Spinner extends ViewGroup {
     }
 
     @Override
-    public void addView(@NonNull View child) {
-    	//Do nothing
-    }
-    
-    @Override
 	protected boolean verifyDrawable(Drawable who) {
         return super.verifyDrawable(who) || mArrowDrawable == who || mDividerDrawable == who;
     }
@@ -376,18 +417,29 @@ public class Spinner extends ViewGroup {
     	
     	if(heightMode != MeasureSpec.UNSPECIFIED)
     		heightSize -= getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight();
-    	
+
+        int labelWidth = 0;
+        int labelHeight = 0;
+        if(mLabelView != null){
+            mLabelView.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            labelWidth = mLabelView.getMeasuredWidth();
+            labelHeight = mLabelView.getMeasuredHeight();
+        }
+
     	int width = 0;
     	int height = 0;
     	
     	View v = getSelectedView();
     	if(v != null){
-    		v.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(heightSize, heightMode));
+    		v.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(heightSize - labelHeight, heightMode));
     		width = v.getMeasuredWidth();
     		height = v.getMeasuredHeight();
     	}
 
-    	setMeasuredDimension(Math.max(mMinWidth, width + getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth()), Math.max(mMinHeight, height + getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight()));
+        width = Math.max(labelWidth, width) + getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth();
+        height += labelHeight + getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight();
+
+    	setMeasuredDimension(Math.max(mMinWidth, width), Math.max(mMinHeight, height));
     }
 
     @Override
@@ -396,7 +448,12 @@ public class Spinner extends ViewGroup {
 		int childRight = r - l - getPaddingRight() - getArrowDrawableWidth();
 		int childTop = getPaddingTop();
 		int childBottom = b - t - getPaddingBottom();
-				
+
+        if(mLabelView != null){
+            mLabelView.layout(childLeft, childTop, childLeft + mLabelView.getMeasuredWidth(), childTop + mLabelView.getMeasuredHeight());
+            childTop += mLabelView.getMeasuredHeight();
+        }
+
 		View v = getSelectedView();
 		if(v != null){			
 			int x, y;
@@ -441,7 +498,7 @@ public class Spinner extends ViewGroup {
     
     @Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		mArrowDrawable.setBounds(w - getArrowDrawableWidth() - getPaddingRight(), getPaddingTop(), w - getPaddingRight(), h - getDividerDrawableHeight() - getPaddingBottom());
+		mArrowDrawable.setBounds(w - getArrowDrawableWidth() - getPaddingRight(), getPaddingTop() + (mLabelView == null ? 0 : mLabelView.getMeasuredHeight()), w - getPaddingRight(), h - getDividerDrawableHeight() - getPaddingBottom());
 		if(mDividerDrawable != null)
 			mDividerDrawable.setBounds(getPaddingLeft(), h - mDividerHeight - getPaddingBottom(), w - getPaddingRight(), h - getPaddingBottom());
 	}
@@ -460,19 +517,7 @@ public class Spinner extends ViewGroup {
     	if(mDividerDrawable != null)
     		mDividerDrawable.setState(getDrawableState());
     }
-    
-    @Override
-    public boolean performClick() {
-        boolean handled = super.performClick();
-        
-        if (!handled) {
-            handled = true;
-            showPopup();
-        }
 
-        return handled;
-    }
-    
 	public boolean performItemClick(View view, int position, long id) {
         if (mOnItemClickListener != null) {
 //            playSoundEffect(SoundEffectConstants.CLICK);
@@ -493,22 +538,8 @@ public class Spinner extends ViewGroup {
 	private void onDataChanged(){
 		if(mSelectedPosition == INVALID_POSITION)
 			setSelection(0);
-		else if(mSelectedPosition < mAdapter.getCount()){
-			int type = mAdapter.getItemViewType(mSelectedPosition);		
-			View v = mRecycler.get(type);		
-			v = mAdapter.getView(mSelectedPosition, v, this);
-			v.setFocusable(false);
-			v.setClickable(false);
-			
-			removeAllViews();
-			LayoutParams params = v.getLayoutParams();
-			if(params == null)
-				params = generateDefaultLayoutParams();
-			
-			super.addView(v, params);
-			
-			mRecycler.put(type, v);
-		}
+		else if(mSelectedPosition < mAdapter.getCount())
+            onDataInvalidated();
 		else 
 			setSelection(mAdapter.getCount() - 1);
 	}
@@ -516,15 +547,20 @@ public class Spinner extends ViewGroup {
 	private void onDataInvalidated(){
 		if(mAdapter == null)
 			return;
-		
-		int type = mAdapter.getItemViewType(mSelectedPosition);		
-		View v = mRecycler.get(type);		
-		v = mAdapter.getView(mSelectedPosition, v, this);
+
+        if(mLabelView == null)
+            removeAllViews();
+        else
+            for(int i = getChildCount() - 1; i > 0; i--)
+                removeViewAt(i);
+
+		int type = mAdapter.getItemViewType(mSelectedPosition);
+        View v = mAdapter.getView(mSelectedPosition, mRecycler.get(type), this);
 		v.setFocusable(false);
 		v.setClickable(false);
-		
-		removeAllViews();
+
 		super.addView(v);
+
 		mRecycler.put(type, v);
 	}
 	
@@ -682,25 +718,20 @@ public class Spinner extends ViewGroup {
  	private class RecycleBin {
         private final SparseArray<View> mScrapHeap = new SparseArray<>();
 
-        public void put(int position, View v) {
-            mScrapHeap.put(position, v);
+        public void put(int type, View v) {
+            mScrapHeap.put(type, v);
         }
 
-        View get(int position) {
-            // System.out.print("Looking for " + position);
-            View result = mScrapHeap.get(position);
+        View get(int type) {
+            View result = mScrapHeap.get(type);
             if (result != null)
-                mScrapHeap.delete(position);
+                mScrapHeap.delete(type);
 
             return result;
         }
 
         void clear() {
             final SparseArray<View> scrapHeap = mScrapHeap;
-//            final int count = scrapHeap.size();
-//            for (int i = 0; i < count; i++) {
-//                final View view = scrapHeap.valueAt(i);
-//            }
             scrapHeap.clear();
         }
     }
@@ -812,7 +843,20 @@ public class Spinner extends ViewGroup {
                 mAdapter.unregisterDataSetObserver(observer);            
 		}
     }
-	
+
+    private class LabelView extends android.widget.TextView{
+
+        public LabelView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected int[] onCreateDrawableState(int extraSpace) {
+            return Spinner.this.getDrawableState();
+        }
+
+    }
+
 	private class DropdownPopup extends ListPopupWindow {
 		
         private CharSequence mHintText;

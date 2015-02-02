@@ -330,10 +330,11 @@ public class SimpleDialog extends Dialog {
                 mSelected[i] = false;
 
             if(selectedIndexes != null)
-                for(int index : selectedIndexes) {
-                    mSelected[index] = true;
-                    mLastSelectedIndex = index;
-                }
+                for(int index : selectedIndexes)
+                    if(index >= 0 && index < mSelected.length) {
+                        mSelected[index] = true;
+                        mLastSelectedIndex = index;
+                    }
 
             notifyDataSetChanged();
         }
@@ -450,7 +451,7 @@ public class SimpleDialog extends Dialog {
         }
     }
 
-    public static class Builder extends Dialog.Builder{
+    public static class Builder extends Dialog.Builder implements OnSelectionChangedListener {
 
         private int mMode;
         private CharSequence mMessage;
@@ -493,13 +494,32 @@ public class SimpleDialog extends Dialog {
                     break;
                 case MODE_ITEMS:
                     dialog.items(mItems, mSelectedIndexes == null ? 0 : mSelectedIndexes[0]);
+                    dialog.onSelectionChangedListener(this);
                     break;
                 case MODE_MULTI_ITEMS:
                     dialog.multiChoiceItems(mItems, mSelectedIndexes);
+                    dialog.onSelectionChangedListener(this);
                     break;
             }
 
             return dialog;
+        }
+
+        @Override
+        public void onSelectionChanged(int index, boolean selected) {
+            switch (mMode){
+                case MODE_ITEMS:
+                    if(selected) {
+                        if (mSelectedIndexes == null)
+                            mSelectedIndexes = new int[]{index};
+                        else
+                            mSelectedIndexes[0] = index;
+                    }
+                    break;
+                case MODE_MULTI_ITEMS:
+                    mSelectedIndexes = ((SimpleDialog)mDialog).getSelectedIndexes();
+                    break;
+            }
         }
 
         protected Builder(Parcel in) {
@@ -572,5 +592,6 @@ public class SimpleDialog extends Dialog {
                 return new Builder[size];
             }
         };
+
     }
 }

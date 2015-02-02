@@ -592,7 +592,7 @@ public class TimePickerDialog extends Dialog{
         }
     }
 
-    public static class Builder extends Dialog.Builder{
+    public static class Builder extends Dialog.Builder implements OnTimeChangedListener {
 
         private int mHour;
         private int mMinute;
@@ -629,8 +629,14 @@ public class TimePickerDialog extends Dialog{
         protected Dialog onBuild(Context context, int styleId) {
             TimePickerDialog dialog = new TimePickerDialog(context, styleId);
             dialog.hour(mHour)
-                    .minute(mMinute);
+                    .minute(mMinute)
+                    .onTimeChangedListener(this);
             return dialog;
+        }
+
+        @Override
+        public void onTimeChanged(int oldHour, int oldMinute, int newHour, int newMinute) {
+            hour(newHour).minute(newMinute);
         }
 
         protected Builder(Parcel in){
@@ -658,5 +664,6 @@ public class TimePickerDialog extends Dialog{
                 return new Builder[size];
             }
         };
+
     }
 }
