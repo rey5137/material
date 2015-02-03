@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.rey.material.R;
+import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
@@ -67,7 +68,13 @@ public class Dialog extends android.app.Dialog{
     }
 
     public Dialog(Context context, int style) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        super(context, style);
+
+        //Override style to ensure not show window's title or background.
+        //TODO: find a way to ensure windowIsFloating attribute is false.
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawable(BlankDrawable.getInstance());
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         init(context, style);
     }
@@ -122,9 +129,6 @@ public class Dialog extends android.app.Dialog{
     }
 
     public Dialog applyStyle(int resId){
-        if(resId == 0)
-            return this;
-
         Context context = getContext();
         TypedArray a = context.obtainStyledAttributes(resId, R.styleable.Dialog);
 
@@ -144,10 +148,10 @@ public class Dialog extends android.app.Dialog{
         layoutParams(layout_width, layout_height);
 
         dimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
-        backgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, 0xFFFFFFFF));/**/
+        backgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, ThemeUtil.windowBackground(context, 0xFFFFFFFF)));
         maxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
-        elevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, 0));
-        cornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, 0));
+        elevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, ThemeUtil.dpToPx(context, 4)));
+        cornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, ThemeUtil.dpToPx(context, 2)));
 
         titleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_titleTextColor) != TypedValue.TYPE_NULL)

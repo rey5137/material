@@ -274,8 +274,9 @@
     <style name="Material.App.Dialog">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowIsFloating">false</item>
         <item name="di_dimAmount">0.5</item>
-        <item name="di_backgroundColor">#FF323232</item>
+        <item name="di_backgroundColor">@color/background_floating_material_dark</item>
         <item name="di_elevation">4dp</item>
         <item name="di_maxElevation">4dp</item>
         <item name="di_cornerRadius">2dp</item>
@@ -291,7 +292,7 @@
     </style>
 
     <style name="Material.App.Dialog.Light" parent="Material.App.Dialog">
-        <item name="di_backgroundColor">#FFFFFFFF</item>
+        <item name="di_backgroundColor">@color/background_floating_material_light</item>
         <item name="di_titleTextColor">@color/abc_primary_text_material_light</item>
         <item name="di_actionRipple">@style/Material.Drawable.Ripple.Wave.Light</item>
         <item name="di_dividerColor">#1E000000</item>

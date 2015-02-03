@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:baselineAligned="false">
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/rd_fl_mode"
@@ -21,6 +20,7 @@
             android:minWidth="72dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
+            android:popupBackground="@drawable/abc_popup_background_mtrl_mult"
             app:spn_labelEnable="true"
             app:spn_labelTextColor="#FFFFFFFF"
             app:spn_label="@string/rd_repeat"
@@ -106,17 +106,13 @@
                 android:orientation="horizontal"
                 android:paddingTop="8dp">
 
-                <!--
-                <com.rey.material.widget.Spinner
-                    style="@style/Material.Widget.Spinner"
+                <Spinner
                     android:id="@+id/rd_spn_end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="72dp"
-                    app:ripple="@style/Material.Drawable.Ripple.Touch.Light"
-                    app:delayClick="true"/>
-
-                !-->
+                    android:spinnerMode="dropdown"
+                    android:popupBackground="@drawable/abc_popup_background_mtrl_mult"/>
 
                 <com.rey.material.widget.EditText
                     style="@style/Material.Widget.EditText.Light"

@@ -2,7 +2,8 @@
 
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
-    <application android:allowBackup="true"
+    <application
+        android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.AppTheme">

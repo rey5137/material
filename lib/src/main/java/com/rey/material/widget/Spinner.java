@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.internal.widget.TintManager;
 import android.support.v7.internal.widget.TintTypedArray;
@@ -35,6 +40,9 @@ import com.rey.material.R;
 import com.rey.material.drawable.ArrowDrawable;
 import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.util.ThemeUtil;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class Spinner extends FrameLayout {
 		
@@ -116,7 +124,7 @@ public class Spinner extends FrameLayout {
 	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setWillNotDraw(false);
 		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-				
+
 		TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
         mLabelEnable = a.getBoolean(R.styleable.Spinner_spn_labelEnable, false);
@@ -173,7 +181,7 @@ public class Spinner extends FrameLayout {
 		mPopup.setItemAnimation(a.getResourceId(R.styleable.Spinner_spn_popupItemAnimation, 0));
 		mPopup.setItemAnimationOffset(a.getInteger(R.styleable.Spinner_spn_popupItemAnimOffset, 50));		
         mDisableChildrenWhenDisabled = a.getBoolean(R.styleable.Spinner_disableChildrenWhenDisabled, false);
-        
+
         mArrowAnimSwitchMode = a.getBoolean(R.styleable.Spinner_spn_arrowSwitchMode, false);
         int arrowAnimDuration = a.getInteger(R.styleable.Spinner_spn_arrowAnimDuration, 0);
         mArrowSize = a.getDimensionPixelSize(R.styleable.Spinner_spn_arrowSize, ThemeUtil.dpToPx(getContext(), 4));
@@ -411,17 +419,14 @@ public class Spinner extends FrameLayout {
     	int widthSize = MeasureSpec.getSize(widthMeasureSpec);
     	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
     	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-    	    	    	
-    	if(widthMode != MeasureSpec.UNSPECIFIED)
-    		widthSize -= getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth();
-    	
-    	if(heightMode != MeasureSpec.UNSPECIFIED)
-    		heightSize -= getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight();
+
+        int paddingHorizontal = getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth();
+        int paddingVertical = getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight();
 
         int labelWidth = 0;
         int labelHeight = 0;
         if(mLabelView != null){
-            mLabelView.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            mLabelView.measure(MeasureSpec.makeMeasureSpec(widthSize - paddingHorizontal, widthMode), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             labelWidth = mLabelView.getMeasuredWidth();
             labelHeight = mLabelView.getMeasuredHeight();
         }
@@ -431,15 +436,65 @@ public class Spinner extends FrameLayout {
     	
     	View v = getSelectedView();
     	if(v != null){
-    		v.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), MeasureSpec.makeMeasureSpec(heightSize - labelHeight, heightMode));
+            int ws;
+            int hs;
+            ViewGroup.LayoutParams params = v.getLayoutParams();
+            switch (params.width){
+                case ViewGroup.LayoutParams.WRAP_CONTENT:
+                    ws = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                    break;
+                case ViewGroup.LayoutParams.MATCH_PARENT:
+                    ws = MeasureSpec.makeMeasureSpec(widthSize - paddingHorizontal, widthMode);
+                    break;
+                default:
+                    ws = MeasureSpec.makeMeasureSpec(params.width, MeasureSpec.EXACTLY);
+                    break;
+            }
+            switch (params.height){
+                case ViewGroup.LayoutParams.WRAP_CONTENT:
+                    hs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                    break;
+                case ViewGroup.LayoutParams.MATCH_PARENT:
+                    hs = MeasureSpec.makeMeasureSpec(heightSize - paddingVertical - labelHeight, heightMode);
+                    break;
+                default:
+                    hs = MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY);
+                    break;
+            }
+
+    		v.measure(ws, hs);
     		width = v.getMeasuredWidth();
     		height = v.getMeasuredHeight();
     	}
 
-        width = Math.max(labelWidth, width) + getPaddingLeft() + getPaddingRight() + getArrowDrawableWidth();
-        height += labelHeight + getPaddingTop() + getPaddingBottom() + getDividerDrawableHeight();
+        width = Math.max(mMinWidth, Math.max(labelWidth, width) + paddingHorizontal);
+        height = Math.max(mMinHeight, height + labelHeight + paddingVertical);
 
-    	setMeasuredDimension(Math.max(mMinWidth, width), Math.max(mMinHeight, height));
+        switch (widthMode){
+            case MeasureSpec.AT_MOST:
+                width = Math.min(widthSize, width);
+                break;
+            case MeasureSpec.EXACTLY:
+                width = widthSize;
+                break;
+        }
+
+        switch (heightMode){
+            case MeasureSpec.AT_MOST:
+                height = Math.min(heightSize, height);
+                break;
+            case MeasureSpec.EXACTLY:
+                height = heightSize;
+                break;
+        }
+
+    	setMeasuredDimension(width, height);
+
+        width -= paddingHorizontal;
+        height -= labelHeight + paddingVertical;
+
+        if(v != null && (v.getMeasuredWidth() != width || v.getMeasuredHeight() != height))
+            v.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -975,5 +1030,5 @@ public class Spinner extends FrameLayout {
                 vto.addOnGlobalLayoutListener(layoutListener);
         }
     }
-	
+
 }

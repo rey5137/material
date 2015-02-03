@@ -47,6 +47,17 @@ public class RecurringPickerDialog extends Dialog{
                         getContext().getString(R.string.rd_yearly)
                 }
         ));
+
+        android.widget.Spinner spn_end = (android.widget.Spinner)v.findViewById(R.id.rd_spn_end);
+        spn_end.setAdapter(new ArrayAdapter<>(getContext(),
+                R.layout.row_rd_mode,
+                new String[]{
+                        getContext().getString(R.string.rd_daily),
+                        getContext().getString(R.string.rd_weekly),
+                        getContext().getString(R.string.rd_monthly),
+                        getContext().getString(R.string.rd_yearly)
+                }
+        ));
     }
 
     @Override
