@@ -9,12 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.rey.material.app.*;
-import com.rey.material.app.DialogFragment;
+import com.rey.material.app.RecurringPickerDialog;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.FloatingActionButton;
-
-import java.util.Calendar;
 
 public class ButtonFragment extends Fragment{
 

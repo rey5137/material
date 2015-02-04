@@ -89,9 +89,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mPaddingRight;
     private int mPaddingBottom;
 
-    protected PositionScroller mPositionScroller = new PositionScroller();
-    private float mAlpha;
-
     public DatePicker(Context context) {
         super(context);
 
@@ -273,50 +270,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         super.setPadding(0, 0, 0, 0);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public void setAlpha(float alpha) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            super.setAlpha(alpha);
-            invalidate();
-        }
-        else{
-            if(mAlpha != alpha){
-                mAlpha = alpha;
-                ViewCompat.setAlpha(this, alpha);
-                invalidate();
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public float getAlpha() {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) ? super.getAlpha() : mAlpha;
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        if(getAlpha() != 0f)
-            super.draw(canvas);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if(getAlpha() == 0f)
-            return false;
-
-        return super.onTouchEvent(ev);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(getAlpha() == 0f)
-            return false;
-
-        return super.dispatchTouchEvent(ev);
-    }
-
     public void setContentPadding(int left, int top, int right, int bottom){
         mPaddingLeft = left;
         mPaddingTop = top;
@@ -339,17 +292,29 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     }
 
     public void setDateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
-        mAdapter.setDayRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
+        mAdapter.setDateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
     public void goTo(int month, int year){
         int position = mAdapter.positionOfMonth(month, year);
-        setSelectionFromTop(position, 0);
-        mPositionScroller.start(position);
+        postSetSelectionFromTop(position, 0);
+    }
+
+    public void postSetSelectionFromTop(final int position, final int offset) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                setSelectionFromTop(position, offset);
+                requestLayout();
+            }
+        });
     }
 
     public void setDate(int day, int month, int year){
-        mAdapter.setDay(day, month, year, false);
+        if(mAdapter.getYear() == year && mAdapter.getMonth() == month && mAdapter.getDay() == day)
+            return;
+
+        mAdapter.setDate(day, month, year, false);
         goTo(month, year);
     }
 
@@ -453,132 +418,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             }
             else
                 mPreviousScrollState = mNewState;
-        }
-    }
-
-    class PositionScroller implements Runnable {
-        private static final int SCROLL_DURATION = 25;
-
-        private static final int MOVE_DOWN_POS = 1;
-        private static final int MOVE_UP_POS = 2;
-
-        private int mMode;
-        private int mTargetPos;
-        private int mLastSeenPos;
-        private final int mExtraScroll;
-
-        PositionScroller() {
-            mExtraScroll = ViewConfiguration.get(getContext()).getScaledFadingEdgeLength();
-        }
-
-        public void start(final int position) {
-            stop();
-
-            final int childCount = getChildCount();
-            if (childCount == 0)
-                return;
-
-            final int firstPos = getFirstVisiblePosition();
-            final int lastPos = firstPos + childCount - 1;
-
-            if (position < firstPos)
-                mMode = MOVE_UP_POS;
-            else if (position > lastPos)
-                mMode = MOVE_DOWN_POS;
-            else {
-                scrollToVisible(position);
-                return;
-            }
-
-            mTargetPos = position;
-            mLastSeenPos = INVALID_POSITION;
-
-            postOnAnimation(this);
-        }
-
-        /**
-         * Scroll such that targetPos is in the visible padded region without scrolling
-         * boundPos out of view. Assumes targetPos is onscreen.
-         */
-        private void scrollToVisible(int targetPos) {
-            final int firstPos = getFirstVisiblePosition();
-            final int paddedTop = getPaddingTop();
-            final int paddedBottom = getHeight() - getPaddingBottom();
-
-            final View targetChild = getChildAt(targetPos - firstPos);
-            final int targetTop = targetChild.getTop();
-            final int targetBottom = targetChild.getBottom();
-            int scrollBy = 0;
-
-            if (targetBottom > paddedBottom)
-                scrollBy = targetBottom - paddedBottom;
-
-            if (targetTop < paddedTop)
-                scrollBy = targetTop - paddedTop;
-
-            if (scrollBy == 0)
-                return;
-
-            smoothScrollBy(scrollBy, SCROLL_DURATION);
-        }
-
-        public void stop() {
-            removeCallbacks(this);
-        }
-
-        @Override
-        public void run() {
-            final int listHeight = getHeight();
-            final int firstPos = getFirstVisiblePosition();
-
-            switch (mMode) {
-                case MOVE_DOWN_POS: {
-                    final int lastViewIndex = getChildCount() - 1;
-                    final int lastPos = firstPos + lastViewIndex;
-
-                    if (lastViewIndex < 0)
-                        return;
-
-                    if (lastPos == mLastSeenPos) {
-                        // No new views, let things keep going.
-                        ViewCompat.postOnAnimation(DatePicker.this, this);
-                        return;
-                    }
-
-                    final View lastView = getChildAt(lastViewIndex);
-                    final int lastViewHeight = mMonthRealHeight;
-                    final int lastViewTop = lastView == null ? 0 : lastView.getTop();
-                    final int lastViewPixelsShowing = listHeight - lastViewTop;
-                    final int extraScroll = lastPos < getCount() - 1 ? Math.max(getPaddingBottom(), mExtraScroll) : getPaddingBottom();
-
-                    final int scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
-                    smoothScrollBy(scrollBy, SCROLL_DURATION);
-
-                    mLastSeenPos = lastPos;
-                    if (lastPos < mTargetPos)
-                        ViewCompat.postOnAnimation(DatePicker.this, this);
-                    break;
-                }
-                case MOVE_UP_POS:
-                    if (firstPos == mLastSeenPos) {
-                        // No new views, let things keep going.
-                        ViewCompat.postOnAnimation(DatePicker.this, this);
-                        return;
-                    }
-
-                    final View firstView = getChildAt(0);
-                    final int firstViewTop = firstView == null ? 0 : firstView.getTop();
-                    final int extraScroll = firstPos > 0 ? Math.max(mExtraScroll, getPaddingTop()) : getPaddingTop();
-
-                    final int scrollBy = firstViewTop - extraScroll;
-                    smoothScrollBy(scrollBy, SCROLL_DURATION);
-
-                    mLastSeenPos = firstPos;
-
-                    if (firstPos > mTargetPos)
-                        ViewCompat.postOnAnimation(DatePicker.this, this);
-                    break;
-            }
         }
     }
 
@@ -760,7 +599,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
                     break;
                 case MotionEvent.ACTION_UP:
                     if(getTouchedDay(event.getX(), event.getY()) == mTouchedDay)
-                        mAdapter.setDay(mTouchedDay, mMonth, mYear, true);
+                        mAdapter.setDate(mTouchedDay, mMonth, mYear, true);
                     mTouchedDay = -1;
                     return true;
                 case MotionEvent.ACTION_CANCEL:
@@ -832,7 +671,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         private int mMinMonthValue;
         private int mMaxMonthValue;
 
-        public void setDayRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
+        public void setDateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
             int minMonthValue = minDay < 0 || minMonth < 0 || minYear < 0 ? 0 : minYear * 12 + minMonth;
             int maxMonthValue = maxDay < 0 || maxMonth < 0 || maxYear < 0 ? Integer.MAX_VALUE - 1: maxYear * 12 + maxMonth;
 
@@ -851,7 +690,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             }
         }
 
-        public void setDay(int day, int month, int year, boolean animation){
+        public void setDate(int day, int month, int year, boolean animation){
             if(mMonth != month || mYear != year) {
                 MonthView v = (MonthView)getChildAt(positionOfMonth(mMonth, mYear) - getFirstVisiblePosition());
                 if (v != null)

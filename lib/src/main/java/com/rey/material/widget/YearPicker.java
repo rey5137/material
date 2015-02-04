@@ -14,14 +14,11 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -71,9 +68,6 @@ public class YearPicker extends ListView{
     };
 
     private int[] mTextColors = new int[2];
-
-    protected PositionScroller mPositionScroller = new PositionScroller();
-    private float mAlpha;
 
     public YearPicker(Context context) {
         super(context);
@@ -175,12 +169,25 @@ public class YearPicker extends ListView{
             position = 0;
             offset = 0;
         }
-        setSelectionFromTop(position, offset);
-        mPositionScroller.startWithOffset(position, offset);
+        postSetSelectionFromTop(position, offset);
+    }
+
+    public void postSetSelectionFromTop(final int position, final int offset) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                setSelectionFromTop(position, offset);
+                requestLayout();
+            }
+        });
     }
 
     public void setYear(int year){
+        if(mAdapter.getYear() == year)
+            return;
+
         mAdapter.setYear(year);
+        goTo(year);
     }
 
     public int getYear(){
@@ -220,54 +227,10 @@ public class YearPicker extends ListView{
         mPositionShift = (int)Math.floor(shift);
         mPositionShift = shift > mPositionShift ? mPositionShift + 1 : mPositionShift;
         mDistanceShift = (int)((shift - mPositionShift) * mItemRealHeight) - getPaddingTop();
-        setSelectionFromTop(mAdapter.positionOfYear(mAdapter.getYear()) - mPositionShift, mDistanceShift);
+        goTo(mAdapter.getYear());
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public void setAlpha(float alpha) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            super.setAlpha(alpha);
-            invalidate();
-        }
-        else{
-            if(mAlpha != alpha){
-                mAlpha = alpha;
-                ViewCompat.setAlpha(this, alpha);
-                invalidate();
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public float getAlpha() {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) ? super.getAlpha() : mAlpha;
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        if(getAlpha() != 0f)
-            super.draw(canvas);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if(getAlpha() == 0f)
-            return false;
-
-        return super.onTouchEvent(ev);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(getAlpha() == 0f)
-            return false;
-
-        return super.dispatchTouchEvent(ev);
-    }
-
-    private class YearAdapter extends BaseAdapter implements View.OnClickListener{
+    private class YearAdapter extends BaseAdapter implements OnClickListener{
 
         private int mMinYear = 1990;
         private int mMaxYear = Integer.MAX_VALUE - 1;
@@ -315,11 +278,11 @@ public class YearPicker extends ListView{
                 int old = mCurYear;
                 mCurYear = year;
 
-                CircleCheckedTextView child = (CircleCheckedTextView)YearPicker.this.getChildAt(positionOfYear(old) - YearPicker.this.getFirstVisiblePosition());
+                CircleCheckedTextView child = (CircleCheckedTextView) YearPicker.this.getChildAt(positionOfYear(old) - YearPicker.this.getFirstVisiblePosition());
                 if(child != null)
                     child.setChecked(false);
 
-                child = (CircleCheckedTextView)YearPicker.this.getChildAt(positionOfYear(mCurYear) - YearPicker.this.getFirstVisiblePosition());
+                child = (CircleCheckedTextView) YearPicker.this.getChildAt(positionOfYear(mCurYear) - YearPicker.this.getFirstVisiblePosition());
                 if(child != null)
                     child.setChecked(true);
 
@@ -430,7 +393,7 @@ public class YearPicker extends ListView{
         int year;
 
         /**
-         * Constructor called from {@link Switch#onSaveInstanceState()}
+         * Constructor called from {@link com.rey.material.widget.Switch#onSaveInstanceState()}
          */
         SavedState(Parcelable superState) {
             super(superState);
@@ -475,86 +438,4 @@ public class YearPicker extends ListView{
         };
     }
 
-    class PositionScroller implements Runnable {
-        private static final int SCROLL_DURATION = 25;
-
-        private int mTargetPos;
-        private int mLastSeenPos;
-        private int mOffsetFromTop;
-
-        PositionScroller() {}
-
-        public void startWithOffset(final int position, int offset) {
-            stop();
-
-            final int childCount = getChildCount();
-            if (childCount == 0)
-                return;
-
-            offset += getPaddingTop();
-
-            mTargetPos = Math.max(0, Math.min(getCount() - 1, position));
-            mOffsetFromTop = offset;
-            mLastSeenPos = INVALID_POSITION;
-
-            final int firstPos = getFirstVisiblePosition();
-            final int lastPos = firstPos + childCount - 1;
-
-            if(mTargetPos >= firstPos && mTargetPos <= lastPos) {
-                // On-screen, just scroll.
-                final int targetTop = getChildAt(mTargetPos - firstPos).getTop();
-                smoothScrollBy(targetTop - offset, SCROLL_DURATION);
-                return;
-            }
-
-            mLastSeenPos = INVALID_POSITION;
-
-            postOnAnimation(this);
-        }
-
-        public void stop() {
-            removeCallbacks(this);
-        }
-
-        @Override
-        public void run() {
-            final int firstPos = getFirstVisiblePosition();
-
-            if (mLastSeenPos == firstPos) {
-                // No new views, let things keep going.
-                ViewCompat.postOnAnimation(YearPicker.this, this);
-                return;
-            }
-
-            mLastSeenPos = firstPos;
-
-            final int childCount = getChildCount();
-            final int position = mTargetPos;
-            final int lastPos = firstPos + childCount - 1;
-
-            int viewTravelCount = 0;
-            if (position < firstPos)
-                viewTravelCount = firstPos - position + 1;
-            else if (position > lastPos)
-                viewTravelCount = position - lastPos;
-
-            // Estimate how many screens we should travel
-            final float screenTravelCount = (float) viewTravelCount / childCount;
-            final float modifier = Math.min(Math.abs(screenTravelCount), 1.f);
-            if (position < firstPos) {
-                final int distance = (int) (-getHeight() * modifier);
-                smoothScrollBy(distance, SCROLL_DURATION);
-                ViewCompat.postOnAnimation(YearPicker.this, this);
-            } else if (position > lastPos) {
-                final int distance = (int) (getHeight() * modifier);
-                smoothScrollBy(distance, SCROLL_DURATION);
-                ViewCompat.postOnAnimation(YearPicker.this, this);
-            } else {
-                // On-screen, just scroll.
-                final int targetTop = getChildAt(position - firstPos).getTop();
-                final int distance = targetTop - mOffsetFromTop;
-                smoothScrollBy(distance, SCROLL_DURATION);
-            }
-        }
-    }
 }

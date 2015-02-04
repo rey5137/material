@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.rey.material.app.ToolbarManager;
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.widget.FloatingActionButton;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
@@ -106,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 		
-		vp.setCurrentItem(1);
+		vp.setCurrentItem(mItems.length - 1);
 	}
 
 	@Override
@@ -259,7 +258,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.SWITCHES, fragment);
     					else if(fragment instanceof TextfieldFragment)
     						setFragment(Tab.TEXTFIELDS, fragment);
-    					else if(fragment instanceof SnackBarFragment)
+    					else if(fragment instanceof SnackbarFragment)
     						setFragment(Tab.SNACKBARS, fragment);
                         else if(fragment instanceof DialogsFragment)
                             setFragment(Tab.DIALOGS, fragment);
@@ -294,7 +293,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 						mFragments[position] = TextfieldFragment.newInstance();
 						break;
 					case SNACKBARS:
-						mFragments[position] = SnackBarFragment.newInstance();
+						mFragments[position] = SnackbarFragment.newInstance();
 						break;
                     case DIALOGS:
                         mFragments[position] = DialogsFragment.newInstance();

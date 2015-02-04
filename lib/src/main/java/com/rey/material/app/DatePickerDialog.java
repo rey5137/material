@@ -11,7 +11,10 @@ import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
 import com.rey.material.R;
@@ -127,7 +130,7 @@ public class DatePickerDialog extends Dialog {
 
         private int mPadding;
 
-        private boolean mDateSelectMode = true;
+        private boolean mDaySelectMode = true;
 
         private boolean mMonthFirst = true;
         private boolean mLocationDirty = true;
@@ -169,8 +172,8 @@ public class DatePickerDialog extends Dialog {
             addView(mDatePicker);
             addView(mYearPicker);
 
-            mYearPicker.setAlpha(mDateSelectMode ? 0f : 1f);
-            mDatePicker.setAlpha(mDateSelectMode ? 1f : 0f);
+            mYearPicker.setVisibility(mDaySelectMode ? View.GONE : View.VISIBLE);
+            mDatePicker.setVisibility(mDaySelectMode ? View.VISIBLE : View.GONE);
 
             mMonthFirst = isMonthFirst();
 
@@ -185,13 +188,58 @@ public class DatePickerDialog extends Dialog {
         }
 
         public void setDateSelectMode(boolean enable){
-            if(mDateSelectMode != enable){
-                mDateSelectMode = enable;
+            if(mDaySelectMode != enable){
+                mDaySelectMode = enable;
 
-                mYearPicker.setAlpha(mDateSelectMode ? 0f : 1f);
-                mDatePicker.setAlpha(mDateSelectMode ? 1f : 0f);
+                if(mDaySelectMode) {
+                    mDatePicker.goTo(mDatePicker.getMonth(), mDatePicker.getYear());
+                    animOut(mYearPicker);
+                    animIn(mDatePicker);
+                }
+                else {
+                    mYearPicker.goTo(mYearPicker.getYear());
+                    animOut(mDatePicker);
+                    animIn(mYearPicker);
+                }
+
                 invalidate(0, 0, mHeaderRealWidth, mHeaderPrimaryRealHeight + mHeaderSecondaryHeight);
             }
+        }
+
+        private void animOut(final View v){
+            Animation anim = new AlphaAnimation(1f, 0f);
+            anim.setDuration(getContext().getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    v.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+            v.startAnimation(anim);
+        }
+
+        private void animIn(final View v){
+            Animation anim = new AlphaAnimation(0f, 1f);
+            anim.setDuration(getContext().getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    v.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {}
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+            v.startAnimation(anim);
         }
 
         public void applyStyle(int resId){
@@ -241,17 +289,14 @@ public class DatePickerDialog extends Dialog {
 
         @Override
         public void onYearChanged(int oldYear, int newYear) {
-            mDatePicker.setDate(mDatePicker.getDay(), mDatePicker.getMonth(), newYear);
+            if(!mDaySelectMode)
+                mDatePicker.setDate(mDatePicker.getDay(), mDatePicker.getMonth(), newYear);
         }
 
         @Override
         public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear) {
-            if(mYearPicker.getAlpha() == 0f) {
-                mYearPicker.setOnYearChangedListener(null);
+            if(mDaySelectMode)
                 mYearPicker.setYear(newYear);
-                mYearPicker.goTo(newYear);
-                mYearPicker.setOnYearChangedListener(this);
-            }
 
             if(newDay < 0 || newMonth < 0 || newYear < 0){
                 mWeekDay = null;
@@ -348,7 +393,7 @@ public class DatePickerDialog extends Dialog {
                 }
             }
             else{
-                mHeaderRealWidth = w / 2;
+                mHeaderRealWidth = w - mDatePicker.getMeasuredWidth();
                 mHeaderPrimaryRealHeight = h - mHeaderSecondaryHeight;
                 mHeaderSecondaryBackground.reset();
                 if(mCornerRadius == 0)
@@ -456,7 +501,7 @@ public class DatePickerDialog extends Dialog {
 
             canvas.drawText(mWeekDay, 0, mWeekDay.length(), mBaseX, mWeekDayY, mPaint);
 
-            mPaint.setColor(mDateSelectMode ? mDatePicker.getTextHighlightColor() : mTextHeaderColor);
+            mPaint.setColor(mDaySelectMode ? mDatePicker.getTextHighlightColor() : mTextHeaderColor);
             mPaint.setTextSize(mHeaderPrimaryTextSize);
             if(mMonthFirst)
                 canvas.drawText(mDay, 0, mDay.length(), mBaseX, mDayY, mPaint);
@@ -469,7 +514,7 @@ public class DatePickerDialog extends Dialog {
             else
                 canvas.drawText(mDay, 0, mDay.length(), mBaseX, mDayY, mPaint);
 
-            mPaint.setColor(mDateSelectMode ? mTextHeaderColor : mDatePicker.getTextHighlightColor());
+            mPaint.setColor(mDaySelectMode ? mTextHeaderColor : mDatePicker.getTextHighlightColor());
             canvas.drawText(mYear, 0, mYear.length(), mBaseX, mYearY, mPaint);
         }
 
@@ -487,10 +532,10 @@ public class DatePickerDialog extends Dialog {
             switch (event.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     if(isTouched(mBaseX - mFirstWidth / 2f, mHeaderSecondaryHeight, mBaseX + mFirstWidth / 2f, mCenterY , event.getX(), event.getY()))
-                        return !mDateSelectMode;
+                        return !mDaySelectMode;
 
                     if(isTouched(mBaseX - mSecondWidth / 2f, mCenterY, mBaseX + mSecondWidth / 2f, mHeaderSecondaryHeight + mHeaderPrimaryRealHeight, event.getX(), event.getY()))
-                        return mDateSelectMode;
+                        return mDaySelectMode;
                     break;
                 case MotionEvent.ACTION_UP:
                     if(isTouched(mBaseX - mFirstWidth / 2f, mHeaderSecondaryHeight, mBaseX + mFirstWidth / 2f, mCenterY , event.getX(), event.getY())) {

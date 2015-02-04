@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.SnackBar;
 
-public class SnackBarFragment extends Fragment{
+public class SnackbarFragment extends Fragment{
 	
 	SnackBar mSnackBar;
 		
-	public static SnackBarFragment newInstance(){
-		SnackBarFragment fragment = new SnackBarFragment();
+	public static SnackbarFragment newInstance(){
+		SnackbarFragment fragment = new SnackbarFragment();
 		
 		return fragment;
 	}
