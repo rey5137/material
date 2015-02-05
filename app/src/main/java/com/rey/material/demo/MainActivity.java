@@ -1,6 +1,7 @@
 package com.rey.material.demo;
 
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -20,13 +21,18 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.rey.material.app.Recurring;
 import com.rey.material.app.ToolbarManager;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
 
@@ -104,9 +110,35 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			public void onPageScrollStateChanged(int state) {}
 			
 		});
-		
+
 		vp.setCurrentItem(mItems.length - 1);
+
+        Recurring recurring = new Recurring();
+        recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
+        recurring.setPeriod(3);
+        recurring.setEnabledWeekday(Calendar.TUESDAY, true);
+        recurring.setEnabledWeekday(Calendar.THURSDAY, true);
+
+        printTime(recurring.getNextEventTime(getTime(4, Calendar.JANUARY, 2015, 10, 0)));
 	}
+
+    private long getTime(int day, int month, int year, int hour, int minute) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        return cal.getTimeInMillis();
+    }
+
+    private void printTime(long time){
+        DateFormat format = SimpleDateFormat.getDateTimeInstance();
+        System.out.println(format.format(new Date(time)));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

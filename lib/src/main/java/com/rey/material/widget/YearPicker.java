@@ -1,22 +1,17 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -26,7 +21,6 @@ import android.widget.BaseAdapter;
 
 import com.rey.material.R;
 import com.rey.material.drawable.BlankDrawable;
-import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
 
@@ -323,47 +317,6 @@ public class YearPicker extends ListView{
             v.setCheckedImmediately(year == mCurYear);
             return v;
         }
-    }
-
-    private class CircleCheckedTextView extends android.widget.CheckedTextView {
-
-        private CircleDrawable mBackground;
-
-        public CircleCheckedTextView(Context context) {
-            super(context);
-
-            setGravity(Gravity.CENTER);
-            setPadding(0, 0, 0, 0);
-
-            mBackground = new CircleDrawable();
-            mBackground.setInEditMode(isInEditMode());
-            mBackground.setAnimEnable(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                setBackground(mBackground);
-            else
-                setBackgroundDrawable(mBackground);
-            mBackground.setAnimEnable(true);
-        }
-
-        @Override
-        public void setBackgroundColor(int color) {
-            mBackground.setColor(color);
-        }
-
-        public void setAnimDuration(int duration) {
-            mBackground.setAnimDuration(duration);
-        }
-
-        public void setInterpolator(Interpolator in, Interpolator out) {
-            mBackground.setInterpolator(in, out);
-        }
-
-        public void setCheckedImmediately(boolean checked){
-            mBackground.setAnimEnable(false);
-            setChecked(checked);
-            mBackground.setAnimEnable(true);
-        }
-
     }
 
     @Override
