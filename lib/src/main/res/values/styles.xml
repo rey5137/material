@@ -469,7 +469,7 @@
         <item name="et_dividerErrorColor">?attr/colorAccent</item>
         <item name="et_dividerAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="et_dividerHeight">2dp</item>
-        <item name="et_dividerPadding">8dp</item>
+        <item name="et_dividerPadding">0dp</item>
         <item name="et_supportTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
         <item name="et_supportTextColor">@color/abc_secondary_text_material_dark</item>
         <item name="et_supportTextErrorColor">?attr/colorAccent</item>
@@ -489,7 +489,7 @@
         <item name="spn_labelTextColor">@color/abc_secondary_text_material_dark</item>
         <item name="spn_labelEllipsize">end</item>
         <item name="spn_dividerHeight">2dp</item>
-        <item name="spn_dividerPadding">8dp</item>
+        <item name="spn_dividerPadding">0dp</item>
         <item name="spn_dividerAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowColor">?attr/colorControlNormal</item>
         <item name="spn_arrowSize">4dp</item>

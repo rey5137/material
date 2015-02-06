@@ -20,7 +20,6 @@
             android:minWidth="72dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:popupBackground="@drawable/abc_popup_background_mtrl_mult"
             app:spn_labelEnable="true"
             app:spn_labelTextColor="#FFFFFFFF"
             app:spn_label="@string/rd_repeat"
@@ -43,14 +42,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:baselineAligned="false">
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.rey.material.widget.TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -59,17 +58,20 @@
 
                 <com.rey.material.widget.EditText
                     style="@style/Material.Widget.EditText.Light"
-                    android:id="@+id/rd_et_freq"
+                    android:id="@+id/rd_et_period"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:inputType="number"
                     app:et_labelEnable="false"
+                    app:et_inputId="@+id/rd_et_period_input"
                     tools:text="1"/>
 
-                <TextView
-                    android:id="@+id/rd_tv_freq_unit"
+                <com.rey.material.widget.TextView
+                    android:id="@+id/rd_tv_period_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -78,9 +80,19 @@
 
             </LinearLayout>
 
+            <com.rey.material.app.WeekView
+                android:id="@+id/rd_week_wv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/abc_primary_text_material_light"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:paddingTop="8dp"/>
+
             <com.rey.material.widget.RadioButton
                 style="@style/Material.Drawable.RadioButton"
-                android:id="@+id/rd_month_cb_same"
+                android:id="@+id/rd_month_rb_same"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -92,7 +104,7 @@
 
             <com.rey.material.widget.RadioButton
                 style="@style/Material.Drawable.RadioButton"
-                android:id="@+id/rd_month_cb_week"
+                android:id="@+id/rd_month_rb_week"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -100,49 +112,62 @@
                 tools:text="@string/rd_month_last"
                 android:gravity="center_vertical"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:layout_marginLeft="-8dp">
 
-                <Spinner
+                <com.rey.material.widget.Spinner
+                    style="@style/Material.Widget.Spinner"
                     android:id="@+id/rd_spn_end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="72dp"
-                    android:spinnerMode="dropdown"
-                    android:popupBackground="@drawable/abc_popup_background_mtrl_mult"/>
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    app:ripple="@style/Material.Drawable.Ripple.Wave.Light"
+                    app:delayClick="true"/>
 
                 <com.rey.material.widget.EditText
                     style="@style/Material.Widget.EditText.Light"
                     android:id="@+id/rd_et_end_num"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:inputType="number"
+                    android:layout_toRightOf="@id/rd_spn_end"
+                    android:layout_centerVertical="true"
                     app:et_labelEnable="false"
+                    app:et_inputId="@+id/rd_et_end_num_input"
                     tools:text="1"/>
 
-                <TextView
+                <com.rey.material.widget.TextView
                     android:id="@+id/rd_tv_end_num_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/abc_primary_text_material_light"
+                    android:layout_toRightOf="@id/rd_et_end_num"
+                    android:layout_marginLeft="8dp"
+                    android:layout_centerVertical="true"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     tools:text="@string/rd_event"/>
 
                 <com.rey.material.widget.Button
                     android:id="@+id/rd_bt_end_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/rd_spn_end"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_centerVertical="true"
                     app:ripple="@style/Material.Drawable.Ripple.Wave.Light"
                     app:delayClick="false"
-                    tools:text="12/01/2015"
-                    android:layout_marginLeft="8dp"/>
+                    tools:text="12/01/2015"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
 

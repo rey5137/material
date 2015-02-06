@@ -1,7 +1,6 @@
 package com.rey.material.demo;
 
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -21,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.rey.material.app.Recurring;
 import com.rey.material.app.ToolbarManager;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.SnackBar;
@@ -111,15 +109,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 
-		vp.setCurrentItem(mItems.length - 1);
-
-        Recurring recurring = new Recurring();
-        recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
-        recurring.setPeriod(3);
-        recurring.setEnabledWeekday(Calendar.TUESDAY, true);
-        recurring.setEnabledWeekday(Calendar.THURSDAY, true);
-
-        printTime(recurring.getNextEventTime(getTime(4, Calendar.JANUARY, 2015, 10, 0)));
+		vp.setCurrentItem(1);
 	}
 
     private long getTime(int day, int month, int year, int hour, int minute) {

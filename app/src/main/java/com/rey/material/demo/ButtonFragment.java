@@ -9,9 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.rey.material.app.Recurring;
 import com.rey.material.app.RecurringPickerDialog;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.FloatingActionButton;
+
+import java.util.Calendar;
 
 public class ButtonFragment extends Fragment{
 
@@ -73,7 +76,15 @@ public class ButtonFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 RecurringPickerDialog dialog = new RecurringPickerDialog(getActivity(), R.style.Material_App_Dialog_Light);
-                dialog.show();
+                Recurring recurring = new Recurring();
+                recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
+                recurring.setEnabledWeekday(Calendar.SUNDAY, true);
+                recurring.setEnabledWeekday(Calendar.TUESDAY, true);
+                dialog.recurring(recurring)
+                        .startTime(System.currentTimeMillis())
+                        .positiveAction("OK")
+                        .negativeAction("CANCEL")
+                        .show();
             }
         });
 

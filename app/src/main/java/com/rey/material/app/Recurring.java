@@ -65,18 +65,18 @@ public class Recurring {
     }
 
     /**
-     * Enable repeat on a weekday. Only apply it repeat mode is REPEAT_WEEKLY.
-     * @param weekday value of weekday, take from Calendar obj.
-     * @param enable Enable this weekday or not.
+     * Enable repeat on a dayOfWeek. Only apply it repeat mode is REPEAT_WEEKLY.
+     * @param dayOfWeek value of dayOfWeek, take from Calendar obj.
+     * @param enable Enable this dayOfWeek or not.
      */
-    public void setEnabledWeekday(int weekday, boolean enable){
+    public void setEnabledWeekday(int dayOfWeek, boolean enable){
         if(mRepeatMode != REPEAT_WEEKLY)
             return;
 
         if(enable)
-            mRepeatSetting = mRepeatSetting | WEEKDAY_MASK[weekday - 1];
+            mRepeatSetting = mRepeatSetting | WEEKDAY_MASK[dayOfWeek - 1];
         else
-            mRepeatSetting = mRepeatSetting & (~WEEKDAY_MASK[weekday - 1]);
+            mRepeatSetting = mRepeatSetting & (~WEEKDAY_MASK[dayOfWeek - 1]);
     }
 
     public boolean isEnabledWeekday(int weekday){
@@ -165,7 +165,7 @@ public class Recurring {
         while(true);
     }
 
-    private long gotoFirstDayOfWeek(Calendar cal){
+    private static long gotoFirstDayOfWeek(Calendar cal){
         int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         int firstDayOfWeek = cal.getFirstDayOfWeek();
         int shift = dayOfWeek >= firstDayOfWeek ? (dayOfWeek - firstDayOfWeek) : (dayOfWeek + 7 - firstDayOfWeek);
@@ -224,7 +224,7 @@ public class Recurring {
     /**
      * Get the order number of weekday. 0 mean the first, -1 mean the last.
      */
-    private int getWeekDayOrderNum(Calendar cal){
+    public static int getWeekDayOrderNum(Calendar cal){
         return cal.get(Calendar.DAY_OF_MONTH) + 7 > cal.getActualMaximum(Calendar.DAY_OF_MONTH) ? - 1 : (cal.get(Calendar.DAY_OF_MONTH) - 1) / 7;
     }
 
@@ -235,7 +235,7 @@ public class Recurring {
      * @param orderNum The order number, 0 mean the first, -1 mean the last.
      * @return The day int month
      */
-    private int getDay(Calendar cal, int dayOfWeek, int orderNum){
+    private static int getDay(Calendar cal, int dayOfWeek, int orderNum){
         int day = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
         cal.set(Calendar.DAY_OF_MONTH, day);
