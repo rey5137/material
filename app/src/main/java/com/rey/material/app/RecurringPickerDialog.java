@@ -65,7 +65,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     private HeaderDrawable mHeaderBackground;
 
     private Recurring mRecurring;
-    private long mStartTime;
+    private int mDatePickerDialogStyleId;
 
     private static int[] MONTH_SAME_WEEKDAY = {R.string.rd_month_last, R.string.rd_month_first, R.string.rd_month_second, R.string.rd_month_third, R.string.rd_month_fourth};
 
@@ -162,6 +162,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
                 }
             }
         };
+
         mSameDayRadioButton.setOnCheckedChangeListener(mCheckChangeListener);
         mSameWeekdayRadioButton.setOnCheckedChangeListener(mCheckChangeListener);
 
@@ -190,6 +191,39 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
             }
         });
 
+        View.OnClickListener mDateClickListener = new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final DatePickerDialog dialog = new DatePickerDialog(getContext(), mDatePickerDialogStyleId);
+                long minTime = System.currentTimeMillis();
+                Calendar cal = dialog.getCalendar();
+                cal.setTimeInMillis(minTime);
+                cal.add(Calendar.YEAR, 100);
+                long maxTime = cal.getTimeInMillis();
+
+                dialog.dateRange(minTime, maxTime)
+                        .date((long)mEndDateButton.getTag())
+                        .positiveAction(mPositiveAction.getText())
+                        .positiveActionClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                onEndDateChanged(dialog.getDate());
+                                dialog.dismiss();
+                            }
+                        })
+                        .negativeAction(mNegativeAction.getText())
+                        .negativeActionClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        };
+
+        mEndDateButton.setOnClickListener(mDateClickListener);
+
         mWeekView.setOnDaySelectionChangedListener(this);
     }
 
@@ -215,11 +249,8 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         return this;
     }
 
-    public RecurringPickerDialog startTime(long startTime){
-        if(mStartTime != startTime){
-            mStartTime = startTime;
-            updateTimeData();
-        }
+    public RecurringPickerDialog datePickerLayoutStyle(int styleId){
+        mDatePickerDialogStyleId = styleId;
         return this;
     }
 
@@ -273,25 +304,44 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     }
 
     private void updateRecurringData(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(mRecurring.getStartTime());
+        int order = Recurring.getWeekDayOrderNum(cal);
+        String dayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+        int formattedTextId = MONTH_SAME_WEEKDAY[(order + 1) % MONTH_SAME_WEEKDAY.length];
+        mSameWeekdayRadioButton.setText(getContext().getResources().getString(formattedTextId, dayOfWeek));
+
         mPeriodEditText.setText(String.valueOf(mRecurring.getPeriod()));
+
+        if(mRecurring.getRepeatMode() == Recurring.REPEAT_WEEKLY) {
+            for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
+                mWeekView.setSelected(i, mRecurring.isEnabledWeekday(i), true);
+        }
+        else{
+            int day = cal.get(Calendar.DAY_OF_WEEK);
+            for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
+                mWeekView.setSelected(i, i == day, true);
+
+            if(mRecurring.getRepeatMode() == Recurring.REPEAT_MONTHLY){
+                mSameDayRadioButton.setCheckedImmediately(mRecurring.getMonthRepeatType() == Recurring.MONTH_SAME_DAY);
+                mSameWeekdayRadioButton.setCheckedImmediately(mRecurring.getMonthRepeatType() == Recurring.MONTH_SAME_WEEKDAY);
+            }
+            else{
+                mSameDayRadioButton.setCheckedImmediately(true);
+                mSameWeekdayRadioButton.setCheckedImmediately(false);
+            }
+        }
 
         if(mModeSpinner.getSelectedItemPosition() != mRecurring.getRepeatMode())
             mModeSpinner.setSelection(mRecurring.getRepeatMode());
         else
             onModeSelected(mRecurring.getRepeatMode());
 
-        if(mRecurring.getEndMode() == Recurring.END_FOR_EVENT)
-            mEndNumEditText.setText(String.valueOf(mRecurring.getEventNumber()));
-        else
-            mEndNumEditText.setText(String.valueOf(10));
+        mEndNumEditText.setText(String.valueOf(mRecurring.getEndMode() == Recurring.END_FOR_EVENT ? mRecurring.getEventNumber() : 10));
 
-        if(mRecurring.getEndMode() == Recurring.END_UNTIL_DATE)
-            mEndDateButton.setText(mDateFormat.format(new Date(mRecurring.getEndDate())));
-
-        if(mRecurring.getRepeatMode() == Recurring.REPEAT_WEEKLY) {
-            for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
-                mWeekView.setSelected(i, mRecurring.isEnabledWeekday(i), true);
-        }
+        long date = mRecurring.getEndMode() == Recurring.END_UNTIL_DATE ? mRecurring.getEndDate() : (Math.max(System.currentTimeMillis(), mRecurring.getStartTime()) + 86400000L * 31);
+        mEndDateButton.setText(mDateFormat.format(new Date(date)));
+        mEndDateButton.setTag(date);
 
         if(mEndSpinner.getSelectedItemPosition() != mRecurring.getEndMode())
             mEndSpinner.setSelection(mRecurring.getEndMode());
@@ -299,28 +349,11 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
             onEndSelected(mRecurring.getEndMode());
     }
 
-    private void updateTimeData(){
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(mStartTime);
-        int order = Recurring.getWeekDayOrderNum(cal);
-        String dayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
-        int formattedTextId = MONTH_SAME_WEEKDAY[(order + 1) % MONTH_SAME_WEEKDAY.length];
-        mSameWeekdayRadioButton.setText(getContext().getResources().getString(formattedTextId, dayOfWeek));
-
-        if(mRecurring.getEndMode() != Recurring.END_UNTIL_DATE)
-            mEndDateButton.setText(mDateFormat.format(new Date(mStartTime + 86400000 * 31)));
-
-        if(mRecurring.getRepeatMode() != Recurring.REPEAT_WEEKLY){
-            int day = cal.get(Calendar.DAY_OF_WEEK);
-            for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
-                mWeekView.setSelected(i, i == day, true);
-        }
-    }
-
     private void onModeSelected(int mode){
         int oldMode = mRecurring.getRepeatMode();
         mRecurring.setRepeatMode(mode);
         updatePeriodUnit();
+        mRecurring.setRepeatSetting(0);
 
         if(mode == Recurring.REPEAT_NONE){
             mPeriodEditText.setEnabled(false);
@@ -353,11 +386,14 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
                     animIn(mSameDayRadioButton, false);
                     animIn(mSameWeekdayRadioButton, false);
                     animOut(mWeekView, true, true);
+                    mRecurring.setMonthRepeatType(mSameDayRadioButton.isChecked() ? Recurring.MONTH_SAME_DAY : Recurring.MONTH_SAME_WEEKDAY);
                     break;
                 case Recurring.REPEAT_WEEKLY:
                     animOut(mSameDayRadioButton, true, true);
                     animOut(mSameWeekdayRadioButton, true, true);
                     animIn(mWeekView, false);
+                    for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
+                        mRecurring.setEnabledWeekday(i, mWeekView.isSelected(i));
                     break;
             }
         }
@@ -365,7 +401,9 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     }
 
     private void onEndSelected(int endMode){
+        int oldEndMode = mRecurring.getEndMode();
         mRecurring.setEndMode(endMode);
+        mRecurring.setEndSetting(0);
 
         switch (endMode){
             case Recurring.END_FOREVER:
@@ -377,11 +415,13 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
                 animOut(mEndNumEditText, false, true);
                 animOut(mEndNumUnitTextView, false, true);
                 animIn(mEndDateButton, false);
+                mRecurring.setEndDate((Long)mEndDateButton.getTag());
                 break;
             case Recurring.END_FOR_EVENT:
                 animIn(mEndNumEditText, false);
                 animIn(mEndNumUnitTextView, false);
                 animOut(mEndDateButton, false, true);
+                mRecurring.setEventNumber(Integer.parseInt(mEndNumEditText.getText().toString()));
                 break;
         }
     }
@@ -414,6 +454,12 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
                 updateNumberUnit();
             }
         }
+    }
+
+    private void onEndDateChanged(long date){
+        mEndDateButton.setTag(date);
+        mEndDateButton.setText(mDateFormat.format(new Date(date)));
+        mRecurring.setEndDate(date);
     }
 
     @Override
@@ -585,7 +631,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     public static class Builder extends Dialog.Builder{
 
         private Recurring mRecurring;
-        private long mStartTime;
+        private int mDatePickerLayoutStyleId;
 
         public Builder() {
             super();
@@ -600,8 +646,8 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
             return this;
         }
 
-        public Builder startTime(long startTime){
-            mStartTime = startTime;
+        public Builder datePickerLayoutStyle(int styleId){
+            mDatePickerLayoutStyleId = styleId;
             return this;
         }
 
@@ -614,7 +660,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         protected Dialog onBuild(Context context, int styleId) {
             RecurringPickerDialog dialog = new RecurringPickerDialog(context, styleId);
             dialog.recurring(mRecurring)
-                    .startTime(mStartTime);
+                    .datePickerLayoutStyle(mDatePickerLayoutStyleId);
             return dialog;
         }
 
@@ -624,7 +670,8 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
 
         @Override
         protected void onWriteToParcel(Parcel dest, int flags) {
-            dest.writeLong(mStartTime);
+            dest.writeInt(mDatePickerLayoutStyleId);
+            dest.writeLong(mRecurring.getStartTime());
             dest.writeInt(mRecurring.getRepeatMode());
             dest.writeInt(mRecurring.getPeriod());
             dest.writeInt(mRecurring.getRepeatSetting());
@@ -634,8 +681,9 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
 
         @Override
         protected void onReadFromParcel(Parcel in) {
-            mStartTime = in.readInt();
+            mDatePickerLayoutStyleId = in.readInt();
             mRecurring = new Recurring();
+            mRecurring.setStartTime(in.readLong());
             mRecurring.setRepeatMode(in.readInt());
             mRecurring.setPeriod(in.readInt());
             mRecurring.setRepeatSetting(in.readInt());

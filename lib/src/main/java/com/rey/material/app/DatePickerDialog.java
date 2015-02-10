@@ -83,8 +83,18 @@ public class DatePickerDialog extends Dialog {
         return this;
     }
 
+    public DatePickerDialog dateRange(long minTime, long maxTime){
+        mDatePickerLayout.setDateRange(minTime, maxTime);
+        return this;
+    }
+
     public DatePickerDialog date(int day, int month, int year){
         mDatePickerLayout.setDate(day, month, year);
+        return this;
+    }
+
+    public DatePickerDialog date(long time){
+        mDatePickerLayout.setDate(time);
         return this;
     }
 
@@ -103,6 +113,22 @@ public class DatePickerDialog extends Dialog {
 
     public int getYear(){
         return mDatePickerLayout.getYear();
+    }
+
+    public long getDate(){
+        Calendar cal = getCalendar();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.DAY_OF_MONTH, getDay());
+        cal.set(Calendar.MONTH, getMonth());
+        cal.set(Calendar.YEAR, getYear());
+        return cal.getTimeInMillis();
+    }
+
+    public Calendar getCalendar(){
+        return mDatePickerLayout.getCalendar();
     }
 
     public String getFormattedDate(DateFormat formatter){
@@ -267,7 +293,30 @@ public class DatePickerDialog extends Dialog {
             mYearPicker.setYearRange(minYear, maxYear);
         }
 
+        public void setDateRange(long minTime, long maxTime){
+            Calendar cal = mDatePicker.getCalendar();
+            cal.setTimeInMillis(minTime);
+            int minDay = cal.get(Calendar.DAY_OF_MONTH);
+            int minMonth = cal.get(Calendar.MONTH);
+            int minYear = cal.get(Calendar.YEAR);
+            cal.setTimeInMillis(maxTime);
+            int maxDay = cal.get(Calendar.DAY_OF_MONTH);
+            int maxMonth = cal.get(Calendar.MONTH);
+            int maxYear = cal.get(Calendar.YEAR);
+
+            setDateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
+        }
+
         public void setDate(int day, int month, int year){
+            mDatePicker.setDate(day, month, year);
+        }
+
+        public void setDate(long time){
+            Calendar cal = mDatePicker.getCalendar();
+            cal.setTimeInMillis(time);
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            int month = cal.get(Calendar.MONTH);
+            int year = cal.get(Calendar.YEAR);
             mDatePicker.setDate(day, month, year);
         }
 
@@ -285,6 +334,10 @@ public class DatePickerDialog extends Dialog {
 
         public String getFormattedDate(DateFormat formatter){
             return mDatePicker.getFormattedDate(formatter);
+        }
+
+        public Calendar getCalendar(){
+            return mDatePicker.getCalendar();
         }
 
         @Override
@@ -567,6 +620,8 @@ public class DatePickerDialog extends Dialog {
         private int mMonth;
         private int mYear;
 
+        private Calendar mCalendar;
+
         public Builder(){
             this(0);
         }
@@ -608,11 +663,39 @@ public class DatePickerDialog extends Dialog {
             return this;
         }
 
+        public Builder dateRange(long minTime, long maxTime){
+            if(mCalendar == null)
+                mCalendar = Calendar.getInstance();
+
+            mCalendar.setTimeInMillis(minTime);
+            int minDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+            int minMonth = mCalendar.get(Calendar.MONTH);
+            int minYear = mCalendar.get(Calendar.YEAR);
+            mCalendar.setTimeInMillis(maxTime);
+            int maxDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+            int maxMonth = mCalendar.get(Calendar.MONTH);
+            int maxYear = mCalendar.get(Calendar.YEAR);
+
+            return dateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
+        }
+
         public Builder date(int day, int month, int year){
             mDay = day;
             mMonth = month;
             mYear = year;
             return this;
+        }
+
+        public Builder date(long time) {
+            if (mCalendar == null)
+                mCalendar = Calendar.getInstance();
+
+            mCalendar.setTimeInMillis(time);
+            int day = mCalendar.get(Calendar.DAY_OF_MONTH);
+            int month = mCalendar.get(Calendar.MONTH);
+            int year = mCalendar.get(Calendar.YEAR);
+
+            return date(day, month, year);
         }
 
         @Override

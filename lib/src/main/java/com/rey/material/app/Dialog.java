@@ -38,10 +38,10 @@ public class Dialog extends android.app.Dialog{
     private int mLayoutWidth;
     private int mLayoutHeight;
 
-    private TextView mTitle;
-    private Button mPositiveAction;
-    private Button mNegativeAction;
-    private Button mNeutralAction;
+    protected TextView mTitle;
+    protected Button mPositiveAction;
+    protected Button mNegativeAction;
+    protected Button mNeutralAction;
     private View mContent;
     private CardView mBackground;
 

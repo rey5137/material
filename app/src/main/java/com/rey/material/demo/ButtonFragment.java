@@ -78,11 +78,12 @@ public class ButtonFragment extends Fragment{
             public void onClick(View v) {
                 RecurringPickerDialog.Builder builder = new RecurringPickerDialog.Builder(R.style.Material_App_Dialog_Light);
                 Recurring recurring = new Recurring();
+                recurring.setStartTime(System.currentTimeMillis());
                 recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
                 recurring.setEnabledWeekday(Calendar.SUNDAY, true);
                 recurring.setEnabledWeekday(Calendar.TUESDAY, true);
                 builder.recurring(recurring)
-                        .startTime(System.currentTimeMillis())
+                        .datePickerLayoutStyle(R.style.Material_App_Dialog_DatePicker_Light)
                         .positiveAction("OK")
                         .negativeAction("CANCEL");
 

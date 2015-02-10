@@ -26,6 +26,8 @@ public class Recurring {
 
     private static final int DAY_TIME = 86400000;
 
+    private long mStartTime;
+
     private int mRepeatMode;
     private int mPeriod = 1;
     private int mRepeatSetting;
@@ -34,6 +36,14 @@ public class Recurring {
     private long mEndSetting;
 
     public Recurring(){}
+
+    public void setStartTime(long time){
+        mStartTime = time;
+    }
+
+    public long getStartTime(){
+        return mStartTime;
+    }
 
     /**
      * Set repeat mode of this recurring obj.
@@ -145,25 +155,25 @@ public class Recurring {
         return (int)mEndSetting;
     }
 
-    public long getNextEventTime(long start){
-        return getNextEventTime(start, System.currentTimeMillis());
+    public long getNextEventTime(){
+        return getNextEventTime(System.currentTimeMillis());
     }
 
-    public long getNextEventTime(long start, long now){
-        if(start >= now)
-            return start;
+    public long getNextEventTime(long now){
+        if(mStartTime >= now)
+            return mStartTime;
 
         Calendar cal = Calendar.getInstance();
 
         switch (mRepeatMode){
             case REPEAT_DAILY:
-                return getNextDailyEventTime(cal, start, now);
+                return getNextDailyEventTime(cal, mStartTime, now);
             case REPEAT_WEEKLY:
-                return getNextWeeklyEventTime(cal, start, now);
+                return getNextWeeklyEventTime(cal, mStartTime, now);
             case REPEAT_MONTHLY:
-                return getNextMonthlyEventTime(cal, start, now);
+                return getNextMonthlyEventTime(cal, mStartTime, now);
             case REPEAT_YEARLY:
-                return getNextYearlyEventTime(cal, start, now);
+                return getNextYearlyEventTime(cal, mStartTime, now);
             default:
                 return 0;
         }

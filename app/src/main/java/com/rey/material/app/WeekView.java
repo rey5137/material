@@ -5,6 +5,9 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -249,6 +252,13 @@ public class WeekView extends FrameLayout{
             view.setChecked(selected);
     }
 
+    public boolean isSelected(int dayOfWeek){
+        int index = dayOfWeek >= mFirstDayOfWeek ? (dayOfWeek - mFirstDayOfWeek) : (dayOfWeek + 7 - mFirstDayOfWeek);
+        CircleCheckedTextView view = (CircleCheckedTextView)getChildAt(index);
+
+        return view.isChecked();
+    }
+
     public void setOnDaySelectionChangedListener(OnDaySelectionChangedListener listener){
         mOnDaySelectionChangedListener = listener;
     }
@@ -256,5 +266,71 @@ public class WeekView extends FrameLayout{
     private void onDaySelectionChanged(int dayOfWeek, boolean selected){
         if(mOnDaySelectionChangedListener != null)
             mOnDaySelectionChangedListener.onDaySelectionChanged(dayOfWeek, selected);
+    }
+
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+
+        for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
+            ss.selected[i - 1] = isSelected(i);
+
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+
+        super.onRestoreInstanceState(ss.getSuperState());
+        for(int i = 0; i < ss.selected.length; i++)
+            setSelected(i + 1, ss.selected[i], true);
+
+        requestLayout();
+    }
+
+    static class SavedState extends BaseSavedState {
+        boolean[] selected = new boolean[7];
+
+        /**
+         * Constructor called from {@link WeekView#onSaveInstanceState()}
+         */
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        private SavedState(Parcel in) {
+            super(in);
+            in.readBooleanArray(selected);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeBooleanArray(selected);
+        }
+
+        @Override
+        public String toString() {
+            return "WeekView.SavedState{"
+                    + Integer.toHexString(System.identityHashCode(this)) + "}";
+        }
+
+        public static final Creator<SavedState> CREATOR
+                = new Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }
