@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.rey.material.app.DialogFragment;
 import com.rey.material.app.Recurring;
 import com.rey.material.app.RecurringPickerDialog;
 import com.rey.material.widget.Button;
@@ -75,16 +76,18 @@ public class ButtonFragment extends Fragment{
         bt_flat.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                RecurringPickerDialog dialog = new RecurringPickerDialog(getActivity(), R.style.Material_App_Dialog_Light);
+                RecurringPickerDialog.Builder builder = new RecurringPickerDialog.Builder(R.style.Material_App_Dialog_Light);
                 Recurring recurring = new Recurring();
                 recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
                 recurring.setEnabledWeekday(Calendar.SUNDAY, true);
                 recurring.setEnabledWeekday(Calendar.TUESDAY, true);
-                dialog.recurring(recurring)
+                builder.recurring(recurring)
                         .startTime(System.currentTimeMillis())
                         .positiveAction("OK")
-                        .negativeAction("CANCEL")
-                        .show();
+                        .negativeAction("CANCEL");
+
+                DialogFragment fragment = DialogFragment.newInstance(builder);
+                fragment.show(getFragmentManager(), null);
             }
         });
 

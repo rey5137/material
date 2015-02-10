@@ -57,6 +57,14 @@ public class Recurring {
         return mPeriod;
     }
 
+    public int getRepeatSetting(){
+        return mRepeatSetting;
+    }
+
+    public void setRepeatSetting(int setting){
+        mRepeatSetting = setting;
+    }
+
     public void clearWeekdaySetting(){
         if(mRepeatMode != REPEAT_WEEKLY)
             return;
@@ -103,6 +111,14 @@ public class Recurring {
 
     public int getEndMode(){
         return mEndMode;
+    }
+
+    public long getEndSetting(){
+        return mEndSetting;
+    }
+
+    public void setEndSetting(long setting){
+        mEndSetting = setting;
     }
 
     public void setEndDate(long date){

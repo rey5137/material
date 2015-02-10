@@ -246,7 +246,7 @@ public class DatePickerDialog extends Dialog {
             mYearPicker.applyStyle(resId);
             mDatePicker.applyStyle(resId);
 
-            Context context = getContext();/**/
+            Context context = getContext();
 
             TypedArray a = context.obtainStyledAttributes(resId, R.styleable.DatePickerDialog);
             mHeaderPrimaryHeight = a.getDimensionPixelOffset(R.styleable.DatePickerDialog_dp_headerPrimaryHeight, ThemeUtil.dpToPx(context, 144));

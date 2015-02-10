@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WeekView">
+        <attr name="wv_backgroundColor" format="reference|color"/>
+        <attr name="wv_verticalPadding" format="reference|dimension"/>
+        <attr name="wv_horizontalPadding" format="reference|dimension"/>
+        <attr name="wv_animDuration" format="reference|integer"/>
+    </declare-styleable>
+
+</resources>

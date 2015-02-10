@@ -1,6 +1,18 @@
 package com.rey.material.app;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -18,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.rey.material.demo.R;
+import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.CompoundButton;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.RadioButton;
@@ -35,8 +48,6 @@ import java.util.Locale;
  */
 public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelectionChangedListener {
 
-    private float mCornerRadius;
-
     private ModeAdapter mModeAdapter;
     private EndAdapter mEndAdapter;
 
@@ -51,6 +62,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     private Button mEndDateButton;
     private WeekView mWeekView;
 
+    private HeaderDrawable mHeaderBackground;
 
     private Recurring mRecurring;
     private long mStartTime;
@@ -67,6 +79,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         super(context, style);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate() {
         View v = LayoutInflater.from(getContext()).inflate(R.layout.dialog_recurring, null);
@@ -85,7 +98,13 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         mEndDateButton = (Button)v.findViewById(R.id.rd_bt_end_date);
         mWeekView = (WeekView)v.findViewById(R.id.rd_week_wv);
 
+        mHeaderBackground = new HeaderDrawable(getContext());
+
         fl_mode.setPadding(mContentPadding, 0, mContentPadding, 0);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            fl_mode.setBackground(mHeaderBackground);
+        else
+            fl_mode.setBackgroundDrawable(mHeaderBackground);
         ll_repeat.setPadding(mContentPadding, mActionOuterPadding, mContentPadding, mActionPadding);
 
         mModeAdapter = new ModeAdapter();
@@ -186,7 +205,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
 
     @Override
     public Dialog cornerRadius(float radius){
-        mCornerRadius = radius;
+        mHeaderBackground.updateCorner(radius);
         return super.cornerRadius(radius);
     }
 
@@ -500,5 +519,139 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
             ((TextView)v).setText(mDropDownItems[position]);
             return v;
         }
+    }
+
+    private class HeaderDrawable extends Drawable{
+        private Paint mPaint;
+        private float mRadius;
+        private Path mPath;
+
+        public HeaderDrawable(Context context){
+            mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mPaint.setColor(ThemeUtil.colorPrimary(context, 0));
+            mPaint.setStyle(Paint.Style.FILL);
+            mPath = new Path();
+        }
+
+        public void updateCorner(float radius){
+            mRadius = radius;
+            Rect bounds = getBounds();
+
+            mPath.reset();
+            if(radius == 0)
+                mPath.addRect(bounds.left, bounds.top, bounds.right, bounds.bottom, Path.Direction.CW);
+            else {
+                RectF rect = new RectF();
+                mPath.moveTo(bounds.left, bounds.top - radius);
+                rect.set(bounds.left, bounds.top, bounds.left + radius * 2, bounds.top + radius * 2);
+                mPath.arcTo(rect, 180, 90, false);
+                mPath.lineTo(bounds.right - radius, bounds.top);
+                rect.set(bounds.right - radius * 2, bounds.top, bounds.right, bounds.top + radius * 2);
+                mPath.arcTo(rect, 270, 90, false);
+                mPath.lineTo(bounds.right, bounds.bottom);
+                mPath.lineTo(bounds.left, bounds.bottom);
+                mPath.close();
+            }
+
+            invalidateSelf();
+        }
+
+        @Override
+        protected void onBoundsChange(Rect bounds) {
+            updateCorner(mRadius);
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.drawPath(mPath, mPaint);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            mPaint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter cf) {
+            mPaint.setColorFilter(cf);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+    }
+
+    public static class Builder extends Dialog.Builder{
+
+        private Recurring mRecurring;
+        private long mStartTime;
+
+        public Builder() {
+            super();
+        }
+
+        public Builder(int styleId){
+            super(styleId);
+        }
+
+        public Builder recurring(Recurring recurring){
+            mRecurring = recurring;
+            return this;
+        }
+
+        public Builder startTime(long startTime){
+            mStartTime = startTime;
+            return this;
+        }
+
+        @Override
+        public Dialog.Builder contentView(int layoutId) {
+            return this;
+        }
+
+        @Override
+        protected Dialog onBuild(Context context, int styleId) {
+            RecurringPickerDialog dialog = new RecurringPickerDialog(context, styleId);
+            dialog.recurring(mRecurring)
+                    .startTime(mStartTime);
+            return dialog;
+        }
+
+        protected Builder(Parcel in){
+            super(in);
+        }
+
+        @Override
+        protected void onWriteToParcel(Parcel dest, int flags) {
+            dest.writeLong(mStartTime);
+            dest.writeInt(mRecurring.getRepeatMode());
+            dest.writeInt(mRecurring.getPeriod());
+            dest.writeInt(mRecurring.getRepeatSetting());
+            dest.writeInt(mRecurring.getEndMode());
+            dest.writeLong(mRecurring.getEndSetting());
+        }
+
+        @Override
+        protected void onReadFromParcel(Parcel in) {
+            mStartTime = in.readInt();
+            mRecurring = new Recurring();
+            mRecurring.setRepeatMode(in.readInt());
+            mRecurring.setPeriod(in.readInt());
+            mRecurring.setRepeatSetting(in.readInt());
+            mRecurring.setEndMode(in.readInt());
+            mRecurring.setEndSetting(in.readLong());
+        }
+
+        public static final Parcelable.Creator<Builder> CREATOR = new Parcelable.Creator<Builder>() {
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
+
     }
 }

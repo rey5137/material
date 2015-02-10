@@ -9,8 +9,7 @@
     <FrameLayout
         android:id="@+id/rd_fl_mode"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary">
+        android:layout_height="?attr/actionBarSize">
 
         <com.rey.material.widget.Spinner
             style="@style/Material.Widget.Spinner"
@@ -85,10 +84,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/abc_primary_text_material_light"
+                android:textColor="@drawable/color_wv_text"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:paddingTop="8dp"/>
+                android:paddingTop="8dp"
+                app:wv_animDuration="@android:integer/config_mediumAnimTime"
+                app:wv_verticalPadding="8dp"
+                app:wv_horizontalPadding="8dp"/>
 
             <com.rey.material.widget.RadioButton
                 style="@style/Material.Drawable.RadioButton"
