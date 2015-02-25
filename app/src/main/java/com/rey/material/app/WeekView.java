@@ -13,7 +13,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.rey.material.demo.R;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.CircleCheckedTextView;
 
 import java.util.Calendar;
@@ -125,6 +127,7 @@ public class WeekView extends FrameLayout{
             view.setPadding(0, 0, 0, 0);
             view.setBackgroundColor(color);
             view.setAnimDuration(animDuration);
+            view.setId(ViewUtil.generateViewId());
 
             if(i == 0) {
                 mOriginalTextSize = view.getTextSize();
@@ -274,9 +277,13 @@ public class WeekView extends FrameLayout{
         Parcelable superState = super.onSaveInstanceState();
 
         SavedState ss = new SavedState(superState);
-
-        for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++)
-            ss.selected[i - 1] = isSelected(i);
+        ss.selected = 0;
+        int mask = 1;
+        for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++) {
+            if(isSelected(i))
+                ss.selected += mask;
+            mask <<= 1;
+        }
 
         return ss;
     }
@@ -286,14 +293,18 @@ public class WeekView extends FrameLayout{
         SavedState ss = (SavedState) state;
 
         super.onRestoreInstanceState(ss.getSuperState());
-        for(int i = 0; i < ss.selected.length; i++)
-            setSelected(i + 1, ss.selected[i], true);
+
+        int val = ss.selected;
+        for(int i = 0; i < 7; i++){
+            setSelected(i + 1, val % 2 == 1, true);
+            val >>= 1;
+        }
 
         requestLayout();
     }
 
     static class SavedState extends BaseSavedState {
-        boolean[] selected = new boolean[7];
+        int selected;
 
         /**
          * Constructor called from {@link WeekView#onSaveInstanceState()}
@@ -307,19 +318,21 @@ public class WeekView extends FrameLayout{
          */
         private SavedState(Parcel in) {
             super(in);
-            in.readBooleanArray(selected);
+            selected = in.readInt();
         }
 
         @Override
         public void writeToParcel(@NonNull Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeBooleanArray(selected);
+            out.writeInt(selected);
         }
 
         @Override
         public String toString() {
             return "WeekView.SavedState{"
-                    + Integer.toHexString(System.identityHashCode(this)) + "}";
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + ";selected=" + selected
+                    + "}";
         }
 
         public static final Creator<SavedState> CREATOR

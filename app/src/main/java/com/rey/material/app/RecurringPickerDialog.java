@@ -96,7 +96,7 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         mEndNumEditText = (EditText)v.findViewById(R.id.rd_et_end_num);
         mEndNumUnitTextView = (TextView)v.findViewById(R.id.rd_tv_end_num_unit);
         mEndDateButton = (Button)v.findViewById(R.id.rd_bt_end_date);
-        mWeekView = (WeekView)v.findViewById(R.id.rd_week_wv);
+        mWeekView = (WeekView)v.findViewById(R.id.rd_wv_week);
 
         mHeaderBackground = new HeaderDrawable(getContext());
 

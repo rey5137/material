@@ -80,7 +80,7 @@
             </LinearLayout>
 
             <com.rey.material.app.WeekView
-                android:id="@+id/rd_week_wv"
+                android:id="@+id/rd_wv_week"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
