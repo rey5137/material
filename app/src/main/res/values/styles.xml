@@ -241,5 +241,16 @@
     <style name="FloatingActionButtonIcon.Light" parent="FloatingActionButtonIcon">
         <item name="lmd_strokeColor">#FF000000</item>
     </style>
-s
+
+    <!-- ContactView -->
+    <style name="ContactView">
+        <item name="android:minHeight">56dp</item>
+        <item name="cv_avatarSize">40dp</item>
+        <item name="cv_spacing">8dp</item>
+        <item name="cv_nameTextAppearance">@style/TextAppearance.AppCompat.Subhead</item>
+        <item name="cv_nameTextColor">@color/abc_primary_text_material_light</item>
+        <item name="cv_addressTextAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="cv_addressTextColor">@color/abc_primary_text_material_light</item>
+    </style>
+
 </resources>

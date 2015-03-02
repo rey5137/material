@@ -254,6 +254,10 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         return this;
     }
 
+    public Recurring getRecurring(){
+        return mRecurring;
+    }
+
     private void animOut(final View v, final boolean setGone, final boolean immediately){
         if(!isShowing() || v.getVisibility() != View.VISIBLE || immediately) {
             v.setVisibility(setGone ? View.GONE : View.INVISIBLE);

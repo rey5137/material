@@ -109,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 
-		vp.setCurrentItem(1);
+		vp.setCurrentItem(3);
 	}
 
     private long getTime(int day, int month, int year, int hour, int minute) {

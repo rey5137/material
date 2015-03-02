@@ -1,6 +1,7 @@
 package com.rey.material.app;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Rey on 2/4/2015.
@@ -36,6 +37,72 @@ public class Recurring {
     private long mEndSetting;
 
     public Recurring(){}
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Recurring.class.getSimpleName())
+                .append("[mode=");
+        switch (mRepeatMode){
+            case REPEAT_NONE:
+                sb.append("none");
+                break;
+            case REPEAT_DAILY:
+                sb.append("daily")
+                        .append("; period=")
+                        .append(mPeriod);
+                break;
+            case REPEAT_WEEKLY:
+                sb.append("weekly")
+                        .append("; period=")
+                        .append(mPeriod)
+                        .append("; setting=");
+
+                for(int i = Calendar.SUNDAY; i <= Calendar.SATURDAY; i++){
+                    if(isEnabledWeekday(i))
+                        sb.append(i);
+                }
+                break;
+            case REPEAT_MONTHLY:
+                sb.append("monthly")
+                        .append("; period=")
+                        .append(mPeriod)
+                        .append("; setting=")
+                        .append(getMonthRepeatType() == MONTH_SAME_DAY ? "same_day" : "same_weekday");
+                break;
+            case REPEAT_YEARLY:
+                sb.append("yearly")
+                        .append("; period=")
+                        .append(mPeriod);
+                break;
+        }
+
+        if(mRepeatMode != REPEAT_NONE){
+            switch (mEndMode){
+                case END_FOREVER:
+                    sb.append("; end=forever");
+                    break;
+                case END_UNTIL_DATE:
+                    sb.append("; end=until ");
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(mEndSetting);
+                    sb.append(cal.get(Calendar.DAY_OF_MONTH))
+                            .append('/')
+                            .append(cal.get(Calendar.MONTH) + 1)
+                            .append('/')
+                            .append(cal.get(Calendar.YEAR));
+                    break;
+                case END_FOR_EVENT:
+                    sb.append("; end=for ")
+                            .append(mEndSetting)
+                            .append(" events");
+                    break;
+            }
+        }
+
+        sb.append(']');
+        return sb.toString();
+    }
 
     public void setStartTime(long time){
         mStartTime = time;

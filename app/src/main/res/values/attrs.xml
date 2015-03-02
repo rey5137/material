@@ -6,5 +6,20 @@
         <attr name="wv_horizontalPadding" format="reference|dimension"/>
         <attr name="wv_animDuration" format="reference|integer"/>
     </declare-styleable>
+    
+    <declare-styleable name="ContactView">
+        <attr name="cv_avatarSrc" format="reference"/>
+        <attr name="cv_avatarSize" format="reference|dimension"/>
+        <attr name="cv_spacing" format="reference|dimension"/>
+        <attr name="cv_name" format="reference|string"/>
+        <attr name="cv_nameTextAppearance" format="reference"/>
+        <attr name="cv_nameTextSize" format="reference|dimension"/>
+        <attr name="cv_nameTextColor" format="reference|color"/>
+        <attr name="cv_address" format="reference|string"/>
+        <attr name="cv_addressTextAppearance" format="reference"/>
+        <attr name="cv_addressTextSize" format="reference|dimension"/>
+        <attr name="cv_addressTextColor" format="reference|color"/>
+        <attr name="android:minHeight" />
+    </declare-styleable>
 
 </resources>
