@@ -73,7 +73,7 @@
     </declare-styleable> 
     
     <declare-styleable name="RippleDrawable">       
-        <attr name="rd_background" format="reference"/>
+        <attr name="rd_background" format="reference|color"/>
         <attr name="rd_backgroundColor" format="reference|color"/>
         <attr name="rd_backgroundAnimDuration" format="reference|integer"/>        
         <attr name="rd_maxRippleRadius" format="reference|dimension"/>

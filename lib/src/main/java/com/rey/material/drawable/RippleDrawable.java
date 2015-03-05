@@ -16,9 +16,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -479,10 +481,16 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 
 		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, defStyleAttr, defStyleRes);
-			
-			int resId = a.getResourceId(R.styleable.RippleDrawable_rd_background, 0);
-			if(resId != 0)
-				backgroundDrawable(context.getResources().getDrawable(resId));			
+
+            int type = ThemeUtil.getType(a, R.styleable.RippleDrawable_rd_background);
+            int resId;
+            if(type == TypedValue.TYPE_REFERENCE) {
+                if ((resId = a.getResourceId(R.styleable.RippleDrawable_rd_background, 0)) != 0)
+                    backgroundDrawable(context.getResources().getDrawable(resId));
+            }
+            else if(type >= TypedValue.TYPE_FIRST_COLOR_INT && type <= TypedValue.TYPE_LAST_COLOR_INT)
+                backgroundDrawable(new ColorDrawable(a.getColor(R.styleable.RippleDrawable_rd_background, 0)));
+
 			backgroundColor(a.getColor(R.styleable.RippleDrawable_rd_backgroundColor, 0));
 			backgroundAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_backgroundAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			rippleType(a.getInteger(R.styleable.RippleDrawable_rd_rippleType, RippleDrawable.TYPE_TOUCH));

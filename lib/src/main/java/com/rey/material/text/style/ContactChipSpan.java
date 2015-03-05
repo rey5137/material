@@ -94,7 +94,7 @@ public class ContactChipSpan extends ReplacementSpan {
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         canvas.save();
 
-        canvas.translate(x, 0);
+        canvas.translate(x, top);
 
         float halfHeight = mHeight / 2f;
         mPaint.setShader(null);

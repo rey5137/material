@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,27 +13,29 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
+import android.text.method.QwertyKeyListener;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.PopupWindow;
 
 import com.rey.material.demo.R;
 import com.rey.material.text.style.ContactChipSpan;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.widget.EditText;
+import com.rey.material.widget.ListPopupWindow;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -57,6 +60,11 @@ public class ContactEditText extends EditText{
     private int mSpanTextSize;
     private int mSpanTextColor;
     private int mSpanBackgroundColor;
+    private int mSpanSpacing;
+
+    private ContactReplaceAdapter mReplacementAdapter;
+    private ListPopupWindow mReplacementPopup;
+    private RecipientSpan mSelectedSpan;
 
     public ContactEditText(Context context) {
         super(context);
@@ -93,12 +101,15 @@ public class ContactEditText extends EditText{
         mSpanTextSize = ThemeUtil.spToPx(context, 14);
         mSpanTextColor = 0xFF000000;
         mSpanBackgroundColor = 0xFFE0E0E0;
+        mSpanSpacing = ThemeUtil.dpToPx(context, 4);
 
-        ContactSuggestionAdapter adapter = new ContactSuggestionAdapter(context);
+        ContactSuggestionAdapter adapter = new ContactSuggestionAdapter();
         setAdapter(adapter);
         setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        addTextChangedListener(new ContactTextWatcher());
 
         setMovementMethod(new RecipientMovementMethod());
+        setLineSpacing(mSpanSpacing, 1);
     }
 
     @Override
@@ -109,18 +120,66 @@ public class ContactEditText extends EditText{
 
     @Override
     protected void replaceText(CharSequence text) {
-        int start = mTokenizer.findTokenStart(getText(), getSelectionEnd());
-        super.replaceText(text);
-        int end = getSelectionEnd();
+        clearComposingText();
 
+        int end = getSelectionEnd();
+        int start = mTokenizer.findTokenStart(getText(), end);
+        getText().replace(start, end, mTokenizer.terminateToken(text));
+
+        end = getSelectionEnd();
         Recipient recipient = mRecipientMap.get(text.toString());
-        RecipientSpan span = new RecipientSpan(recipient);
-        getText().setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        getText().setSpan(new RecipientSpan(recipient), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void onSpanClick(RecipientSpan span){
+        if(span != mSelectedSpan) {
+            dismissReplacementPopup();
+            mSelectedSpan = span;
+            if(mReplacementAdapter == null)
+                mReplacementAdapter = new ContactReplaceAdapter(mSelectedSpan.getRecipient());
+            else
+                mReplacementAdapter.setRecipient(mSelectedSpan.getRecipient());
+
+            mReplacementPopup = new ListPopupWindow(getContext());
+            mReplacementPopup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    mReplacementPopup = null;
+                    mSelectedSpan = null;
+                }
+            });
+            mReplacementPopup.setAdapter(mReplacementAdapter);
+            mReplacementPopup.setAnchorView(this);
+            mReplacementPopup.show();
+        }
+    }
+
+    private void removeSpan(RecipientSpan span){
+        Editable text = getText();
+        int start = text.getSpanStart(span);
+        int end = text.getSpanEnd(span);
+        text.delete(start, end);
+        text.removeSpan(span);
+    }
+
+    private void replaceSpan(RecipientSpan span, Recipient newRecipient){
+        Editable text = getText();
+        int start = text.getSpanStart(span);
+        int end = text.getSpanEnd(span);
+        String replace = newRecipient.number;
+        text.replace(start, end - 2, newRecipient.number, 0, replace.length());
+        span.setRecipient(newRecipient);
+        text.setSpan(span, start, start + replace.length() + 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void dismissReplacementPopup(){
+        if(mReplacementPopup != null && mReplacementPopup.isShowing()){
+            mReplacementPopup.dismiss();
+            mReplacementPopup = null;
+        }
     }
 
     class ContactSuggestionAdapter extends BaseAdapter implements Filterable {
-
-        private Context mContext;
 
         private final String COLS[] = new String[]{
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
@@ -131,9 +190,7 @@ public class ContactEditText extends EditText{
 
         private ArrayList<Recipient> mItems;
 
-        public ContactSuggestionAdapter(Context context) {
-            mContext = context;
-        }
+        public ContactSuggestionAdapter() {}
 
         @Override
         public int getCount() {
@@ -154,7 +211,7 @@ public class ContactEditText extends EditText{
         public View getView(int position, View convertView, ViewGroup parent) {
             ContactView v = (ContactView)convertView;
             if (v == null)
-                v = new ContactView(mContext, null, 0, R.style.ContactView);
+                v = new ContactView(getContext(), null, 0, R.style.ContactView);
 
             Recipient recipient = (Recipient) getItem(position);
             v.setNameText(recipient.name);
@@ -163,7 +220,7 @@ public class ContactEditText extends EditText{
             if(TextUtils.isEmpty(recipient.lookupKey))
                 v.setAvatarResource(mDefaultAvatarId);
             else
-                Picasso.with(mContext)
+                Picasso.with(getContext())
                         .load(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, recipient.lookupKey))
                         .placeholder(mDefaultAvatarId)
                         .into(v);
@@ -192,7 +249,7 @@ public class ContactEditText extends EditText{
                     String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ? OR " + COLS[2] + " LIKE ?";
                     String[] selectionArgs = new String[]{"%" + constraint + "%", "%" + constraint + "%"};
                     String sortOrder = COLS[2] + " COLLATE LOCALIZED ASC";
-                    Cursor cursor = mContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, COLS, selection, selectionArgs, sortOrder);
+                    Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, COLS, selection, selectionArgs, sortOrder);
                     if (cursor.getCount() > 0) {
                         ArrayList<Recipient> values = new ArrayList<>();
                         while (cursor.moveToNext()) {
@@ -221,6 +278,116 @@ public class ContactEditText extends EditText{
         };
     }
 
+    class ContactReplaceAdapter extends BaseAdapter implements OnClickListener {
+
+        Recipient[] mItems;
+
+        private final String COLS[] = new String[]{
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+        };
+
+        public ContactReplaceAdapter(Recipient recipient){
+            queryNumber(recipient);
+        }
+
+        public void setRecipient(Recipient recipient){
+            queryNumber(recipient);
+        }
+
+        private void queryNumber(Recipient recipient){
+            String selection = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + "=?";
+            String[] selectionArgs = new String[]{recipient.lookupKey};
+            Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, COLS, selection, selectionArgs, null);
+            if (cursor.getCount() > 0) {
+                mItems = new Recipient[cursor.getCount()];
+                int index = 1;
+                while (cursor.moveToNext()) {
+                    long contactId = cursor.getLong(0);
+                    String number = cursor.getString(1);
+
+                    if(number.equals(recipient.number))
+                        mItems[0] = recipient;
+                    else{
+                        Recipient newRecipient = new Recipient();
+                        newRecipient.contactId = contactId;
+                        newRecipient.lookupKey = recipient.lookupKey;
+                        newRecipient.name = recipient.name;
+                        newRecipient.number = number;
+                        mItems[index] = newRecipient;
+                        index++;
+                    }
+                }
+            }
+            cursor.close();
+
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = (Integer)v.getTag();
+            if(position == 0)
+                removeSpan(mSelectedSpan);
+            else
+                replaceSpan(mSelectedSpan, (Recipient)mReplacementAdapter.getItem(position));
+
+            Selection.setSelection(getText(), getText().length());
+
+            dismissReplacementPopup();
+        }
+
+        @Override
+        public int getCount() {
+            return mItems == null ? 0 : mItems.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mItems == null ? null : mItems[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == 0 ? 0 : 1;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ContactView v = (ContactView)convertView;
+            if(v == null) {
+                v = new ContactView(getContext(), null, 0, position == 0 ? R.style.SelectedContactView : R.style.ReplacementContactView);
+                v.setOnClickListener(this);
+            }
+
+            v.setTag(position);
+
+            Recipient recipient = (Recipient)getItem(position);
+            v.setNameText(position == 0 ? recipient.name : null);
+            v.setAddressText(recipient.number);
+
+            if(TextUtils.isEmpty(recipient.lookupKey))
+                v.setAvatarResource(mDefaultAvatarId);
+            else
+                Picasso.with(getContext())
+                        .load(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, recipient.lookupKey))
+                        .placeholder(mDefaultAvatarId)
+                        .into(v);
+
+            return v;
+        }
+    }
+
     class RecipientSpan extends ContactChipSpan implements Target{
 
         private Recipient mRecipient;
@@ -237,6 +404,10 @@ public class ContactEditText extends EditText{
                         .load(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, recipient.lookupKey))
                         .placeholder(mDefaultAvatarId)
                         .into(this);
+        }
+
+        public void setRecipient(Recipient recipient){
+            mRecipient = recipient;
         }
 
         public Recipient getRecipient(){
@@ -264,6 +435,11 @@ public class ContactEditText extends EditText{
                 drawable.draw(canvas);
                 setImage(bm);
             }
+        }
+
+        @Override
+        public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+            return super.getSize(paint, text, start, end, fm) + mSpanSpacing;
         }
 
         @Override
@@ -299,10 +475,8 @@ public class ContactEditText extends EditText{
                     Selection.removeSelection(spannable);
                 }
             } else {
-                if (mTouchedSpan != null) {
-                    super.onTouchEvent(textView, spannable, event);
-                    System.out.println("click asd " + mTouchedSpan.getRecipient());
-                }
+                if (mTouchedSpan != null)
+                    onSpanClick(mTouchedSpan);
                 mTouchedSpan = null;
                 Selection.removeSelection(spannable);
             }
@@ -310,20 +484,30 @@ public class ContactEditText extends EditText{
         }
 
         private RecipientSpan getTouchedSpan(android.widget.TextView textView, Spannable spannable, MotionEvent event) {
-            int x = (int) event.getX() - textView.getTotalPaddingLeft() + textView.getScrollX();
-            int y = (int) event.getY() - textView.getTotalPaddingTop() + textView.getScrollY();
+            int off = getOffsetForPosition(event.getX(), event.getY());
 
-            Layout layout = textView.getLayout();
-            int line = layout.getLineForVertical(y);
-            int off = layout.getOffsetForHorizontal(line, x);
-
-            System.out.println("line: " + line + " off:" + off);
+            System.out.println("off:" + off);
 
             RecipientSpan[] spans = spannable.getSpans(off, off, RecipientSpan.class);
             RecipientSpan touchedSpan = null;
             if (spans.length > 0)
                 touchedSpan = spans[spans.length - 1];
             return touchedSpan;
+        }
+
+    }
+
+    class ContactTextWatcher implements TextWatcher{
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            dismissReplacementPopup();
         }
 
     }
