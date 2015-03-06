@@ -66,6 +66,8 @@ public class ContactEditText extends EditText{
     private ListPopupWindow mReplacementPopup;
     private RecipientSpan mSelectedSpan;
 
+    private RecipientSpan mTouchedSpan;
+
     public ContactEditText(Context context) {
         super(context);
 
@@ -108,8 +110,54 @@ public class ContactEditText extends EditText{
         setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         addTextChangedListener(new ContactTextWatcher());
 
-        setMovementMethod(new RecipientMovementMethod());
         setLineSpacing(mSpanSpacing, 1);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                mTouchedSpan = getTouchedSpan(event);
+                if (mTouchedSpan != null)
+                    return true;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if(mTouchedSpan != null){
+                    if(mTouchedSpan != getTouchedSpan(event))
+                        mTouchedSpan = null;
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (mTouchedSpan != null) {
+                    onSpanClick(mTouchedSpan);
+                    mTouchedSpan = null;
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                if (mTouchedSpan != null) {
+                    mTouchedSpan = null;
+                    return true;
+                }
+                break;
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
+    private RecipientSpan getTouchedSpan(MotionEvent event) {
+        int off = getOffsetForPosition(event.getX(), event.getY());
+
+        RecipientSpan[] spans = getText().getSpans(off, off, RecipientSpan.class);
+
+        if (spans.length > 0) {
+            float x = convertToLocalHorizontalCoordinate(event.getX());
+            for(int i = 0; i < spans.length; i++)
+                if(spans[i].mX <= x && spans[i].mX + spans[i].mWidth >= x)
+                    return spans[i];
+        }
+
+        return null;
     }
 
     @Override
@@ -391,6 +439,8 @@ public class ContactEditText extends EditText{
     class RecipientSpan extends ContactChipSpan implements Target{
 
         private Recipient mRecipient;
+        int mWidth;
+        float mX;
 
         public RecipientSpan(Recipient recipient) {
             super(TextUtils.isEmpty(recipient.name) ? recipient.number : recipient.name,
@@ -439,7 +489,14 @@ public class ContactEditText extends EditText{
 
         @Override
         public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-            return super.getSize(paint, text, start, end, fm) + mSpanSpacing;
+            mWidth = super.getSize(paint, text, start, end, fm) + mSpanSpacing;
+            return mWidth;
+        }
+
+        @Override
+        public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+            mX = x;
+            super.draw(canvas, text, start, end, x, top, y, bottom, paint);
         }
 
         @Override
@@ -457,44 +514,6 @@ public class ContactEditText extends EditText{
         public void onPrepareLoad(Drawable placeHolderDrawable) {
             setImageDrawable(placeHolderDrawable);
         }
-    }
-
-    class RecipientMovementMethod extends LinkMovementMethod{
-        private RecipientSpan mTouchedSpan;
-
-        @Override
-        public boolean onTouchEvent(android.widget.TextView textView, Spannable spannable, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                mTouchedSpan = getTouchedSpan(textView, spannable, event);
-                if (mTouchedSpan != null)
-                    Selection.setSelection(spannable, spannable.getSpanStart(mTouchedSpan),spannable.getSpanEnd(mTouchedSpan));
-            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                RecipientSpan touchedSpan = getTouchedSpan(textView, spannable, event);
-                if (mTouchedSpan != null && touchedSpan != mTouchedSpan) {
-                    mTouchedSpan = null;
-                    Selection.removeSelection(spannable);
-                }
-            } else {
-                if (mTouchedSpan != null)
-                    onSpanClick(mTouchedSpan);
-                mTouchedSpan = null;
-                Selection.removeSelection(spannable);
-            }
-            return true;
-        }
-
-        private RecipientSpan getTouchedSpan(android.widget.TextView textView, Spannable spannable, MotionEvent event) {
-            int off = getOffsetForPosition(event.getX(), event.getY());
-
-            System.out.println("off:" + off);
-
-            RecipientSpan[] spans = spannable.getSpans(off, off, RecipientSpan.class);
-            RecipientSpan touchedSpan = null;
-            if (spans.length > 0)
-                touchedSpan = spans[spans.length - 1];
-            return touchedSpan;
-        }
-
     }
 
     class ContactTextWatcher implements TextWatcher{

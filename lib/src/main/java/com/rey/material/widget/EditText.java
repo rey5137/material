@@ -67,6 +67,7 @@ public class EditText extends FrameLayout {
 	
 	private ColorStateList mDividerColors;
 	private ColorStateList mDividerErrorColors;
+    private boolean mDividerCompoundPadding;
 	
 	private ColorStateList mSupportColors;
 	private ColorStateList mSupportErrorColors;
@@ -151,17 +152,19 @@ public class EditText extends FrameLayout {
 		int dividerHeight = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerHeight, 0);
 		int dividerPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerPadding, 0);
 		int dividerAnimDuration = a.getInteger(R.styleable.EditText_et_dividerAnimDuration, context.getResources().getInteger(android.R.integer.config_shortAnimTime));
-		mDivider = new DividerDrawable(dividerHeight, mDividerColors, dividerAnimDuration);
+        mDividerCompoundPadding = a.getBoolean(R.styleable.EditText_et_dividerCompoundPadding, true);
+        mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+
+		mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
 		mDivider.setInEditMode(isInEditMode());
-		mDivider.setAnimEnable(false);		
+		mDivider.setAnimEnable(false);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			mInputView.setBackground(mDivider);
 		else
 			mInputView.setBackgroundDrawable(mDivider);		
 		mDivider.setAnimEnable(true);
-		
-		mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);		
-		mInputView.addTextChangedListener(new InputTextWatcher());
+
+        mInputView.addTextChangedListener(new InputTextWatcher());
 		addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		
 		if(mLabelEnable){
@@ -176,7 +179,7 @@ public class EditText extends FrameLayout {
 			mLabelInAnimId = a.getResourceId(R.styleable.EditText_et_labelInAnim, 0);
 			mLabelOutAnimId = a.getResourceId(R.styleable.EditText_et_labelOutAnim, 0);
 
-            mLabelView.setPadding(0, 0, 0, labelPadding);
+            mLabelView.setPadding(mDivider.getPaddingLeft(), 0, mDivider.getPaddingRight(), labelPadding);
             if(labelTextAppearance > 0)
                 mLabelView.setTextAppearance(context, labelTextAppearance);
 			if(labelTextSize > 0)
@@ -216,7 +219,7 @@ public class EditText extends FrameLayout {
 			int supportLines = a.getInteger(R.styleable.EditText_et_supportLines, 0);
 			boolean supportSingleLine = a.getBoolean(R.styleable.EditText_et_supportSingleLine, false);
 			
-			mSupportView.setPadding(0, supportPadding, 0, 0);
+			mSupportView.setPadding(mDivider.getPaddingLeft(), supportPadding, mDivider.getPaddingRight(), 0);
 			mSupportView.setTextSize(TypedValue.COMPLEX_UNIT_PX, supportTextSize);
 			mSupportView.setTextColor(mSupportColors);
 			if(supportTextAppearance > 0)
@@ -1787,16 +1790,13 @@ public class EditText extends FrameLayout {
      */
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	public int getOffsetForPosition (float x, float y){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-			return mInputView.getOffsetForPosition(x, y);
-
         if (getLayout() == null) return -1;
         final int line = getLineAtCoordinate(y);
         final int offset = getOffsetAtCoordinate(line, x);
         return offset;
 	}
 
-    float convertToLocalHorizontalCoordinate(float x) {
+    protected float convertToLocalHorizontalCoordinate(float x) {
         x -= getTotalPaddingLeft();
         // Clamp the position to inside of the view.
         x = Math.max(0.0f, x);
@@ -1805,7 +1805,7 @@ public class EditText extends FrameLayout {
         return x;
     }
 
-    int getLineAtCoordinate(float y) {
+    protected int getLineAtCoordinate(float y) {
         y -= getTotalPaddingTop();
         // Clamp the position to inside of the view.
         y = Math.max(0.0f, y);
@@ -1814,7 +1814,7 @@ public class EditText extends FrameLayout {
         return getLayout().getLineForVertical((int) y);
     }
 
-    private int getOffsetAtCoordinate(int line, float x) {
+    protected int getOffsetAtCoordinate(int line, float x) {
         x = convertToLocalHorizontalCoordinate(x);
         return getLayout().getOffsetForHorizontal(line, x);
     }
@@ -1977,7 +1977,7 @@ public class EditText extends FrameLayout {
      * from showing, and the vertical offset for gravity, if any.
      */
 	public int getTotalPaddingBottom (){
-		return mInputView.getTotalPaddingBottom();
+		return getPaddingBottom() + mInputView.getTotalPaddingBottom() + (mSupportMode != SUPPORT_MODE_NONE ? mSupportView.getHeight() : 0);
 	}
 	
 	/**
@@ -1987,9 +1987,9 @@ public class EditText extends FrameLayout {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public int getTotalPaddingEnd (){
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-			return mInputView.getTotalPaddingEnd();
+			return getPaddingEnd() + mInputView.getTotalPaddingEnd();
 		
-		return mInputView.getTotalPaddingRight();
+		return getTotalPaddingRight();
 	}
 	
 	/**
@@ -1997,7 +1997,7 @@ public class EditText extends FrameLayout {
      * Drawable if any.
      */
 	public int getTotalPaddingLeft (){
-		return mInputView.getTotalPaddingLeft();
+		return getPaddingLeft() + mInputView.getTotalPaddingLeft();
 	}
 	
 	/**
@@ -2005,7 +2005,7 @@ public class EditText extends FrameLayout {
      * Drawable if any.
      */
 	public int getTotalPaddingRight (){
-		return mInputView.getTotalPaddingRight();
+		return getPaddingRight() + mInputView.getTotalPaddingRight();
 	}
 	
 	/**
@@ -2015,9 +2015,9 @@ public class EditText extends FrameLayout {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public int getTotalPaddingStart (){
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-			return mInputView.getTotalPaddingStart();
+			return getPaddingStart() + mInputView.getTotalPaddingStart();
 		
-		return mInputView.getTotalPaddingLeft();
+		return getTotalPaddingLeft();
 	}
 	
 	 /**
@@ -2026,7 +2026,7 @@ public class EditText extends FrameLayout {
      * from showing, and the vertical offset for gravity, if any.
      */
 	public int getTotalPaddingTop (){
-		return mInputView.getTotalPaddingTop();
+		return getPaddingTop() + mInputView.getTotalPaddingTop() + (mLabelEnable ? mLabelView.getHeight() : 0);
 	}
 	
 	/**
@@ -2295,6 +2295,13 @@ public class EditText extends FrameLayout {
      */
 	public void setCompoundDrawablePadding (int pad){
 		mInputView.setCompoundDrawablePadding(pad);
+        if(mDividerCompoundPadding) {
+            mDivider.setPadding(mInputView.getTotalPaddingLeft(), mInputView.getTotalPaddingRight());
+            if(mLabelEnable)
+                mLabelView.setPadding(mDivider.getPaddingLeft(), mLabelView.getPaddingTop(), mDivider.getPaddingRight(), mLabelView.getPaddingBottom());
+            if(mSupportMode != SUPPORT_MODE_NONE)
+                mSupportView.setPadding(mDivider.getPaddingLeft(), mSupportView.getPaddingTop(), mDivider.getPaddingRight(), mSupportView.getPaddingBottom());
+        }
 	}
 	
 	/**
@@ -2313,6 +2320,13 @@ public class EditText extends FrameLayout {
      */
 	public void setCompoundDrawables (Drawable left, Drawable top, Drawable right, Drawable bottom){
 		mInputView.setCompoundDrawables(left, top, right, bottom);
+        if(mDividerCompoundPadding) {
+            mDivider.setPadding(mInputView.getTotalPaddingLeft(), mInputView.getTotalPaddingRight());
+            if(mLabelEnable)
+                mLabelView.setPadding(mDivider.getPaddingLeft(), mLabelView.getPaddingTop(), mDivider.getPaddingRight(), mLabelView.getPaddingBottom());
+            if(mSupportMode != SUPPORT_MODE_NONE)
+                mSupportView.setPadding(mDivider.getPaddingLeft(), mSupportView.getPaddingTop(), mDivider.getPaddingRight(), mSupportView.getPaddingBottom());
+        }
 	}
 	
 	/**

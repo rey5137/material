@@ -224,6 +224,7 @@
         <attr name="et_dividerHeight" format="reference|dimension"/>        
         <attr name="et_dividerPadding" format="reference|dimension"/> 
         <attr name="et_dividerAnimDuration" format="reference|integer"/>
+        <attr name="et_dividerCompoundPadding" format="boolean"/>
         <attr name="et_autoCompleteMode" format="integer">
             <enum name="none"   value="0"/>
             <enum name="single" value="1"/>
