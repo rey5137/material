@@ -271,7 +271,6 @@ public class WeekView extends FrameLayout{
             mOnDaySelectionChangedListener.onDaySelectionChanged(dayOfWeek, selected);
     }
 
-
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();

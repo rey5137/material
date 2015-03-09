@@ -11,25 +11,26 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
-import android.text.method.QwertyKeyListener;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.rey.material.demo.R;
 import com.rey.material.text.style.ContactChipSpan;
@@ -40,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -111,6 +113,43 @@ public class ContactEditText extends EditText{
         addTextChangedListener(new ContactTextWatcher());
 
         setLineSpacing(mSpanSpacing, 1);
+    }
+
+    public Recipient[] getRecipients(){
+        RecipientSpan[] spans = getText().getSpans(0, getText().length(), RecipientSpan.class);
+
+        if(spans == null || spans.length == 0)
+            return null;
+
+        Recipient[] recipients = new Recipient[spans.length];
+        for(int i = 0; i < spans.length; i++)
+            recipients[i] = spans[i].getRecipient();
+
+        return recipients;
+    }
+
+    public void setRecipients(Recipient[] recipients){
+        mRecipientMap.clear();
+
+        if(recipients == null){
+            setText(null);
+            return;
+        }
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        String separator = ", ";
+        for(Recipient recipient : recipients){
+            int start = ssb.length();
+            ssb.append(recipient.number)
+                    .append(separator);
+
+            int end = ssb.length();
+            ssb.setSpan(new RecipientSpan(recipient), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mRecipientMap.put(recipient.number, recipient);
+        }
+
+        setText(ssb, TextView.BufferType.SPANNABLE);
+        setSelection(ssb.length());
     }
 
     @Override
@@ -227,10 +266,80 @@ public class ContactEditText extends EditText{
         }
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+        ss.recipients = getRecipients();
+
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        setRecipients(ss.recipients);
+
+        requestLayout();
+    }
+
+    static class SavedState extends BaseSavedState {
+        Recipient[] recipients;
+
+        /**
+         * Constructor called from {@link ContactEditText#onSaveInstanceState()}
+         */
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        private SavedState(Parcel in) {
+            super(in);
+            int length = in.readInt();
+            if(length > 0){
+                recipients = new Recipient[length];
+                in.readTypedArray(recipients, Recipient.CREATOR);
+            }
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            int length = recipients == null ? 0 : recipients.length;
+            out.writeInt(length);
+            if(length > 0)
+                out.writeTypedArray(recipients, flags);
+        }
+
+        @Override
+        public String toString() {
+            return "ContactEditText.SavedState{"
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + "}";
+        }
+
+        public static final Creator<SavedState> CREATOR
+                = new Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
     class ContactSuggestionAdapter extends BaseAdapter implements Filterable {
 
         private final String COLS[] = new String[]{
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                 ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY : ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -294,18 +403,17 @@ public class ContactEditText extends EditText{
                 FilterResults results = new FilterResults();
 
                 if (constraint != null) {
-                    String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ? OR " + COLS[2] + " LIKE ?";
+                    String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE ? OR " + COLS[1] + " LIKE ?";
                     String[] selectionArgs = new String[]{"%" + constraint + "%", "%" + constraint + "%"};
-                    String sortOrder = COLS[2] + " COLLATE LOCALIZED ASC";
+                    String sortOrder = COLS[1] + " COLLATE LOCALIZED ASC";
                     Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, COLS, selection, selectionArgs, sortOrder);
                     if (cursor.getCount() > 0) {
                         ArrayList<Recipient> values = new ArrayList<>();
                         while (cursor.moveToNext()) {
                             Recipient recipient = new Recipient();
-                            recipient.contactId = cursor.getLong(0);
-                            recipient.lookupKey = cursor.getString(1);
-                            recipient.name = cursor.getString(2);
-                            recipient.number = cursor.getString(3);
+                            recipient.lookupKey = cursor.getString(0);
+                            recipient.name = cursor.getString(1);
+                            recipient.number = cursor.getString(2);
                             values.add(recipient);
                         }
 
@@ -331,7 +439,6 @@ public class ContactEditText extends EditText{
         Recipient[] mItems;
 
         private final String COLS[] = new String[]{
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
         };
 
@@ -351,14 +458,12 @@ public class ContactEditText extends EditText{
                 mItems = new Recipient[cursor.getCount()];
                 int index = 1;
                 while (cursor.moveToNext()) {
-                    long contactId = cursor.getLong(0);
-                    String number = cursor.getString(1);
+                    String number = cursor.getString(0);
 
                     if(number.equals(recipient.number))
                         mItems[0] = recipient;
                     else{
                         Recipient newRecipient = new Recipient();
-                        newRecipient.contactId = contactId;
                         newRecipient.lookupKey = recipient.lookupKey;
                         newRecipient.name = recipient.name;
                         newRecipient.number = number;
