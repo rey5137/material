@@ -13,16 +13,15 @@
 	    android:padding="8dp">
 
         <com.rey.material.app.ContactEditText
-            style="@style/Material.Widget.EditText.Light"
+            style="@style/ContactEditText"
             android:id="@+id/textfield_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#FF000000"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
-            android:inputType="textMultiLine"
+            android:inputType="textEmailSubject|textMultiLine"
             android:hint="Contact"
-            android:drawableLeft="@drawable/ic_autorenew_white_24dp"
-            android:imeOptions="flagNoExtractUi"
+            android:imeOptions="actionNext|flagNoEnterAction|flagNoExtractUi"
             app:et_inputId="@+id/textfield_et_contact_input"
             app:et_supportMode="none"
             app:et_autoCompleteMode="multi"

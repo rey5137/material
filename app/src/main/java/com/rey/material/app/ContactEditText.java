@@ -1,6 +1,7 @@
 package com.rey.material.app;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import com.rey.material.demo.R;
 import com.rey.material.text.style.ContactChipSpan;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.TypefaceUtil;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.ListPopupWindow;
 import com.squareup.picasso.Picasso;
@@ -95,17 +97,26 @@ public class ContactEditText extends EditText{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRecipientMap = new HashMap<>();
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ContactEditText, defStyleAttr, defStyleRes);
 
-        mSpanHeight = ThemeUtil.dpToPx(context, 32);
-        mSpanMaxWidth = ThemeUtil.dpToPx(context, 150);
-        mSpanPaddingLeft = ThemeUtil.dpToPx(context, 8);
-        mSpanPaddingRight = ThemeUtil.dpToPx(context, 12);
+        mSpanHeight = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanHeight, ThemeUtil.dpToPx(context, 32));
+        mSpanMaxWidth = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanMaxWidth, ThemeUtil.dpToPx(context, 150));
+        mSpanPaddingLeft = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanPaddingLeft, ThemeUtil.dpToPx(context, 8));
+        mSpanPaddingRight = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanPaddingRight, ThemeUtil.dpToPx(context, 12));
         mSpanTypeface = Typeface.DEFAULT;
-        mSpanTextSize = ThemeUtil.spToPx(context, 14);
-        mSpanTextColor = 0xFF000000;
-        mSpanBackgroundColor = 0xFFE0E0E0;
-        mSpanSpacing = ThemeUtil.dpToPx(context, 4);
+        mSpanTextSize = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanTextSize, ThemeUtil.spToPx(context, 14));
+        mSpanTextColor = a.getColor(R.styleable.ContactEditText_cet_spanTextColor, 0xFF000000);
+        mSpanBackgroundColor = a.getColor(R.styleable.ContactEditText_cet_spanBackgroundColor, 0xFFE0E0E0);
+        mSpanSpacing = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanSpacing, ThemeUtil.dpToPx(context, 4));
+
+        String familyName = a.getString(R.styleable.ContactEditText_cet_spanFontFamily);
+        int style = a.getInteger(R.styleable.ContactEditText_cet_spanTextStyle, Typeface.NORMAL);
+
+        mSpanTypeface = TypefaceUtil.load(context, familyName, style);
+
+        a.recycle();
+
+        mRecipientMap = new HashMap<>();
 
         ContactSuggestionAdapter adapter = new ContactSuggestionAdapter();
         setAdapter(adapter);
@@ -237,6 +248,7 @@ public class ContactEditText extends EditText{
             });
             mReplacementPopup.setAdapter(mReplacementAdapter);
             mReplacementPopup.setAnchorView(this);
+            mReplacementPopup.setModal(true);
             mReplacementPopup.show();
         }
     }

@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.text.TextUtils;
@@ -23,10 +24,13 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rey.material.demo.R;
+import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.widget.ImageButton;
 import com.rey.material.widget.RippleManager;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -39,10 +43,13 @@ public class ContactView extends FrameLayout implements Target{
     private TextView mNameView;
     private TextView mAddressView;
     private AvatarDrawable mAvatarDrawable;
+    private ImageButton mButton;
 
     private int mAvatarSize;
     private int mSpacing;
     private int mMinHeight;
+
+    private int mButtonSize;
 
     private RippleManager mRippleManager = new RippleManager();
 
@@ -112,10 +119,29 @@ public class ContactView extends FrameLayout implements Target{
             mAddressView.setTextColor(addressTextColor);
         setAddressText(a.getString(R.styleable.ContactView_cv_address));
 
+        mButtonSize = a.getDimensionPixelOffset(R.styleable.ContactView_cv_buttonSize, 0);
+
+        if(mButtonSize > 0){
+            mButton = new ImageButton(context);
+            int resId = a.getResourceId(R.styleable.ContactView_cv_buttonSrc, 0);
+            if(resId != 0)
+                mButton.setImageResource(resId);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                mButton.setBackground(BlankDrawable.getInstance());
+            else
+                mButton.setBackgroundDrawable(BlankDrawable.getInstance());
+            mButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            mButton.setFocusableInTouchMode(false);
+            mButton.setFocusable(false);
+            mButton.setClickable(false);
+        }
+
         a.recycle();
 
         addView(mNameView);
         addView(mAddressView);
+        if(mButton != null)
+            addView(mButton);
 
         mAvatarDrawable = new AvatarDrawable();
         if(avatarSrc != 0)
@@ -198,13 +224,16 @@ public class ContactView extends FrameLayout implements Target{
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        int nonTextWidth = mAvatarSize - mSpacing * 3;
+        int nonTextWidth = mAvatarSize + mSpacing * 3 + mButtonSize;
 
         int ws = MeasureSpec.makeMeasureSpec(widthSize - nonTextWidth, widthMode == MeasureSpec.UNSPECIFIED ? widthMode : MeasureSpec.AT_MOST);
         int hs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 
         mNameView.measure(ws, hs);
         mAddressView.measure(ws, hs);
+
+        if(mButton != null)
+            mButton.measure(MeasureSpec.makeMeasureSpec(mButtonSize, MeasureSpec.EXACTLY), hs);
 
         int width = widthMode == MeasureSpec.EXACTLY ? widthSize : Math.max(mNameView.getMeasuredWidth(), mAddressView.getMeasuredWidth()) + nonTextWidth;
         int height = Math.max(mAvatarSize + mSpacing * 2, mNameView.getMeasuredHeight() + mAddressView.getMeasuredHeight());
@@ -218,7 +247,12 @@ public class ContactView extends FrameLayout implements Target{
                 break;
         }
 
-        setMeasuredDimension(width, Math.max(mMinHeight, height));
+        height = Math.max(mMinHeight, height);
+
+        if(mButton != null)
+            mButton.measure(MeasureSpec.makeMeasureSpec(mButtonSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -233,6 +267,11 @@ public class ContactView extends FrameLayout implements Target{
         mAvatarDrawable.setBounds(childLeft, y, childLeft + mAvatarSize, y + mAvatarSize);
 
         childLeft += mAvatarSize + mSpacing;
+
+        if(mButton != null){
+            mButton.layout(childRight - mButtonSize, childTop, childRight, childBottom);
+            childRight -= mButtonSize;
+        }
 
         if(mNameView.getVisibility() == View.VISIBLE){
             if(mAddressView.getVisibility() == View.VISIBLE){
