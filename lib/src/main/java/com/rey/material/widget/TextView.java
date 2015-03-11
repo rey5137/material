@@ -4,10 +4,17 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 public class TextView extends android.widget.TextView {
 
 	private RippleManager mRippleManager = new RippleManager();
+
+    public interface OnSelectionChangedListener{
+        public void onSelectionChanged(View v, int selStart, int selEnd);
+    }
+
+    private OnSelectionChangedListener mOnSelectionChangedListener;
 
     public TextView(Context context) {
         super(context);
@@ -52,5 +59,16 @@ public class TextView extends android.widget.TextView {
 		boolean result = super.onTouchEvent(event);
 		return  mRippleManager.onTouchEvent(event) || result;
 	}
-	
+
+    public void setOnSelectionChangedListener(OnSelectionChangedListener listener){
+        mOnSelectionChangedListener = listener;
+    }
+
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        super.onSelectionChanged(selStart, selEnd);
+
+        if(mOnSelectionChangedListener != null)
+            mOnSelectionChangedListener.onSelectionChanged(this, selStart, selEnd);
+    }
 }

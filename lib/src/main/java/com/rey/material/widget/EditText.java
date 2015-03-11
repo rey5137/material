@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.annotation.TargetApi;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -27,6 +28,7 @@ import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
@@ -35,6 +37,7 @@ import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.CompletionInfo;
@@ -78,10 +81,12 @@ public class EditText extends FrameLayout {
 	private int mLabelInAnimId;
 	private int mLabelOutAnimId;
 	
-	private LabelView mLabelView;
-	private android.widget.EditText mInputView;
-	private LabelView mSupportView;
+	protected LabelView mLabelView;
+    protected android.widget.EditText mInputView;
+    protected LabelView mSupportView;
 	private DividerDrawable mDivider;
+
+    private TextView.OnSelectionChangedListener mOnSelectionChangedListener;
 
     public EditText(Context context) {
         super(context);
@@ -534,7 +539,7 @@ public class EditText extends FrameLayout {
      * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
      */
     public CharSequence getCompletionHint() {
-        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             return null;
         return ((AutoCompleteTextView)mInputView).getCompletionHint();
     }
@@ -953,9 +958,10 @@ public class EditText extends FrameLayout {
 
     /** <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p> */
     public void onFilterComplete(int count) {
-        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
-            return;
-        ((AutoCompleteTextView)mInputView).onFilterComplete(count);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            ((InternalAutoCompleteTextView)mInputView).superOnFilterComplete(count);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_MULTI)
+            ((InternalMultiAutoCompleteTextView)mInputView).superOnFilterComplete(count);
     }
 
     /**
@@ -2161,12 +2167,7 @@ public class EditText extends FrameLayout {
 	public boolean moveCursorToVisibleOffset (){
 		return mInputView.moveCursorToVisibleOffset();
 	}
-	
-	@Override
-	public boolean onCheckIsTextEditor (){
-		return mInputView.onCheckIsTextEditor();
-	}
-	
+
 	/**
      * Called by the framework in response to a text completion from
      * the current input method, provided by it calling
@@ -2178,7 +2179,12 @@ public class EditText extends FrameLayout {
      * @param text The auto complete text the user has selected.
      */
 	public void onCommitCompletion (CompletionInfo text){
-		mInputView.onCommitCompletion(text);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            ((InternalEditText)mInputView).superOnCommitCompletion(text);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            ((InternalAutoCompleteTextView)mInputView).superOnCommitCompletion(text);
+        else
+            ((InternalMultiAutoCompleteTextView)mInputView).superOnCommitCompletion(text);
 	}
 	
 	/**
@@ -2189,15 +2195,23 @@ public class EditText extends FrameLayout {
      *
      * @param info The auto correct info about the text that was corrected.
      */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void onCommitCorrection (CorrectionInfo info){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			mInputView.onCommitCorrection(info);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            ((InternalEditText)mInputView).superOnCommitCorrection(info);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            ((InternalAutoCompleteTextView)mInputView).superOnCommitCorrection(info);
+        else
+            ((InternalMultiAutoCompleteTextView)mInputView).superOnCommitCorrection(info);
 	}
 	
 	@Override
 	public InputConnection onCreateInputConnection (EditorInfo outAttrs){
-		return mInputView.onCreateInputConnection(outAttrs);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnCreateInputConnection(outAttrs);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnCreateInputConnection(outAttrs);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnCreateInputConnection(outAttrs);
 	}
 	
 	/**
@@ -2221,33 +2235,89 @@ public class EditText extends FrameLayout {
      * @see #setOnEditorActionListener
      */
 	public void onEditorAction (int actionCode){
-		mInputView.onEditorAction(actionCode);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            ((InternalEditText)mInputView).superOnEditorAction(actionCode);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            ((InternalAutoCompleteTextView)mInputView).superOnEditorAction(actionCode);
+        else
+            ((InternalMultiAutoCompleteTextView)mInputView).superOnEditorAction(actionCode);
 	}
 	
 	@Override
 	public boolean onKeyDown (int keyCode, KeyEvent event){
-		return mInputView.onKeyDown(keyCode, event);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnKeyDown(keyCode, event);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnKeyDown(keyCode, event);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnKeyDown(keyCode, event);
 	}
 	
 	@Override
 	public boolean onKeyMultiple (int keyCode, int repeatCount, KeyEvent event){
-		return mInputView.onKeyMultiple(keyCode, repeatCount, event);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnKeyMultiple(keyCode, repeatCount, event);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnKeyMultiple(keyCode, repeatCount, event);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnKeyMultiple(keyCode, repeatCount, event);
 	}
 	
 	@Override
 	public boolean onKeyPreIme (int keyCode, KeyEvent event){
-		return mInputView.onKeyPreIme(keyCode, event);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnKeyPreIme(keyCode, event);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnKeyPreIme(keyCode, event);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnKeyPreIme(keyCode, event);
 	}
 	
 	@Override
 	public boolean onKeyShortcut (int keyCode, KeyEvent event){
-		return mInputView.onKeyShortcut(keyCode, event);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnKeyShortcut(keyCode, event);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnKeyShortcut(keyCode, event);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnKeyShortcut(keyCode, event);
 	}
 	
 	@Override
 	public boolean onKeyUp (int keyCode, KeyEvent event){
-		return mInputView.onKeyUp(keyCode, event);
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            return ((InternalEditText)mInputView).superOnKeyUp(keyCode, event);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            return ((InternalAutoCompleteTextView)mInputView).superOnKeyUp(keyCode, event);
+        else
+            return ((InternalMultiAutoCompleteTextView)mInputView).superOnKeyUp(keyCode, event);
 	}
+
+    public void setOnSelectionChangedListener(TextView.OnSelectionChangedListener listener){
+        mOnSelectionChangedListener = listener;
+    }
+
+    /**
+     * This method is called when the selection has changed, in case any
+     * subclasses would like to know.
+     *
+     * @param selStart The new selection start location.
+     * @param selEnd The new selection end location.
+     */
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        if(mInputView == null)
+            return;
+
+        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+            ((InternalEditText)mInputView).superOnSelectionChanged(selStart, selEnd);
+        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+            ((InternalAutoCompleteTextView)mInputView).superOnSelectionChanged(selStart, selEnd);
+        else
+            ((InternalMultiAutoCompleteTextView)mInputView).superOnSelectionChanged(selStart, selEnd);
+
+        if(mOnSelectionChangedListener != null)
+            mOnSelectionChangedListener.onSelectionChanged(this, selStart, selEnd);
+    }
 	
 	/**
      * Removes the specified TextWatcher from the list of those whose
@@ -2761,7 +2831,8 @@ public class EditText extends FrameLayout {
      * @attr ref android.R.styleable#TextView_letterSpacing
      */
 	public void setLetterSpacing (float letterSpacing){
-		mInputView.setLetterSpacing(letterSpacing);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+		    mInputView.setLetterSpacing(letterSpacing);
 	}
 	
 	/**
@@ -3239,7 +3310,41 @@ public class EditText extends FrameLayout {
 	public void setTypeface (Typeface tf){
 		mInputView.setTypeface(tf);
 	}
-	
+
+    /**
+     * It would be better to rely on the input type for everything. A password inputType should have
+     * a password transformation. We should hence use isPasswordInputType instead of this method.
+     *
+     * We should:
+     * - Call setInputType in setKeyListener instead of changing the input type directly (which
+     * would install the correct transformation).
+     * - Refuse the installation of a non-password transformation in setTransformation if the input
+     * type is password.
+     *
+     * However, this is like this for legacy reasons and we cannot break existing apps. This method
+     * is useful since it matches what the user can see (obfuscated text or not).
+     *
+     * @return true if the current transformation method is of the password type.
+     */
+    private boolean hasPasswordTransformationMethod() {
+        return getTransformationMethod() != null && getTransformationMethod() instanceof PasswordTransformationMethod;
+    }
+
+    public boolean canCut() {
+        return !hasPasswordTransformationMethod() && getText().length() > 0 && hasSelection() && getKeyListener() != null;
+    }
+
+    public boolean canCopy() {
+        return !hasPasswordTransformationMethod() && getText().length() > 0 && hasSelection();
+    }
+
+    public boolean canPaste() {
+        return (getKeyListener() != null &&
+                getSelectionStart() >= 0 &&
+                getSelectionEnd() >= 0 &&
+                ((ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE)).hasPrimaryClip());
+    }
+
 	/* Inner class */
 	
 	private class InputTextWatcher implements TextWatcher {
@@ -3348,8 +3453,98 @@ public class EditText extends FrameLayout {
 			if(mSupportView != null)
 				mSupportView.refreshDrawableState();
 		}
-				
-	}
+
+        @Override
+        public void onCommitCompletion(CompletionInfo text) {
+            EditText.this.onCommitCompletion(text);
+        }
+
+        @Override
+        public void onCommitCorrection(CorrectionInfo info) {
+            EditText.this.onCommitCorrection(info);
+        }
+
+        @Override
+        public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+            return EditText.this.onCreateInputConnection(outAttrs);
+        }
+
+        @Override
+        public void onEditorAction(int actionCode) {
+            EditText.this.onEditorAction(actionCode);
+        }
+
+        @Override
+        public boolean onKeyDown(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyDown(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return EditText.this.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        @Override
+        public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyPreIme(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyShortcut(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyShortcut(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyUp(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyUp(keyCode, event);
+        }
+
+        @Override
+        protected void onSelectionChanged(int selStart, int selEnd) {
+            EditText.this.onSelectionChanged(selStart, selEnd);
+        }
+
+        void superOnCommitCompletion(CompletionInfo text) {
+            super.onCommitCompletion(text);
+        }
+
+        void superOnCommitCorrection(CorrectionInfo info) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                super.onCommitCorrection(info);
+        }
+
+        InputConnection superOnCreateInputConnection(EditorInfo outAttrs) {
+            return super.onCreateInputConnection(outAttrs);
+        }
+
+        void superOnEditorAction(int actionCode) {
+            super.onEditorAction(actionCode);
+        }
+
+        boolean superOnKeyDown(int keyCode, KeyEvent event) {
+            return super.onKeyDown(keyCode, event);
+        }
+
+        boolean superOnKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return super.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        boolean superOnKeyPreIme(int keyCode, KeyEvent event) {
+            return super.onKeyPreIme(keyCode, event);
+        }
+
+        boolean superOnKeyShortcut(int keyCode, KeyEvent event) {
+            return super.onKeyShortcut(keyCode, event);
+        }
+
+        boolean superOnKeyUp(int keyCode, KeyEvent event) {
+            return super.onKeyUp(keyCode, event);
+        }
+
+        void superOnSelectionChanged(int selStart, int selEnd) {
+            super.onSelectionChanged(selStart, selEnd);
+        }
+    }
 
     private class InternalAutoCompleteTextView extends android.widget.AutoCompleteTextView{
 
@@ -3377,6 +3572,56 @@ public class EditText extends FrameLayout {
         }
 
         @Override
+        public void onCommitCompletion(CompletionInfo text) {
+            EditText.this.onCommitCompletion(text);
+        }
+
+        @Override
+        public void onCommitCorrection(CorrectionInfo info) {
+            EditText.this.onCommitCorrection(info);
+        }
+
+        @Override
+        public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+            return EditText.this.onCreateInputConnection(outAttrs);
+        }
+
+        @Override
+        public void onEditorAction(int actionCode) {
+            EditText.this.onEditorAction(actionCode);
+        }
+
+        @Override
+        public boolean onKeyDown(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyDown(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return EditText.this.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        @Override
+        public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyPreIme(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyShortcut(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyShortcut(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyUp(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyUp(keyCode, event);
+        }
+
+        @Override
+        protected void onSelectionChanged(int selStart, int selEnd) {
+            EditText.this.onSelectionChanged(selStart, selEnd);
+        }
+
+        @Override
         protected CharSequence convertSelectionToString(Object selectedItem) {
             return EditText.this.convertSelectionToString(selectedItem);
         }
@@ -3396,6 +3641,52 @@ public class EditText extends FrameLayout {
             return EditText.this.getFilter();
         }
 
+        @Override
+        public void onFilterComplete(int count) {
+            EditText.this.onFilterComplete(count);
+        }
+
+        void superOnCommitCompletion(CompletionInfo text) {
+            super.onCommitCompletion(text);
+        }
+
+        void superOnCommitCorrection(CorrectionInfo info) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                super.onCommitCorrection(info);
+        }
+
+        InputConnection superOnCreateInputConnection(EditorInfo outAttrs) {
+            return super.onCreateInputConnection(outAttrs);
+        }
+
+        void superOnEditorAction(int actionCode) {
+            super.onEditorAction(actionCode);
+        }
+
+        boolean superOnKeyDown(int keyCode, KeyEvent event) {
+            return super.onKeyDown(keyCode, event);
+        }
+
+        boolean superOnKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return super.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        boolean superOnKeyPreIme(int keyCode, KeyEvent event) {
+            return super.onKeyPreIme(keyCode, event);
+        }
+
+        boolean superOnKeyShortcut(int keyCode, KeyEvent event) {
+            return super.onKeyShortcut(keyCode, event);
+        }
+
+        boolean superOnKeyUp(int keyCode, KeyEvent event) {
+            return super.onKeyUp(keyCode, event);
+        }
+
+        void superOnFilterComplete(int count) {
+            super.onFilterComplete(count);
+        }
+
         CharSequence superConvertSelectionToString(Object selectedItem) {
             return super.convertSelectionToString(selectedItem);
         }
@@ -3410,6 +3701,10 @@ public class EditText extends FrameLayout {
 
         Filter superGetFilter() {
             return super.getFilter();
+        }
+
+        void superOnSelectionChanged(int selStart, int selEnd) {
+            super.onSelectionChanged(selStart, selEnd);
         }
     }
 
@@ -3439,6 +3734,61 @@ public class EditText extends FrameLayout {
         }
 
         @Override
+        public void onCommitCompletion(CompletionInfo text) {
+            EditText.this.onCommitCompletion(text);
+        }
+
+        @Override
+        public void onCommitCorrection(CorrectionInfo info) {
+            EditText.this.onCommitCorrection(info);
+        }
+
+        @Override
+        public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+            return EditText.this.onCreateInputConnection(outAttrs);
+        }
+
+        @Override
+        public void onEditorAction(int actionCode) {
+            EditText.this.onEditorAction(actionCode);
+        }
+
+        @Override
+        public boolean onKeyDown(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyDown(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return EditText.this.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        @Override
+        public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyPreIme(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyShortcut(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyShortcut(keyCode, event);
+        }
+
+        @Override
+        public boolean onKeyUp(int keyCode, KeyEvent event) {
+            return EditText.this.onKeyUp(keyCode, event);
+        }
+
+        @Override
+        protected void onSelectionChanged(int selStart, int selEnd) {
+            EditText.this.onSelectionChanged(selStart, selEnd);
+        }
+
+        @Override
+        public void onFilterComplete(int count) {
+            EditText.this.onFilterComplete(count);
+        }
+
+        @Override
         protected CharSequence convertSelectionToString(Object selectedItem) {
             return EditText.this.convertSelectionToString(selectedItem);
         }
@@ -3463,6 +3813,47 @@ public class EditText extends FrameLayout {
             EditText.this.performFiltering(text, start, end, keyCode);
         }
 
+        void superOnCommitCompletion(CompletionInfo text) {
+            super.onCommitCompletion(text);
+        }
+
+        void superOnCommitCorrection(CorrectionInfo info) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                super.onCommitCorrection(info);
+        }
+
+        InputConnection superOnCreateInputConnection(EditorInfo outAttrs) {
+            return super.onCreateInputConnection(outAttrs);
+        }
+
+        void superOnEditorAction(int actionCode) {
+            super.onEditorAction(actionCode);
+        }
+
+        boolean superOnKeyDown(int keyCode, KeyEvent event) {
+            return super.onKeyDown(keyCode, event);
+        }
+
+        boolean superOnKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+            return super.onKeyMultiple(keyCode, repeatCount, event);
+        }
+
+        boolean superOnKeyPreIme(int keyCode, KeyEvent event) {
+            return super.onKeyPreIme(keyCode, event);
+        }
+
+        boolean superOnKeyShortcut(int keyCode, KeyEvent event) {
+            return super.onKeyShortcut(keyCode, event);
+        }
+
+        boolean superOnKeyUp(int keyCode, KeyEvent event) {
+            return super.onKeyUp(keyCode, event);
+        }
+
+        void superOnFilterComplete(int count) {
+            super.onFilterComplete(count);
+        }
+
         CharSequence superConvertSelectionToString(Object selectedItem) {
             return super.convertSelectionToString(selectedItem);
         }
@@ -3481,6 +3872,10 @@ public class EditText extends FrameLayout {
 
         void superPerformFiltering(CharSequence text, int start, int end, int keyCode){
             super.performFiltering(text, start, end, keyCode);
+        }
+
+        void superOnSelectionChanged(int selStart, int selEnd) {
+            super.onSelectionChanged(selStart, selEnd);
         }
     }
 }

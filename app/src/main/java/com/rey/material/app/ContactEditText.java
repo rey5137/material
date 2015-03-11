@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -39,6 +41,7 @@ import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.ListPopupWindow;
+import com.rey.material.widget.ListView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -246,10 +249,51 @@ public class ContactEditText extends EditText{
                     mSelectedSpan = null;
                 }
             });
-            mReplacementPopup.setAdapter(mReplacementAdapter);
+
             mReplacementPopup.setAnchorView(this);
             mReplacementPopup.setModal(true);
+            mReplacementPopup.setAdapter(mReplacementAdapter);
             mReplacementPopup.show();
+
+            mReplacementPopup.getListView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    ListView lv = mReplacementPopup.getListView();
+                    ViewTreeObserver observer = lv.getViewTreeObserver();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                        observer.removeOnGlobalLayoutListener(this);
+                    else
+                        observer.removeGlobalOnLayoutListener(this);
+
+                    View v = lv.getChildAt(0);
+                    v.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                    mReplacementPopup.setContentWidth(v.getMeasuredWidth());
+
+
+                    int[] popupLocation = new int[2];
+                    lv.getLocationOnScreen(popupLocation);
+
+                    int[] inputLocation = new int[2];
+                    mInputView.getLocationOnScreen(inputLocation);
+
+                    Drawable background = mReplacementPopup.getPopup().getBackground();
+                    Rect backgroundPadding = new Rect();
+                    int verticalOffset;
+                    int horizontalOffset = inputLocation[0] + (int)mSelectedSpan.mX - (popupLocation[0] + backgroundPadding.left);
+
+                    if(background != null)
+                        background.getPadding(backgroundPadding);
+
+                    if(inputLocation[1] < popupLocation[1]) //popup show at bottom
+                        verticalOffset = inputLocation[1] + mSelectedSpan.mY - (popupLocation[1] + backgroundPadding.top);
+                    else
+                        verticalOffset = inputLocation[1] + mSelectedSpan.mY + mSpanHeight - (popupLocation[1] + lv.getHeight() - backgroundPadding.bottom);
+
+                    mReplacementPopup.setVerticalOffset(verticalOffset);
+                    mReplacementPopup.setHorizontalOffset(horizontalOffset);
+                    mReplacementPopup.show();
+                }
+            });
         }
     }
 
@@ -468,24 +512,30 @@ public class ContactEditText extends EditText{
             Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, COLS, selection, selectionArgs, null);
             if (cursor.getCount() > 0) {
                 mItems = new Recipient[cursor.getCount()];
+                mItems[0] = recipient;
                 int index = 1;
                 while (cursor.moveToNext()) {
                     String number = cursor.getString(0);
 
-                    if(number.equals(recipient.number))
-                        mItems[0] = recipient;
-                    else{
+                    if(!number.equals(recipient.number)){
                         Recipient newRecipient = new Recipient();
                         newRecipient.lookupKey = recipient.lookupKey;
                         newRecipient.name = recipient.name;
                         newRecipient.number = number;
+                        if(index == mItems.length){
+                            Recipient[] newItems = new Recipient[mItems.length + 1];
+                            System.arraycopy(mItems, 0, newItems, 0, mItems.length);
+                            mItems = newItems;
+                        }
                         mItems[index] = newRecipient;
                         index++;
                     }
                 }
             }
-            cursor.close();
+            else
+                mItems = new Recipient[]{recipient};
 
+            cursor.close();
             notifyDataSetChanged();
         }
 
@@ -558,6 +608,7 @@ public class ContactEditText extends EditText{
         private Recipient mRecipient;
         int mWidth;
         float mX;
+        int mY;
 
         public RecipientSpan(Recipient recipient) {
             super(TextUtils.isEmpty(recipient.name) ? recipient.number : recipient.name,
@@ -613,6 +664,7 @@ public class ContactEditText extends EditText{
         @Override
         public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
             mX = x;
+            mY = top;
             super.draw(canvas, text, start, end, x, top, y, bottom, paint);
         }
 

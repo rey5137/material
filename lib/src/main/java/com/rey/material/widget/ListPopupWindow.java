@@ -867,6 +867,10 @@ public class ListPopupWindow {
         return mDropDownList;
     }
 
+    public PopupWindow getPopup(){
+        return mPopup;
+    }
+
     /**
      * The maximum number of list items that can be visible and still have
      * the list expand when touched.
