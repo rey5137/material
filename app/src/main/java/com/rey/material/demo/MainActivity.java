@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -84,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
 
         });
-        mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();
 		lv_drawer.setAdapter(mDrawerAdapter);		
@@ -112,24 +111,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		vp.setCurrentItem(3);
 	}
 
-    private long getTime(int day, int month, int year, int hour, int minute) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, minute);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        return cal.getTimeInMillis();
-    }
-
-    private void printTime(long time){
-        DateFormat format = SimpleDateFormat.getDateTimeInstance();
-        System.out.println(format.format(new Date(time)));
-    }
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         mToolbarManager.createMenu(R.menu.menu_main);
@@ -140,11 +121,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         mToolbarManager.onPrepareMenu();
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public void onToolbarGroupChanged(int oldGroupId, int groupId) {
-        mToolbarManager.notifyNavigationStateChanged();
     }
 
     @Override

@@ -261,7 +261,7 @@
 
     <style name="SelectedContactView" parent="ContactView">
         <item name="android:minHeight">72dp</item>
-        <item name="cv_buttonSrc">@drawable/ic_highlight_remove_white_24dp</item>
+        <item name="cv_buttonSrc">@drawable/ic_cancel_white_24dp</item>
         <item name="cv_buttonSize">48dp</item>
         <item name="cv_nameTextColor">#FFFFFFFF</item>
         <item name="cv_addressTextColor">#FFFFFFFF</item>
