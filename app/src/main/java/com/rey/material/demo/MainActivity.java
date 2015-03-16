@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -84,6 +84,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             }
 
         });
+        mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();
 		lv_drawer.setAdapter(mDrawerAdapter);		
@@ -138,6 +139,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     @Override
+    public void onToolbarGroupChanged(int oldGroupId, int groupId) {
+        mToolbarManager.notifyNavigationStateChanged();
+    }
+
+    @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		vp.setCurrentItem(position);
 		dl_navigator.closeDrawer(fl_drawer);
@@ -147,7 +153,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         return mSnackBar;
     }
 
-	public enum Tab {
+
+
+    public enum Tab {
 	    PROGRESS ("Progresses"),
 	    BUTTONS ("Buttons"),
 	    SWITCHES ("Switches"),

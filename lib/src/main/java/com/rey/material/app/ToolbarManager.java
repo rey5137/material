@@ -125,8 +125,6 @@ public class ToolbarManager {
             else
                 ref.get().onToolbarGroupChanged(oldGroupId, groupId);
         }
-
-        notifyNavigationStateChanged();
     }
 
     public int getCurrentGroup(){
