@@ -160,7 +160,9 @@ public class EditText extends FrameLayout {
         mDividerCompoundPadding = a.getBoolean(R.styleable.EditText_et_dividerCompoundPadding, true);
         mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
 
-		mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
+        System.out.println("a " + mInputView.getTotalPaddingLeft() + " " + mInputView.getTotalPaddingRight());
+
+		mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
 		mDivider.setInEditMode(isInEditMode());
 		mDivider.setAnimEnable(false);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
