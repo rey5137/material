@@ -117,7 +117,17 @@
         <item name="rd_rippleType">touch</item>
     </style>
 
+    <style name="Material.Drawable.Ripple.Touch.MatchView" parent="Material.Drawable.Ripple.Touch">
+        <item name="rd_maxRippleRadius">match_view</item>
+    </style>
+
     <style name="Material.Drawable.Ripple.Touch.Light" parent="Material.Drawable.Ripple.Touch">
+        <item name="rd_backgroundColor">#33999999</item>
+        <item name="rd_rippleColor">#33999999</item>
+    </style>
+
+    <style name="Material.Drawable.Ripple.Touch.MatchView.Light" parent="Material.Drawable.Ripple.Touch">
+        <item name="rd_maxRippleRadius">match_view</item>
         <item name="rd_backgroundColor">#33999999</item>
         <item name="rd_rippleColor">#33999999</item>
     </style>

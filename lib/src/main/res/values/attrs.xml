@@ -76,7 +76,9 @@
         <attr name="rd_background" format="reference|color"/>
         <attr name="rd_backgroundColor" format="reference|color"/>
         <attr name="rd_backgroundAnimDuration" format="reference|integer"/>        
-        <attr name="rd_maxRippleRadius" format="reference|dimension"/>
+        <attr name="rd_maxRippleRadius" format="reference|dimension|integer">
+            <enum name="match_view" value="0x00000000" />
+        </attr>
         <attr name="rd_rippleColor" format="reference|color"/>
         <attr name="rd_rippleAnimDuration" format="reference|integer"/>       
         <attr name="rd_inInterpolator" format="reference"/>   
