@@ -7,7 +7,7 @@
 	    <item name="colorAccent">@color/colorAccent</item>	 
 		<item name="colorControlNormal">@color/colorControlNormal</item>  
 	    <item name="colorControlActivated">@color/colorControlActivated</item>
-		<item name="colorSwitchThumbNormal">@color/colorSwitchThumbNormal</item>  		    
+		<item name="colorSwitchThumbNormal">@color/colorSwitchThumbNormal</item>
 	</style>
 
 </resources>

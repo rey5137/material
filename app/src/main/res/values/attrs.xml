@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WeekView">
+        <attr name="wv_backgroundColor" format="reference|color"/>
+        <attr name="wv_verticalPadding" format="reference|dimension"/>
+        <attr name="wv_horizontalPadding" format="reference|dimension"/>
+        <attr name="wv_animDuration" format="reference|integer"/>
+    </declare-styleable>
+    
+    <declare-styleable name="ContactView">
+        <attr name="cv_buttonSrc" format="reference"/>
+        <attr name="cv_buttonSize" format="reference|dimension"/>
+        <attr name="cv_avatarSrc" format="reference"/>
+        <attr name="cv_avatarSize" format="reference|dimension"/>
+        <attr name="cv_spacing" format="reference|dimension"/>
+        <attr name="cv_name" format="reference|string"/>
+        <attr name="cv_nameTextAppearance" format="reference"/>
+        <attr name="cv_nameTextSize" format="reference|dimension"/>
+        <attr name="cv_nameTextColor" format="reference|color"/>
+        <attr name="cv_address" format="reference|string"/>
+        <attr name="cv_addressTextAppearance" format="reference"/>
+        <attr name="cv_addressTextSize" format="reference|dimension"/>
+        <attr name="cv_addressTextColor" format="reference|color"/>
+        <attr name="android:minHeight" />
+    </declare-styleable>
+
+    <declare-styleable name="ContactEditText">
+        <attr name="cet_spanHeight" format="reference|dimension"/>
+        <attr name="cet_spanMaxWidth" format="reference|dimension"/>
+        <attr name="cet_spanPaddingLeft" format="reference|dimension"/>
+        <attr name="cet_spanPaddingRight" format="reference|dimension"/>
+        <attr name="cet_spanFontFamily" format="reference|string"/>
+        <attr name="cet_spanTextStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <attr name="cet_spanTextSize" format="reference|dimension"/>
+        <attr name="cet_spanTextColor" format="reference|color"/>
+        <attr name="cet_spanBackgroundColor" format="reference|color"/>
+        <attr name="cet_spanSpacing" format="reference|dimension"/>
+    </declare-styleable>
+
+</resources>

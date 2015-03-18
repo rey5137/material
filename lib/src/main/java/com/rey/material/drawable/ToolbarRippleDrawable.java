@@ -404,9 +404,13 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 		private Interpolator mOutInterpolator;
 						
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, 0, defStyle);			
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, defStyleAttr, defStyleRes);
 			int resId;
 			
 			backgroundColor(a.getColor(R.styleable.RippleDrawable_rd_backgroundColor, 0));

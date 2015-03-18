@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.rey.material.widget.EditText
+        style="@style/Material.Widget.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/abc_primary_text_material_dark"
+        app:et_dividerHeight="0dp"
+        app:et_supportMode="none"
+        android:hint="Signal strength"
+        android:text="Excellent"
+        android:enabled="false"
+        android:paddingTop="8dp"/>
+
+    <com.rey.material.widget.EditText
+        style="@style/Material.Widget.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/abc_primary_text_material_dark"
+        app:et_dividerHeight="0dp"
+        app:et_supportMode="none"
+        android:hint="Security"
+        android:text="802.1x EAP"
+        android:enabled="false"
+        android:paddingTop="8dp"/>
+
+    <com.rey.material.widget.EditText
+        style="@style/Material.Widget.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:et_supportMode="charCounter"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:textColorHint="@color/abc_secondary_text_material_dark"
+        android:hint="Password"
+        android:paddingTop="8dp"
+        android:inputType="textPassword"/>
+
+    <com.rey.material.widget.CheckBox
+        style="@style/Material.Drawable.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show password"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

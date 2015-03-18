@@ -8,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.rey.material.util.ThemeUtil;
-import com.rey.material.view.Button;
-import com.rey.material.view.SnackBar;
+import com.rey.material.widget.Button;
+import com.rey.material.widget.SnackBar;
 
 public class SnackbarFragment extends Fragment{
 	
@@ -41,60 +40,32 @@ public class SnackbarFragment extends Fragment{
 				else{
 					switch (v.getId()) {
 						case R.id.snackbar_bt_mobile_single:
-							mSnackBar.text("This is single-line snackbar.")
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Mobile)
+                                    .text("This is single-line snackbar.")
 									.actionText("CLOSE")
-									.singleLine(true)
-									.width(SnackBar.MATCH_PARENT)
-									.minWidth(0)
-									.maxWidth(0)
-									.height(ThemeUtil.dpToPx(getActivity(), 48))
-									.marginLeft(0)
-									.marginBottom(0)
-									.verticalPadding(0)
-									.show(getActivity());
+                                    .duration(0)
+									.show();
 							break;
 						case R.id.snackbar_bt_mobile_multi:
-							mSnackBar.text("This is multi-line snackbar.\nIt will auto-close after 5s.")
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Mobile_MultiLine)
+                                    .text("This is multi-line snackbar.\nIt will auto-close after 5s.")
 									.actionText(null)
-									.singleLine(false)
-									.maxLines(2)
-									.width(SnackBar.MATCH_PARENT)
-									.minWidth(0)
-									.maxWidth(0)
-									.height(SnackBar.WRAP_CONTENT)
-									.marginLeft(0)
-									.marginBottom(0)
-									.verticalPadding(ThemeUtil.dpToPx(getActivity(), 12))
 									.duration(5000)
-									.show(getActivity());
+									.show();
 							break;
 						case R.id.snackbar_bt_tablet_single:
-							mSnackBar.text("This is single-line snackbar.")
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet)
+                                    .text("This is single-line snackbar.")
 									.actionText("CLOSE")
-									.singleLine(true)
-									.width(SnackBar.WRAP_CONTENT)
-									.minWidth(ThemeUtil.dpToPx(getActivity(), 288))
-									.maxWidth(ThemeUtil.dpToPx(getActivity(), 568))
-									.height(ThemeUtil.dpToPx(getActivity(), 48))
-									.marginLeft(ThemeUtil.dpToPx(getActivity(), 16))
-									.marginBottom(ThemeUtil.dpToPx(getActivity(), 16))
-									.verticalPadding(0)
-									.show(getActivity());
+                                    .duration(0)
+									.show();
 							break;
 						case R.id.snackbar_bt_tablet_multi:
-							mSnackBar.text("This is multi-line snackbar.\nIt will auto-close after 5s.")
-									.actionText(null)
-									.singleLine(false)
-									.maxLines(2)
-									.width(SnackBar.WRAP_CONTENT)
-									.minWidth(ThemeUtil.dpToPx(getActivity(), 288))
-									.maxWidth(ThemeUtil.dpToPx(getActivity(), 568))
-									.height(SnackBar.WRAP_CONTENT)
-									.marginLeft(ThemeUtil.dpToPx(getActivity(), 16))
-									.marginBottom(ThemeUtil.dpToPx(getActivity(), 16))
-									.verticalPadding(ThemeUtil.dpToPx(getActivity(), 12))
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet_MultiLine)
+                                    .text("This is multi-line snackbar.\nIt will auto-close after 5s.")
+                                    .actionText(null)
 									.duration(5000)
-									.show(getActivity());
+									.show();
 							break;
 					}
 				}				
@@ -107,7 +78,7 @@ public class SnackbarFragment extends Fragment{
 		bt_tablet_single.setOnClickListener(listener);
 		bt_tablet_multi.setOnClickListener(listener);
 		
-		mSnackBar = SnackBar.make(getActivity()).applyStyle(R.style.SnackBar);
+		mSnackBar = ((MainActivity)getActivity()).getSnackBar();
 				
 		return v;
 	}

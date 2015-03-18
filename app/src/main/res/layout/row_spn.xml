@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>    
-    <com.rey.material.view.TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.rey.material.widget.TextView xmlns:android="http://schemas.android.com/apk/res/android"
     	xmlns:app="http://schemas.android.com/apk/res-auto"
 	    android:id="@+id/row_spn_tv"
 	    android:layout_width="match_parent"

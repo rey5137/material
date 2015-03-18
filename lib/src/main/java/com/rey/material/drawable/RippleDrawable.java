@@ -16,9 +16,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -70,23 +72,27 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	private static final int STATE_PRESS = 1;
 	private static final int STATE_HOVER = 2;
 	private static final int STATE_RELEASE_ON_HOLD = 3;	
-	private static final int STATE_RELEASE = 4;	
-		
+	private static final int STATE_RELEASE = 4;
+
+    private static final int TYPE_TOUCH_MATCH_VIEW = -1;
 	private static final int TYPE_TOUCH = 0;
 	private static final int TYPE_WAVE = 1;
 	
 	private static final float[] GRADIENT_STOPS = new float[]{0f, 0.99f, 1f};
 	private static final float GRADIENT_RADIUS = 16;
 		
-	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int maxTouchRadius, int touchAnimDuration, int touchColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
+	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int maxRippleRadius, int rippleAnimDuration, int rippleColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
 		mBackgroundDrawable = backgroundDrawable;
 		mBackgroundAnimDuration = backgroundAnimDuration;
 		mBackgroundColor = backgroundColor;
 		
 		mRippleType = rippleType;
-		mMaxRippleRadius = maxTouchRadius;
-		mRippleAnimDuration = touchAnimDuration;
-		mRippleColor = touchColor;
+		mMaxRippleRadius = maxRippleRadius;
+		mRippleAnimDuration = rippleAnimDuration;
+		mRippleColor = rippleColor;
+
+        if(mRippleType == TYPE_TOUCH && mMaxRippleRadius <= 0)
+            mRippleType = TYPE_TOUCH_MATCH_VIEW;
 		
 		mInInterpolator = inInterpolator;
 		mOutInterpolator = outInterpolator;
@@ -205,6 +211,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		
 		switch (mRippleType) {
 			case TYPE_TOUCH:
+            case TYPE_TOUCH_MATCH_VIEW:
 				drawTouch(canvas);
 				break;
 			case TYPE_WAVE:
@@ -261,7 +268,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
 				if(mState == STATE_OUT || mState == STATE_RELEASE){
-					if(mRippleType == TYPE_WAVE)
+					if(mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
 						mMaxRippleRadius = getMaxRippleRadius(event.getX(), event.getY());
 					
 					setRippleEffect(event.getX(), event.getY(), 0);
@@ -276,7 +283,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			case MotionEvent.ACTION_CANCEL:	
 				if(mState != STATE_OUT){
 					if(mState == STATE_HOVER){
-						if(mRippleType == TYPE_WAVE)
+						if(mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
 							setRippleEffect(mRipplePoint.x, mRipplePoint.y, 0);
 						
 						setRippleState(STATE_RELEASE);
@@ -337,6 +344,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	    public void run() {
 	    	switch (mRippleType) {
 				case TYPE_TOUCH:
+                case TYPE_TOUCH_MATCH_VIEW:
 					updateTouch();
 					break;
 				case TYPE_WAVE:
@@ -472,17 +480,29 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		private int mMaskBottom;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, 0, defStyle);
-			
-			int resId = a.getResourceId(R.styleable.RippleDrawable_rd_background, 0);
-			if(resId != 0)
-				backgroundDrawable(context.getResources().getDrawable(resId));			
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleDrawable, defStyleAttr, defStyleRes);
+
+            int type = ThemeUtil.getType(a, R.styleable.RippleDrawable_rd_background);
+            int resId;
+            if(type >= TypedValue.TYPE_FIRST_COLOR_INT && type <= TypedValue.TYPE_LAST_COLOR_INT)
+                backgroundDrawable(new ColorDrawable(a.getColor(R.styleable.RippleDrawable_rd_background, 0)));
+            else if ((resId = a.getResourceId(R.styleable.RippleDrawable_rd_background, 0)) != 0)
+                backgroundDrawable(context.getResources().getDrawable(resId));
+
 			backgroundColor(a.getColor(R.styleable.RippleDrawable_rd_backgroundColor, 0));
 			backgroundAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_backgroundAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			rippleType(a.getInteger(R.styleable.RippleDrawable_rd_rippleType, RippleDrawable.TYPE_TOUCH));
-			maxRippleRadius(a.getDimensionPixelSize(R.styleable.RippleDrawable_rd_maxRippleRadius, ThemeUtil.dpToPx(context, 48)));
+            type = ThemeUtil.getType(a, R.styleable.RippleDrawable_rd_maxRippleRadius);
+            if(type >= TypedValue.TYPE_FIRST_INT && type <= TypedValue.TYPE_LAST_INT)
+                maxRippleRadius(a.getInteger(R.styleable.RippleDrawable_rd_maxRippleRadius, -1));
+            else
+			    maxRippleRadius(a.getDimensionPixelSize(R.styleable.RippleDrawable_rd_maxRippleRadius, ThemeUtil.dpToPx(context, 48)));
 			rippleColor(a.getColor(R.styleable.RippleDrawable_rd_rippleColor, ThemeUtil.colorControlHighlight(context, 0)));
 			rippleAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_rippleAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			if((resId = a.getResourceId(R.styleable.RippleDrawable_rd_inInterpolator, 0)) != 0)

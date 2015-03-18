@@ -285,9 +285,13 @@ public class RadioButtonDrawable extends Drawable implements Animatable {
 		private ColorStateList mStrokeColor;
 		
 		public Builder(){}
-		
-		public Builder(Context context, AttributeSet attrs, int defStyle){
-			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RadioButtonDrawable, 0, defStyle);
+
+        public Builder(Context context, int defStyleRes){
+            this(context, null, 0, defStyleRes);
+        }
+
+		public Builder(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RadioButtonDrawable, defStyleAttr, defStyleRes);
 			
 			width(a.getDimensionPixelSize(R.styleable.RadioButtonDrawable_rbd_width, ThemeUtil.dpToPx(context, 32)));
 			height(a.getDimensionPixelSize(R.styleable.RadioButtonDrawable_rbd_height, ThemeUtil.dpToPx(context, 32)));

@@ -19,6 +19,8 @@ import android.view.animation.Interpolator;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ViewUtil;
 
+import java.util.Arrays;
+
 public class RevealDrawable extends Drawable implements Animatable {
 	
 	private boolean mRunning = false;
@@ -159,14 +161,26 @@ public class RevealDrawable extends Drawable implements Animatable {
 		changeColor(new ColorChangeTask(color, duration, interpolator, x, y, out));
 	}
 	
-	public void changeColor(ColorChangeTask... tasks){		
-		for(int i = 0; i < tasks.length; i++)
-			if(tasks[i].color != mCurColor){
-				mCurTask = i;
-				mTasks = tasks;
-				start();
-				break;
-			}
+	public void changeColor(ColorChangeTask... tasks){
+        synchronized (RevealDrawable.class){
+            if(!isRunning()){
+                for(int i = 0; i < tasks.length; i++)
+                    if(tasks[i].color != mCurColor){
+                        mCurTask = i;
+                        mTasks = tasks;
+                        start();
+                        break;
+                    }
+            }
+            else{
+                int curLength = mTasks.length - mCurTask;
+                ColorChangeTask[] newTasks = new ColorChangeTask[curLength + tasks.length];
+                System.arraycopy(mTasks, mCurTask, newTasks, 0, curLength);
+                System.arraycopy(tasks, 0, newTasks, curLength, tasks.length);
+                mTasks = newTasks;
+                mCurTask = 0;
+            }
+        }
 	}
 
 	@Override
@@ -239,20 +253,21 @@ public class RevealDrawable extends Drawable implements Animatable {
 		
 	private void update(){
 		long curTime = SystemClock.uptimeMillis();
-		mAnimProgress = Math.min(1f, (float)(curTime - mStartTime) / mTasks[mCurTask].duration);	
-		
-		if(mAnimProgress == 1f){
-			setCurColor(mTasks[mCurTask].color);
-			
-			for(mCurTask = mCurTask + 1; mCurTask < mTasks.length; mCurTask++)
-				if(mTasks[mCurTask].color != mCurColor){
-					resetAnimation();
-					break;
-				}
-			
-			if(mCurTask == mTasks.length)
-				stop();
-		}
+        synchronized (RevealDrawable.class) {
+            mAnimProgress = Math.min(1f, (float) (curTime - mStartTime) / mTasks[mCurTask].duration);
+
+            if (mAnimProgress == 1f) {
+                setCurColor(mTasks[mCurTask].color);
+                for (mCurTask = mCurTask + 1; mCurTask < mTasks.length; mCurTask++)
+                    if (mTasks[mCurTask].color != mCurColor) {
+                        resetAnimation();
+                        break;
+                    }
+
+                if (mCurTask == mTasks.length)
+                    stop();
+            }
+        }
 		
 		invalidateSelf();
 		

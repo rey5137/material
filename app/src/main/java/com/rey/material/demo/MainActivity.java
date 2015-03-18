@@ -1,20 +1,17 @@
 package com.rey.material.demo;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -23,11 +20,19 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.rey.material.drawable.NavigationDrawerDrawable;
+import com.rey.material.app.ToolbarManager;
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.view.TabPageIndicator;
+import com.rey.material.widget.SnackBar;
+import com.rey.material.widget.TabPageIndicator;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -38,10 +43,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private DrawerAdapter mDrawerAdapter;
 	private PagerAdapter mPagerAdapter;
 	
-	private Toolbar toolbar;
-	private NavigationDrawerDrawable mNavigatorDrawable;
-	
-	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS};
+	private Toolbar mToolbar;
+    private ToolbarManager mToolbarManager;
+    private SnackBar mSnackBar;
+
+	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,43 +58,33 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		dl_navigator = (DrawerLayout)findViewById(R.id.main_dl);
 		fl_drawer = (FrameLayout)findViewById(R.id.main_fl_drawer);
 		lv_drawer = (ListView)findViewById(R.id.main_lv_drawer);
-		toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
 		vp = (ViewPager)findViewById(R.id.main_vp);
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
-		
-		setSupportActionBar(toolbar);
-		mNavigatorDrawable = new NavigationDrawerDrawable.Builder(this, null, R.style.NavigationDrawerDrawable).build();
-		toolbar.setNavigationIcon(mNavigatorDrawable);
-		
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dl_navigator.openDrawer(fl_drawer);
-			}
-			
-		});
-		
-		dl_navigator.setDrawerListener(new DrawerLayout.DrawerListener() {
-			
-			@Override
-			public void onDrawerStateChanged(int state) {}
-			
-			@Override
-			public void onDrawerSlide(View v, float factor) {				
-				if(dl_navigator.isDrawerOpen(GravityCompat.START))
-					mNavigatorDrawable.setIconState(NavigationDrawerDrawable.STATE_DRAWER, 1f - factor);
-				else
-					mNavigatorDrawable.setIconState(NavigationDrawerDrawable.STATE_ARROW, factor);
-			}
-			
-			@Override
-			public void onDrawerOpened(View v) {}
-			
-			@Override
-			public void onDrawerClosed(View v) {}
-			
-		});
+        mSnackBar = (SnackBar)findViewById(R.id.main_sn);
+
+        mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
+            @Override
+            public void onNavigationClick() {
+                if(mToolbarManager.getCurrentGroup() != 0)
+                    mToolbarManager.setCurrentGroup(0);
+                else
+                    dl_navigator.openDrawer(Gravity.START);
+            }
+
+            @Override
+            public boolean isBackState() {
+                return super.isBackState() || mToolbarManager.getCurrentGroup() != 0;
+            }
+
+            @Override
+            protected boolean shouldSyncDrawerSlidingProgress() {
+                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == 0;
+            }
+
+        });
+        mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();
 		lv_drawer.setAdapter(mDrawerAdapter);		
@@ -101,7 +97,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 			@Override
 			public void onPageSelected(int position) {
-				mDrawerAdapter.setSelected(mItems[position]);				
+				mDrawerAdapter.setSelected(mItems[position]);
+                mSnackBar.dismiss();
 			}
 			
 			@Override
@@ -111,31 +108,60 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			public void onPageScrollStateChanged(int state) {}
 			
 		});
-		
-		vp.setCurrentItem(2);
-		
-//		FloatingActionButton fab = FloatingActionButton.make(this, R.style.FloatingActionButton);
-//		fab.show(this, 100, 100, Gravity.LEFT);		
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		new MenuInflater(this).inflate(R.menu.menu_main, menu);
-		return true;
+
+		vp.setCurrentItem(0);
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+        mToolbarManager.createMenu(R.menu.menu_main);
+		return true;
+	}
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mToolbarManager.onPrepareMenu();
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.tb_contextual:
+                mToolbarManager.setCurrentGroup(R.id.tb_group_contextual);
+                break;
+            case R.id.tb_done:
+            case R.id.tb_done_all:
+                mToolbarManager.setCurrentGroup(0);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onToolbarGroupChanged(int oldGroupId, int groupId) {
+        mToolbarManager.notifyNavigationStateChanged();
+    }
+
+    @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		vp.setCurrentItem(position);
 		dl_navigator.closeDrawer(fl_drawer);
 	}
-		
-	public enum Tab {
+
+    public SnackBar getSnackBar(){
+        return mSnackBar;
+    }
+
+
+
+    public enum Tab {
 	    PROGRESS ("Progresses"),
 	    BUTTONS ("Buttons"),
 	    SWITCHES ("Switches"),
 	    TEXTFIELDS ("Textfields"),
-	    SNACKBARS ("Snackbars");
+	    SNACKBARS ("Snackbars"),
+        DIALOGS ("Dialogs");
 	    private final String name;       
 
 	    private Tab(String s) {
@@ -240,6 +266,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.TEXTFIELDS, fragment);
     					else if(fragment instanceof SnackbarFragment)
     						setFragment(Tab.SNACKBARS, fragment);
+                        else if(fragment instanceof DialogsFragment)
+                            setFragment(Tab.DIALOGS, fragment);
     				}
     			}
     		}
@@ -273,6 +301,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					case SNACKBARS:
 						mFragments[position] = SnackbarFragment.newInstance();
 						break;
+                    case DIALOGS:
+                        mFragments[position] = DialogsFragment.newInstance();
+                        break;
 				}
 			}
 						
