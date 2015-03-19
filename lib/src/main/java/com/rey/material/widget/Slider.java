@@ -16,6 +16,7 @@ import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
@@ -27,8 +28,9 @@ public class Slider extends View{
     private Paint mPaint;
     private RectF mDrawRect;
     private RectF mTempRect;
-    private Path mLeftPath;
-    private Path mRightPath;
+    private Path mLeftRailPath;
+    private Path mRightRailPath;
+    private Path mMarkPath;
 
     private int mMinValue;
     private int mMaxValue;
@@ -52,8 +54,11 @@ public class Slider extends View{
     private PointF mMemoPoint;
     private boolean mIsDragging;
     private float mThumbCurrentRadius;
+    private float mThumbFillPercent;
 
     private ThumbRadiusAnimator mThumbRadiusAnimator;
+    private ThumbStrokeAnimator mThumbStrokeAnimator;
+    private ThumbMoveAnimator mThumbMoveAnimator;
 
     public Slider(Context context) {
         super(context);
@@ -83,7 +88,7 @@ public class Slider extends View{
 
         mMinValue = 0;
         mMaxValue = 100;
-        mThumbPosition = 0f;
+        mThumbPosition = 0.5f;
 
         mContinuosMode = true;
 
@@ -93,22 +98,25 @@ public class Slider extends View{
         mStrokeCap = Paint.Cap.SQUARE;
         mThumbBorderSize = ThemeUtil.dpToPx(context, 2);
         mThumbRadius = ThemeUtil.dpToPx(context, 9);
-        mTravelAnimationDuration = 1000;
+        mTravelAnimationDuration = 800;
         mTransformAnimationDuration = 500;
         mInterpolator = new DecelerateInterpolator();
 
+        mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
         mThumbCurrentRadius = mThumbRadius;
         mThumbFocusRadius = mThumbRadius * 2;
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mMemoPoint = new PointF();
 
         mThumbRadiusAnimator = new ThumbRadiusAnimator();
+        mThumbStrokeAnimator = new ThumbStrokeAnimator();
+        mThumbMoveAnimator = new ThumbMoveAnimator();
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mDrawRect = new RectF();
         mTempRect = new RectF();
-        mLeftPath = new Path();
-        mRightPath = new Path();
+        mLeftRailPath = new Path();
+        mRightRailPath = new Path();
     }
 
     public int getValue(){
@@ -116,7 +124,26 @@ public class Slider extends View{
     }
 
     public float getExactValue(){
-        return (mMaxValue - mMinValue) * mThumbPosition + mMinValue;
+        return (mMaxValue - mMinValue) * getPosition() + mMinValue;
+    }
+
+    public float getPosition(){
+        return mThumbMoveAnimator.isRunning() ? mThumbMoveAnimator.getPosition() : mThumbPosition;
+    }
+
+    public void setPosition(float pos, boolean animation){
+        if(animation)
+            mThumbMoveAnimator.startAnimation(pos);
+        else if (mThumbPosition != pos){
+            mThumbPosition = pos;
+            mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
+            invalidate();
+        }
+    }
+
+    public void setValue(float value, boolean animation){
+        value = Math.min(mMaxValue, Math.max(value, mMinValue));
+        setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
     }
 
     @Override
@@ -150,12 +177,12 @@ public class Slider extends View{
 
     @Override
     public int getSuggestedMinimumWidth() {
-        return (mThumbFocusRadius * 2 + mThumbBorderSize) * 2 + getPaddingLeft() + getPaddingRight();
+        return mThumbFocusRadius * 4 + getPaddingLeft() + getPaddingRight();
     }
 
     @Override
     public int getSuggestedMinimumHeight() {
-        return mThumbFocusRadius * 2 + mThumbBorderSize + getPaddingTop() + getPaddingBottom();
+        return mThumbFocusRadius * 2 + getPaddingTop() + getPaddingBottom();
     }
 
     @Override
@@ -163,7 +190,7 @@ public class Slider extends View{
         mDrawRect.left = getPaddingLeft();
         mDrawRect.right = w - getPaddingRight();
 
-        int height = mThumbFocusRadius * 2 + mThumbBorderSize;
+        int height = mThumbFocusRadius * 2;
         int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
         switch (align) {
@@ -183,11 +210,10 @@ public class Slider extends View{
     }
 
     private boolean isThumbHit(float x, float y){
-        float outerRadius = mThumbRadius + mThumbBorderSize / 2f;
-        float cx = (mDrawRect.width() - outerRadius * 2) * mThumbPosition + mDrawRect.left + outerRadius;
+        float cx = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
         float cy = mDrawRect.centerY();
 
-        return x >= cx - outerRadius && x <= cx + outerRadius && y >= cy - outerRadius && y < cy + outerRadius;
+        return x >= cx - mThumbRadius && x <= cx + mThumbRadius && y >= cy - mThumbRadius && y < cy + mThumbRadius;
     }
 
     private double distance(float x1, float y1, float x2, float y2){
@@ -200,15 +226,16 @@ public class Slider extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(event.getX(), event.getY());
+                mIsDragging = isThumbHit(event.getX(), event.getY()) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(event.getX(), event.getY());
                 if(mIsDragging)
-                    mThumbRadiusAnimator.startAnimation(mThumbFocusRadius);
+                    mThumbRadiusAnimator.startAnimation(mContinuosMode ? 0 : mThumbFocusRadius);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
-                    float offset = (event.getX() - mMemoPoint.x) / (mDrawRect.width() - mThumbRadius * 2 - mThumbBorderSize);
+                    float offset = (event.getX() - mMemoPoint.x) / (mDrawRect.width() - mThumbRadius * 2);
                     mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
+                    mThumbStrokeAnimator.startAnimation(mThumbPosition == 0 ? 0 : 1);
                     mMemoPoint.x = event.getX();
                     invalidate();
                 }
@@ -219,10 +246,9 @@ public class Slider extends View{
                     mIsDragging = false;
                 }
                 else if(distance(mMemoPoint.x, mMemoPoint.y, event.getX(), event.getY()) <= mTouchSlop){
-                    mThumbPosition = Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left - mThumbRadius - mThumbBorderSize / 2f) / (mDrawRect.width() - mThumbRadius * 2 - mThumbBorderSize)));
-                    invalidate();
+                    float position = Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left - mThumbRadius) / (mDrawRect.width() - mThumbRadius * 2)));
+                    mThumbMoveAnimator.startAnimation(position);
                 }
-
                 break;
             case MotionEvent.ACTION_CANCEL:
                 if(mIsDragging) {
@@ -235,91 +261,193 @@ public class Slider extends View{
         return true;
     }
 
-    private void getPath(float x, float y, float radius){
+    private void getRailPath(float x, float y, float radius){
         float halfStroke = mStrokeSize / 2f;
 
-        mLeftPath.reset();
-        mRightPath.reset();
+        mLeftRailPath.reset();
+        mRightRailPath.reset();
 
-        if(mStrokeCap != Paint.Cap.ROUND){
-            mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-            float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
+        if(radius < halfStroke || radius < 1f){
+            if(mStrokeCap != Paint.Cap.ROUND){
+                if(x - radius > mDrawRect.left){
+                    mLeftRailPath.moveTo(mDrawRect.left, y - halfStroke);
+                    mLeftRailPath.lineTo(x, y - halfStroke);
+                    mLeftRailPath.lineTo(x, y + halfStroke);
+                    mLeftRailPath.lineTo(mDrawRect.left, y + halfStroke);
+                    mLeftRailPath.close();
+                }
 
-            if(x - radius > mDrawRect.left){
-                mLeftPath.moveTo(mDrawRect.left, y - halfStroke);
-                mLeftPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-                mLeftPath.lineTo(mDrawRect.left, y + halfStroke);
-                mLeftPath.close();
+                if(x + radius < mDrawRect.right){
+                    mRightRailPath.moveTo(mDrawRect.right, y + halfStroke);
+                    mRightRailPath.lineTo(x, y + halfStroke);
+                    mRightRailPath.lineTo(x, y - halfStroke);
+                    mRightRailPath.lineTo(mDrawRect.right, y - halfStroke);
+                    mRightRailPath.close();
+                }
             }
+            else{
+                if(x - radius > mDrawRect.left){
+                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
+                    mLeftRailPath.arcTo(mTempRect, 90, 180);
+                    mLeftRailPath.lineTo(x, y - halfStroke);
+                    mLeftRailPath.lineTo(x, y + halfStroke);
+                    mLeftRailPath.close();
+                }
 
-            if(x + radius < mDrawRect.right){
-                mRightPath.moveTo(mDrawRect.right, y - halfStroke);
-                mRightPath.arcTo(mTempRect, -angle, angle * 2);
-                mRightPath.lineTo(mDrawRect.right, y + halfStroke);
-                mRightPath.close();
+                if(x + radius < mDrawRect.right){
+                    mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
+                    mRightRailPath.arcTo(mTempRect, 270, 180);
+                    mRightRailPath.lineTo(x, y + halfStroke);
+                    mRightRailPath.lineTo(x, y - halfStroke);
+                    mRightRailPath.close();
+                }
             }
         }
         else{
-            float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
-
-            if(x - radius > mDrawRect.left){
-                float angle2 = (float)(Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
-
-                mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
-                mLeftPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
-
+            if(mStrokeCap != Paint.Cap.ROUND){
                 mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-                mLeftPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-                mLeftPath.close();
+                float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
+
+                if(x - radius > mDrawRect.left){
+                    mLeftRailPath.moveTo(mDrawRect.left, y - halfStroke);
+                    mLeftRailPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+                    mLeftRailPath.lineTo(mDrawRect.left, y + halfStroke);
+                    mLeftRailPath.close();
+                }
+
+                if(x + radius < mDrawRect.right){
+                    mRightRailPath.moveTo(mDrawRect.right, y - halfStroke);
+                    mRightRailPath.arcTo(mTempRect, -angle, angle * 2);
+                    mRightRailPath.lineTo(mDrawRect.right, y + halfStroke);
+                    mRightRailPath.close();
+                }
             }
+            else{
+                float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
 
-            if(x + radius < mDrawRect.right){
-                float angle2 = (float)Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
-                mRightPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
+                if(x - radius > mDrawRect.left){
+                    float angle2 = (float)(Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
 
-                angle2 = (float)(angle2 / Math.PI * 180);
-                mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
-                mRightPath.arcTo(mTempRect, angle2, -angle2 * 2);
+                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
+                    mLeftRailPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
 
-                mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-                mRightPath.arcTo(mTempRect, -angle, angle * 2);
-                mRightPath.close();
+                    mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
+                    mLeftRailPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+                    mLeftRailPath.close();
+                }
+
+                if(x + radius < mDrawRect.right){
+                    float angle2 = (float)Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
+                    mRightRailPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
+
+                    angle2 = (float)(angle2 / Math.PI * 180);
+                    mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
+                    mRightRailPath.arcTo(mTempRect, angle2, -angle2 * 2);
+
+                    mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
+                    mRightRailPath.arcTo(mTempRect, -angle, angle * 2);
+                    mRightRailPath.close();
+                }
             }
         }
+    }
+
+    private Path getMarkPath(Path path, float cx, float cy, float radius, float factor){
+        if(path == null)
+            path = new Path();
+        else
+            path.reset();
+
+        float x1 = cx - radius;
+        float y1 = cy;
+        float x2 = cx + radius;
+        float y2 = cy;
+        float x3 = cx;
+        float y3 = cy + radius;
+
+        float nCx = cx;
+        float nCy = cy - radius * factor;
+
+        // calculate first arc
+        float angle = (float)(Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
+        float nRadius = (float)distance(nCx, nCy, x1, y1);
+        mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
+        path.moveTo(x1, y1);
+        path.arcTo(mTempRect, 180 - angle, 180 + angle * 2);
+
+        if(factor > 0.9f)
+            path.lineTo(x3, y3);
+        else{
+            // find center point for second arc
+            float x4 = (x2 + x3) / 2;
+            float y4 = (y2 + y3) / 2;
+
+            double d1 = distance(x2, y2, x4, y4);
+            double d2 = d1 / Math.tan(Math.PI / 2 * (1f - factor) / 2);
+
+            nCx = (float)(x4 - Math.cos(Math.PI / 4) * d2);
+            nCy = (float)(y4 - Math.sin(Math.PI / 4) * d2);
+
+            // calculate second arc
+            angle = (float)(Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
+            float angle2 = (float)(Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
+            nRadius = (float)distance(nCx, nCy, x2, y2);
+            mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
+            path.arcTo(mTempRect, angle, angle2 - angle);
+
+            // calculate third arc
+            nCx = cx * 2 - nCx;
+            angle = (float)(Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
+            angle2 = (float)(Math.atan2(y1 - nCy, x1 - nCx) * 180 / Math.PI);
+            mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
+            path.arcTo(mTempRect, angle + (float)Math.PI / 4, angle2 - angle);
+        }
+
+        path.close();
+
+        return path;
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
-        float outerBaseRadius = mThumbRadius + mThumbBorderSize / 2f;
-        float x = (mDrawRect.width() - outerBaseRadius * 2) * mThumbPosition + mDrawRect.left + outerBaseRadius;
+        float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
         float y = mDrawRect.centerY();
 
-        float outerRadius = mThumbCurrentRadius + mThumbBorderSize / 2f;
-
-        getPath(x, y, outerRadius);
-        mPaint.setColor(isEnabled() ? mPrimaryColor : mSecondaryColor);
+        getRailPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
-        canvas.drawPath(mLeftPath, mPaint);
         mPaint.setColor(mSecondaryColor);
-        canvas.drawPath(mRightPath, mPaint);
+        canvas.drawPath(mRightRailPath, mPaint);
+        mPaint.setColor(ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent));
+        canvas.drawPath(mLeftRailPath, mPaint);
 
-        float radius;
+        if(mContinuosMode){
+            float factor = 1f - mThumbCurrentRadius / mThumbRadius;
 
-        if(mThumbPosition == 0f){
-            radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
-            mPaint.setColor(mSecondaryColor);
-            mPaint.setStrokeWidth(mThumbBorderSize);
-            mPaint.setStyle(Paint.Style.STROKE);
+            mMarkPath = getMarkPath(mMarkPath, x, y, mThumbRadius, factor);
+            mPaint.setStyle(Paint.Style.FILL);
+            int saveCount = canvas.save();
+            canvas.translate(0, -mThumbRadius * 2 * factor);
+            canvas.drawPath(mMarkPath, mPaint);
+            canvas.restoreToCount(saveCount);
+
+            float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
+            if(radius > 0)
+                canvas.drawCircle(x, y, radius, mPaint);
         }
         else{
-            radius = isEnabled() ? outerRadius : outerRadius - mThumbBorderSize;
-            mPaint.setColor(isEnabled() ? mPrimaryColor : mSecondaryColor);
-            mPaint.setStyle(Paint.Style.FILL);
+            float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
+            if(mThumbFillPercent == 1)
+                mPaint.setStyle(Paint.Style.FILL);
+            else{
+                float strokeWidth = (radius - mThumbBorderSize) * mThumbFillPercent + mThumbBorderSize;
+                radius = radius - strokeWidth / 2f;
+                mPaint.setStyle(Paint.Style.STROKE);
+                mPaint.setStrokeWidth(strokeWidth);
+            }
+            canvas.drawCircle(x, y, radius, mPaint);
         }
-
-        canvas.drawCircle(x, y, radius, mPaint);
     }
 
     class ThumbRadiusAnimator implements Runnable{
@@ -335,6 +463,9 @@ public class Slider extends View{
         }
 
         public void startAnimation(int radius) {
+            if(mThumbCurrentRadius == radius)
+                return;
+
             mRadius = radius;
 
             if(getHandler() != null){
@@ -373,4 +504,138 @@ public class Slider extends View{
 
     }
 
+    class ThumbStrokeAnimator implements Runnable{
+
+        boolean mRunning = false;
+        long mStartTime;
+        float mStartFillPercent;
+        int mFillPercent;
+
+        public void resetAnimation(){
+            mStartTime = SystemClock.uptimeMillis();
+            mStartFillPercent = mThumbFillPercent;
+        }
+
+        public void startAnimation(int fillPercent) {
+            if(mThumbFillPercent == fillPercent)
+                return;
+
+            mFillPercent = fillPercent;
+
+            if(getHandler() != null){
+                resetAnimation();
+                mRunning = true;
+                getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            }
+            else
+                mThumbFillPercent = mFillPercent;
+
+            invalidate();
+        }
+
+        public void stopAnimation() {
+            mRunning = false;
+            getHandler().removeCallbacks(this);
+            invalidate();
+        }
+
+        @Override
+        public void run() {
+            long curTime = SystemClock.uptimeMillis();
+            float progress = Math.min(1f, (float)(curTime - mStartTime) / mTransformAnimationDuration);
+            float value = mInterpolator.getInterpolation(progress);
+
+            mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+
+            if(progress == 1f)
+                stopAnimation();
+
+            if(mRunning)
+                getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+
+            invalidate();
+        }
+
+    }
+
+    class ThumbMoveAnimator implements Runnable{
+
+        boolean mRunning = false;
+        long mStartTime;
+        float mStartFillPercent;
+        float mStartRadius;
+        float mStartPosition;
+        float mPosition;
+        float mFillPercent;
+        int mDuration;
+
+        public boolean isRunning(){
+            return mRunning;
+        }
+
+        public float getPosition(){
+            return mPosition;
+        }
+
+        public void resetAnimation(){
+            mStartTime = SystemClock.uptimeMillis();
+            mStartPosition = mThumbPosition;
+            mStartFillPercent = mThumbFillPercent;
+            mStartRadius = mThumbCurrentRadius;
+            mFillPercent = mPosition == 0 ? 0 : 1;
+            mDuration = (int)(mTravelAnimationDuration * Math.abs(mPosition - mThumbPosition));
+        }
+
+        public void startAnimation(float position) {
+            if(mThumbPosition == position)
+                return;
+
+            mPosition = position;
+
+            if(getHandler() != null){
+                resetAnimation();
+                mRunning = true;
+                getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            }
+            else {
+                mThumbPosition = position;
+                mThumbCurrentRadius = mThumbRadius;
+                mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
+            }
+
+            invalidate();
+        }
+
+        public void stopAnimation() {
+            mRunning = false;
+            getHandler().removeCallbacks(this);
+            invalidate();
+        }
+
+        @Override
+        public void run() {
+            long curTime = SystemClock.uptimeMillis();
+            float progress = Math.min(1f, (float)(curTime - mStartTime) / mDuration);
+            float value = mInterpolator.getInterpolation(progress);
+
+            mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
+            mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+
+            if(progress < 0.2)
+                mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);
+            else if(progress < 0.8)
+                mThumbCurrentRadius = mThumbRadius + mThumbBorderSize;
+            else
+                mThumbCurrentRadius = mThumbRadius + mThumbBorderSize * (5f - progress * 5);
+
+            if(progress == 1f)
+                stopAnimation();
+
+            if(mRunning)
+                getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+
+            invalidate();
+        }
+
+    }
 }

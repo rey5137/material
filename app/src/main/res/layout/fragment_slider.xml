@@ -25,7 +25,7 @@
             style="@style/CheckBoxDrawable"
             android:id="@+id/slider_sl1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:gravity="center"
             android:padding="16dp"/>
 	    
