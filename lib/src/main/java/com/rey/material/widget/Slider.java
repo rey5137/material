@@ -5,7 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -34,8 +36,9 @@ public class Slider extends View{
 
     private int mMinValue;
     private int mMaxValue;
+    private int mStepValue;
 
-    private boolean mContinuosMode;
+    private boolean mContinuousMode;
 
     private int mPrimaryColor;
     private int mSecondaryColor;
@@ -45,6 +48,9 @@ public class Slider extends View{
     private int mThumbRadius;
     private int mThumbFocusRadius;
     private float mThumbPosition;
+    private Typeface mTypeface;
+    private int mTextSize;
+    private int mTextColor;
     private int mGravity = Gravity.CENTER;
     private int mTravelAnimationDuration;
     private int mTransformAnimationDuration;
@@ -55,6 +61,9 @@ public class Slider extends View{
     private boolean mIsDragging;
     private float mThumbCurrentRadius;
     private float mThumbFillPercent;
+    private int mTextHeight;
+    private int mMemoValue;
+    private String mValueText;
 
     private ThumbRadiusAnimator mThumbRadiusAnimator;
     private ThumbStrokeAnimator mThumbStrokeAnimator;
@@ -88,9 +97,10 @@ public class Slider extends View{
 
         mMinValue = 0;
         mMaxValue = 100;
+        mStepValue = 10;
         mThumbPosition = 0.5f;
 
-        mContinuosMode = true;
+        mContinuousMode = true;
 
         mPrimaryColor = 0xFF4557B7;
         mSecondaryColor = 0xFFBFBFBF;
@@ -98,9 +108,13 @@ public class Slider extends View{
         mStrokeCap = Paint.Cap.SQUARE;
         mThumbBorderSize = ThemeUtil.dpToPx(context, 2);
         mThumbRadius = ThemeUtil.dpToPx(context, 9);
-        mTravelAnimationDuration = 800;
-        mTransformAnimationDuration = 500;
+        mTravelAnimationDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+        mTransformAnimationDuration = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
         mInterpolator = new DecelerateInterpolator();
+        mTextSize = ThemeUtil.spToPx(context, 12);
+        mTextColor = 0xFFFFFFFF;
+        mTypeface = Typeface.DEFAULT;
+
 
         mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
         mThumbCurrentRadius = mThumbRadius;
@@ -113,14 +127,44 @@ public class Slider extends View{
         mThumbMoveAnimator = new ThumbMoveAnimator();
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setTextSize(mTextSize);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.setTypeface(mTypeface);
         mDrawRect = new RectF();
         mTempRect = new RectF();
         mLeftRailPath = new Path();
         mRightRailPath = new Path();
+
+        measureText();
+    }
+
+    private void measureText(){
+        Rect temp = new Rect();
+        String text = String.valueOf(mMaxValue);
+        mPaint.setTextSize(mTextSize);
+        float width = mPaint.measureText(text);
+        float maxWidth = (float)(mThumbRadius * Math.sqrt(2) * 2 - ThemeUtil.dpToPx(getContext(), 8));
+        if(width > maxWidth){
+            float textSize = mTextSize * maxWidth / width;
+            mPaint.setTextSize(textSize);
+        }
+
+        mPaint.getTextBounds(text, 0, text.length(), temp);
+        mTextHeight = temp.height();
+    }
+
+    private String getValueText(){
+        int value = getValue();
+        if(mValueText == null || mMemoValue != value){
+            mMemoValue = value;
+            mValueText = String.valueOf(mMemoValue);
+        }
+
+        return mValueText;
     }
 
     public int getValue(){
-        return (int)getExactValue();
+        return Math.round(getExactValue());
     }
 
     public float getExactValue(){
@@ -132,10 +176,16 @@ public class Slider extends View{
     }
 
     public void setPosition(float pos, boolean animation){
-        if(animation)
-            mThumbMoveAnimator.startAnimation(pos);
-        else if (mThumbPosition != pos){
+        if(animation) {
+            if(!mThumbMoveAnimator.startAnimation(pos)){
+                if(!mIsDragging)
+                    mThumbRadiusAnimator.startAnimation(mThumbRadius);
+                mThumbStrokeAnimator.startAnimation(pos == 0 ? 0 : 1);
+            }
+        }
+        else {
             mThumbPosition = pos;
+            mThumbCurrentRadius = mThumbRadius;
             mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
             invalidate();
         }
@@ -187,8 +237,8 @@ public class Slider extends View{
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mDrawRect.left = getPaddingLeft();
-        mDrawRect.right = w - getPaddingRight();
+        mDrawRect.left = getPaddingLeft() + mThumbRadius;
+        mDrawRect.right = w - getPaddingRight() - mThumbRadius;
 
         int height = mThumbFocusRadius * 2;
         int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
@@ -209,15 +259,30 @@ public class Slider extends View{
         }
     }
 
-    private boolean isThumbHit(float x, float y){
-        float cx = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
+    private boolean isThumbHit(float x, float y, float radius){
+        float cx = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float cy = mDrawRect.centerY();
 
-        return x >= cx - mThumbRadius && x <= cx + mThumbRadius && y >= cy - mThumbRadius && y < cy + mThumbRadius;
+        return x >= cx - radius && x <= cx + radius && y >= cy - radius && y < cy + radius;
     }
 
     private double distance(float x1, float y1, float x2, float y2){
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    private float correctPosition(float position){
+        if(!mContinuousMode)
+            return position;
+
+        int totalOffset = mMaxValue - mMinValue;
+        int valueOffset = Math.round(totalOffset * position);
+        int stepOffset = valueOffset / mStepValue;
+        if(valueOffset - stepOffset * mStepValue < (stepOffset + 1) * mStepValue - valueOffset)
+            position = (stepOffset * mStepValue) / (float)totalOffset;
+        else
+            position = (stepOffset + 1) * mStepValue / (float)totalOffset;
+
+        return position;
     }
 
     @Override
@@ -226,34 +291,40 @@ public class Slider extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(event.getX(), event.getY()) && !mThumbMoveAnimator.isRunning();
+                mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(event.getX(), event.getY());
                 if(mIsDragging)
-                    mThumbRadiusAnimator.startAnimation(mContinuosMode ? 0 : mThumbFocusRadius);
+                    mThumbRadiusAnimator.startAnimation(mContinuousMode ? 0 : mThumbFocusRadius);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
-                    float offset = (event.getX() - mMemoPoint.x) / (mDrawRect.width() - mThumbRadius * 2);
-                    mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
-                    mThumbStrokeAnimator.startAnimation(mThumbPosition == 0 ? 0 : 1);
-                    mMemoPoint.x = event.getX();
-                    invalidate();
+                    if(mContinuousMode) {
+                        float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                        setPosition(position, true);
+                    }
+                    else{
+                        float offset = (event.getX() - mMemoPoint.x) / mDrawRect.width();
+                        mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
+                        mMemoPoint.x = event.getX();
+                        mThumbStrokeAnimator.startAnimation(mThumbPosition == 0 ? 0 : 1);
+                        invalidate();
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if(mIsDragging) {
-                    mThumbRadiusAnimator.startAnimation(mThumbRadius);
                     mIsDragging = false;
+                    setPosition(getPosition(), true);
                 }
                 else if(distance(mMemoPoint.x, mMemoPoint.y, event.getX(), event.getY()) <= mTouchSlop){
-                    float position = Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left - mThumbRadius) / (mDrawRect.width() - mThumbRadius * 2)));
-                    mThumbMoveAnimator.startAnimation(position);
+                    float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                    setPosition(position, true);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
                 if(mIsDragging) {
-                    mThumbRadiusAnimator.startAnimation(mThumbRadius);
                     mIsDragging = false;
+                    setPosition(getPosition(), true);
                 }
                 break;
         }
@@ -267,9 +338,9 @@ public class Slider extends View{
         mLeftRailPath.reset();
         mRightRailPath.reset();
 
-        if(radius < halfStroke || radius < 1f){
+        if(radius - 1f < halfStroke){
             if(mStrokeCap != Paint.Cap.ROUND){
-                if(x - radius > mDrawRect.left){
+                if(x > mDrawRect.left){
                     mLeftRailPath.moveTo(mDrawRect.left, y - halfStroke);
                     mLeftRailPath.lineTo(x, y - halfStroke);
                     mLeftRailPath.lineTo(x, y + halfStroke);
@@ -277,7 +348,7 @@ public class Slider extends View{
                     mLeftRailPath.close();
                 }
 
-                if(x + radius < mDrawRect.right){
+                if(x < mDrawRect.right){
                     mRightRailPath.moveTo(mDrawRect.right, y + halfStroke);
                     mRightRailPath.lineTo(x, y + halfStroke);
                     mRightRailPath.lineTo(x, y - halfStroke);
@@ -286,7 +357,7 @@ public class Slider extends View{
                 }
             }
             else{
-                if(x - radius > mDrawRect.left){
+                if(x > mDrawRect.left){
                     mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
                     mLeftRailPath.arcTo(mTempRect, 90, 180);
                     mLeftRailPath.lineTo(x, y - halfStroke);
@@ -294,7 +365,7 @@ public class Slider extends View{
                     mLeftRailPath.close();
                 }
 
-                if(x + radius < mDrawRect.right){
+                if(x < mDrawRect.right){
                     mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
                     mRightRailPath.arcTo(mTempRect, 270, 180);
                     mRightRailPath.lineTo(x, y + halfStroke);
@@ -383,7 +454,7 @@ public class Slider extends View{
             float y4 = (y2 + y3) / 2;
 
             double d1 = distance(x2, y2, x4, y4);
-            double d2 = d1 / Math.tan(Math.PI / 2 * (1f - factor) / 2);
+            double d2 = d1 / Math.tan(Math.PI * (1f - factor) / 4);
 
             nCx = (float)(x4 - Math.cos(Math.PI / 4) * d2);
             nCy = (float)(y4 - Math.sin(Math.PI / 4) * d2);
@@ -412,29 +483,36 @@ public class Slider extends View{
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
-        float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
+        float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float y = mDrawRect.centerY();
+        int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
         getRailPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mSecondaryColor);
         canvas.drawPath(mRightRailPath, mPaint);
-        mPaint.setColor(ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent));
+        mPaint.setColor(filledPrimaryColor);
         canvas.drawPath(mLeftRailPath, mPaint);
 
-        if(mContinuosMode){
+        if(mContinuousMode){
             float factor = 1f - mThumbCurrentRadius / mThumbRadius;
 
-            mMarkPath = getMarkPath(mMarkPath, x, y, mThumbRadius, factor);
-            mPaint.setStyle(Paint.Style.FILL);
-            int saveCount = canvas.save();
-            canvas.translate(0, -mThumbRadius * 2 * factor);
-            canvas.drawPath(mMarkPath, mPaint);
-            canvas.restoreToCount(saveCount);
+            if(factor > 0){
+                mMarkPath = getMarkPath(mMarkPath, x, y, mThumbRadius, factor);
+                mPaint.setStyle(Paint.Style.FILL);
+                int saveCount = canvas.save();
+                canvas.translate(0, -mThumbRadius * 2 * factor);
+                canvas.drawPath(mMarkPath, mPaint);
+                mPaint.setColor(ColorUtil.getColor(mTextColor, factor));
+                canvas.drawText(getValueText(), x, y + mTextHeight / 2f - mThumbRadius * factor, mPaint);
+                canvas.restoreToCount(saveCount);
+            }
 
             float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
-            if(radius > 0)
+            if(radius > 0) {
+                mPaint.setColor(filledPrimaryColor);
                 canvas.drawCircle(x, y, radius, mPaint);
+            }
         }
         else{
             float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
@@ -462,9 +540,9 @@ public class Slider extends View{
             mStartRadius = mThumbCurrentRadius;
         }
 
-        public void startAnimation(int radius) {
+        public boolean startAnimation(int radius) {
             if(mThumbCurrentRadius == radius)
-                return;
+                return false;
 
             mRadius = radius;
 
@@ -477,10 +555,12 @@ public class Slider extends View{
                 mThumbCurrentRadius = mRadius;
 
             invalidate();
+            return true;
         }
 
         public void stopAnimation() {
             mRunning = false;
+            mThumbCurrentRadius = mRadius;
             getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -516,9 +596,9 @@ public class Slider extends View{
             mStartFillPercent = mThumbFillPercent;
         }
 
-        public void startAnimation(int fillPercent) {
+        public boolean startAnimation(int fillPercent) {
             if(mThumbFillPercent == fillPercent)
-                return;
+                return false;
 
             mFillPercent = fillPercent;
 
@@ -531,10 +611,12 @@ public class Slider extends View{
                 mThumbFillPercent = mFillPercent;
 
             invalidate();
+            return true;
         }
 
         public void stopAnimation() {
             mRunning = false;
+            mThumbFillPercent = mFillPercent;
             getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -583,12 +665,12 @@ public class Slider extends View{
             mStartFillPercent = mThumbFillPercent;
             mStartRadius = mThumbCurrentRadius;
             mFillPercent = mPosition == 0 ? 0 : 1;
-            mDuration = (int)(mTravelAnimationDuration * Math.abs(mPosition - mThumbPosition));
+            mDuration = mContinuousMode && !mIsDragging ? mTransformAnimationDuration * 2 + mTravelAnimationDuration : mTravelAnimationDuration;
         }
 
-        public void startAnimation(float position) {
+        public boolean startAnimation(float position) {
             if(mThumbPosition == position)
-                return;
+                return false;
 
             mPosition = position;
 
@@ -604,10 +686,15 @@ public class Slider extends View{
             }
 
             invalidate();
+
+            return true;
         }
 
         public void stopAnimation() {
             mRunning = false;
+            mThumbCurrentRadius = mContinuousMode && mIsDragging ? 0 : mThumbRadius;
+            mThumbFillPercent = mFillPercent;
+            mThumbPosition = mPosition;
             getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -618,15 +705,35 @@ public class Slider extends View{
             float progress = Math.min(1f, (float)(curTime - mStartTime) / mDuration);
             float value = mInterpolator.getInterpolation(progress);
 
-            mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-            mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+            if(mContinuousMode){
+                if(mIsDragging) {
+                    mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
+                    mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+                }
+                else{
+                    float p1 = (float)mTravelAnimationDuration / mDuration;
+                    float p2 = (float)(mTravelAnimationDuration + mTransformAnimationDuration)/ mDuration;
+                    if(progress < p1) {
+                        value = mInterpolator.getInterpolation(progress / p1);
+                        mThumbCurrentRadius = mStartRadius * (1f - value);
+                        mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
+                        mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+                    }
+                    else if(progress > p2){
+                        mThumbCurrentRadius = mThumbRadius * (progress - p2) / (1 - p2);
+                    }
+                }
+            }
+            else{
+                mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
+                mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
 
-            if(progress < 0.2)
-                mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);
-            else if(progress < 0.8)
-                mThumbCurrentRadius = mThumbRadius + mThumbBorderSize;
-            else
-                mThumbCurrentRadius = mThumbRadius + mThumbBorderSize * (5f - progress * 5);
+                if(progress < 0.2)
+                    mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);
+                else if(progress >= 0.8)
+                    mThumbCurrentRadius = mThumbRadius + mThumbBorderSize * (5f - progress * 5);
+            }
+
 
             if(progress == 1f)
                 stopAnimation();
