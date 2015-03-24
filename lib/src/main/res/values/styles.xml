@@ -189,17 +189,17 @@
     </style>
 
     <style name="Material.Widget.Switch">
-        <item name="sw_strokeSize">2dp</item>
-        <item name="sw_strokeCap">round</item>
-        <item name="sw_thumbBorderSize">2dp</item>
-        <item name="sw_thumbRadius">9dp</item>
-        <item name="sw_animDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="sw_trackSize">14dp</item>
+        <item name="sw_trackCap">round</item>
+        <item name="sw_thumbRadius">10dp</item>
+        <item name="sw_thumbElevation">2dp</item>
+        <item name="sw_animDuration">@android:integer/config_shortAnimTime</item>
         <item name="sw_interpolator">@android:anim/decelerate_interpolator</item>
     </style>
 
     <style name="Material.Widget.Slider">
-        <item name="sl_strokeSize">2dp</item>
-        <item name="sl_strokeCap">round</item>
+        <item name="sl_trackSize">2dp</item>
+        <item name="sl_trackCap">square</item>
         <item name="sl_thumbBorderSize">2dp</item>
         <item name="sl_thumbRadius">10dp</item>
         <item name="sl_thumbFocusRadius">14dp</item>

@@ -9,6 +9,8 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -36,8 +38,8 @@ public class Slider extends View{
     private Paint mPaint;
     private RectF mDrawRect;
     private RectF mTempRect;
-    private Path mLeftRailPath;
-    private Path mRightRailPath;
+    private Path mLeftTrackPath;
+    private Path mRightTrackPath;
     private Path mMarkPath;
 
     private int mMinValue = 0;
@@ -48,8 +50,8 @@ public class Slider extends View{
 
     private int mPrimaryColor;
     private int mSecondaryColor;
-    private int mStrokeSize;
-    private Paint.Cap mStrokeCap;
+    private int mTrackSize;
+    private Paint.Cap mTrackCap;
     private int mThumbBorderSize;
     private int mThumbRadius;
     private int mThumbFocusRadius;
@@ -104,8 +106,8 @@ public class Slider extends View{
 
         mDrawRect = new RectF();
         mTempRect = new RectF();
-        mLeftRailPath = new Path();
-        mRightRailPath = new Path();
+        mLeftTrackPath = new Path();
+        mRightTrackPath = new Path();
 
         mThumbRadiusAnimator = new ThumbRadiusAnimator();
         mThumbStrokeAnimator = new ThumbStrokeAnimator();
@@ -128,14 +130,14 @@ public class Slider extends View{
         mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
         mPrimaryColor = a.getColor(R.styleable.Slider_sl_primaryColor, ThemeUtil.colorControlActivated(context, 0xFF000000));
         mSecondaryColor = a.getColor(R.styleable.Slider_sl_secondaryColor, ThemeUtil.colorControlNormal(context, 0xFF000000));
-        mStrokeSize = a.getDimensionPixelSize(R.styleable.Slider_sl_strokeSize, ThemeUtil.dpToPx(context, 2));
-        int cap = a.getInteger(R.styleable.Slider_sl_strokeCap, 0);
+        mTrackSize = a.getDimensionPixelSize(R.styleable.Slider_sl_trackSize, ThemeUtil.dpToPx(context, 2));
+        int cap = a.getInteger(R.styleable.Slider_sl_trackCap, 0);
         if(cap == 0)
-            mStrokeCap = Paint.Cap.BUTT;
+            mTrackCap = Paint.Cap.BUTT;
         else if(cap == 1)
-            mStrokeCap = Paint.Cap.ROUND;
+            mTrackCap = Paint.Cap.ROUND;
         else
-            mStrokeCap = Paint.Cap.SQUARE;
+            mTrackCap = Paint.Cap.SQUARE;
         mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
         mThumbRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbRadius, ThemeUtil.dpToPx(context, 10));
         mThumbFocusRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbFocusRadius, ThemeUtil.dpToPx(context, 14));
@@ -397,65 +399,65 @@ public class Slider extends View{
         return true;
     }
 
-    private void getRailPath(float x, float y, float radius){
-        float halfStroke = mStrokeSize / 2f;
+    private void getTrackPath(float x, float y, float radius){
+        float halfStroke = mTrackSize / 2f;
 
-        mLeftRailPath.reset();
-        mRightRailPath.reset();
+        mLeftTrackPath.reset();
+        mRightTrackPath.reset();
 
         if(radius - 1f < halfStroke){
-            if(mStrokeCap != Paint.Cap.ROUND){
+            if(mTrackCap != Paint.Cap.ROUND){
                 if(x > mDrawRect.left){
-                    mLeftRailPath.moveTo(mDrawRect.left, y - halfStroke);
-                    mLeftRailPath.lineTo(x, y - halfStroke);
-                    mLeftRailPath.lineTo(x, y + halfStroke);
-                    mLeftRailPath.lineTo(mDrawRect.left, y + halfStroke);
-                    mLeftRailPath.close();
+                    mLeftTrackPath.moveTo(mDrawRect.left, y - halfStroke);
+                    mLeftTrackPath.lineTo(x, y - halfStroke);
+                    mLeftTrackPath.lineTo(x, y + halfStroke);
+                    mLeftTrackPath.lineTo(mDrawRect.left, y + halfStroke);
+                    mLeftTrackPath.close();
                 }
 
                 if(x < mDrawRect.right){
-                    mRightRailPath.moveTo(mDrawRect.right, y + halfStroke);
-                    mRightRailPath.lineTo(x, y + halfStroke);
-                    mRightRailPath.lineTo(x, y - halfStroke);
-                    mRightRailPath.lineTo(mDrawRect.right, y - halfStroke);
-                    mRightRailPath.close();
+                    mRightTrackPath.moveTo(mDrawRect.right, y + halfStroke);
+                    mRightTrackPath.lineTo(x, y + halfStroke);
+                    mRightTrackPath.lineTo(x, y - halfStroke);
+                    mRightTrackPath.lineTo(mDrawRect.right, y - halfStroke);
+                    mRightTrackPath.close();
                 }
             }
             else{
                 if(x > mDrawRect.left){
-                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
-                    mLeftRailPath.arcTo(mTempRect, 90, 180);
-                    mLeftRailPath.lineTo(x, y - halfStroke);
-                    mLeftRailPath.lineTo(x, y + halfStroke);
-                    mLeftRailPath.close();
+                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mTrackSize, y + halfStroke);
+                    mLeftTrackPath.arcTo(mTempRect, 90, 180);
+                    mLeftTrackPath.lineTo(x, y - halfStroke);
+                    mLeftTrackPath.lineTo(x, y + halfStroke);
+                    mLeftTrackPath.close();
                 }
 
                 if(x < mDrawRect.right){
-                    mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
-                    mRightRailPath.arcTo(mTempRect, 270, 180);
-                    mRightRailPath.lineTo(x, y + halfStroke);
-                    mRightRailPath.lineTo(x, y - halfStroke);
-                    mRightRailPath.close();
+                    mTempRect.set(mDrawRect.right - mTrackSize, y - halfStroke, mDrawRect.right, y + halfStroke);
+                    mRightTrackPath.arcTo(mTempRect, 270, 180);
+                    mRightTrackPath.lineTo(x, y + halfStroke);
+                    mRightTrackPath.lineTo(x, y - halfStroke);
+                    mRightTrackPath.close();
                 }
             }
         }
         else{
-            if(mStrokeCap != Paint.Cap.ROUND){
+            if(mTrackCap != Paint.Cap.ROUND){
                 mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
                 float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
 
                 if(x - radius > mDrawRect.left){
-                    mLeftRailPath.moveTo(mDrawRect.left, y - halfStroke);
-                    mLeftRailPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-                    mLeftRailPath.lineTo(mDrawRect.left, y + halfStroke);
-                    mLeftRailPath.close();
+                    mLeftTrackPath.moveTo(mDrawRect.left, y - halfStroke);
+                    mLeftTrackPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+                    mLeftTrackPath.lineTo(mDrawRect.left, y + halfStroke);
+                    mLeftTrackPath.close();
                 }
 
                 if(x + radius < mDrawRect.right){
-                    mRightRailPath.moveTo(mDrawRect.right, y - halfStroke);
-                    mRightRailPath.arcTo(mTempRect, -angle, angle * 2);
-                    mRightRailPath.lineTo(mDrawRect.right, y + halfStroke);
-                    mRightRailPath.close();
+                    mRightTrackPath.moveTo(mDrawRect.right, y - halfStroke);
+                    mRightTrackPath.arcTo(mTempRect, -angle, angle * 2);
+                    mRightTrackPath.lineTo(mDrawRect.right, y + halfStroke);
+                    mRightTrackPath.close();
                 }
             }
             else{
@@ -464,25 +466,25 @@ public class Slider extends View{
                 if(x - radius > mDrawRect.left){
                     float angle2 = (float)(Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
 
-                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
-                    mLeftRailPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
+                    mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mTrackSize, y + halfStroke);
+                    mLeftTrackPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
 
                     mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-                    mLeftRailPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-                    mLeftRailPath.close();
+                    mLeftTrackPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+                    mLeftTrackPath.close();
                 }
 
                 if(x + radius < mDrawRect.right){
                     float angle2 = (float)Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
-                    mRightRailPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
+                    mRightTrackPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
 
                     angle2 = (float)(angle2 / Math.PI * 180);
-                    mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
-                    mRightRailPath.arcTo(mTempRect, angle2, -angle2 * 2);
+                    mTempRect.set(mDrawRect.right - mTrackSize, y - halfStroke, mDrawRect.right, y + halfStroke);
+                    mRightTrackPath.arcTo(mTempRect, angle2, -angle2 * 2);
 
                     mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-                    mRightRailPath.arcTo(mTempRect, -angle, angle * 2);
-                    mRightRailPath.close();
+                    mRightTrackPath.arcTo(mTempRect, -angle, angle * 2);
+                    mRightTrackPath.close();
                 }
             }
         }
@@ -552,12 +554,12 @@ public class Slider extends View{
         float y = mDrawRect.centerY();
         int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
-        getRailPath(x, y, mThumbCurrentRadius);
+        getTrackPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mSecondaryColor);
-        canvas.drawPath(mRightRailPath, mPaint);
+        canvas.drawPath(mRightTrackPath, mPaint);
         mPaint.setColor(filledPrimaryColor);
-        canvas.drawPath(mLeftRailPath, mPaint);
+        canvas.drawPath(mLeftTrackPath, mPaint);
 
         if(mDiscreteMode){
             float factor = 1f - mThumbCurrentRadius / mThumbRadius;
@@ -809,5 +811,67 @@ public class Slider extends View{
             invalidate();
         }
 
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+
+        ss.position = getPosition();
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+
+        super.onRestoreInstanceState(ss.getSuperState());
+        setPosition(ss.position, false);
+        requestLayout();
+    }
+
+    static class SavedState extends BaseSavedState {
+        float position;
+
+        /**
+         * Constructor called from {@link Slider#onSaveInstanceState()}
+         */
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        private SavedState(Parcel in) {
+            super(in);
+            position = in.readFloat();
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeFloat(position);
+        }
+
+        @Override
+        public String toString() {
+            return "Slider.SavedState{"
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + " pos=" + position + "}";
+        }
+
+        public static final Creator<SavedState> CREATOR
+                = new Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

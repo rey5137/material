@@ -10,7 +10,8 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
-	    android:gravity="center">
+	    android:gravity="center"
+        android:padding="8dp">
 	                    
 	    <TextView 
 			android:layout_width="match_parent"
@@ -102,15 +103,16 @@
 	    <com.rey.material.widget.Switch
             style="@style/Material.Widget.Switch"
             android:id="@+id/switches_sw1"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:checked="false"/>
+            android:checked="false"
+            android:padding="16dp"/>
 	    
 	    <com.rey.material.widget.Switch
             style="@style/Material.Widget.Switch"
             android:id="@+id/switches_sw2"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:checked="true"

@@ -6,7 +6,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -35,12 +37,11 @@ public class Switch extends View implements Checkable {
 	private Paint mPaint;
 	private RectF mDrawRect;
 	private RectF mTempRect;
-	private Path mPath;
+	private Path mTrackPath;
 	
-	private int mStrokeSize;
-	private ColorStateList mStrokeColors;
-	private Paint.Cap mStrokeCap;	
-	private int mThumbBorderSize;
+	private int mTrackSize;
+	private ColorStateList mTrackColors;
+	private Paint.Cap mTrackCap;
 	private int mThumbRadius;
 	private ColorStateList mThumbColors;
 	private float mThumbPosition;
@@ -59,6 +60,15 @@ public class Switch extends View implements Checkable {
 	private float mStartPosition;
 	
 	private int[] mTempStates = new int[2];
+
+    private int mShadowSize;
+    private int mShadowOffset;
+    private Path mShadowPath;
+    private Paint mShadowPaint;
+
+    private static final int COLOR_SHADOW_START = 0x4C000000;
+    private static final int COLOR_SHADOW_END = 0x00000000;
+
 
     public Switch(Context context) {
         super(context);
@@ -89,7 +99,7 @@ public class Switch extends View implements Checkable {
 		
 		mDrawRect = new RectF();
 		mTempRect = new RectF();
-		mPath = new Path();
+		mTrackPath = new Path();
 
         mFlingVelocity = ViewConfiguration.get(context).getScaledMinimumFlingVelocity();
 
@@ -101,18 +111,19 @@ public class Switch extends View implements Checkable {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
 
-        mStrokeSize = a.getDimensionPixelSize(R.styleable.Switch_sw_strokeSize, ThemeUtil.dpToPx(context, 2));
-        mStrokeColors = a.getColorStateList(R.styleable.Switch_sw_strokeColor);
-        int cap = a.getInteger(R.styleable.Switch_sw_strokeCap, 0);
+        mTrackSize = a.getDimensionPixelSize(R.styleable.Switch_sw_trackSize, ThemeUtil.dpToPx(context, 2));
+        mTrackColors = a.getColorStateList(R.styleable.Switch_sw_trackColor);
+        int cap = a.getInteger(R.styleable.Switch_sw_trackCap, 0);
         if(cap == 0)
-            mStrokeCap = Paint.Cap.BUTT;
+            mTrackCap = Paint.Cap.BUTT;
         else if(cap == 1)
-            mStrokeCap = Paint.Cap.ROUND;
+            mTrackCap = Paint.Cap.ROUND;
         else
-            mStrokeCap = Paint.Cap.SQUARE;
-        mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
+            mTrackCap = Paint.Cap.SQUARE;
         mThumbColors = a.getColorStateList(R.styleable.Switch_sw_thumbColor);
         mThumbRadius = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbRadius, ThemeUtil.dpToPx(context, 8));
+        mShadowSize = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbElevation, ThemeUtil.dpToPx(context, 2));
+        mShadowOffset = mShadowSize / 2;
         mMaxAnimDuration = a.getInt(R.styleable.Switch_sw_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         mGravity = a.getInt(R.styleable.Switch_android_gravity, Gravity.CENTER_VERTICAL);
         mChecked = a.getBoolean(R.styleable.Switch_android_checked, false);
@@ -122,17 +133,17 @@ public class Switch extends View implements Checkable {
 
         a.recycle();
 
-        if(mStrokeColors == null){
+        if(mTrackColors == null){
             int[][] states = new int[][]{
                     new int[]{-android.R.attr.state_checked},
                     new int[]{android.R.attr.state_checked},
             };
             int[] colors = new int[]{
-                    ThemeUtil.colorControlNormal(context, 0xFF000000),
-                    ThemeUtil.colorControlActivated(context, 0xFF000000),
+                    ColorUtil.getColor(ThemeUtil.colorControlNormal(context, 0xFF000000), 0.5f),
+                    ColorUtil.getColor(ThemeUtil.colorControlActivated(context, 0xFF000000), 0.5f),
             };
 
-            mStrokeColors = new ColorStateList(states, colors);
+            mTrackColors = new ColorStateList(states, colors);
         }
 
         if(mThumbColors == null){
@@ -141,14 +152,16 @@ public class Switch extends View implements Checkable {
                     new int[]{android.R.attr.state_checked},
             };
             int[] colors = new int[]{
-                    ThemeUtil.colorSwitchThumbNormal(context, 0xFF000000),
+                    0xFAFAFA,
                     ThemeUtil.colorControlActivated(context, 0xFF000000),
             };
 
             mThumbColors = new ColorStateList(states, colors);
         }
 
-        mPaint.setStrokeCap(mStrokeCap);
+        mPaint.setStrokeCap(mTrackCap);
+
+        buildShadow();
     }
 
 	@Override
@@ -195,7 +208,7 @@ public class Switch extends View implements Checkable {
 				mStartTime = SystemClock.uptimeMillis();
 				break;
 			case MotionEvent.ACTION_MOVE:
-				float offset = (event.getX() - mMemoX) / (mDrawRect.width() - mThumbRadius * 2 - mThumbBorderSize); 
+				float offset = (event.getX() - mMemoX) / (mDrawRect.width() - mThumbRadius * 2);
 				mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
 				mMemoX = event.getX();
 				invalidate();
@@ -248,29 +261,29 @@ public class Switch extends View implements Checkable {
 
 	@Override
 	public int getSuggestedMinimumWidth() {
-		return (mThumbRadius * 2 + mThumbBorderSize) * 2 + getPaddingLeft() + getPaddingRight();
+		return mThumbRadius * 4 + Math.max(mShadowSize, getPaddingLeft()) + Math.max(mShadowSize, getPaddingRight());
 	}
 
 	@Override
 	public int getSuggestedMinimumHeight() {
-		return mThumbRadius * 2 + mThumbBorderSize + getPaddingTop() + getPaddingBottom();
+		return mThumbRadius * 2 + Math.max(mShadowSize - mShadowOffset, getPaddingTop()) + Math.max(mShadowSize + mShadowOffset, getPaddingBottom());
 	}
 		
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		mDrawRect.left = getPaddingLeft();
-		mDrawRect.right = w - getPaddingRight();
+		mDrawRect.left = Math.max(mShadowSize, getPaddingLeft());
+		mDrawRect.right = w - Math.max(mShadowSize, getPaddingRight());
 		
-		int height = mThumbRadius * 2 + mThumbBorderSize;		
+		int height = mThumbRadius * 2;
 		int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
 								
 		switch (align) {
 			case Gravity.TOP:
-				mDrawRect.top = getPaddingTop();
+				mDrawRect.top = Math.max(mShadowSize - mShadowOffset, getPaddingTop());
 				mDrawRect.bottom = mDrawRect.top + height;
 				break;
 			case Gravity.BOTTOM:
-				mDrawRect.bottom = h - getPaddingBottom();
+				mDrawRect.bottom = h - Math.max(mShadowSize + mShadowOffset, getPaddingBottom());
 				mDrawRect.top = mDrawRect.bottom - height;
 				break;
 			default:
@@ -280,11 +293,11 @@ public class Switch extends View implements Checkable {
 		}		
 	}
 
-	private int getStrokeColor(boolean checked){
+	private int getTrackColor(boolean checked){
 		mTempStates[0] = isEnabled() ? android.R.attr.state_enabled : -android.R.attr.state_enabled;
 		mTempStates[1] = checked ? android.R.attr.state_checked : -android.R.attr.state_checked;
 		
-		return mStrokeColors.getColorForState(mTempStates, 0);
+		return mTrackColors.getColorForState(mTempStates, 0);
 	}
 	
 	private int getThumbColor(boolean checked){
@@ -293,28 +306,57 @@ public class Switch extends View implements Checkable {
 		
 		return mThumbColors.getColorForState(mTempStates, 0);
 	}
+
+    private void buildShadow(){
+        if(mShadowSize <= 0)
+            return;
+
+        if(mShadowPaint == null){
+            mShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+            mShadowPaint.setStyle(Paint.Style.FILL);
+            mShadowPaint.setDither(true);
+        }
+        float startRatio = (float)mThumbRadius / (mThumbRadius + mShadowSize + mShadowOffset);
+        mShadowPaint.setShader(new RadialGradient(0, 0, mThumbRadius + mShadowSize,
+                new int[]{COLOR_SHADOW_START, COLOR_SHADOW_START, COLOR_SHADOW_END},
+                new float[]{0f, startRatio, 1f}
+                , Shader.TileMode.CLAMP));
+
+        if(mShadowPath == null){
+            mShadowPath = new Path();
+            mShadowPath.setFillType(Path.FillType.EVEN_ODD);
+        }
+        else
+            mShadowPath.reset();
+        float radius = mThumbRadius + mShadowSize;
+        mTempRect.set(-radius, -radius, radius, radius);
+        mShadowPath.addOval(mTempRect, Path.Direction.CW);
+        radius = mThumbRadius - 1;
+        mTempRect.set(-radius, -radius - mShadowOffset, radius, radius - mShadowOffset);
+        mShadowPath.addOval(mTempRect, Path.Direction.CW);
+    }
+
+	private void getTrackPath(float x, float y, float radius){
+		float halfStroke = mTrackSize / 2f;
 		
-	private void getPath(float x, float y, float radius){
-		float halfStroke = mStrokeSize / 2f;		
+		mTrackPath.reset();
 		
-		mPath.reset();
-		
-		if(mStrokeCap != Paint.Cap.ROUND){
+		if(mTrackCap != Paint.Cap.ROUND){
 			mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
 			float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
 			
 			if(x - radius > mDrawRect.left){			
-				mPath.moveTo(mDrawRect.left, y - halfStroke);		
-				mPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-				mPath.lineTo(mDrawRect.left, y + halfStroke);
-				mPath.close();
+				mTrackPath.moveTo(mDrawRect.left, y - halfStroke);
+				mTrackPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+				mTrackPath.lineTo(mDrawRect.left, y + halfStroke);
+				mTrackPath.close();
 			}
 			
 			if(x + radius < mDrawRect.right){
-				mPath.moveTo(mDrawRect.right, y - halfStroke);
-				mPath.arcTo(mTempRect, -angle, angle * 2);
-				mPath.lineTo(mDrawRect.right, y + halfStroke);
-				mPath.close();
+				mTrackPath.moveTo(mDrawRect.right, y - halfStroke);
+				mTrackPath.arcTo(mTempRect, -angle, angle * 2);
+				mTrackPath.lineTo(mDrawRect.right, y + halfStroke);
+				mTrackPath.close();
 			}
 		}
 		else{
@@ -323,55 +365,51 @@ public class Switch extends View implements Checkable {
 			if(x - radius > mDrawRect.left){					
 				float angle2 = (float)(Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
 				
-				mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mStrokeSize, y + halfStroke);
-				mPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
+				mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mTrackSize, y + halfStroke);
+				mTrackPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
 				
 				mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-				mPath.arcTo(mTempRect, 180 + angle, -angle * 2);
-				mPath.close();
+				mTrackPath.arcTo(mTempRect, 180 + angle, -angle * 2);
+				mTrackPath.close();
 			}
 			
 			if(x + radius < mDrawRect.right){
 				float angle2 = (float)Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
-				mPath.moveTo((float)(mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float)(y + Math.sin(angle2) * halfStroke));
+				mTrackPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
 				
 				angle2 = (float)(angle2 / Math.PI * 180);				
-				mTempRect.set(mDrawRect.right - mStrokeSize, y - halfStroke, mDrawRect.right, y + halfStroke);
-				mPath.arcTo(mTempRect, angle2, -angle2 * 2);
+				mTempRect.set(mDrawRect.right - mTrackSize, y - halfStroke, mDrawRect.right, y + halfStroke);
+				mTrackPath.arcTo(mTempRect, angle2, -angle2 * 2);
 				
 				mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-				mPath.arcTo(mTempRect, -angle, angle * 2);
-				mPath.close();
+				mTrackPath.arcTo(mTempRect, -angle, angle * 2);
+				mTrackPath.close();
 			}
 		}		
 	}
-	
-	private float getInterpolation(float value){
-		return 2 * value * (1f - value);
-	}
-	
+
 	@Override
 	public void draw(@NonNull Canvas canvas) {
 		super.draw(canvas);
-		
-		float shinkWidth = getInterpolation(mThumbPosition) * mThumbBorderSize;
-		
-		float outerRadius = mThumbRadius + mThumbBorderSize / 2f - shinkWidth;
-		float x = (mDrawRect.width() - outerRadius * 2) * mThumbPosition + mDrawRect.left + outerRadius;
+
+		float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
 		float y = mDrawRect.centerY();
 				
-		getPath(x, y, outerRadius);
-		mPaint.setColor(ColorUtil.getMiddleColor(getStrokeColor(false), getStrokeColor(true), mThumbPosition));
+		getTrackPath(x, y, mThumbRadius);
+		mPaint.setColor(ColorUtil.getMiddleColor(getTrackColor(false), getTrackColor(true), mThumbPosition));
 		mPaint.setStyle(Paint.Style.FILL);		
-		canvas.drawPath(mPath, mPaint);		
-		
-		float strokeWidth = mThumbBorderSize + (mThumbRadius - mThumbBorderSize / 2f) * mThumbPosition - shinkWidth;			
-		float radius = mThumbRadius - (strokeWidth - mThumbBorderSize) / 2f - shinkWidth;
-		
-		mPaint.setColor(ColorUtil.getMiddleColor(getThumbColor(false), getThumbColor(true), mThumbPosition));
-		mPaint.setStyle(Paint.Style.STROKE);
-		mPaint.setStrokeWidth(strokeWidth);
-		canvas.drawCircle(x, y, radius, mPaint);
+		canvas.drawPath(mTrackPath, mPaint);
+
+        if(mShadowSize > 0){
+            int saveCount = canvas.save();
+            canvas.translate(x, y + mShadowOffset);
+            canvas.drawPath(mShadowPath, mShadowPaint);
+            canvas.restoreToCount(saveCount);
+        }
+
+        mPaint.setColor(ColorUtil.getMiddleColor(getThumbColor(false), getThumbColor(true), mThumbPosition));
+        mPaint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(x, y, mThumbRadius, mPaint);
 	}
 
 	private void resetAnimation(){	
