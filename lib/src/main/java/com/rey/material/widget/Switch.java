@@ -85,66 +85,71 @@ public class Switch extends View implements Checkable {
     }
 	
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-				
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
-		
-		mStrokeSize = a.getDimensionPixelSize(R.styleable.Switch_sw_strokeSize, ThemeUtil.dpToPx(context, 2));
-		mStrokeColors = a.getColorStateList(R.styleable.Switch_sw_strokeColor);
-		int cap = a.getInteger(R.styleable.Switch_sw_strokeCap, 0);
-		if(cap == 0)
-			mStrokeCap = Paint.Cap.BUTT;
-		else if(cap == 1)
-			mStrokeCap = Paint.Cap.ROUND;
-		else
-			mStrokeCap = Paint.Cap.SQUARE;
-		mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
-		mThumbColors = a.getColorStateList(R.styleable.Switch_sw_thumbColor);
-		mThumbRadius = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbRadius, ThemeUtil.dpToPx(context, 8));
-		mMaxAnimDuration = a.getInt(R.styleable.Switch_sw_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-		mGravity = a.getInt(R.styleable.Switch_android_gravity, Gravity.CENTER_VERTICAL);
-		mChecked = a.getBoolean(R.styleable.Switch_android_checked, false);
-		mThumbPosition = mChecked ? 1f : 0f;
-		int resId = a.getResourceId(R.styleable.Switch_sw_interpolator, 0);
-		mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
-		mFlingVelocity = ViewConfiguration.get(context).getScaledMinimumFlingVelocity();		
-		
-		a.recycle();
-		
-		if(mStrokeColors == null){
-			int[][] states = new int[][]{
-					new int[]{-android.R.attr.state_checked},
-					new int[]{android.R.attr.state_checked},
-			};
-			int[] colors = new int[]{
-					ThemeUtil.colorControlNormal(context, 0xFF000000),
-					ThemeUtil.colorControlActivated(context, 0xFF000000),
-			};				
-			
-			mStrokeColors = new ColorStateList(states, colors);
-		}
-		
-		if(mThumbColors == null){
-			int[][] states = new int[][]{
-					new int[]{-android.R.attr.state_checked},
-					new int[]{android.R.attr.state_checked},
-			};
-			int[] colors = new int[]{
-					ThemeUtil.colorSwitchThumbNormal(context, 0xFF000000),
-					ThemeUtil.colorControlActivated(context, 0xFF000000),
-			};		
-			
-			mThumbColors = new ColorStateList(states, colors);
-		}
-		
-		mPaint = new Paint();		
-		mPaint.setAntiAlias(true);
-		mPaint.setStrokeCap(mStrokeCap);
+		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
 		mDrawRect = new RectF();
 		mTempRect = new RectF();
-		mPath = new Path();		
+		mPath = new Path();
+
+        mFlingVelocity = ViewConfiguration.get(context).getScaledMinimumFlingVelocity();
+
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
 	}
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
+
+        mStrokeSize = a.getDimensionPixelSize(R.styleable.Switch_sw_strokeSize, ThemeUtil.dpToPx(context, 2));
+        mStrokeColors = a.getColorStateList(R.styleable.Switch_sw_strokeColor);
+        int cap = a.getInteger(R.styleable.Switch_sw_strokeCap, 0);
+        if(cap == 0)
+            mStrokeCap = Paint.Cap.BUTT;
+        else if(cap == 1)
+            mStrokeCap = Paint.Cap.ROUND;
+        else
+            mStrokeCap = Paint.Cap.SQUARE;
+        mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
+        mThumbColors = a.getColorStateList(R.styleable.Switch_sw_thumbColor);
+        mThumbRadius = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbRadius, ThemeUtil.dpToPx(context, 8));
+        mMaxAnimDuration = a.getInt(R.styleable.Switch_sw_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        mGravity = a.getInt(R.styleable.Switch_android_gravity, Gravity.CENTER_VERTICAL);
+        mChecked = a.getBoolean(R.styleable.Switch_android_checked, false);
+        mThumbPosition = mChecked ? 1f : 0f;
+        int resId = a.getResourceId(R.styleable.Switch_sw_interpolator, 0);
+        mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
+
+        a.recycle();
+
+        if(mStrokeColors == null){
+            int[][] states = new int[][]{
+                    new int[]{-android.R.attr.state_checked},
+                    new int[]{android.R.attr.state_checked},
+            };
+            int[] colors = new int[]{
+                    ThemeUtil.colorControlNormal(context, 0xFF000000),
+                    ThemeUtil.colorControlActivated(context, 0xFF000000),
+            };
+
+            mStrokeColors = new ColorStateList(states, colors);
+        }
+
+        if(mThumbColors == null){
+            int[][] states = new int[][]{
+                    new int[]{-android.R.attr.state_checked},
+                    new int[]{android.R.attr.state_checked},
+            };
+            int[] colors = new int[]{
+                    ThemeUtil.colorSwitchThumbNormal(context, 0xFF000000),
+                    ThemeUtil.colorControlActivated(context, 0xFF000000),
+            };
+
+            mThumbColors = new ColorStateList(states, colors);
+        }
+
+        mPaint.setStrokeCap(mStrokeCap);
+    }
 
 	@Override
 	public void setOnClickListener(OnClickListener l) {

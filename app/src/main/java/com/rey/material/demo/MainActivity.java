@@ -109,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 
-		vp.setCurrentItem(3);
+		vp.setCurrentItem(2);
 	}
 
 	@Override

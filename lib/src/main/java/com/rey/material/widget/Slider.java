@@ -1,6 +1,7 @@
 package com.rey.material.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -15,17 +16,22 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.rey.material.R;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.TypefaceUtil;
 import com.rey.material.util.ViewUtil;
 
 /**
  * Created by Ret on 3/18/2015.
  */
 public class Slider extends View{
+
+    private RippleManager mRippleManager = new RippleManager();
 
     private Paint mPaint;
     private RectF mDrawRect;
@@ -34,11 +40,11 @@ public class Slider extends View{
     private Path mRightRailPath;
     private Path mMarkPath;
 
-    private int mMinValue;
-    private int mMaxValue;
-    private int mStepValue;
+    private int mMinValue = 0;
+    private int mMaxValue = 100;
+    private int mStepValue = 1;
 
-    private boolean mContinuousMode;
+    private boolean mDiscreteMode = false;
 
     private int mPrimaryColor;
     private int mSecondaryColor;
@@ -94,46 +100,68 @@ public class Slider extends View{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        mMinValue = 0;
-        mMaxValue = 100;
-        mStepValue = 10;
-        mThumbPosition = 0.5f;
-
-        mContinuousMode = true;
-
-        mPrimaryColor = 0xFF4557B7;
-        mSecondaryColor = 0xFFBFBFBF;
-        mStrokeSize = ThemeUtil.dpToPx(context, 2);
-        mStrokeCap = Paint.Cap.SQUARE;
-        mThumbBorderSize = ThemeUtil.dpToPx(context, 2);
-        mThumbRadius = ThemeUtil.dpToPx(context, 9);
-        mTravelAnimationDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
-        mTransformAnimationDuration = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
-        mInterpolator = new DecelerateInterpolator();
-        mTextSize = ThemeUtil.spToPx(context, 12);
-        mTextColor = 0xFFFFFFFF;
-        mTypeface = Typeface.DEFAULT;
-
-
-        mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
-        mThumbCurrentRadius = mThumbRadius;
-        mThumbFocusRadius = mThumbRadius * 2;
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-        mMemoPoint = new PointF();
+        mDrawRect = new RectF();
+        mTempRect = new RectF();
+        mLeftRailPath = new Path();
+        mRightRailPath = new Path();
 
         mThumbRadiusAnimator = new ThumbRadiusAnimator();
         mThumbStrokeAnimator = new ThumbStrokeAnimator();
         mThumbMoveAnimator = new ThumbMoveAnimator();
 
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        mMemoPoint = new PointF();
+
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
+        mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
+        mPrimaryColor = a.getColor(R.styleable.Slider_sl_primaryColor, ThemeUtil.colorControlActivated(context, 0xFF000000));
+        mSecondaryColor = a.getColor(R.styleable.Slider_sl_secondaryColor, ThemeUtil.colorControlNormal(context, 0xFF000000));
+        mStrokeSize = a.getDimensionPixelSize(R.styleable.Slider_sl_strokeSize, ThemeUtil.dpToPx(context, 2));
+        int cap = a.getInteger(R.styleable.Slider_sl_strokeCap, 0);
+        if(cap == 0)
+            mStrokeCap = Paint.Cap.BUTT;
+        else if(cap == 1)
+            mStrokeCap = Paint.Cap.ROUND;
+        else
+            mStrokeCap = Paint.Cap.SQUARE;
+        mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
+        mThumbRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbRadius, ThemeUtil.dpToPx(context, 10));
+        mThumbFocusRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbFocusRadius, ThemeUtil.dpToPx(context, 14));
+        mTravelAnimationDuration = a.getInteger(R.styleable.Slider_sl_travelAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        mTransformAnimationDuration = a.getInteger(R.styleable.Slider_sl_travelAnimDuration, context.getResources().getInteger(android.R.integer.config_shortAnimTime));
+        int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
+        mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
+        mGravity = a.getInt(R.styleable.Slider_android_gravity, Gravity.CENTER_VERTICAL);
+        mMinValue = a.getInteger(R.styleable.Slider_sl_minValue, mMinValue);
+        mMaxValue = a.getInteger(R.styleable.Slider_sl_maxValue, mMaxValue);
+        mStepValue = a.getInteger(R.styleable.Slider_sl_stepValue, mStepValue);
+        setValue(a.getInteger(R.styleable.Slider_sl_value, getValue()), false);
+
+        String familyName = a.getString(R.styleable.Slider_sl_fontFamily);
+        int style = a.getInteger(R.styleable.Slider_sl_textStyle, Typeface.NORMAL);
+
+        mTypeface = TypefaceUtil.load(context, familyName, style);
+        mTextColor = a.getColor(R.styleable.Slider_sl_textColor, 0xFFFFFFFF);
+        mTextSize = a.getDimensionPixelSize(R.styleable.Slider_sl_textSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_small_material));
+        setEnabled(a.getBoolean(R.styleable.Slider_android_enabled, true));
+
+        a.recycle();
+
         mPaint.setTextSize(mTextSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTypeface(mTypeface);
-        mDrawRect = new RectF();
-        mTempRect = new RectF();
-        mLeftRailPath = new Path();
-        mRightRailPath = new Path();
 
         measureText();
     }
@@ -197,6 +225,16 @@ public class Slider extends View{
     }
 
     @Override
+    public void setOnClickListener(OnClickListener l) {
+        if(l == mRippleManager)
+            super.setOnClickListener(l);
+        else{
+            mRippleManager.setOnClickListener(l);
+            setOnClickListener(mRippleManager);
+        }
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -227,12 +265,12 @@ public class Slider extends View{
 
     @Override
     public int getSuggestedMinimumWidth() {
-        return mThumbFocusRadius * 4 + getPaddingLeft() + getPaddingRight();
+        return (mDiscreteMode ? (int)(mThumbRadius * Math.sqrt(2)) : mThumbFocusRadius) * 4 + getPaddingLeft() + getPaddingRight();
     }
 
     @Override
     public int getSuggestedMinimumHeight() {
-        return mThumbFocusRadius * 2 + getPaddingTop() + getPaddingBottom();
+        return (mDiscreteMode ? (int)(mThumbRadius * (4 + Math.sqrt(2))) : mThumbFocusRadius * 2) + getPaddingTop() + getPaddingBottom();
     }
 
     @Override
@@ -240,22 +278,42 @@ public class Slider extends View{
         mDrawRect.left = getPaddingLeft() + mThumbRadius;
         mDrawRect.right = w - getPaddingRight() - mThumbRadius;
 
-        int height = mThumbFocusRadius * 2;
         int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-        switch (align) {
-            case Gravity.TOP:
-                mDrawRect.top = getPaddingTop();
-                mDrawRect.bottom = mDrawRect.top + height;
-                break;
-            case Gravity.BOTTOM:
-                mDrawRect.bottom = h - getPaddingBottom();
-                mDrawRect.top = mDrawRect.bottom - height;
-                break;
-            default:
-                mDrawRect.top = (h - height) / 2f;
-                mDrawRect.bottom = mDrawRect.top + height;
-                break;
+        if(mDiscreteMode){
+            int fullHeight = (int)(mThumbRadius * (4 + Math.sqrt(2)));
+            int height = mThumbRadius * 2;
+            switch (align) {
+                case Gravity.TOP:
+                    mDrawRect.top = Math.max(getPaddingTop(), fullHeight - height);
+                    mDrawRect.bottom = mDrawRect.top + height;
+                    break;
+                case Gravity.BOTTOM:
+                    mDrawRect.bottom = h - getPaddingBottom();
+                    mDrawRect.top = mDrawRect.bottom - height;
+                    break;
+                default:
+                    mDrawRect.top = Math.max((h - height) / 2f, fullHeight - height);
+                    mDrawRect.bottom = mDrawRect.top + height;
+                    break;
+            }
+        }
+        else{
+            int height = mThumbFocusRadius * 2;
+            switch (align) {
+                case Gravity.TOP:
+                    mDrawRect.top = getPaddingTop();
+                    mDrawRect.bottom = mDrawRect.top + height;
+                    break;
+                case Gravity.BOTTOM:
+                    mDrawRect.bottom = h - getPaddingBottom();
+                    mDrawRect.top = mDrawRect.bottom - height;
+                    break;
+                default:
+                    mDrawRect.top = (h - height) / 2f;
+                    mDrawRect.bottom = mDrawRect.top + height;
+                    break;
+            }
         }
     }
 
@@ -271,16 +329,19 @@ public class Slider extends View{
     }
 
     private float correctPosition(float position){
-        if(!mContinuousMode)
+        if(!mDiscreteMode)
             return position;
 
         int totalOffset = mMaxValue - mMinValue;
         int valueOffset = Math.round(totalOffset * position);
         int stepOffset = valueOffset / mStepValue;
-        if(valueOffset - stepOffset * mStepValue < (stepOffset + 1) * mStepValue - valueOffset)
-            position = (stepOffset * mStepValue) / (float)totalOffset;
+        int lowerValue = stepOffset * mStepValue;
+        int higherValue = Math.min(mMaxValue, (stepOffset + 1) * mStepValue);
+
+        if(valueOffset - lowerValue < higherValue - valueOffset)
+            position = lowerValue / (float)totalOffset;
         else
-            position = (stepOffset + 1) * mStepValue / (float)totalOffset;
+            position = higherValue / (float)totalOffset;
 
         return position;
     }
@@ -288,17 +349,21 @@ public class Slider extends View{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
+        mRippleManager.onTouchEvent(event);
+
+        if(!isEnabled())
+            return false;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(event.getX(), event.getY());
                 if(mIsDragging)
-                    mThumbRadiusAnimator.startAnimation(mContinuousMode ? 0 : mThumbFocusRadius);
+                    mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
-                    if(mContinuousMode) {
+                    if(mDiscreteMode) {
                         float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
                         setPosition(position, true);
                     }
@@ -494,7 +559,7 @@ public class Slider extends View{
         mPaint.setColor(filledPrimaryColor);
         canvas.drawPath(mLeftRailPath, mPaint);
 
-        if(mContinuousMode){
+        if(mDiscreteMode){
             float factor = 1f - mThumbCurrentRadius / mThumbRadius;
 
             if(factor > 0){
@@ -665,7 +730,7 @@ public class Slider extends View{
             mStartFillPercent = mThumbFillPercent;
             mStartRadius = mThumbCurrentRadius;
             mFillPercent = mPosition == 0 ? 0 : 1;
-            mDuration = mContinuousMode && !mIsDragging ? mTransformAnimationDuration * 2 + mTravelAnimationDuration : mTravelAnimationDuration;
+            mDuration = mDiscreteMode && !mIsDragging ? mTransformAnimationDuration * 2 + mTravelAnimationDuration : mTravelAnimationDuration;
         }
 
         public boolean startAnimation(float position) {
@@ -692,7 +757,7 @@ public class Slider extends View{
 
         public void stopAnimation() {
             mRunning = false;
-            mThumbCurrentRadius = mContinuousMode && mIsDragging ? 0 : mThumbRadius;
+            mThumbCurrentRadius = mDiscreteMode && mIsDragging ? 0 : mThumbRadius;
             mThumbFillPercent = mFillPercent;
             mThumbPosition = mPosition;
             getHandler().removeCallbacks(this);
@@ -705,7 +770,7 @@ public class Slider extends View{
             float progress = Math.min(1f, (float)(curTime - mStartTime) / mDuration);
             float value = mInterpolator.getInterpolation(progress);
 
-            if(mContinuousMode){
+            if(mDiscreteMode){
                 if(mIsDragging) {
                     mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
                     mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;

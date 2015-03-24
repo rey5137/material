@@ -197,6 +197,28 @@
         <item name="sw_interpolator">@android:anim/decelerate_interpolator</item>
     </style>
 
+    <style name="Material.Widget.Slider">
+        <item name="sl_strokeSize">2dp</item>
+        <item name="sl_strokeCap">round</item>
+        <item name="sl_thumbBorderSize">2dp</item>
+        <item name="sl_thumbRadius">10dp</item>
+        <item name="sl_thumbFocusRadius">14dp</item>
+        <item name="sl_travelAnimDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="sl_transformAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="sl_interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="sl_minValue">0</item>
+        <item name="sl_maxValue">100</item>
+        <item name="sl_stepValue">1</item>
+        <item name="sl_value">0</item>
+        <item name="sl_discreteMode">false</item>
+        <item name="sl_textSize">@dimen/abc_text_size_small_material</item>
+        <item name="sl_textColor">#FFFFFFFF</item>
+    </style>
+
+    <style name="Material.Widget.Slider.Discrete" parent="Material.Widget.Slider">
+        <item name="sl_discreteMode">true</item>
+    </style>
+
     <style name="Material.Widget.TabPageIndicator">
         <item name="tpi_tabPadding">12dp</item>
         <item name="tpi_tabRipple">@style/Material.Drawable.Ripple.Wave</item>
