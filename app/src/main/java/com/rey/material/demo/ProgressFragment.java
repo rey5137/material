@@ -33,7 +33,7 @@ public class ProgressFragment extends Fragment implements Callback{
 	private static final int MSG_UPDATE_QUERY_PROGRESS = 1003;
 	private static final int MSG_UPDATE_BUFFER_PROGRESS = 1004;
 	
-	private static final long PROGRESS_INTERVAL = 5000;
+	private static final long PROGRESS_INTERVAL = 7000;
 	private static final long START_DELAY = 2000;
 	private static final long PROGRESS_UPDATE_INTERVAL = PROGRESS_INTERVAL / 100;
 	private static final long START_QUERY_DELAY = PROGRESS_INTERVAL / 2;
