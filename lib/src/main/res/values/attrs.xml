@@ -311,9 +311,11 @@
         <attr name="fab_backgroundColor" format="reference|color"/>
         <attr name="fab_radius" format="reference|dimension"/>
         <attr name="fab_elevation" format="reference|dimension"/>
-        <attr name="fab_icon" format="reference"/>
+        <attr name="fab_iconSrc" format="reference"/>
+        <attr name="fab_iconLineMorphing" format="reference"/>
         <attr name="fab_iconSize" format="reference|dimension"/>
-        <attr name="fab_autoSwitch" format="boolean"/>
+        <attr name="fab_interpolator" format="reference"/>
+        <attr name="fab_animDuration" format="reference|integer"/>
         <attr name="ripple" /> 
         <attr name="delayClick" /> 
     </declare-styleable>

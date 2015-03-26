@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private ToolbarManager mToolbarManager;
     private SnackBar mSnackBar;
 
-	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.SLIDERS, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
+	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.FAB, Tab.SWITCHES, Tab.SLIDERS, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -156,10 +156,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public enum Tab {
 	    PROGRESS ("Progresses"),
 	    BUTTONS ("Buttons"),
+        FAB ("FABs"),
 	    SWITCHES ("Switches"),
         SLIDERS ("Sliders"),
-	    TEXTFIELDS ("Textfields"),
-	    SNACKBARS ("Snackbars"),
+	    TEXTFIELDS ("TextFields"),
+	    SNACKBARS ("SnackBars"),
         DIALOGS ("Dialogs");
 	    private final String name;       
 
@@ -259,6 +260,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.PROGRESS, fragment);
     					else if(fragment instanceof ButtonFragment)
     						setFragment(Tab.BUTTONS, fragment);
+                        else if(fragment instanceof FabFragment)
+                            setFragment(Tab.FAB, fragment);
     					else if(fragment instanceof SwitchesFragment)
     						setFragment(Tab.SWITCHES, fragment);
                         else if(fragment instanceof SliderFragment)
@@ -293,6 +296,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					case BUTTONS:
 						mFragments[position] = ButtonFragment.newInstance();
 						break;
+                    case FAB:
+                        mFragments[position] = FabFragment.newInstance();
+                        break;
 					case SWITCHES:
 						mFragments[position] = SwitchesFragment.newInstance();
 						break;

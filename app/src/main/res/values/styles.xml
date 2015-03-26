@@ -184,8 +184,7 @@
     <style name="FloatingActionButton" parent="Material.Widget.FloatingActionButton.Light">
         <item name="fab_backgroundColor">#FFDFDFDF</item>
         <item name="fab_elevation">4dp</item>
-        <item name="fab_icon">@style/FloatingActionButtonIcon.Light</item>
-        <item name="fab_autoSwitch">true</item>
+        <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon.Light</item>
         <item name="ripple">@style/Material.Drawable.Ripple.Touch.Light</item>
         <item name="delayClick">false</item>
     </style>
@@ -193,8 +192,7 @@
     <style name="FloatingWaveActionButton" parent="Material.Widget.FloatingActionButton.Light">
         <item name="fab_backgroundColor">#FFDFDFDF</item>
         <item name="fab_elevation">4dp</item>
-        <item name="fab_icon">@style/FloatingActionButtonIcon.Light</item>
-        <item name="fab_autoSwitch">true</item>
+        <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon.Light</item>
         <item name="ripple">@style/Material.Drawable.Ripple.Wave.Light</item>
         <item name="delayClick">false</item>
     </style>
@@ -202,8 +200,7 @@
     <style name="FloatingColorActionButton" parent="Material.Widget.FloatingActionButton.Light">
         <item name="fab_backgroundColor">#FF2196F3</item>
         <item name="fab_elevation">4dp</item>
-        <item name="fab_icon">@style/FloatingActionButtonIcon</item>
-        <item name="fab_autoSwitch">true</item>
+        <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon</item>
         <item name="ripple">@style/FloatingColorButtonRippleStyle</item>
         <item name="delayClick">true</item>
     </style>
@@ -211,8 +208,7 @@
     <style name="FloatingWaveColorActionButton" parent="Material.Widget.FloatingActionButton.Light">
         <item name="fab_backgroundColor">#FF2196F3</item>
         <item name="fab_elevation">4dp</item>
-        <item name="fab_icon">@style/FloatingActionButtonIcon</item>
-        <item name="fab_autoSwitch">true</item>
+        <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon</item>
         <item name="ripple">@style/FloatingWaveColorButtonRippleStyle</item>
         <item name="delayClick">true</item>
     </style>

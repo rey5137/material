@@ -32,7 +32,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		mDelayClick = a.getBoolean(R.styleable.RippleView_delayClick, mDelayClick);
 		a.recycle();
 		
-		if(resId != 0){
+		if(resId != 0 && !mView.isInEditMode()){
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 				mView.setBackground(new RippleDrawable.Builder(context, resId).build());
 			else

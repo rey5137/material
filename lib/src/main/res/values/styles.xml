@@ -243,6 +243,8 @@
         <item name="fab_radius">28dp</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconSize">24dp</item>
+        <item name="fab_interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
         <item name="ripple">@style/Material.Drawable.Ripple.Touch</item>
         <item name="delayClick">false</item>
     </style>
