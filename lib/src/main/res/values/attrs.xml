@@ -150,20 +150,53 @@
     </declare-styleable>
     
     <declare-styleable name="Switch">
-        <attr name="sw_strokeSize" format="reference|dimension"/>
-        <attr name="sw_strokeColor" format="reference|color"/>
-        <attr name="sw_strokeCap" format="integer">
+        <attr name="sw_trackSize" format="reference|dimension"/>
+        <attr name="sw_trackColor" format="reference|color"/>
+        <attr name="sw_trackCap" format="integer">
             <enum name="butt" value="0x00000000" />
 	        <enum name="round" value="0x00000001" />
 	        <enum name="square" value="0x00000002" />
         </attr>
-        <attr name="sw_thumbBorderSize" format="reference|dimension"/>
         <attr name="sw_thumbColor" format="reference|color"/>
         <attr name="sw_thumbRadius" format="reference|dimension"/>
+        <attr name="sw_thumbElevation" format="reference|dimension"/>
         <attr name="sw_animDuration" format="reference|integer"/>
         <attr name="sw_interpolator" format="reference"/>
         <attr name="android:gravity" />
         <attr name="android:checked" />
+    </declare-styleable>
+
+    <declare-styleable name="Slider">
+        <attr name="sl_trackSize" format="reference|dimension"/>
+        <attr name="sl_primaryColor" format="reference|color"/>
+        <attr name="sl_secondaryColor" format="reference|color"/>
+        <attr name="sl_trackCap" format="integer">
+            <enum name="butt" value="0x00000000" />
+            <enum name="round" value="0x00000001" />
+            <enum name="square" value="0x00000002" />
+        </attr>
+        <attr name="sl_thumbBorderSize" format="reference|dimension"/>
+        <attr name="sl_thumbRadius" format="reference|dimension"/>
+        <attr name="sl_thumbFocusRadius" format="reference|dimension"/>
+        <attr name="sl_travelAnimDuration" format="reference|integer"/>
+        <attr name="sl_transformAnimDuration" format="reference|integer"/>
+        <attr name="sl_interpolator" format="reference"/>
+        <attr name="sl_minValue" format="reference|integer"/>
+        <attr name="sl_maxValue" format="reference|integer"/>
+        <attr name="sl_stepValue" format="reference|integer"/>
+        <attr name="sl_value" format="reference|integer"/>
+        <attr name="sl_discreteMode" format="reference|boolean"/>
+        <attr name="sl_fontFamily" format="string|reference"/>
+        <attr name="sl_textStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <attr name="sl_textSize" format="reference|dimension"/>
+        <attr name="sl_textColor" format="reference|color"/>
+        <attr name="android:gravity" />
+        <attr name="android:enabled" />
     </declare-styleable>
     
     <declare-styleable name="NavigationDrawerDrawable">
@@ -278,9 +311,11 @@
         <attr name="fab_backgroundColor" format="reference|color"/>
         <attr name="fab_radius" format="reference|dimension"/>
         <attr name="fab_elevation" format="reference|dimension"/>
-        <attr name="fab_icon" format="reference"/>
+        <attr name="fab_iconSrc" format="reference"/>
+        <attr name="fab_iconLineMorphing" format="reference"/>
         <attr name="fab_iconSize" format="reference|dimension"/>
-        <attr name="fab_autoSwitch" format="boolean"/>
+        <attr name="fab_interpolator" format="reference"/>
+        <attr name="fab_animDuration" format="reference|integer"/>
         <attr name="ripple" /> 
         <attr name="delayClick" /> 
     </declare-styleable>

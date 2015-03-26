@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbarStyle="outsideOverlay">
+    
+    <LinearLayout    
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:gravity="center"
+        android:padding="8dp">
+	                    
+	    <TextView 
+			android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:textSize="@dimen/title_text"
+		    android:padding="8dp"
+		    android:textColor="#FF000000"
+		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+		    android:text="Image"/>
+
+	    <com.rey.material.widget.FloatingActionButton
+            style="@style/Material.Widget.FloatingActionButton.Light"
+            android:id="@+id/fab_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_iconSrc="@drawable/ic_done_white_24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/title_text"
+            android:padding="8dp"
+            android:textColor="#FF000000"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            android:text="Line Morphing"/>
+
+        <com.rey.material.widget.FloatingActionButton
+            style="@style/Material.Widget.FloatingActionButton.Light"
+            android:id="@+id/fab_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_iconLineMorphing="@style/FloatingActionButtonIcon"/>
+
+	    
+	</LinearLayout>
+    
+    
+</ScrollView>
+    

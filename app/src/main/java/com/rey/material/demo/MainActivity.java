@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
 	private ListView lv_drawer;
-	private ViewPager vp;
+	private CustomViewPager vp;
 	private TabPageIndicator tpi;
 	
 	private DrawerAdapter mDrawerAdapter;
@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private ToolbarManager mToolbarManager;
     private SnackBar mSnackBar;
 
-	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.SWITCHES, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
+	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.FAB, Tab.SWITCHES, Tab.SLIDERS, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		fl_drawer = (FrameLayout)findViewById(R.id.main_fl_drawer);
 		lv_drawer = (ListView)findViewById(R.id.main_lv_drawer);
 		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
-		vp = (ViewPager)findViewById(R.id.main_vp);
+		vp = (CustomViewPager)findViewById(R.id.main_vp);
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
@@ -109,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 
-		vp.setCurrentItem(0);
+		vp.setCurrentItem(2);
 	}
 
 	@Override
@@ -153,14 +153,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         return mSnackBar;
     }
 
-
-
     public enum Tab {
 	    PROGRESS ("Progresses"),
 	    BUTTONS ("Buttons"),
+        FAB ("FABs"),
 	    SWITCHES ("Switches"),
-	    TEXTFIELDS ("Textfields"),
-	    SNACKBARS ("Snackbars"),
+        SLIDERS ("Sliders"),
+	    TEXTFIELDS ("TextFields"),
+	    SNACKBARS ("SnackBars"),
         DIALOGS ("Dialogs");
 	    private final String name;       
 
@@ -260,8 +260,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.PROGRESS, fragment);
     					else if(fragment instanceof ButtonFragment)
     						setFragment(Tab.BUTTONS, fragment);
+                        else if(fragment instanceof FabFragment)
+                            setFragment(Tab.FAB, fragment);
     					else if(fragment instanceof SwitchesFragment)
     						setFragment(Tab.SWITCHES, fragment);
+                        else if(fragment instanceof SliderFragment)
+                            setFragment(Tab.SLIDERS, fragment);
     					else if(fragment instanceof TextfieldFragment)
     						setFragment(Tab.TEXTFIELDS, fragment);
     					else if(fragment instanceof SnackbarFragment)
@@ -292,9 +296,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					case BUTTONS:
 						mFragments[position] = ButtonFragment.newInstance();
 						break;
+                    case FAB:
+                        mFragments[position] = FabFragment.newInstance();
+                        break;
 					case SWITCHES:
 						mFragments[position] = SwitchesFragment.newInstance();
 						break;
+                    case SLIDERS:
+                        mFragments[position] = SliderFragment.newInstance();
+                        break;
 					case TEXTFIELDS:
 						mFragments[position] = TextfieldFragment.newInstance();
 						break;
