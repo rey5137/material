@@ -28,7 +28,155 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <p>A library to bring Material Design UI to pre-Lolipop Android.</p>
+          <h1>
+<a id="material" class="anchor" href="#material" aria-hidden="true"><span class="octicon octicon-link"></span></a>Material</h1>
+
+<p>MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is <a href="https://github.com/rey5137">Rey Pham</a>.</p>
+
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#demo">Demo</a></li>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#donation">Donation</a></li>
+</ul>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>
+<p>Progress</p>
+
+<ul>
+<li>
+<p>Circular</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/progress_circular_indeterminate.gif" alt=""> <img src="https://github.com/rey5137/Material/blob/master/image/progress_circular_determinate.gif" alt=""></p>
+</li>
+<li>
+<p>Linear</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/progress_linear_indeterminate.gif" alt=""> 
+<img src="https://github.com/rey5137/Material/blob/master/image/progress_linear_determinate.gif" alt="">
+<img src="https://github.com/rey5137/Material/blob/master/image/progress_linear_query.gif" alt="">
+<img src="https://github.com/rey5137/Material/blob/master/image/progress_linear_buffer.gif" alt=""></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Buttons</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/button_raise_touch.gif" alt=""> <img src="https://github.com/rey5137/Material/blob/master/image/button_raise_wave.gif" alt=""></p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/fab_image.gif" alt=""> <img src="https://github.com/rey5137/Material/blob/master/image/fab_line.gif" alt="">   </p>
+</li>
+<li>
+<p>Switches</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/cb.gif" alt=""></p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/rb.gif" alt=""></p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/switch.gif" alt=""></p>
+</li>
+<li>
+<p>Sliders</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/slider_continuous.gif" alt=""></p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/slider_discrete.gif" alt=""></p>
+</li>
+<li>
+<p>Text fields</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/textfield.gif" alt=""></p>
+</li>
+<li>
+<p>Snackbars</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/snackbar.png" alt=""></p>
+</li>
+<li>
+<p>Dialogs</p>
+
+<p><img src="https://github.com/rey5137/Material/blob/master/image/dialog_3.png" alt=""> <img src="https://github.com/rey5137/Material/blob/master/image/dialog_4.png" alt=""></p>
+</li>
+</ul>
+
+<h2>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
+
+<p><a href="https://play.google.com/store/apps/details?id=com.rey.material.demo">
+  <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png">
+</a></p>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Add Gradle dependency:</p>
+
+<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.0.0<span class="pl-pds">'</span></span>
+}</pre></div>
+
+<ul>
+<li>Or
+<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.0.0/material-1.0.0.aar">Download from Maven</a>
+</li>
+</ul>
+
+<p>AppCompat and CardView library is required by Material library.</p>
+
+<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:appcompat-v7:21.0.2<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:21.0.3<span class="pl-pds">'</span></span>
+}</pre></div>
+
+<p>Now you can use any widget in <strong>com.rey.material.widget</strong> package as you wish. For styling, please view component's details pages.</p>
+
+<h2>
+<a id="donation" class="anchor" href="#donation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Donation</h2>
+
+<p>You can support the project and thank the author for his hard work.</p>
+
+<p><a href="https://pledgie.com/campaigns/28714"><img alt="Click here to lend your support to: Support Material Library project. and make a donation at pledgie.com !" src="https://pledgie.com/campaigns/28714.png?skin_name=chrome" border="0"></a></p>
+
+<p><strong>PayPal</strong></p>
+
+<ul>
+<li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=pea5137%40gmail%2ecom&amp;lc=US&amp;item_name=Rey%20Pham&amp;no_note=0&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest">Donate</a></li>
+</ul>
+
+<h2>
+<a id="developed-by" class="anchor" href="#developed-by" aria-hidden="true"><span class="octicon octicon-link"></span></a>Developed By</h2>
+
+<ul>
+<li>Rey Pham - <a href="mailto:pea5137@gmail.com">pea5137@gmail.com</a>
+</li>
+</ul>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Want to contribute? You are welcome!</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<pre><code>Copyright 2015 Rey Pham.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</code></pre>
         </section>
 
         <aside id="sidebar">
@@ -48,6 +196,16 @@
       </div>
     </div>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-52008083-5");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
