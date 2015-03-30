@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -501,7 +500,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
         @Override
         protected void onDraw(Canvas canvas) {
-
             //draw month text
             mPaint.setTextSize(mTextSize);
             mPaint.setTypeface(mTypeface);
@@ -543,7 +541,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             for(int i = 0; i < 7; i++){
                 x = (i + 0.5f) * mDayWidth + paddingLeft;
                 y = paddingTop;
-                int index = mIsMondayFirst ? (i == 6 ? 0 : i - 1) : i;
+                int index = mIsMondayFirst ? (i == 6 ? 0 : i + 1) : i;
                 canvas.drawText(mLabels[index], x, y, mPaint);
             }
 

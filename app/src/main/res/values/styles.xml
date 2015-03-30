@@ -252,6 +252,16 @@
         <item name="lmd_strokeColor">#FF000000</item>
     </style>
 
+    <style name="SimpleDialog" parent="Material.App.Dialog.Simple">
+        <item name="di_inAnimation">@anim/anim_scale_in</item>
+        <item name="di_outAnimation">@anim/anim_scale_out</item>
+    </style>
+
+    <style name="SimpleDialogLight" parent="Material.App.Dialog.Simple.Light">
+        <item name="di_inAnimation">@anim/anim_scale_in</item>
+        <item name="di_outAnimation">@anim/anim_scale_out</item>
+    </style>
+
     <!-- ContactView -->
     <style name="ContactView">
         <item name="android:minHeight">56dp</item>
