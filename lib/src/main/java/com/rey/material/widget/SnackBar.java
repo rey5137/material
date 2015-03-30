@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -230,6 +231,7 @@ public class SnackBar extends FrameLayout {
 		boolean hasTextColor = a.hasValue(R.styleable.SnackBar_sb_textColor);		
 		int textColor = hasTextColor ? a.getColor(R.styleable.SnackBar_sb_textColor, 0xFFFFFFFF) : 0;
 		int textAppearance = a.getResourceId(R.styleable.SnackBar_sb_textAppearance, 0);
+        String text = a.getString(R.styleable.SnackBar_sb_text);
 		boolean singleLine = a.getBoolean(R.styleable.SnackBar_sb_singleLine, true);
 		int maxLines = a.getInteger(R.styleable.SnackBar_sb_maxLines, 0);
 		int lines = a.getInteger(R.styleable.SnackBar_sb_lines, 0);
@@ -242,10 +244,13 @@ public class SnackBar extends FrameLayout {
 		else
 			actionTextColor = a.getColorStateList(R.styleable.SnackBar_sb_actionTextColor);
 		int actionTextAppearance = a.getResourceId(R.styleable.SnackBar_sb_actionTextAppearance, 0);
+        String actionText = a.getString(R.styleable.SnackBar_sb_actionText);
 		int actionRipple = a.getResourceId(R.styleable.SnackBar_sb_actionRipple, 0);
+        int duration = a.getInteger(R.styleable.SnackBar_sb_duration, -1);
 		mInAnimationId = a.getResourceId(R.styleable.SnackBar_sb_inAnimation, 0);
 		mOutAnimationId = a.getResourceId(R.styleable.SnackBar_sb_outAnimation, 0);
         mRemoveOnDismiss = a.getBoolean(R.styleable.SnackBar_sb_removeOnDismiss, true);
+
 		
 		a.recycle();
 				
@@ -258,7 +263,9 @@ public class SnackBar extends FrameLayout {
 		if(textSize > 0)
 			textSize(textSize);
 		if(hasTextColor)
-			textColor(textColor);	
+			textColor(textColor);
+        if(text != null)
+            text(text);
 		singleLine(singleLine);
 		if(maxLines > 0)
 			maxLines(maxLines);
@@ -296,8 +303,12 @@ public class SnackBar extends FrameLayout {
 		    actionTextSize(actionTextSize);
         if(actionTextColor != null)
 		    actionTextColor(actionTextColor);
+        if(actionText != null)
+            actionText(actionText);
         if(actionRipple != 0)
 		    actionRipple(actionRipple);
+        if(duration >= 0)
+            duration(duration);
 	}
 
     public SnackBar applyStyle(int resId){
@@ -356,7 +367,7 @@ public class SnackBar extends FrameLayout {
 	}
 	
 	public SnackBar actionText(CharSequence text){
-		if(text == null)
+		if(TextUtils.isEmpty(text))
 			mAction.setVisibility(View.INVISIBLE);
 		else{
 			mAction.setVisibility(View.VISIBLE);		
