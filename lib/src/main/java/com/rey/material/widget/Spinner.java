@@ -202,8 +202,8 @@ public class Spinner extends FrameLayout {
         ColorStateList dividerColor = a.getColorStateList(R.styleable.Spinner_spn_dividerColor);
         if(dividerColor == null){
             int[][] states = new int[][]{
-                    new int[]{-android.R.attr.state_focused},
-                    new int[]{android.R.attr.state_focused, android.R.attr.state_enabled},
+                    new int[]{-android.R.attr.state_pressed},
+                    new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled},
             };
             int[] colors = new int[]{
                     ThemeUtil.colorControlNormal(context, 0xFF000000),

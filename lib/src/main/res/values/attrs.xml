@@ -289,6 +289,7 @@
         <attr name="sb_textSize" format="reference|dimension"/>
         <attr name="sb_textColor" format="reference|color"/>
         <attr name="sb_textAppearance" format="reference"/>
+        <attr name="sb_text" format="reference|string"/>
         <attr name="sb_singleLine" format="boolean"/>
         <attr name="sb_maxLines" format="reference|integer"/>
         <attr name="sb_lines" format="reference|integer"/>
@@ -301,7 +302,9 @@
         <attr name="sb_actionTextSize" format="reference|dimension"/>
         <attr name="sb_actionTextColor" format="reference|color"/>
         <attr name="sb_actionTextAppearance" format="reference"/>
+        <attr name="sb_actionText" format="reference|string"/>
         <attr name="sb_actionRipple" format="reference"/>
+        <attr name="sb_duration" format="reference|integer"/>
         <attr name="sb_inAnimation" format="reference"/>
         <attr name="sb_outAnimation" format="reference"/>
         <attr name="sb_removeOnDismiss" format="boolean" />

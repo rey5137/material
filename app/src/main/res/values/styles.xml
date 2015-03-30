@@ -179,6 +179,20 @@
     
     <style name="CheckBoxDrawable" parent="Material.Drawable.CheckBox"/>
 
+    <!-- SnackBar Style -->
+
+    <style name="SnackBarSingleLine" parent="Material.Widget.SnackBar.Mobile">
+        <item name="sb_text">This is single-line snackbar.</item>
+        <item name="sb_actionText">CLOSE</item>
+        <item name="sb_duration">0</item>
+    </style>
+
+    <style name="SnackBarMultiLine" parent="Material.Widget.SnackBar.Mobile.MultiLine">
+        <item name="sb_text">This is multi-line snackbar.\nIt will auto-close after 5s.</item>
+        <item name="sb_actionText"></item>
+        <item name="sb_duration">5000</item>
+    </style>
+
     <!-- FloatingActionButton Style -->
 
     <style name="FloatingActionButton" parent="Material.Widget.FloatingActionButton.Light">

@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private ToolbarManager mToolbarManager;
     private SnackBar mSnackBar;
 
-	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.FAB, Tab.SWITCHES, Tab.SLIDERS, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
+	private Tab[] mItems = new Tab[]{Tab.PROGRESS, Tab.BUTTONS, Tab.FAB, Tab.SWITCHES, Tab.SLIDERS, Tab.SPINNERS, Tab.TEXTFIELDS, Tab.SNACKBARS, Tab.DIALOGS};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +159,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         FAB ("FABs"),
 	    SWITCHES ("Switches"),
         SLIDERS ("Sliders"),
+        SPINNERS ("Spinners"),
 	    TEXTFIELDS ("TextFields"),
 	    SNACKBARS ("SnackBars"),
         DIALOGS ("Dialogs");
@@ -229,7 +230,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	
 	private static class PagerAdapter extends FragmentStatePagerAdapter {
 		
-		Fragment[] mFragments = new Fragment[3];
+		Fragment[] mFragments;
 		Tab[] mTabs; 
 				
 		private static final Field sActiveField;
@@ -266,6 +267,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     						setFragment(Tab.SWITCHES, fragment);
                         else if(fragment instanceof SliderFragment)
                             setFragment(Tab.SLIDERS, fragment);
+                        else if(fragment instanceof SpinnersFragment)
+                            setFragment(Tab.SPINNERS, fragment);
     					else if(fragment instanceof TextfieldFragment)
     						setFragment(Tab.TEXTFIELDS, fragment);
     					else if(fragment instanceof SnackbarFragment)
@@ -304,6 +307,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 						break;
                     case SLIDERS:
                         mFragments[position] = SliderFragment.newInstance();
+                        break;
+                    case SPINNERS:
+                        mFragments[position] = SpinnersFragment.newInstance();
                         break;
 					case TEXTFIELDS:
 						mFragments[position] = TextfieldFragment.newInstance();
