@@ -1,5 +1,8 @@
 Material
 =====================
+
+![](https://img.shields.io/maven-central/v/com.github.rey5137/material.svg)
+
 MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is [Rey Pham](https://github.com/rey5137).
 
 * [Features](#features)
@@ -8,48 +11,48 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Donation](#donation)
 
 ##Features
-- Progress
+- [Progress](Progress)
     - Circular
     
-        ![](https://github.com/rey5137/Material/blob/master/image/progress_circular_indeterminate.gif) ![](https://github.com/rey5137/Material/blob/master/image/progress_circular_determinate.gif)
+        ![](https://github.com/rey5137/Material/raw/master/image/progress_circular_indeterminate.gif) ![](https://github.com/rey5137/Material/raw/master/image/progress_circular_determinate.gif)
     - Linear
 
-        ![](https://github.com/rey5137/Material/blob/master/image/progress_linear_indeterminate.gif) 
-        ![](https://github.com/rey5137/Material/blob/master/image/progress_linear_determinate.gif)
-        ![](https://github.com/rey5137/Material/blob/master/image/progress_linear_query.gif)
-        ![](https://github.com/rey5137/Material/blob/master/image/progress_linear_buffer.gif)
+        ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_indeterminate.gif) 
+        ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_determinate.gif)
+        ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_query.gif)
+        ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_buffer.gif)
 
-- Buttons
+- [Button](Button)
     
-    ![](https://github.com/rey5137/Material/blob/master/image/button_raise_touch.gif) ![](https://github.com/rey5137/Material/blob/master/image/button_raise_wave.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/button_raise_touch.gif) ![](https://github.com/rey5137/Material/raw/master/image/button_raise_wave.gif)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/fab_image.gif) ![](https://github.com/rey5137/Material/blob/master/image/fab_line.gif)   
+    ![](https://github.com/rey5137/Material/raw/master/image/fab_image.gif) ![](https://github.com/rey5137/Material/raw/master/image/fab_line.gif)   
      
-- Switches
+- [Switch](Switch)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/cb.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/cb.gif)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/rb.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/rb.gif)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/switch.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/switch.gif)
 
-- Sliders
+- [Slider](Slider)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/slider_continuous.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/slider_continuous.gif)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/slider_discrete.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/slider_discrete.gif)
 
-- Text fields
+- [Text Field](Text Field)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/textfield.gif)
+    ![](https://github.com/rey5137/Material/raw/master/image/textfield.gif)
 
-- Snackbars
+- [SnackBar](SnackBar)
      
-    ![](https://github.com/rey5137/Material/blob/master/image/snackbar.png)
+    ![](https://github.com/rey5137/Material/raw/master/image/snackbar.png)
 
-- Dialogs
+- [Dialog](Dialog)
 
-    ![](https://github.com/rey5137/Material/blob/master/image/dialog_3.png) ![](https://github.com/rey5137/Material/blob/master/image/dialog_4.png)
+    ![](https://github.com/rey5137/Material/raw/master/image/dialog_3.png) ![](https://github.com/rey5137/Material/raw/master/image/dialog_4.png)
 
 ## Demo
 
