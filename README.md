@@ -11,7 +11,7 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Donation](#donation)
 
 ##Features
-- [Progress](Progress)
+- [Progress](https://github.com/rey5137/Material/wiki/Progress)
     - Circular
     
         ![](https://github.com/rey5137/Material/raw/master/image/progress_circular_indeterminate.gif) ![](https://github.com/rey5137/Material/raw/master/image/progress_circular_determinate.gif)
@@ -22,13 +22,13 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
         ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_query.gif)
         ![](https://github.com/rey5137/Material/raw/master/image/progress_linear_buffer.gif)
 
-- [Button](Button)
+- [Button](https://github.com/rey5137/Material/wiki/Button)
     
     ![](https://github.com/rey5137/Material/raw/master/image/button_raise_touch.gif) ![](https://github.com/rey5137/Material/raw/master/image/button_raise_wave.gif)
 
     ![](https://github.com/rey5137/Material/raw/master/image/fab_image.gif) ![](https://github.com/rey5137/Material/raw/master/image/fab_line.gif)   
      
-- [Switch](Switch)
+- [Switch](https://github.com/rey5137/Material/wiki/Switch)
 
     ![](https://github.com/rey5137/Material/raw/master/image/cb.gif)
 
@@ -36,21 +36,21 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 
     ![](https://github.com/rey5137/Material/raw/master/image/switch.gif)
 
-- [Slider](Slider)
+- [Slider](https://github.com/rey5137/Material/wiki/Slider)
 
     ![](https://github.com/rey5137/Material/raw/master/image/slider_continuous.gif)
 
     ![](https://github.com/rey5137/Material/raw/master/image/slider_discrete.gif)
 
-- [Text Field](Text Field)
+- [Text Field](https://github.com/rey5137/Material/wiki/Text-Field)
 
     ![](https://github.com/rey5137/Material/raw/master/image/textfield.gif)
 
-- [SnackBar](SnackBar)
+- [SnackBar](https://github.com/rey5137/Material/wiki/SnackBar)
      
     ![](https://github.com/rey5137/Material/raw/master/image/snackbar.png)
 
-- [Dialog](Dialog)
+- [Dialog](https://github.com/rey5137/Material/wiki/Dialog)
 
     ![](https://github.com/rey5137/Material/raw/master/image/dialog_3.png) ![](https://github.com/rey5137/Material/raw/master/image/dialog_4.png)
 
@@ -82,7 +82,7 @@ dependencies {
    compile 'com.android.support:cardview-v7:21.0.3'
 }
 ```
-Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view component's details pages.
+Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view [Wiki](https://github.com/rey5137/Material/wiki).
 
 ## Donation
 You can support the project and thank the author for his hard work.
