@@ -42,9 +42,17 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 
     ![](https://github.com/rey5137/Material/raw/master/image/slider_discrete.gif)
 
+- [Spinner](https://github.com/rey5137/Material/wiki/Spinner)
+     
+    ![](https://github.com/rey5137/Material/raw/master/image/spn.gif)
+
 - [Text Field](https://github.com/rey5137/Material/wiki/Text-Field)
 
     ![](https://github.com/rey5137/Material/raw/master/image/textfield.gif)
+
+- [TabPageIndicator](https://github.com/rey5137/Material/wiki/TabPageIndicator)
+     
+    ![](https://github.com/rey5137/Material/raw/master/image/tpi.gif)
 
 - [SnackBar](https://github.com/rey5137/Material/wiki/SnackBar)
      
