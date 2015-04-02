@@ -625,7 +625,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
         private void stopAnimation() {
             mRunning = false;
-            getHandler().removeCallbacks(mUpdater);
+            mAnimProgress = 1f;
+            if(getHandler() != null)
+                getHandler().removeCallbacks(mUpdater);
             invalidate();
         }
 
@@ -645,8 +647,12 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             if(mAnimProgress == 1f)
                 stopAnimation();
 
-            if(mRunning)
-                getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            if(mRunning) {
+                if(getHandler() != null)
+                    getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+                else
+                    stopAnimation();
+            }
 
             invalidate();
         }
