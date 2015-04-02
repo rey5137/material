@@ -32,8 +32,16 @@ public class CheckBox extends CompoundButton {
     }
 
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		CheckBoxDrawable drawable = new CheckBoxDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).build();
-		drawable.setInEditMode(isInEditMode());
+		applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        CheckBoxDrawable drawable = new CheckBoxDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).build();
+        drawable.setInEditMode(isInEditMode());
         drawable.setAnimEnable(false);
         setButtonDrawable(drawable);
         drawable.setAnimEnable(true);

@@ -135,7 +135,7 @@ public class SnackBar extends FrameLayout {
 
         setClickable(true);
 
-        applyStyle(attrs, defStyleAttr, defStyleRes);
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -203,8 +203,7 @@ public class SnackBar extends FrameLayout {
 
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private void applyStyle(AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		Context context = getContext();
+	private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
 		
 		int backgroundColor = a.getColor(R.styleable.SnackBar_sb_backgroundColor, 0xFF323232);
@@ -312,7 +311,7 @@ public class SnackBar extends FrameLayout {
 	}
 
     public SnackBar applyStyle(int resId){
-        applyStyle(null, 0, resId);
+        applyStyle(getContext(), null, 0, resId);
         return this;
     }
 

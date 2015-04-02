@@ -37,10 +37,18 @@ public class Button extends android.widget.Button {
     }
 
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-	}	
-	
-	@Override
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+	}
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
 	public void setOnClickListener(OnClickListener l) {
 		if(l == mRippleManager)
 			super.setOnClickListener(l);
