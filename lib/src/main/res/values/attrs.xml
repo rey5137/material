@@ -383,6 +383,8 @@
         <attr name="di_neutralActionTextColor" format="color|reference" />
         <attr name="di_dividerColor" format="color|reference" />
         <attr name="di_dividerHeight" format="dimension|reference" />
+        <attr name="di_inAnimation" format="reference" />
+        <attr name="di_outAnimation" format="reference" />
         <attr name="di_cancelable" format="boolean" />
         <attr name="di_canceledOnTouchOutside" format="boolean" />
     </declare-styleable>

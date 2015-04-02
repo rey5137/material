@@ -44,25 +44,37 @@ public class ProgressView extends View {
 	public ProgressView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr);
 		
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyleAttr, defStyleRes);
-		mAutostart = a.getBoolean(R.styleable.ProgressView_pv_autostart, true);
-		mCircular = a.getBoolean(R.styleable.ProgressView_pv_circular, true);
-		mProgressId = a.getResourceId(R.styleable.ProgressView_pv_progressStyle, 0);	
-		
-		a.recycle();
-		
-		if(mProgressId > 0){
-			if(mCircular)
-				mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
-			else
-				mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
-						
-			if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-				setBackground(mProgressDrawable);
-			else
-				setBackgroundDrawable(mProgressDrawable);
-		}
+		init(context, attrs, defStyleAttr, defStyleRes);
 	}
+
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyleAttr, defStyleRes);
+        mAutostart = a.getBoolean(R.styleable.ProgressView_pv_autostart, true);
+        mCircular = a.getBoolean(R.styleable.ProgressView_pv_circular, true);
+        mProgressId = a.getResourceId(R.styleable.ProgressView_pv_progressStyle, 0);
+
+        a.recycle();
+
+        if(mProgressId > 0){
+            if(mCircular)
+                mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
+            else
+                mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
+
+            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                setBackground(mProgressDrawable);
+            else
+                setBackgroundDrawable(mProgressDrawable);
+        }
+    }
 	
 	@Override
     public void setVisibility(int v) {

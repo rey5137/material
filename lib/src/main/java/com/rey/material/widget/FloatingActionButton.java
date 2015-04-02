@@ -684,7 +684,8 @@ public class FloatingActionButton extends View {
             unscheduleDrawable(mPrevIcon);
             mPrevIcon = null;
             mIcon.setAlpha(255);
-            getHandler().removeCallbacks(this);
+            if(getHandler() != null)
+                getHandler().removeCallbacks(this);
             invalidate();
         }
 
@@ -700,8 +701,12 @@ public class FloatingActionButton extends View {
             if(progress == 1f)
                 stopAnimation();
 
-            if(mRunning)
-                getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            if(mRunning) {
+                if(getHandler() != null)
+                    getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+                else
+                    stopAnimation();
+            }
 
             invalidate();
         }

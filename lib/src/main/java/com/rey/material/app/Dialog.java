@@ -8,17 +8,22 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.rey.material.R;
@@ -43,7 +48,7 @@ public class Dialog extends android.app.Dialog{
     protected Button mNegativeAction;
     protected Button mNeutralAction;
     private View mContent;
-    private CardView mBackground;
+    private DialogCardView mCardView;
 
     protected int mContentPadding;
     protected int mActionHeight;
@@ -53,6 +58,17 @@ public class Dialog extends android.app.Dialog{
     protected int mActionPadding;
     protected int mDialogHorizontalPadding;
     protected int mDialogVerticalPadding;
+
+    protected int mInAnimationId;
+    protected int mOutAnimationId;
+
+    private final Handler mHandler = new Handler();
+    private final Runnable mDismissAction = new Runnable() {
+        public void run() {
+            Dialog.super.dismiss();
+        }
+    };
+
 
     private boolean mLayoutActionVertical = false;
 
@@ -89,14 +105,15 @@ public class Dialog extends android.app.Dialog{
         mDialogHorizontalPadding = ThemeUtil.dpToPx(context, 40);
         mDialogVerticalPadding = ThemeUtil.dpToPx(context, 24);
 
-        mBackground = new CardView(context);
+        mCardView = new DialogCardView(context);
         mContainer = new ContainerFrameLayout(context);
         mTitle = new TextView(context);
         mPositiveAction = new Button(context);
         mNegativeAction = new Button(context);
         mNeutralAction = new Button(context);
 
-        mBackground.setPreventCornerOverlap(false);
+        mCardView.setPreventCornerOverlap(false);
+        mCardView.setUseCompatPadding(true);
 
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
         mPositiveAction.setId(ACTION_POSITIVE);
@@ -109,15 +126,14 @@ public class Dialog extends android.app.Dialog{
         mNeutralAction.setPadding(mActionPadding, 0, mActionPadding, 0);
         mNeutralAction.setBackgroundResource(0);
 
-        mContainer.addView(mBackground);
-        mContainer.addView(mTitle);
-        mContainer.addView(mPositiveAction);
-        mContainer.addView(mNegativeAction);
-        mContainer.addView(mNeutralAction);
+        mContainer.addView(mCardView);
+        mCardView.addView(mTitle);
+        mCardView.addView(mPositiveAction);
+        mCardView.addView(mNegativeAction);
+        mCardView.addView(mNeutralAction);
 
         cancelable(true);
         canceledOnTouchOutside(true);
-
         clearContent();
         onCreate();
         applyStyle(style);
@@ -204,6 +220,8 @@ public class Dialog extends android.app.Dialog{
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionTextColor) != TypedValue.TYPE_NULL)
             neutralActionTextColor(a.getColorStateList(R.styleable.Dialog_di_neutralActionTextColor));
 
+        inAnimation(a.getResourceId(R.styleable.Dialog_di_inAnimation, 0));
+        outAnimation(a.getResourceId(R.styleable.Dialog_di_outAnimation, 0));
         dividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
         dividerHeight(a.getDimensionPixelOffset(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
         setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
@@ -245,35 +263,35 @@ public class Dialog extends android.app.Dialog{
     }
 
     public Dialog backgroundColor(int color){
-        mBackground.setCardBackgroundColor(color);
+        mCardView.setCardBackgroundColor(color);
         return this;
     }
 
     public Dialog elevation(float radius){
-        if(mBackground.getMaxCardElevation() < radius)
-            mBackground.setMaxCardElevation(radius);
+        if(mCardView.getMaxCardElevation() < radius)
+            mCardView.setMaxCardElevation(radius);
 
-        mBackground.setCardElevation(radius);
+        mCardView.setCardElevation(radius);
         return this;
     }
 
     public Dialog maxElevation(float radius){
-        mBackground.setMaxCardElevation(radius);
+        mCardView.setMaxCardElevation(radius);
         return this;
     }
 
     public Dialog cornerRadius(float radius){
-        mBackground.setRadius(radius);
+        mCardView.setRadius(radius);
         return this;
     }
 
     public Dialog dividerColor(int color){
-        mContainer.setDividerColor(color);
+        mCardView.setDividerColor(color);
         return this;
     }
 
     public Dialog dividerHeight(int height){
-        mContainer.setDividerHeight(height);
+        mCardView.setDividerHeight(height);
         return this;
     }
 
@@ -496,21 +514,31 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    public Dialog inAnimation(int resId){
+        mInAnimationId = resId;
+        return this;
+    }
+
+    public Dialog outAnimation(int resId){
+        mOutAnimationId = resId;
+        return this;
+    }
+
     public Dialog showDivider(boolean show){
-        mContainer.setShowDivider(show);
+        mCardView.setShowDivider(show);
         return this;
     }
 
     public Dialog contentView(View v){
         if(mContent != v) {
             if(mContent != null)
-                mContainer.removeView(mContent);
+                mCardView.removeView(mContent);
 
             mContent = v;
         }
 
         if(mContent != null)
-            mContainer.addView(mContent);
+            mCardView.addView(mContent);
 
         return this;
     }
@@ -536,12 +564,12 @@ public class Dialog extends android.app.Dialog{
     }
 
     public Dialog contentMargin(int margin){
-        mContainer.setContentMargin(margin);
+        mCardView.setContentMargin(margin);
         return this;
     }
 
     public Dialog contentMargin(int left, int top, int right, int bottom){
-        mContainer.setContentMargin(left, top, right, bottom);
+        mCardView.setContentMargin(left, top, right, bottom);
         return this;
     }
 
@@ -570,19 +598,125 @@ public class Dialog extends android.app.Dialog{
         contentView(v);
     }
 
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        contentView(view);
+    }
+
+    @Override
+    public void show() {
+        if(mInAnimationId != 0)
+            mCardView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mCardView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    Animation anim = AnimationUtils.loadAnimation(mCardView.getContext(), mInAnimationId);
+                    mCardView.startAnimation(anim);
+                    return false;
+                }
+            });
+        super.show();
+    }
+
+    @Override
+    public void dismiss() {
+        if(mOutAnimationId != 0){
+            Animation anim = AnimationUtils.loadAnimation(mContainer.getContext(), mOutAnimationId);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mHandler.post(mDismissAction);
+                }
+            });
+            mCardView.startAnimation(anim);
+        }
+        else
+            mHandler.post(mDismissAction);
+    }
+
     private class ContainerFrameLayout extends FrameLayout{
+
+        private boolean mClickOutside = false;
+
+        public ContainerFrameLayout(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+            mCardView.measure(widthMeasureSpec, heightMeasureSpec);
+            setMeasuredDimension(widthSize, heightSize);
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+            int childLeft = (right - left - mCardView.getMeasuredWidth()) / 2;
+            int childTop = (bottom - top - mCardView.getMeasuredHeight()) / 2;
+            int childRight = childLeft + mCardView.getMeasuredWidth();
+            int childBottom = childTop + mCardView.getMeasuredHeight();
+
+            mCardView.layout(childLeft, childTop, childRight, childBottom);
+        }
+
+        private boolean isOutsideDialog(float x, float y){
+            return x < mCardView.getLeft() + mCardView.getPaddingLeft() || x > mCardView.getRight() - mCardView.getPaddingRight() || y < mCardView.getTop() + mCardView.getPaddingTop() || y > mCardView.getBottom() - mCardView.getPaddingBottom();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            boolean handled = super.onTouchEvent(event);
+
+            if(handled)
+                return true;
+
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    if(isOutsideDialog(event.getX(), event.getY())){
+                        mClickOutside = true;
+                        return true;
+                    }
+                    return false;
+                case MotionEvent.ACTION_MOVE:
+                    return mClickOutside;
+                case MotionEvent.ACTION_CANCEL:
+                    mClickOutside = false;
+                    return false;
+                case MotionEvent.ACTION_UP:
+                    if(mClickOutside && isOutsideDialog(event.getX(), event.getY())){
+                        mClickOutside = false;
+                        if(mCancelable && mCanceledOnTouchOutside)
+                            dismiss();
+                        return true;
+                    }
+                    return false;
+            }
+
+            return false;
+        }
+
+    }
+
+    private class DialogCardView extends CardView{
 
         private Paint mDividerPaint;
         private float mDividerPos = -1f;
         private boolean mShowDivider = false;
-        private boolean mClickOutside = false;
 
         private int mContentMarginLeft;
         private int mContentMarginTop;
         private int mContentMarginRight;
         private int mContentMarginBottom;
 
-        public ContainerFrameLayout(Context context) {
+        public DialogCardView(Context context) {
             super(context);
 
             mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -623,10 +757,10 @@ public class Dialog extends android.app.Dialog{
             int widthSize = MeasureSpec.getSize(widthMeasureSpec);
             int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-            int paddingLeft = Math.max(mDialogHorizontalPadding, mBackground.getPaddingLeft());
-            int paddingRight = Math.max(mDialogHorizontalPadding, mBackground.getPaddingRight());
-            int paddingTop = Math.max(mDialogVerticalPadding, mBackground.getPaddingTop());
-            int paddingBottom = Math.max(mDialogVerticalPadding, mBackground.getPaddingBottom());
+            int paddingLeft = Math.max(mDialogHorizontalPadding, mCardView.getPaddingLeft());
+            int paddingRight = Math.max(mDialogHorizontalPadding, mCardView.getPaddingRight());
+            int paddingTop = Math.max(mDialogVerticalPadding, mCardView.getPaddingTop());
+            int paddingBottom = Math.max(mDialogVerticalPadding, mCardView.getPaddingBottom());
 
             int maxWidth = widthSize - paddingLeft - paddingRight;
             int maxHeight = heightSize - paddingTop - paddingBottom;
@@ -730,24 +864,20 @@ public class Dialog extends android.app.Dialog{
             if(mContent != null)
                 mContent.measure(MeasureSpec.makeMeasureSpec(width - mContentMarginLeft - mContentMarginRight, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - nonContentHeight, MeasureSpec.EXACTLY));
 
-            mBackground.measure(MeasureSpec.makeMeasureSpec(width + mBackground.getPaddingLeft() + mBackground.getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height + mBackground.getPaddingTop() + mBackground.getPaddingBottom(), MeasureSpec.EXACTLY));
-
-            setMeasuredDimension(widthSize, heightSize);
+            setMeasuredDimension(width + getPaddingLeft() + getPaddingRight(), height + getPaddingTop() + getPaddingBottom());
         }
 
         @Override
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-            int childLeft = (right - left - mBackground.getMeasuredWidth()) / 2;
-            int childTop = (bottom - top - mBackground.getMeasuredHeight()) / 2;
-            int childRight = childLeft + mBackground.getMeasuredWidth();
-            int childBottom = childTop + mBackground.getMeasuredHeight();
+            int childLeft = 0;
+            int childTop = 0;
+            int childRight = right - left;
+            int childBottom = bottom - top;
 
-            mBackground.layout(childLeft, childTop, childRight, childBottom);
-
-            childLeft += mBackground.getPaddingLeft();
-            childTop += mBackground.getPaddingTop();
-            childRight -= mBackground.getPaddingRight();
-            childBottom -= mBackground.getPaddingBottom();
+            childLeft += getPaddingLeft();
+            childTop += getPaddingTop();
+            childRight -= getPaddingRight();
+            childBottom -= getPaddingBottom();
 
             if(mTitle.getVisibility() == View.VISIBLE) {
                 mTitle.layout(childLeft, childTop, childRight, childTop + mTitle.getMeasuredHeight());
@@ -811,44 +941,9 @@ public class Dialog extends android.app.Dialog{
             super.draw(canvas);
 
             if(mShowDivider && (mPositiveAction.getVisibility() == View.VISIBLE || mNegativeAction.getVisibility() == View.VISIBLE || mNeutralAction.getVisibility() == View.VISIBLE))
-                canvas.drawLine(mBackground.getLeft() + mBackground.getPaddingLeft(), mDividerPos, mBackground.getRight() - mBackground.getPaddingRight(), mDividerPos, mDividerPaint);
+                canvas.drawLine(getPaddingLeft(), mDividerPos, getWidth() - getPaddingRight(), mDividerPos, mDividerPaint);
         }
 
-        private boolean isOutsideDialog(float x, float y){
-            return x < mBackground.getLeft() + mBackground.getPaddingLeft() || x > mBackground.getRight() - mBackground.getPaddingRight() || y < mBackground.getTop() + mBackground.getPaddingTop() || y > mBackground.getBottom() - mBackground.getPaddingBottom();
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            boolean handled = super.onTouchEvent(event);
-
-            if(handled)
-                return true;
-
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN:
-                    if(isOutsideDialog(event.getX(), event.getY())){
-                        mClickOutside = true;
-                        return true;
-                    }
-                    return false;
-                case MotionEvent.ACTION_MOVE:
-                    return mClickOutside;
-                case MotionEvent.ACTION_CANCEL:
-                    mClickOutside = false;
-                    return false;
-                case MotionEvent.ACTION_UP:
-                    if(mClickOutside && isOutsideDialog(event.getX(), event.getY())){
-                        mClickOutside = false;
-                        if(mCancelable && mCanceledOnTouchOutside)
-                            dismiss();
-                        return true;
-                    }
-                    return false;
-            }
-
-            return false;
-        }
     }
 
     public static class Builder implements DialogFragment.Builder, Parcelable{

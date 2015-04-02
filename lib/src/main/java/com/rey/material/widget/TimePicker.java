@@ -632,7 +632,9 @@ public class TimePicker extends View{
 
     private void stopAnimation() {
         mRunning = false;
-        getHandler().removeCallbacks(mUpdater);
+        mAnimProgress = 1f;
+        if(getHandler() != null)
+            getHandler().removeCallbacks(mUpdater);
         invalidate();
     }
 
@@ -652,8 +654,11 @@ public class TimePicker extends View{
         if(mAnimProgress == 1f)
             stopAnimation();
 
-        if(mRunning)
-            getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+        if(mRunning) {
+            if(getHandler() != null)
+                getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            stopAnimation();
+        }
 
         invalidate();
     }

@@ -40,8 +40,6 @@ public class CompoundButton extends android.widget.CompoundButton {
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-		
 		//a fix to reset paddingLeft attribute
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1){
 			TypedArray a = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.padding, android.R.attr.paddingLeft}, defStyleAttr, defStyleRes);
@@ -53,7 +51,16 @@ public class CompoundButton extends android.widget.CompoundButton {
 		}
 		
 		setClickable(true);
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
 	}
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+    }
 	
 	@Override
 	public void setOnClickListener(OnClickListener l) {

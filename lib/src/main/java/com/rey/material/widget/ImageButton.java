@@ -33,9 +33,17 @@ public class ImageButton extends android.widget.ImageButton {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-	}	
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+    }
 	
 	@Override
 	public void setOnClickListener(OnClickListener l) {

@@ -89,38 +89,48 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		setHorizontalScrollBarEnabled(false);
-								
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, defStyleAttr, defStyleRes);
-		int indicatorColor;
-		
-		mTabPadding = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_tabPadding, ThemeUtil.dpToPx(context, 12));
-		mTabRippleStyle = a.getResourceId(R.styleable.TabPageIndicator_tpi_tabRipple, 0);
-		indicatorColor = a.getColor(R.styleable.TabPageIndicator_tpi_indicatorColor, ThemeUtil.colorAccent(context, 0xFFFFFFFF));
-		mIndicatorHeight = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_indicatorHeight, ThemeUtil.dpToPx(context, 2));
-		mTextApperance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
-		mMode = a.getInteger(R.styleable.TabPageIndicator_tpi_mode, MODE_SCROLL);
-		
-		a.recycle();
-						
-		mTabContainer = new LinearLayout(context);
-		mTabContainer.setOrientation(LinearLayout.HORIZONTAL);
-		mTabContainer.setGravity(Gravity.CENTER);
-		
-		if(mMode == MODE_SCROLL)
-			addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		else if(mMode == MODE_FIXED){
-			addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-			setFillViewport(true);
-		}
-		
-		mPaint = new Paint();
-		mPaint.setAntiAlias(true);
-		mPaint.setColor(indicatorColor);
-		mPaint.setStyle(Paint.Style.FILL);
+
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStyle(Paint.Style.FILL);
+
+        mTabContainer = new LinearLayout(context);
+        mTabContainer.setOrientation(LinearLayout.HORIZONTAL);
+        mTabContainer.setGravity(Gravity.CENTER);
+
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
 		
 		if(isInEditMode())
 			addTemporaryTab();
 	}
+
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
+    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, defStyleAttr, defStyleRes);
+
+        mTabPadding = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_tabPadding, ThemeUtil.dpToPx(context, 12));
+        mTabRippleStyle = a.getResourceId(R.styleable.TabPageIndicator_tpi_tabRipple, 0);
+        int indicatorColor = a.getColor(R.styleable.TabPageIndicator_tpi_indicatorColor, ThemeUtil.colorAccent(context, 0xFFFFFFFF));
+        mIndicatorHeight = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_indicatorHeight, ThemeUtil.dpToPx(context, 2));
+        mTextApperance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
+        mMode = a.getInteger(R.styleable.TabPageIndicator_tpi_mode, MODE_SCROLL);
+
+        a.recycle();
+
+        removeAllViews();
+        if(mMode == MODE_SCROLL) {
+            addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setFillViewport(false);
+        }
+        else if(mMode == MODE_FIXED){
+            addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setFillViewport(true);
+        }
+
+        mPaint.setColor(indicatorColor);
+    }
 
     @Override
     public void onAttachedToWindow() {

@@ -106,6 +106,10 @@ public class Switch extends View implements Checkable {
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 	}
 
+    public void applyStyle(int resId){
+        applyStyle(getContext(), null, 0, resId);
+    }
+
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
@@ -431,7 +435,9 @@ public class Switch extends View implements Checkable {
 	
 	private void stopAnimation() {			
 		mRunning = false;
-		getHandler().removeCallbacks(mUpdater);
+        mThumbPosition = mChecked ? 1f : 0f;
+        if(getHandler() != null)
+		    getHandler().removeCallbacks(mUpdater);
 		invalidate();
 	}
 	
@@ -454,8 +460,12 @@ public class Switch extends View implements Checkable {
 		if(progress == 1f)
 			stopAnimation();
 				
-    	if(mRunning)
-    		getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+    	if(mRunning) {
+            if(getHandler() != null)
+                getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+            else
+                stopAnimation();
+        }
     	
     	invalidate();
 	}
