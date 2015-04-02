@@ -83,6 +83,7 @@ public class Dialog extends android.app.Dialog{
         this(context, 0);
     }
 
+
     public Dialog(Context context, int style) {
         super(context, style);
 

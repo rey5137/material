@@ -110,6 +110,7 @@ public class TimePicker extends View{
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRect = new Rect();
 
+        setWillNotDraw(false);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -657,7 +658,8 @@ public class TimePicker extends View{
         if(mRunning) {
             if(getHandler() != null)
                 getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
-            stopAnimation();
+            else
+                stopAnimation();
         }
 
         invalidate();
