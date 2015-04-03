@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.MotionEvent;
@@ -42,7 +43,7 @@ public class DatePickerDialog extends Dialog {
     private OnDateChangedListener mOnDateChangedListener;
 
     public DatePickerDialog(Context context) {
-        super(context);
+        super(context, R.style.Material_App_Dialog_DatePicker_Light);
     }
 
     public DatePickerDialog(Context context, int style) {
@@ -397,9 +398,10 @@ public class DatePickerDialog extends Dialog {
                 else{
                     int height = Math.max(heightSize - mHeaderSecondaryHeight - mHeaderPrimaryHeight, mDatePicker.getMeasuredHeight());
                     int ws = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);
-                    int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-                    mDatePicker.measure(ws, hs);
-                    mYearPicker.measure(ws, hs);
+                    mDatePicker.measure(ws, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+                    mYearPicker.measure(ws, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                    if(mYearPicker.getMeasuredHeight() != height)
+                        mYearPicker.measure(ws, MeasureSpec.makeMeasureSpec(Math.min(mYearPicker.getMeasuredHeight(), height), MeasureSpec.EXACTLY));
                 }
 
                 setMeasuredDimension(widthSize, heightSize);
@@ -414,9 +416,10 @@ public class DatePickerDialog extends Dialog {
                 else{
                     int height = Math.max(heightSize, mDatePicker.getMeasuredHeight());
                     int ws = MeasureSpec.makeMeasureSpec(widthSize / 2, MeasureSpec.EXACTLY);
-                    int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-                    mDatePicker.measure(ws, hs);
-                    mYearPicker.measure(ws, hs);
+                    mDatePicker.measure(ws, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+                    mYearPicker.measure(ws, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                    if(mYearPicker.getMeasuredHeight() != height)
+                        mYearPicker.measure(ws, MeasureSpec.makeMeasureSpec(Math.min(mYearPicker.getMeasuredHeight(), height), MeasureSpec.EXACTLY));
                 }
 
                 setMeasuredDimension(widthSize, heightSize);
@@ -479,7 +482,9 @@ public class DatePickerDialog extends Dialog {
                 childLeft += mHeaderRealWidth;
 
             mDatePicker.layout(childLeft, childTop, childRight, childBottom);
-            mYearPicker.layout(childLeft, childTop, childRight, childBottom);
+
+            childTop = (childBottom + childTop - mYearPicker.getMeasuredHeight()) / 2;
+            mYearPicker.layout(childLeft, childTop, childRight, childTop + mYearPicker.getMeasuredHeight());
         }
 
         private void measureHeaderText(){
@@ -610,20 +615,20 @@ public class DatePickerDialog extends Dialog {
 
     public static class Builder extends Dialog.Builder implements OnDateChangedListener {
 
-        private int mMinDay;
-        private int mMinMonth;
-        private int mMinYear;
-        private int mMaxDay;
-        private int mMaxMonth;
-        private int mMaxYear;
-        private int mDay;
-        private int mMonth;
-        private int mYear;
+        protected int mMinDay;
+        protected int mMinMonth;
+        protected int mMinYear;
+        protected int mMaxDay;
+        protected int mMaxMonth;
+        protected int mMaxYear;
+        protected int mDay;
+        protected int mMonth;
+        protected int mYear;
 
         private Calendar mCalendar;
 
         public Builder(){
-            this(0);
+            this(R.style.Material_App_Dialog_DatePicker_Light);
         }
 
         public Builder(int styleId){
@@ -638,6 +643,10 @@ public class DatePickerDialog extends Dialog {
             mMaxDay = mDay;
             mMaxMonth = mMonth;
             mMaxYear = mYear + 12;
+        }
+
+        public Builder(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear, int day, int month, int year){
+            this(R.style.Material_App_Dialog_DatePicker_Light, minDay, minMonth, minYear, maxDay, maxMonth, maxYear, day, month, year);
         }
 
         public Builder(int styleId, int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear, int day, int month, int year){
@@ -696,6 +705,18 @@ public class DatePickerDialog extends Dialog {
             int year = mCalendar.get(Calendar.YEAR);
 
             return date(day, month, year);
+        }
+
+        public int getDay(){
+            return mDay;
+        }
+
+        public int getMonth(){
+            return mMonth;
+        }
+
+        public int getYear(){
+            return mYear;
         }
 
         @Override

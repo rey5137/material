@@ -54,7 +54,7 @@ public class SimpleDialog extends Dialog {
     private OnSelectionChangedListener mOnSelectionChangedListener;
 
     public SimpleDialog(Context context) {
-        super(context);
+        super(context, R.style.Material_App_Dialog_Simple_Light);
     }
 
     public SimpleDialog(Context context, int style) {
@@ -453,12 +453,14 @@ public class SimpleDialog extends Dialog {
 
     public static class Builder extends Dialog.Builder implements OnSelectionChangedListener {
 
-        private int mMode;
-        private CharSequence mMessage;
-        private CharSequence[] mItems;
-        private int[] mSelectedIndexes;
+        protected int mMode;
+        protected CharSequence mMessage;
+        protected CharSequence[] mItems;
+        protected int[] mSelectedIndexes;
 
-        public Builder(){}
+        public Builder(){
+            super(R.style.Material_App_Dialog_Simple_Light);
+        }
 
         public Builder(int styleId){
             super(styleId);
@@ -482,6 +484,37 @@ public class SimpleDialog extends Dialog {
             mItems = items;
             mSelectedIndexes = selectedIndexes;
             return this;
+        }
+
+        public int getSelectedIndex(){
+            if(mMode == MODE_ITEMS || mMode == MODE_MULTI_ITEMS)
+                return mSelectedIndexes[0];
+
+            return -1;
+        }
+
+        public CharSequence getSelectedValue(){
+            int index = getSelectedIndex();
+            return index >= 0 ? mItems[index] : null;
+        }
+
+        public int[] getSelectedIndexes(){
+            if(mMode == MODE_ITEMS || mMode == MODE_MULTI_ITEMS)
+                return mSelectedIndexes;
+
+            return null;
+        }
+
+        public CharSequence[] getSelectedValues(){
+            int[] indexes = getSelectedIndexes();
+            if(indexes == null || indexes.length == 0)
+                return null;
+
+            CharSequence[] result = new CharSequence[indexes.length];
+            for(int i = 0; i < indexes.length; i++)
+                result[i] = mItems[indexes[i]];
+
+            return result;
         }
 
         @Override
