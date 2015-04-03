@@ -69,6 +69,11 @@ public class Switch extends View implements Checkable {
     private static final int COLOR_SHADOW_START = 0x4C000000;
     private static final int COLOR_SHADOW_END = 0x00000000;
 
+    public interface OnCheckedChangeListener{
+        public void onCheckedChanged(Switch view, boolean checked);
+    }
+
+    private OnCheckedChangeListener mOnCheckedChangeListener;
 
     public Switch(Context context) {
         super(context);
@@ -177,11 +182,18 @@ public class Switch extends View implements Checkable {
 			setOnClickListener(mRippleManager);
 		}
 	}
-		
+
+    public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
+        mOnCheckedChangeListener = listener;
+    }
+
 	@Override
 	public void setChecked(boolean checked) {		
-		if(mChecked != checked)
-			mChecked = checked;
+		if(mChecked != checked) {
+            mChecked = checked;
+            if(mOnCheckedChangeListener != null)
+                mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
+        }
 		
 		float desPos = mChecked ? 1f : 0f;
 		

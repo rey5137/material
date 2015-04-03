@@ -31,6 +31,14 @@
             android:padding="16dp"
             app:sl_value="50"/>
 
+        <TextView
+            android:id="@+id/slider_tv_continuous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF000000"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            android:gravity="center"/>
+
         <com.rey.material.widget.Slider
             style="@style/Material.Widget.Slider"
             android:id="@+id/slider_sl_continuous_disable"
@@ -58,6 +66,14 @@
             android:padding="16dp"
             app:sl_stepValue="10"
             app:sl_value="50"/>
+
+        <TextView
+            android:id="@+id/slider_tv_discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF000000"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            android:gravity="center"/>
 
         <com.rey.material.widget.Slider
             style="@style/Material.Widget.Slider"
