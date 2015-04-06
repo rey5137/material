@@ -37,8 +37,8 @@
 		        android:textColor="#FF000000"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/FlatButtonRippleStyle"
-		        app:delayClick="false"/>
+		        style="@style/FlatButtonRippleStyle"
+		        app:rd_delayClick="false"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -53,8 +53,8 @@
 		        android:textColor="#FF2196F3"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/FlatColorButtonRippleStyle"
-		        app:delayClick="true"/>
+		        style="@style/FlatColorButtonRippleStyle"
+		        app:rd_delayClick="true"/>
 	        
 	    </LinearLayout>
 	    
@@ -74,8 +74,8 @@
 		        android:textColor="#FF000000"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/FlatWaveButtonRippleStyle"
-		        app:delayClick="false"/>
+		        style="@style/FlatWaveButtonRippleStyle"
+		        app:rd_delayClick="false"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -90,8 +90,8 @@
 		        android:textColor="#FF2196F3"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/FlatWaveColorButtonRippleStyle"
-		        app:delayClick="true"/>
+		        style="@style/FlatWaveColorButtonRippleStyle"
+		        app:rd_delayClick="true"/>
 	        
 	    </LinearLayout>
 	    
@@ -119,8 +119,8 @@
 		        android:textColor="#FF000000"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/RaiseButtonRippleStyle"
-		        app:delayClick="false"/>
+		        style="@style/RaiseButtonRippleStyle"
+		        app:rd_delayClick="false"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -135,8 +135,8 @@
 		        android:textColor="#FFFFFFFF"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/RaiseColorButtonRippleStyle"
-		        app:delayClick="true"/>
+		        style="@style/RaiseColorButtonRippleStyle"
+		        app:rd_delayClick="true"/>
 	        
 	    </LinearLayout>
 	    
@@ -156,8 +156,8 @@
 		        android:textColor="#FF000000"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/RaiseWaveButtonRippleStyle"
-		        app:delayClick="false"/>
+		        style="@style/RaiseWaveButtonRippleStyle"
+		        app:rd_delayClick="false"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -172,8 +172,8 @@
 		        android:textColor="#FFFFFFFF"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:ripple="@style/RaiseWaveColorButtonRippleStyle"
-		        app:delayClick="true"/>
+		        style="@style/RaiseWaveColorButtonRippleStyle"
+		        app:rd_delayClick="true"/>
 	        
 	    </LinearLayout>
 	    

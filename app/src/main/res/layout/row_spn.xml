@@ -9,6 +9,6 @@
 	    android:textColor="#FF000000"
 	    android:paddingLeft="16dp"
 	    android:paddingRight="16dp"
-	    app:ripple="@style/MenuItemRippleStyle"
-		app:delayClick="true"/>
+	    style="@style/MenuItemRippleStyle"
+		app:rd_delayClick="true"/>
 

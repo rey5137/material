@@ -8,5 +8,5 @@
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:gravity="center_vertical"
-    app:ripple="@style/Material.Drawable.Ripple.Wave.Light"
-    app:delayClick="false"/>
+    style="@style/Material.Drawable.Ripple.Wave.Light"
+    app:rd_delayClick="false"/>

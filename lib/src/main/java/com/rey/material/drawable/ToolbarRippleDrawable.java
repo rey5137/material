@@ -53,6 +53,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 	private int mRippleAnimDuration;
 	private int mRippleColor;
 	private float mRippleAlphaPercent;
+    private boolean mDelayClick;
 			
 	private Interpolator mInInterpolator;
 	private Interpolator mOutInterpolator;
@@ -67,15 +68,16 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 	private static final int STATE_PRESS = 1;
 	private static final int STATE_HOVER = 2;
 	private static final int STATE_RELEASE_ON_HOLD = 3;	
-	private static final int STATE_RELEASE = 4;	
-		
+	private static final int STATE_RELEASE = 4;
+
+    private static final int TYPE_TOUCH_MATCH_VIEW = -1;
 	private static final int TYPE_TOUCH = 0;
 	private static final int TYPE_WAVE = 1;
 	
 	private static final float[] GRADIENT_STOPS = new float[]{0f, 0.99f, 1f};
 	private static final float GRADIENT_RADIUS = 16;
 		
-	private ToolbarRippleDrawable(int backgroundAnimDuration, int backgroundColor, int rippleType, int maxTouchRadius, int touchAnimDuration, int touchColor, Interpolator inInterpolator, Interpolator outInterpolator){
+	private ToolbarRippleDrawable(int backgroundAnimDuration, int backgroundColor, int rippleType, boolean delayClick, int maxTouchRadius, int touchAnimDuration, int touchColor, Interpolator inInterpolator, Interpolator outInterpolator){
 		mBackgroundAnimDuration = backgroundAnimDuration;
 		mBackgroundColor = backgroundColor;
 		
@@ -83,6 +85,10 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 		mMaxRippleRadius = maxTouchRadius;
 		mRippleAnimDuration = touchAnimDuration;
 		mRippleColor = touchColor;
+        mDelayClick = delayClick;
+
+        if(mRippleType == TYPE_TOUCH && mMaxRippleRadius <= 0)
+            mRippleType = TYPE_TOUCH_MATCH_VIEW;
 		
 		mInInterpolator = inInterpolator;
 		mOutInterpolator = outInterpolator;
@@ -104,7 +110,15 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 		if(mRippleType == TYPE_WAVE)
 			mOutShader = new RadialGradient(0, 0, GRADIENT_RADIUS, new int[]{0, ColorUtil.getColor(mRippleColor, 0f), mRippleColor}, GRADIENT_STOPS, Shader.TileMode.CLAMP);
 	}
-	
+
+    public boolean isDelayClick(){
+        return mDelayClick;
+    }
+
+    public void setDelayClick(boolean enable){
+        mDelayClick = enable;
+    }
+
 	@Override
 	public void setAlpha(int alpha) {
 		mAlpha = alpha;
@@ -121,11 +135,11 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 		return PixelFormat.TRANSLUCENT;
 	}
 		
-	public long getClickDelayTime(boolean waitToAnimEnd){
+	public long getClickDelayTime(){
 		if(mState == STATE_RELEASE_ON_HOLD)			
-			return (waitToAnimEnd ? 2 : 1) * Math.max(mBackgroundAnimDuration, mRippleAnimDuration) - (SystemClock.uptimeMillis() - mStartTime);
+			return (mDelayClick ? 2 : 1) * Math.max(mBackgroundAnimDuration, mRippleAnimDuration) - (SystemClock.uptimeMillis() - mStartTime);
 		else if(mState == STATE_RELEASE)
-			return (waitToAnimEnd ? Math.max(mBackgroundAnimDuration, mRippleAnimDuration) : 0) - (SystemClock.uptimeMillis() - mStartTime);
+			return (mDelayClick ? Math.max(mBackgroundAnimDuration, mRippleAnimDuration) : 0) - (SystemClock.uptimeMillis() - mStartTime);
 		
 		return -1;
 	}
@@ -186,7 +200,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 				Rect bounds = getBounds();
 				
 				if(mState == STATE_OUT || mState == STATE_RELEASE){
-					if(mRippleType == TYPE_WAVE)
+					if(mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
 						mMaxRippleRadius = getMaxRippleRadius(bounds.exactCenterX(), bounds.exactCenterY());
 					
 					setRippleEffect(bounds.exactCenterX(), bounds.exactCenterY(), 0);
@@ -198,7 +212,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 			else{
 				if(mState != STATE_OUT){
 					if(mState == STATE_HOVER){
-						if(mRippleType == TYPE_WAVE)
+						if(mRippleType == TYPE_WAVE|| mRippleType == TYPE_TOUCH_MATCH_VIEW)
 							setRippleEffect(mRipplePoint.x, mRipplePoint.y, 0);
 						
 						setRippleState(STATE_RELEASE);
@@ -218,6 +232,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 	public void draw(Canvas canvas) {		
 		switch (mRippleType) {
 			case TYPE_TOUCH:
+            case TYPE_TOUCH_MATCH_VIEW:
 				drawTouch(canvas);
 				break;
 			case TYPE_WAVE:
@@ -316,6 +331,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 	    public void run() {
 	    	switch (mRippleType) {
 				case TYPE_TOUCH:
+                case TYPE_TOUCH_MATCH_VIEW:
 					updateTouch();
 					break;
 				case TYPE_WAVE:
@@ -399,6 +415,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 		private int mMaxRippleRadius;
 		private int mRippleAnimDuration = 400;
 		private int mRippleColor;
+        private boolean mDelayClick;
 		
 		private Interpolator mInInterpolator;
 		private Interpolator mOutInterpolator;
@@ -416,6 +433,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 			backgroundColor(a.getColor(R.styleable.RippleDrawable_rd_backgroundColor, 0));
 			backgroundAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_backgroundAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			rippleType(a.getInteger(R.styleable.RippleDrawable_rd_rippleType, ToolbarRippleDrawable.TYPE_TOUCH));
+            delayClick(a.getBoolean(R.styleable.RippleDrawable_rd_delayClick, false));
 			maxRippleRadius(a.getDimensionPixelSize(R.styleable.RippleDrawable_rd_maxRippleRadius, ThemeUtil.dpToPx(context, 48)));
 			rippleColor(a.getColor(R.styleable.RippleDrawable_rd_rippleColor, ThemeUtil.colorControlHighlight(context, 0)));
 			rippleAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_rippleAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
@@ -434,7 +452,7 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 			if(mOutInterpolator == null)
 				mOutInterpolator = new DecelerateInterpolator();
 			
-			return new ToolbarRippleDrawable(mBackgroundAnimDuration, mBackgroundColor, mRippleType, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator);
+			return new ToolbarRippleDrawable(mBackgroundAnimDuration, mBackgroundColor, mRippleType, mDelayClick, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator);
 		}
 		
 		public Builder backgroundAnimDuration(int duration){
@@ -451,7 +469,12 @@ public class ToolbarRippleDrawable extends Drawable implements Animatable {
 			mRippleType = type;
 			return this;
 		}
-		
+
+        public Builder delayClick(boolean enable){
+            mDelayClick = enable;
+            return this;
+        }
+
 		public Builder maxRippleRadius(int radius){
 			mMaxRippleRadius = radius;
 			return this;

@@ -30,8 +30,8 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="SINGLE LINE"
-			    app:ripple="@style/RaiseButtonRippleStyle"
-			    app:delayClick="false"/>
+			    style="@style/RaiseButtonRippleStyle"
+			    app:rd_delayClick="false"/>
 	        
 	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_mobile_multi"
@@ -41,8 +41,8 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    app:ripple="@style/RaiseButtonRippleStyle"
-			    app:delayClick="false"
+			    style="@style/RaiseButtonRippleStyle"
+			    app:rd_delayClick="false"
 			    android:layout_marginTop="8dp"/>
 
 		<TextView 
@@ -62,8 +62,8 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="SINGLE LINE"
-			    app:ripple="@style/RaiseButtonRippleStyle"
-			    app:delayClick="false"/>
+			    style="@style/RaiseButtonRippleStyle"
+			    app:rd_delayClick="false"/>
 	        
 	        <com.rey.material.widget.Button
 				android:id="@+id/snackbar_bt_tablet_multi"
@@ -73,8 +73,8 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    app:ripple="@style/RaiseButtonRippleStyle"
-			    app:delayClick="false"
+			    style="@style/RaiseButtonRippleStyle"
+			    app:rd_delayClick="false"
 			    android:layout_marginTop="8dp"/>
 	        	        	        
 	</LinearLayout>

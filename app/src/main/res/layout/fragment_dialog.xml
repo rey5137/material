@@ -38,8 +38,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="TITLE ONLY"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
             <View
                 android:layout_width="0dp"
@@ -55,8 +55,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="MESSAGE ONLY"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
         </LinearLayout>
 
@@ -77,8 +77,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="TITLE &amp; MSG"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
             <View
                 android:layout_width="0dp"
@@ -94,8 +94,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="CUSTOM"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
         </LinearLayout>
 
@@ -116,8 +116,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="CHOICE"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
             <View
                 android:layout_width="0dp"
@@ -133,8 +133,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="MULTI CHOICE"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
         </LinearLayout>
 
@@ -163,8 +163,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="TIME (LIGHT)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
             <View
                 android:layout_width="0dp"
@@ -180,8 +180,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="DATE (LIGHT)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
         </LinearLayout>
 
@@ -202,8 +202,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="TIME (DARK)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
             <View
                 android:layout_width="0dp"
@@ -219,8 +219,8 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
                 android:text="DATE (DARK)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                style="@style/RaiseButtonRippleStyle"
+                app:rd_delayClick="false"/>
 
         </LinearLayout>
 

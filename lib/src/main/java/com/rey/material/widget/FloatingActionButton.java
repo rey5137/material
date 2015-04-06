@@ -96,8 +96,6 @@ public class FloatingActionButton extends View {
         int iconSrc = a.getResourceId(R.styleable.FloatingActionButton_fab_iconSrc, 0);
         int iconLineMorphing = a.getResourceId(R.styleable.FloatingActionButton_fab_iconLineMorphing, 0);
         mIconSize = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_iconSize, ThemeUtil.dpToPx(context, 24));
-        int rippleId = a.getResourceId(R.styleable.FloatingActionButton_ripple, 0);
-        boolean delayClick = a.getBoolean(R.styleable.FloatingActionButton_delayClick, false);
         mAnimDuration = a.getInteger(R.styleable.FloatingActionButton_fab_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
         if(resId != 0)
@@ -115,25 +113,12 @@ public class FloatingActionButton extends View {
         else if(iconSrc != 0)
             setIcon(context.getResources().getDrawable(iconSrc), false);
 
-        mRippleManager.onCreate(this, context, null, 0, 0);
-        mRippleManager.setDelayClick(delayClick);
-
-        if(rippleId != 0){
-            RippleDrawable.Builder builder = new RippleDrawable.Builder(context, rippleId);
-
-            builder.maskType(RippleDrawable.Mask.TYPE_OVAL)
-                    .backgroundDrawable(null)
-                    .left((int)mBackground.getPaddingLeft())
-                    .top((int)mBackground.getPaddingTop())
-                    .right((int)mBackground.getPaddingRight())
-                    .bottom((int)mBackground.getPaddingBottom());
-
-            mRipple = builder.build();
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                setBackground(mRipple);
-            else
-                setBackgroundDrawable(mRipple);
+        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        Drawable background = getBackground();
+        if(background != null && background instanceof RippleDrawable){
+            RippleDrawable drawable = (RippleDrawable)background;
+            drawable.setBackgroundDrawable(null);
+            drawable.setMask(RippleDrawable.Mask.TYPE_OVAL, 0, 0, 0, 0, (int)mBackground.getPaddingLeft(), (int)mBackground.getPaddingTop(), (int)mBackground.getPaddingRight(), (int)mBackground.getPaddingBottom());
         }
 
         setClickable(true);

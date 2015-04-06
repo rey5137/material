@@ -101,11 +101,13 @@
     </style>
 
     <style name="Material.Drawable.Ripple">
+        <item name="rd_enable">true</item>
         <item name="rd_inInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="rd_outInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="rd_maskType">rectangle</item>
         <item name="rd_cornerRadius">2dp</item>
         <item name="rd_padding">0dp</item>
+        <item name="rd_delayClick">false</item>
     </style>
 
     <style name="Material.Drawable.Ripple.Touch" parent="Material.Drawable.Ripple">
@@ -239,18 +241,20 @@
         <item name="tpi_mode">fixed</item>
     </style>
 
-    <style name="Material.Widget.FloatingActionButton">
+    <style name="Material.Widget.FloatingActionButton" parent="Material.Drawable.Ripple.Touch">
         <item name="fab_radius">28dp</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconSize">24dp</item>
         <item name="fab_interpolator">@android:anim/decelerate_interpolator</item>
         <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
-        <item name="ripple">@style/Material.Drawable.Ripple.Touch</item>
-        <item name="delayClick">false</item>
     </style>
 
-    <style name="Material.Widget.FloatingActionButton.Light" parent="Material.Widget.FloatingActionButton">
-        <item name="ripple">@style/Material.Drawable.Ripple.Touch.Light</item>
+    <style name="Material.Widget.FloatingActionButton.Light" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="fab_radius">28dp</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconSize">24dp</item>
+        <item name="fab_interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
     </style>
 
     <style name="Material.Widget.SnackBar">
