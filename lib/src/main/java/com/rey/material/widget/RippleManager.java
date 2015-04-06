@@ -24,25 +24,31 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		if(v.isInEditMode())
+			return;
+
 		mView = v;
 		
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, defStyleRes);
-        boolean rippleEnable = a.getBoolean(R.styleable.RippleView_rd_enable, false);
         int rippleStyle = a.getResourceId(R.styleable.RippleView_rd_style, 0);
+		RippleDrawable drawable = null;
+
+		if(rippleStyle != 0)
+			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(mView.getBackground()).build();
+		else{
+			boolean rippleEnable = a.getBoolean(R.styleable.RippleView_rd_enable, false);
+			if(rippleEnable)
+				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(mView.getBackground()).build();
+		}
+
 		a.recycle();
 
-		if(rippleEnable && !mView.isInEditMode()){
-            RippleDrawable drawable;
-            if(rippleStyle == 0)
-                drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(mView.getBackground()).build();
-            else
-                drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(mView.getBackground()).build();
-
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+		if(drawable != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 				mView.setBackground(drawable);
 			else
 				mView.setBackgroundDrawable(drawable);
-		}		
+		}
 	}
 	
 	public boolean isDelayClick(){
