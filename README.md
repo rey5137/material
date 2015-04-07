@@ -80,7 +80,7 @@ dependencies {
 ```
 
 * Or
-[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.0.0/material-1.0.0.aar)
+[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar)
 
 AppCompat and CardView library is required by Material library.
 
