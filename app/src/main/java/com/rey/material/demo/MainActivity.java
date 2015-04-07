@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, ToolbarManager.OnToolbarGroupChangedListener {
+public class MainActivity extends ActionBarActivity implements ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -87,8 +87,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
 		mDrawerAdapter = new DrawerAdapter();
-		lv_drawer.setAdapter(mDrawerAdapter);		
-		lv_drawer.setOnItemClickListener(this);
+		lv_drawer.setAdapter(mDrawerAdapter);
 		
 		mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
 		vp.setAdapter(mPagerAdapter);
@@ -109,6 +108,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			
 		});
 
+        mDrawerAdapter.setSelected(Tab.PROGRESS);
 		vp.setCurrentItem(0);
 	}
 
@@ -143,12 +143,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         mToolbarManager.notifyNavigationStateChanged();
     }
 
-    @Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		vp.setCurrentItem(position);
-		dl_navigator.closeDrawer(fl_drawer);
-	}
-
     public SnackBar getSnackBar(){
         return mSnackBar;
     }
@@ -179,7 +173,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
 	}
 	
-	class DrawerAdapter extends BaseAdapter{
+	class DrawerAdapter extends BaseAdapter implements View.OnClickListener {
 
 		private Tab mSelectedTab;
 		
@@ -212,21 +206,34 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
-			if(v == null)
-				v = LayoutInflater.from(MainActivity.this).inflate(R.layout.row_drawer, null);
-			
+			if(v == null) {
+                v = LayoutInflater.from(MainActivity.this).inflate(R.layout.row_drawer, null);
+                v.setOnClickListener(this);
+            }
+
+            v.setTag(position);
 			Tab tab = (Tab)getItem(position);
 			((TextView)v).setText(tab.toString());
 			
-			if(tab == mSelectedTab)
-				v.setBackgroundColor(ThemeUtil.colorPrimary(MainActivity.this, 0));			
-			else
-				v.setBackgroundResource(0);
+			if(tab == mSelectedTab) {
+                v.setBackgroundColor(ThemeUtil.colorPrimary(MainActivity.this, 0));
+                ((TextView)v).setTextColor(0xFFFFFFFF);
+            }
+			else {
+                v.setBackgroundResource(0);
+                ((TextView)v).setTextColor(0xFF000000);
+            }
 			
 			return v;
 		}
-		
-	}
+
+        @Override
+        public void onClick(View v) {
+            int position = (Integer)v.getTag();
+            vp.setCurrentItem(position);
+            dl_navigator.closeDrawer(fl_drawer);
+        }
+    }
 	
 	private static class PagerAdapter extends FragmentStatePagerAdapter {
 		

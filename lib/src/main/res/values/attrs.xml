@@ -9,10 +9,10 @@
     </attr>
     
     <attr name="pv_progress" format="float"/>   
-    <attr name="pv_secondaryProgress" format="float"/>   
-    
-    <attr name="ripple" format="reference"/> 
-    <attr name="delayClick" format="boolean"/>
+    <attr name="pv_secondaryProgress" format="float"/>
+
+    <attr name="rd_style" format="reference"/>
+    <attr name="rd_enable" format="boolean"/>
 
     <declare-styleable name="CircularProgressDrawable">        
         <attr name="cpd_padding" format="reference|dimension"/> 
@@ -67,13 +67,12 @@
         <attr name="pv_progressStyle" format="reference"/>
     </declare-styleable>
         
-    <declare-styleable name="RippleView">        
-        <attr name="ripple" /> 
-        <attr name="delayClick" /> 
+    <declare-styleable name="RippleView">
+        <attr name="rd_style" />
+        <attr name="rd_enable" />
     </declare-styleable> 
     
-    <declare-styleable name="RippleDrawable">       
-        <attr name="rd_background" format="reference|color"/>
+    <declare-styleable name="RippleDrawable">
         <attr name="rd_backgroundColor" format="reference|color"/>
         <attr name="rd_backgroundAnimDuration" format="reference|integer"/>        
         <attr name="rd_maxRippleRadius" format="reference|dimension|integer">
@@ -100,7 +99,8 @@
         <attr name="rd_leftPadding" format="reference|dimension"/>
         <attr name="rd_topPadding" format="reference|dimension"/>
         <attr name="rd_rightPadding" format="reference|dimension"/>
-        <attr name="rd_bottomPadding" format="reference|dimension"/>        
+        <attr name="rd_bottomPadding" format="reference|dimension"/>
+        <attr name="rd_delayClick" format="boolean"/>
     </declare-styleable>
     
     <declare-styleable name="LineMorphingDrawable">
@@ -319,8 +319,6 @@
         <attr name="fab_iconSize" format="reference|dimension"/>
         <attr name="fab_interpolator" format="reference"/>
         <attr name="fab_animDuration" format="reference|integer"/>
-        <attr name="ripple" /> 
-        <attr name="delayClick" /> 
     </declare-styleable>
     
     <declare-styleable name="Spinner">  

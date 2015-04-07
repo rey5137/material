@@ -148,6 +148,7 @@ public class EditText extends FrameLayout {
 
         int inputId = a.getResourceId(R.styleable.EditText_et_inputId, 0);
         mInputView.setId(inputId != 0 ? inputId : ViewUtil.generateViewId());
+        mInputView.setVisibility(View.VISIBLE);
         mInputView.setFocusableInTouchMode(true);
         mDividerColors = a.getColorStateList(R.styleable.EditText_et_dividerColor);
         mDividerErrorColors = a.getColorStateList(R.styleable.EditText_et_dividerErrorColor);

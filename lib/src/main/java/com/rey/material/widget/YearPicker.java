@@ -208,7 +208,13 @@ public class YearPicker extends ListView{
         measureItemHeight();
 
         if(heightMode != MeasureSpec.EXACTLY){
-            heightSize = heightMode == MeasureSpec.AT_MOST ? Math.min(heightSize, mItemRealHeight * 3) : mItemRealHeight * 3;
+            if(heightMode == MeasureSpec.AT_MOST){
+                int num = Math.min(mAdapter.getCount(), heightSize / mItemRealHeight);
+                if(num >= 3)
+                    heightSize = mItemRealHeight * (num % 2 == 0 ? num - 1 : num);
+            }
+            else
+                heightSize = mItemRealHeight * mAdapter.getCount();
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize + getPaddingTop() + getPaddingBottom(), MeasureSpec.EXACTLY);
         }
 

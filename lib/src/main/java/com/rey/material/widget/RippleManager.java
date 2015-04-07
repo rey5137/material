@@ -17,41 +17,63 @@ import com.rey.material.drawable.ToolbarRippleDrawable;
 public final class RippleManager implements View.OnClickListener, Runnable{
 
 	private View.OnClickListener mClickListener;
-	private boolean mDelayClick = false;
-	private View mView;	
+	private View mView;
 		
 	public RippleManager(){}
 	
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		if(v.isInEditMode())
+			return;
+
 		mView = v;
 		
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, defStyleRes);
-		int resId = a.getResourceId(R.styleable.RippleView_ripple, 0);		
-		mDelayClick = a.getBoolean(R.styleable.RippleView_delayClick, mDelayClick);
+        int rippleStyle = a.getResourceId(R.styleable.RippleView_rd_style, 0);
+		RippleDrawable drawable = null;
+
+		if(rippleStyle != 0)
+			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(mView.getBackground()).build();
+		else{
+			boolean rippleEnable = a.getBoolean(R.styleable.RippleView_rd_enable, false);
+			if(rippleEnable)
+				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(mView.getBackground()).build();
+		}
+
 		a.recycle();
-		
-		if(resId != 0 && !mView.isInEditMode()){
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mView.setBackground(new RippleDrawable.Builder(context, resId).build());
+
+		if(drawable != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+				mView.setBackground(drawable);
 			else
-				mView.setBackgroundDrawable(new RippleDrawable.Builder(context, resId).build());
-		}		
+				mView.setBackgroundDrawable(drawable);
+		}
 	}
 	
 	public boolean isDelayClick(){
-		return mDelayClick;
+        Drawable background = mView.getBackground();
+        if(background instanceof RippleDrawable)
+            return ((RippleDrawable)background).isDelayClick();
+        else if(background instanceof ToolbarRippleDrawable)
+            return ((ToolbarRippleDrawable)background).isDelayClick();
+
+        return false;
 	}
 	
 	public void setDelayClick(boolean delay){
-		mDelayClick = delay;
+        Drawable background = mView.getBackground();
+        if(background instanceof RippleDrawable)
+            ((RippleDrawable)background).setDelayClick(delay);
+        else if(background instanceof ToolbarRippleDrawable)
+            ((ToolbarRippleDrawable)background).setDelayClick(delay);
 	}
 	
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;
 	}
-		
+
+
 	public boolean onTouchEvent(MotionEvent event){
 		Drawable background = mView.getBackground();
         return background instanceof RippleDrawable && ((RippleDrawable) background).onTouch(mView, event);
@@ -63,9 +85,9 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		long delay = 0;
 						
 		if(background instanceof RippleDrawable)
-			delay = ((RippleDrawable)background).getClickDelayTime(mDelayClick);
+			delay = ((RippleDrawable)background).getClickDelayTime();
 		else if(background instanceof ToolbarRippleDrawable)
-			delay = ((ToolbarRippleDrawable)background).getClickDelayTime(mDelayClick);
+			delay = ((ToolbarRippleDrawable)background).getClickDelayTime();
 			
 		if(delay > 0 && mView.getHandler() != null)
 			mView.getHandler().postDelayed(this, delay);

@@ -55,7 +55,7 @@
         android:layout_gravity="start"
         android:paddingTop="?attr/actionBarSize">
         
-        <ListView 
+        <com.rey.material.widget.ListView
             android:id="@+id/main_lv_drawer"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"	        
@@ -63,7 +63,7 @@
 	        android:divider="@null"
 	        android:dividerHeight="0dp"
 	        android:background="?android:attr/windowBackground"
-	        android:listSelector="?attr/colorPrimary"/>
+	        android:listSelector="@android:color/transparent"/>
         
     </FrameLayout>    
     

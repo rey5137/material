@@ -63,17 +63,18 @@ public class ProgressView extends View {
 
         a.recycle();
 
-        if(mProgressId > 0){
-            if(mCircular)
-                mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
-            else
-                mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
+        if(mProgressId == 0)
+            mProgressId = mCircular ? R.style.Material_Drawable_CircularProgress : R.style.Material_Drawable_LinearProgress;
 
-            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-                setBackground(mProgressDrawable);
-            else
-                setBackgroundDrawable(mProgressDrawable);
-        }
+        if(mCircular)
+            mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
+        else
+            mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
+
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+            setBackground(mProgressDrawable);
+        else
+            setBackgroundDrawable(mProgressDrawable);
     }
 	
 	@Override

@@ -77,13 +77,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Discarded", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Canceled", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -96,13 +96,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -115,13 +115,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Agreed", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Disagreed", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -143,13 +143,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Connected", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -162,15 +162,14 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                 builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
-                        SimpleDialog dialog = (SimpleDialog)fragment.getDialog();
-                        Toast.makeText(fragment.getDialog().getContext(), "You have selected " + dialog.getSelectedValue() + " as phone ringtone.", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        Toast.makeText(fragment.getDialog().getContext(), "You have selected " + getSelectedValue() + " as phone ringtone.", Toast.LENGTH_SHORT).show();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -183,8 +182,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                 builder = new SimpleDialog.Builder(R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
-                        SimpleDialog dialog = (SimpleDialog)fragment.getDialog();
-                        CharSequence[] values = dialog.getSelectedValues();
+                        CharSequence[] values =  getSelectedValues();
                         if(values == null)
                             Toast.makeText(fragment.getDialog().getContext(), "You have selected nothing.", Toast.LENGTH_SHORT).show();
                         else{
@@ -194,13 +192,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                                 sb.append(values[i]).append(i == values.length - 1? "." : ", ");
                             Toast.makeText(fragment.getDialog().getContext(), sb.toString(), Toast.LENGTH_SHORT).show();
                         }
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -210,18 +208,18 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_time_light:
-                builder = new TimePickerDialog.Builder(R.style.Material_App_Dialog_TimePicker_Light, 6, 00){
+                builder = new TimePickerDialog.Builder(6, 00){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         TimePickerDialog dialog = (TimePickerDialog)fragment.getDialog();
                         Toast.makeText(fragment.getDialog().getContext(), "Time is " + dialog.getFormattedTime(SimpleDateFormat.getTimeInstance()), Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -229,19 +227,19 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_date_light:
-                builder = new DatePickerDialog.Builder(R.style.Material_App_Dialog_DatePicker_Light){
+                builder = new DatePickerDialog.Builder(){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         DatePickerDialog dialog = (DatePickerDialog)fragment.getDialog();
                         String date = dialog.getFormattedDate(SimpleDateFormat.getDateInstance());
                         Toast.makeText(fragment.getDialog().getContext(), "Date is " + date, Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -254,13 +252,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         TimePickerDialog dialog = (TimePickerDialog)fragment.getDialog();
                         Toast.makeText(fragment.getDialog().getContext(), "Time is " + dialog.getFormattedTime(SimpleDateFormat.getTimeInstance()), Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 
@@ -274,13 +272,13 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         DatePickerDialog dialog = (DatePickerDialog)fragment.getDialog();
                         String date = dialog.getFormattedDate(SimpleDateFormat.getDateInstance());
                         Toast.makeText(fragment.getDialog().getContext(), "Date is " + date, Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onPositiveActionClicked(fragment);
                     }
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
                         Toast.makeText(fragment.getDialog().getContext(), "Cancelled" , Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
+                        super.onNegativeActionClicked(fragment);
                     }
                 };
 

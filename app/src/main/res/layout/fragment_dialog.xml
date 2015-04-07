@@ -30,6 +30,7 @@
             android:gravity="center">
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_title_only"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -37,9 +38,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="TITLE ONLY"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="TITLE ONLY"/>
 
             <View
                 android:layout_width="0dp"
@@ -47,6 +46,7 @@
                 android:layout_weight="0.1"/>
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_msg_only"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -54,9 +54,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="MESSAGE ONLY"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="MESSAGE ONLY"/>
 
         </LinearLayout>
 
@@ -69,6 +67,7 @@
             android:paddingTop="8dp">
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_title_msg"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -76,9 +75,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="TITLE &amp; MSG"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="TITLE &amp; MSG"/>
 
             <View
                 android:layout_width="0dp"
@@ -86,6 +83,7 @@
                 android:layout_weight="0.1"/>
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_custom"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -93,9 +91,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="CUSTOM"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="CUSTOM"/>
 
         </LinearLayout>
 
@@ -108,6 +104,7 @@
             android:paddingTop="8dp">
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_choice"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -115,9 +112,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="CHOICE"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="CHOICE"/>
 
             <View
                 android:layout_width="0dp"
@@ -125,6 +120,7 @@
                 android:layout_weight="0.1"/>
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_multi_choice"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -132,9 +128,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="MULTI CHOICE"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="MULTI CHOICE"/>
 
         </LinearLayout>
 
@@ -155,6 +149,7 @@
             android:gravity="center">
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_time_light"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -162,9 +157,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="TIME (LIGHT)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="TIME (LIGHT)"/>
 
             <View
                 android:layout_width="0dp"
@@ -172,6 +165,7 @@
                 android:layout_weight="0.1"/>
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_date_light"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -179,9 +173,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="DATE (LIGHT)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="DATE (LIGHT)"/>
 
         </LinearLayout>
 
@@ -194,6 +186,7 @@
             android:paddingTop="8dp">
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_time_dark"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -201,9 +194,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="TIME (DARK)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="TIME (DARK)"/>
 
             <View
                 android:layout_width="0dp"
@@ -211,6 +202,7 @@
                 android:layout_weight="0.1"/>
 
             <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
                 android:id="@+id/dialog_bt_date_dark"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/bt_height"
@@ -218,9 +210,7 @@
                 android:textColor="#FF000000"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
                 android:gravity="center"
-                android:text="DATE (DARK)"
-                app:ripple="@style/RaiseButtonRippleStyle"
-                app:delayClick="false"/>
+                android:text="DATE (DARK)"/>
 
         </LinearLayout>
 
