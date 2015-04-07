@@ -1,9 +1,12 @@
 package com.rey.material.widget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import com.rey.material.drawable.RippleDrawable;
 
 public class ImageButton extends android.widget.ImageButton {
 
@@ -43,6 +46,15 @@ public class ImageButton extends android.widget.ImageButton {
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    public void setBackgroundDrawable(Drawable drawable) {
+        Drawable background = getBackground();
+        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
+            ((RippleDrawable) background).setBackgroundDrawable(drawable);
+        else
+            super.setBackgroundDrawable(drawable);
     }
 	
 	@Override

@@ -72,7 +72,8 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;
 	}
-		
+
+
 	public boolean onTouchEvent(MotionEvent event){
 		Drawable background = mView.getBackground();
         return background instanceof RippleDrawable && ((RippleDrawable) background).onTouch(mView, event);

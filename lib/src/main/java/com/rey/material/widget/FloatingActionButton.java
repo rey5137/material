@@ -47,7 +47,6 @@ public class FloatingActionButton extends View {
 	private int mIconSize;
 		
 	private RippleManager mRippleManager = new RippleManager();
-	private RippleDrawable mRipple;
 			
 	public static FloatingActionButton make(Context context, int resId){
 		return new FloatingActionButton(context, null, resId);

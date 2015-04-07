@@ -284,6 +284,7 @@
 
     <style name="SelectedContactView" parent="Material.Drawable.Ripple.Wave.Light">
         <item name="android:background">#FF00B8D4</item>
+        <item name="rd_cornerRadius">0dp</item>
         <item name="rd_delayClick">false</item>
 
         <item name="android:minHeight">72dp</item>

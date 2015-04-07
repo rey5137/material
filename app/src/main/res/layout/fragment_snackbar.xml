@@ -23,17 +23,17 @@
 		    android:text="Mobile Snackbar"/>
 	    
 	        <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_mobile_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
 			    android:textColor="#FF000000"
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
-			    android:text="SINGLE LINE"
-			    style="@style/RaiseButtonRippleStyle"
-			    app:rd_delayClick="false"/>
+			    android:text="SINGLE LINE"/>
 	        
 	        <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_mobile_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -41,8 +41,6 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    style="@style/RaiseButtonRippleStyle"
-			    app:rd_delayClick="false"
 			    android:layout_marginTop="8dp"/>
 
 		<TextView 
@@ -55,17 +53,17 @@
 		    android:text="Tablet Snackbar"/>
 	    
 	        <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_tablet_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
 			    android:textColor="#FF000000"
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
-			    android:text="SINGLE LINE"
-			    style="@style/RaiseButtonRippleStyle"
-			    app:rd_delayClick="false"/>
+			    android:text="SINGLE LINE"/>
 	        
 	        <com.rey.material.widget.Button
+                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_tablet_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -73,8 +71,6 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    style="@style/RaiseButtonRippleStyle"
-			    app:rd_delayClick="false"
 			    android:layout_marginTop="8dp"/>
 	        	        	        
 	</LinearLayout>

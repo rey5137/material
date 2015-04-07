@@ -25,8 +25,6 @@
             app:spn_arrowColor="#FFFFFFFF"
             app:spn_dividerHeight="0dp"
             app:rd_style="@style/Material.Drawable.Ripple.Wave"
-            app:rd_enable="true"
-            app:rd_delayClick="true"
             android:layout_gravity="center_vertical"/>
 
     </FrameLayout>
@@ -128,9 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:padding="8dp"
-                    app:rd_style="@style/Material.Drawable.Ripple.Wave.Light"
-                    app:rd_enable="true"
-                    app:rd_delayClick="true"/>
+                    app:rd_style="@style/Material.Drawable.Ripple.Wave.Light"/>
 
                 <com.rey.material.widget.EditText
                     style="@style/Material.Widget.EditText.Light"
@@ -160,6 +156,7 @@
                     tools:text="@string/rd_event"/>
 
                 <com.rey.material.widget.Button
+                    style="@style/Material.Drawable.Ripple.Wave.Light"
                     android:id="@+id/rd_bt_end_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -167,8 +164,8 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_centerVertical="true"
-                    style="@style/Material.Drawable.Ripple.Wave.Light"
-                    app:rd_delayClick="false"
+                    android:padding="8dp"
+                    android:background="@null"
                     tools:text="12/01/2015"/>
 
             </RelativeLayout>
