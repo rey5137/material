@@ -31,6 +31,7 @@
 
     <com.rey.material.widget.EditText
         style="@style/Material.Widget.EditText"
+        android:id="@+id/custom_et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:et_supportMode="charCounter"
