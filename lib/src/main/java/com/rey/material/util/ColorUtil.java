@@ -8,13 +8,13 @@ public class ColorUtil {
 		return Math.round(prev + (next - prev) * factor);
 	}
 	
-	public static int getMiddleColor(int prevColor, int curColor, float factor){		
+	public static int getMiddleColor(int prevColor, int curColor, float factor, boolean disableOnMinimumValue){
 		if(prevColor == curColor)
 			return curColor;
-		
-		if(factor == 0f)
+
+		if(disableOnMinimumValue && factor == 0f)
 			return prevColor;
-		else if(factor == 1f)
+		else if(!disableOnMinimumValue || factor == 1f)
 			return curColor;
 		
 		int a = getMiddleValue(Color.alpha(prevColor), Color.alpha(curColor), factor);
@@ -24,6 +24,10 @@ public class ColorUtil {
 		
 		return Color.argb(a, r, g, b);
 	}
+
+    public static int getMiddleColor(int prevColor, int curColor, float factor){
+        return getMiddleColor(prevColor, curColor, factor, false);
+    }
 	
 	public static int getColor(int baseColor, float alphaPercent){				
 		int alpha = Math.round(Color.alpha(baseColor) * alphaPercent);
