@@ -591,7 +591,7 @@ public class Slider extends View{
 
         float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float y = mDrawRect.centerY();
-        int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent, mDisableOnMinimumValue);
+        int filledPrimaryColor = ColorUtil.getMiddleColor(mDisableOnMinimumValue ? mSecondaryColor : mPrimaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
         getTrackPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
