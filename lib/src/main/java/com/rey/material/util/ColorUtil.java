@@ -8,10 +8,10 @@ public class ColorUtil {
 		return Math.round(prev + (next - prev) * factor);
 	}
 	
-	public static int getMiddleColor(int prevColor, int curColor, float factor){		
+	public static int getMiddleColor(int prevColor, int curColor, float factor){
 		if(prevColor == curColor)
 			return curColor;
-		
+
 		if(factor == 0f)
 			return prevColor;
 		else if(factor == 1f)
@@ -24,8 +24,8 @@ public class ColorUtil {
 		
 		return Color.argb(a, r, g, b);
 	}
-	
-	public static int getColor(int baseColor, float alphaPercent){				
+
+	public static int getColor(int baseColor, float alphaPercent){
 		int alpha = Math.round(Color.alpha(baseColor) * alphaPercent);
 		
 		return (baseColor & 0x00FFFFFF) | (alpha << 24);

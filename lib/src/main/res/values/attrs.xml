@@ -169,6 +169,7 @@
     <declare-styleable name="Slider">
         <attr name="sl_trackSize" format="reference|dimension"/>
         <attr name="sl_primaryColor" format="reference|color"/>
+        <attr name="sl_disableOnMinimumValue" format="boolean"/>
         <attr name="sl_secondaryColor" format="reference|color"/>
         <attr name="sl_trackCap" format="integer">
             <enum name="butt" value="0x00000000" />
