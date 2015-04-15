@@ -13,16 +13,16 @@
     <section class="page-header">
       <h1 class="project-name">Material</h1>
       <h2 class="project-tagline">A library to bring Material Design UI to pre-Lolipop Android.</h2>
-      <a href="https://github.com/rey5137/Material" class="btn">View on GitHub</a>
-      <a href="https://github.com/rey5137/Material/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/rey5137/Material/tarball/master" class="btn">Download .tar.gz</a>
+      <a href="https://github.com/rey5137/material" class="btn">View on GitHub</a>
+      <a href="https://github.com/rey5137/material/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/rey5137/material/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
       <h1>
 <a id="material" class="anchor" href="#material" aria-hidden="true"><span class="octicon octicon-link"></span></a>Material</h1>
 
-<p><img src="https://img.shields.io/maven-central/v/com.github.rey5137/material.svg" alt=""></p>
+<p><a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar"><img src="https://img.shields.io/maven-central/v/com.github.rey5137/material.svg" alt="Maven Central"></a>  <a href="http://android-arsenal.com/details/1/1685"><img src="https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
 
 <p>MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is <a href="https://github.com/rey5137">Rey Pham</a>.</p>
 
@@ -119,12 +119,12 @@
 <p>Add Gradle dependency:</p>
 
 <div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.0.0<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.1.0<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <ul>
 <li>Or
-<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.0.0/material-1.0.0.aar">Download from Maven</a>
+<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar">Download from Maven</a>
 </li>
 </ul>
 
@@ -135,7 +135,24 @@
    compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:21.0.3<span class="pl-pds">'</span></span>
 }</pre></div>
 
-<p>Now you can use any widget in <strong>com.rey.material.widget</strong> package as you wish. For styling, please view <a href="https://github.com/rey5137/Material/wiki">Wiki</a>.</p>
+<p>Now you can use any widget in <strong>com.rey.material.widget</strong> package as you wish. For styling, please view <a href="https://github.com/rey5137/Material/wiki">Wiki</a>. Note that default style of widgets depend on theme of AppCompat. Here is an example:</p>
+
+<div class="highlight highlight-xml"><pre>     &lt;<span class="pl-ent">style</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>AppTheme<span class="pl-pds">"</span></span> <span class="pl-e">parent</span>=<span class="pl-s"><span class="pl-pds">"</span>Theme.AppCompat.Light.DarkActionBar<span class="pl-pds">"</span></span>&gt;
+        <span class="pl-c">&lt;!-- Customize your theme here. --&gt;</span>
+
+        <span class="pl-c">&lt;!-- colorPrimary is used for the default action bar background --&gt;</span>
+        &lt;<span class="pl-ent">item</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>colorPrimary<span class="pl-pds">"</span></span>&gt;@color/colorPrimary&lt;/<span class="pl-ent">item</span>&gt;
+
+        <span class="pl-c">&lt;!-- colorPrimaryDark is used for the status bar --&gt;</span>
+        &lt;<span class="pl-ent">item</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>colorPrimaryDark<span class="pl-pds">"</span></span>&gt;@color/colorPrimaryDark&lt;/<span class="pl-ent">item</span>&gt;
+
+        <span class="pl-c">&lt;!-- colorAccent is used as the default value for colorControlActivated</span>
+<span class="pl-c">             which is used to tint widgets --&gt;</span>
+        &lt;<span class="pl-ent">item</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>colorAccent<span class="pl-pds">"</span></span>&gt;@color/colorAccent&lt;/<span class="pl-ent">item</span>&gt;
+
+        <span class="pl-c">&lt;!-- You can also set colorControlNormal, colorControlActivated</span>
+<span class="pl-c">             colorControlHighlight &amp; colorSwitchThumbNormal. --&gt;</span>
+    &lt;/<span class="pl-ent">style</span>&gt;</pre></div>
 
 <h2>
 <a id="donation" class="anchor" href="#donation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Donation</h2>
@@ -182,7 +199,7 @@ limitations under the License.
 </code></pre>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/rey5137/Material">Material</a> is maintained by <a href="https://github.com/rey5137">rey5137</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/rey5137/material">Material</a> is maintained by <a href="https://github.com/rey5137">rey5137</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
