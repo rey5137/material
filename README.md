@@ -9,7 +9,7 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Demo](#demo)
 * [Getting Started](#getting-started)
 * [Donation](#donation)
-* [Contributing](#Contributing)
+* [Contributing](#contributing)
 
 ##Features
 - [Progress](https://github.com/rey5137/Material/wiki/Progress)
