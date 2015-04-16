@@ -27,6 +27,7 @@
             app:et_supportMode="none"
             app:et_autoCompleteMode="multi"
             app:et_dividerPadding="4dp"
+            app:cet_spanFontFamily="asset:FreeSans.ttf"
             android:completionThreshold="2"/>
 
         <com.rey.material.widget.EditText

@@ -25,7 +25,7 @@ public class TypefaceUtil {
             synchronized (sCachedFonts) {
                 try {
                     if (!sCachedFonts.containsKey(familyName)) {
-                        final Typeface typeface = Typeface.createFromAsset(context.getAssets(), familyName);
+                        final Typeface typeface = Typeface.createFromAsset(context.getAssets(), familyName.substring(PREFIX_ASSET.length()));
                         sCachedFonts.put(familyName, typeface);
                         return typeface;
                     }
