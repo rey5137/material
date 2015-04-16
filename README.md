@@ -9,6 +9,7 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Demo](#demo)
 * [Getting Started](#getting-started)
 * [Donation](#donation)
+* [Contributing](#Contributing)
 
 ##Features
 - [Progress](https://github.com/rey5137/Material/wiki/Progress)
@@ -119,14 +120,15 @@ You can support the project and thank the author for his hard work.
 **PayPal**
 - [Donate] (https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pea5137%40gmail%2ecom&lc=US&item_name=Rey%20Pham&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
 
+## Contributing
+Want to contribute? You are welcome! 
+Note that all pull request should go to `dev` branch.
+
 Developed By
 ------------
 
 * Rey Pham - <pea5137@gmail.com>
 
-Contributing
-------------
-Want to contribute? You are welcome!
 
 License
 --------
