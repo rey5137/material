@@ -61,7 +61,7 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
         com.rey.material.app.Dialog dialog = mBuilder == null ? new Dialog(getActivity()) : mBuilder.build(getActivity());
         dialog.positiveActionClickListener(mActionListener)
                 .negativeActionClickListener(mActionListener)
-                .negativeActionClickListener(mActionListener);
+                .neutralActionClickListener(mActionListener);
         return dialog;
     }
 

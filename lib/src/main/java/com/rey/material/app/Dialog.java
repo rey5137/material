@@ -79,6 +79,7 @@ public class Dialog extends android.app.Dialog{
     private boolean mCancelable = true;
     private boolean mCanceledOnTouchOutside = true;
 
+    public static final int TITLE = ViewUtil.generateViewId();
     public static final int ACTION_POSITIVE = ViewUtil.generateViewId();
     public static final int ACTION_NEGATIVE = ViewUtil.generateViewId();
     public static final int ACTION_NEUTRAL = ViewUtil.generateViewId();
@@ -120,6 +121,7 @@ public class Dialog extends android.app.Dialog{
         mCardView.setPreventCornerOverlap(false);
         mCardView.setUseCompatPadding(true);
 
+        mTitle.setId(TITLE);
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
         mPositiveAction.setId(ACTION_POSITIVE);
         mPositiveAction.setPadding(mActionPadding, 0, mActionPadding, 0);
