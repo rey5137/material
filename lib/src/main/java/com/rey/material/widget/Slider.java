@@ -397,11 +397,14 @@ public class Slider extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
+                mIsDragging = !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(event.getX(), event.getY());
-                if(mIsDragging)
+                if (mIsDragging)
                     mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
-                break;
+
+                float touchedPosition = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                setPosition(touchedPosition, true);
+            break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
                     if(mDiscreteMode) {
