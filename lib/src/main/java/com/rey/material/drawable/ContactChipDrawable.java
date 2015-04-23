@@ -16,6 +16,7 @@ import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.FloatMath;
 
 /**
  * Created by Rey on 1/21/2015.
@@ -46,6 +47,12 @@ public class ContactChipDrawable extends Drawable{
 
         mTextPaint = new TextPaint(mPaint);
         mMetrics = new BoringLayout.Metrics();
+        Paint.FontMetricsInt temp = mTextPaint.getFontMetricsInt();
+        mMetrics.ascent = temp.ascent;
+        mMetrics.bottom = temp.bottom;
+        mMetrics.descent = temp.descent;
+        mMetrics.top = temp.top;
+        mMetrics.leading = temp.leading;
 
         mRect = new RectF();
 
@@ -82,7 +89,7 @@ public class ContactChipDrawable extends Drawable{
             return;
 
         int outerWidth = Math.max(0, bounds.width() - bounds.height() - mPaddingLeft - mPaddingRight);
-        mMetrics = BoringLayout.isBoring(mContactName, mTextPaint, mMetrics);
+        mMetrics.width = (int) FloatMath.ceil(mTextPaint.measureText(mContactName, 0, mContactName.length()));
 
         if(mBoringLayout == null)
             mBoringLayout = BoringLayout.make(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);

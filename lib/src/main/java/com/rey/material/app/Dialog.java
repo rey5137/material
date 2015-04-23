@@ -1002,6 +1002,10 @@ public class Dialog extends android.app.Dialog{
             return this;
         }
 
+        public Dialog getDialog(){
+            return mDialog;
+        }
+
         @Override
         public void onPositiveActionClicked(DialogFragment fragment) {
             fragment.dismiss();
@@ -1029,12 +1033,28 @@ public class Dialog extends android.app.Dialog{
             if(mContentViewId != 0)
                 mDialog.contentView(mContentViewId);
 
+            onBuildDone(mDialog);
+
             return mDialog;
         }
 
+        /**
+         * Get a appropriate Dialog instance will be used for styling later.
+         * Child class should override this function to return appropriate Dialog instance.
+         * If you want to apply styling to dialog, or get content view, you should do it in {@link #onBuildDone(Dialog)}
+         * @param context A Context instance.
+         * @param styleId The resourceId of Dialog's style.
+         * @return A Dialog instance will be used for styling later.
+         */
         protected Dialog onBuild(Context context, int styleId){
             return new Dialog(context, styleId);
         }
+
+        /**
+         * This function will be called after Builder done apply styling to Dialog.
+         * @param dialog The Dialog instance.
+         */
+        protected void onBuildDone(Dialog dialog){}
 
         protected Builder(Parcel in) {
             mStyleId = in.readInt();
@@ -1047,8 +1067,16 @@ public class Dialog extends android.app.Dialog{
             onReadFromParcel(in);
         }
 
+        /**
+         * Child class should override this function and read back any saved attributes.
+         * All read methods should be called after super.onReadFromParcel() call to keep the order.
+         */
         protected void onReadFromParcel(Parcel in){}
 
+        /**
+         * Child class should override this function and write down all attributes will be saved.
+         * All write methods should be called after super.onWriteToParcel() call to keep the order.
+         */
         protected void onWriteToParcel(Parcel dest, int flags){}
 
         @Override

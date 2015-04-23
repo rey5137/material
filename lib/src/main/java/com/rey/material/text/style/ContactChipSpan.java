@@ -10,9 +10,11 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.text.BoringLayout;
 import android.text.Layout;
+import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
+import android.util.FloatMath;
 
 /**
  * Created by Rey on 1/21/2015.
@@ -28,7 +30,6 @@ public class ContactChipSpan extends ReplacementSpan {
 
     private CharSequence mContactName;
     private BoringLayout mBoringLayout;
-    private BoringLayout.Metrics mMetrics;
     private TextPaint mTextPaint;
     private RectF mRect;
 
@@ -44,7 +45,7 @@ public class ContactChipSpan extends ReplacementSpan {
         mPaint.setTextSize(textSize);
 
         mTextPaint = new TextPaint(mPaint);
-        mMetrics = new BoringLayout.Metrics();
+
 
         mRect = new RectF();
 
@@ -58,7 +59,14 @@ public class ContactChipSpan extends ReplacementSpan {
         mWidth = Math.round(Math.min(maxWidth, mPaint.measureText(name, 0, name.length()) + paddingLeft + paddingRight + height));
 
         int outerWidth = Math.max(0, mWidth - mPaddingLeft - mPaddingRight - mHeight);
-        mMetrics = BoringLayout.isBoring(mContactName, mTextPaint, mMetrics);
+        Paint.FontMetricsInt temp = mTextPaint.getFontMetricsInt();
+        BoringLayout.Metrics mMetrics = new BoringLayout.Metrics();
+        mMetrics.width = (int)FloatMath.ceil(mTextPaint.measureText(mContactName, 0, mContactName.length()));
+        mMetrics.ascent = temp.ascent;
+        mMetrics.bottom = temp.bottom;
+        mMetrics.descent = temp.descent;
+        mMetrics.top = temp.top;
+        mMetrics.leading = temp.leading;
         mBoringLayout = BoringLayout.make(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);
     }
 

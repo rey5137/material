@@ -313,12 +313,12 @@ public class ToolbarManager {
 
         @Override
         public Animation getOutAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(v.getContext(), mAnimationOut);
+            return mAnimationOut == 0 ? null : AnimationUtils.loadAnimation(v.getContext(), mAnimationOut);
         }
 
         @Override
         public Animation getInAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(v.getContext(), mAnimationIn);
+            return mAnimationIn == 0 ?  null : AnimationUtils.loadAnimation(v.getContext(), mAnimationIn);
         }
     }
 

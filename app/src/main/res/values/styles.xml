@@ -25,9 +25,8 @@
         <item name="nd_icon">@style/NavigatorDrawableIcon</item>
     </style>
     
-    <style name="ToolbarRippleStyle" parent="Material.Drawable.Ripple.Touch">
-        <item name="rd_backgroundColor">#00000000</item>
-        <item name="rd_maxRippleRadius">48dp</item>
+    <style name="ToolbarRippleStyle" parent="Material.Drawable.Ripple.Touch.MatchView.Light">
+        <item name="rd_backgroundColor">@android:color/transparent</item>
         <item name="rd_rippleColor">#33FFFFFF</item>
     </style>
     

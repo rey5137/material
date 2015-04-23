@@ -56,6 +56,7 @@ import com.rey.material.util.ViewUtil;
 public class EditText extends FrameLayout {
 
 	private boolean mLabelEnable;
+    private boolean mLabelVisible;
 	private int mSupportMode;
     private int mAutoCompleteMode;
 	
@@ -189,6 +190,7 @@ public class EditText extends FrameLayout {
         addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         if(mLabelEnable){
+            mLabelVisible = true;
             mLabelView = new LabelView(context);
             mLabelView.setGravity(GravityCompat.START);
             mLabelView.setSingleLine(true);
@@ -289,7 +291,7 @@ public class EditText extends FrameLayout {
 
         if(mLabelEnable){
             mLabelView.setText(mInputView.getHint());
-            mLabelView.setVisibility(TextUtils.isEmpty(mInputView.getText().toString()) ? View.INVISIBLE : View.VISIBLE);
+            setLabelVisible(!TextUtils.isEmpty(mInputView.getText().toString()), false);
         }
     }
 
@@ -436,6 +438,65 @@ public class EditText extends FrameLayout {
     			mSupportView.setText(String.valueOf(count));
 		}
 	}
+
+    private void setLabelVisible(boolean visible, boolean animation){
+        if(!mLabelEnable|| mLabelVisible == visible)
+            return;
+
+        mLabelVisible = visible;
+
+        if(animation){
+            if(mLabelVisible){
+                if(mLabelInAnimId != 0){
+                    Animation anim = AnimationUtils.loadAnimation(getContext(), mLabelInAnimId);
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            mLabelView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {}
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {}
+                    });
+                    mLabelView.clearAnimation();
+                    mLabelView.startAnimation(anim);
+                }
+                else
+                    mLabelView.setVisibility(View.VISIBLE);
+            }
+            else{
+                if(mLabelOutAnimId != 0){
+                    Animation anim = AnimationUtils.loadAnimation(getContext(), mLabelOutAnimId);
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            mLabelView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {}
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            mLabelView.setVisibility(View.INVISIBLE);
+                        }
+
+                    });
+                    mLabelView.clearAnimation();
+                    mLabelView.startAnimation(anim);
+                }
+                else
+                    mLabelView.setVisibility(View.INVISIBLE);
+            }
+        }
+        else
+            mLabelView.setVisibility(mLabelVisible ? View.VISIBLE : View.INVISIBLE);
+    }
 
     /* protected method of AutoCompleteTextView */
 
@@ -3366,63 +3427,10 @@ public class EditText extends FrameLayout {
 	private class InputTextWatcher implements TextWatcher {
         @Override
         public void afterTextChanged(Editable s) {
-        	if(!mLabelEnable)
-        		return;
-        	
         	int count = s.length();
-        	
-            if(count == 0){
-            	if(mLabelView.getVisibility() == View.VISIBLE){
-            		if(mLabelOutAnimId > 0){
-                		Animation anim = AnimationUtils.loadAnimation(getContext(), mLabelOutAnimId);
-                		anim.setAnimationListener(new Animation.AnimationListener() {
-    						
-    						@Override
-    						public void onAnimationStart(Animation animation) {}
-    						
-    						@Override
-    						public void onAnimationRepeat(Animation animation) {}
-    						
-    						@Override
-    						public void onAnimationEnd(Animation animation) {
-    							mLabelView.setVisibility(View.INVISIBLE);							
-    						}
-    						
-    					});
-                		mLabelView.startAnimation(anim);
-                	}
-                	else
-                		mLabelView.setVisibility(View.INVISIBLE);
-            	}    
-            	
-            	if(mSupportMode == SUPPORT_MODE_CHAR_COUNTER)
-            		updateCharCounter(count);       	
-            } else{
-            	if(mLabelView.getVisibility() == View.INVISIBLE){
-            		if(mLabelInAnimId > 0){
-                		Animation anim = AnimationUtils.loadAnimation(getContext(), mLabelInAnimId);
-                		anim.setAnimationListener(new Animation.AnimationListener() {
-    						
-    						@Override
-    						public void onAnimationStart(Animation animation) {
-    							mLabelView.setVisibility(View.VISIBLE);
-    						}
-    						
-    						@Override
-    						public void onAnimationRepeat(Animation animation) {}
-    						
-    						@Override
-    						public void onAnimationEnd(Animation animation) {}
-    					});
-                		mLabelView.startAnimation(anim);            	
-                	}
-                	else
-                		mLabelView.setVisibility(View.VISIBLE);
-            	}     
-            	
-            	if(mSupportMode == SUPPORT_MODE_CHAR_COUNTER)
-            		updateCharCounter(count);
-            }
+        	setLabelVisible(count != 0, true);
+            if(mSupportMode == SUPPORT_MODE_CHAR_COUNTER)
+                updateCharCounter(count);
         }
 
         @Override
