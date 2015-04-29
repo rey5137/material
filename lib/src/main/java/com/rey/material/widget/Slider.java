@@ -1,5 +1,6 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -10,16 +11,18 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -127,6 +130,8 @@ public class Slider extends View{
         mMemoPoint = new PointF();
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     public void applyStyle(int resId){
@@ -387,6 +392,22 @@ public class Slider extends View{
         return position;
     }
 
+    float mTouchDownX;
+    private int mScaledTouchSlop;
+
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public boolean isInScrollingContainer() {
+        ViewParent p = getParent();
+        while (p != null && p instanceof ViewGroup) {
+            if (((ViewGroup) p).shouldDelayChildPressedState()) {
+                return true;
+            }
+            p = p.getParent();
+        }
+        return false;
+    }
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
@@ -397,14 +418,15 @@ public class Slider extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = !mThumbMoveAnimator.isRunning();
-                mMemoPoint.set(event.getX(), event.getY());
-                if (mIsDragging)
-                    mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
-
-                float touchedPosition = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
-                setPosition(touchedPosition, true);
-            break;
+                if (isInScrollingContainer())
+                    mTouchDownX = event.getX();
+                else {
+                    mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
+                    mMemoPoint.set(event.getX(), event.getY());
+                    if (mIsDragging)
+                        mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
+                }
+                break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
                     if(mDiscreteMode) {
@@ -417,6 +439,13 @@ public class Slider extends View{
                         setPosition(position, false, true);
                         mMemoPoint.x = event.getX();
                         invalidate();
+                    }
+                } else {
+                    final float x = event.getX();
+                    if (Math.abs(x - mTouchDownX) > mScaledTouchSlop) {
+                        float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                        setPosition(position, true);
+                        attemptClaimDrag();
                     }
                 }
                 break;
@@ -439,6 +468,12 @@ public class Slider extends View{
         }
 
         return true;
+    }
+
+    private void attemptClaimDrag() {
+        if (getParent() != null) {
+            getParent().requestDisallowInterceptTouchEvent(true);
+        }
     }
 
     private void getTrackPath(float x, float y, float radius){
