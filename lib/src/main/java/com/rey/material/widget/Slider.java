@@ -79,6 +79,8 @@ public class Slider extends View{
     private int mTextHeight;
     private int mMemoValue;
     private String mValueText;
+    float mTouchDownX;
+    private int mScaledTouchSlop;
 
     private ThumbRadiusAnimator mThumbRadiusAnimator;
     private ThumbStrokeAnimator mThumbStrokeAnimator;
@@ -391,10 +393,6 @@ public class Slider extends View{
 
         return position;
     }
-
-    float mTouchDownX;
-    private int mScaledTouchSlop;
-
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public boolean isInScrollingContainer() {
