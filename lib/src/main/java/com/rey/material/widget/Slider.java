@@ -442,6 +442,7 @@ public class Slider extends View{
                     final float x = event.getX();
                     if (Math.abs(x - mTouchDownX) > mScaledTouchSlop) {
                         mIsDragging = true;
+                        mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
                         float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
                         setPosition(position, true);
                         attemptClaimDrag();
