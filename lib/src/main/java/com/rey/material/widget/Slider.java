@@ -86,6 +86,14 @@ public class Slider extends View{
     private ThumbStrokeAnimator mThumbStrokeAnimator;
     private ThumbMoveAnimator mThumbMoveAnimator;
 
+    public int getmMinValue() {
+        return mMinValue;
+    }
+
+    public void setmMinValue(int mMinValue) {
+        this.mMinValue = mMinValue;
+    }
+
     public interface OnPositionChangeListener{
         public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue);
     }
@@ -164,7 +172,7 @@ public class Slider extends View{
         int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
         mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
         mGravity = a.getInt(R.styleable.Slider_android_gravity, Gravity.CENTER_VERTICAL);
-        mMinValue = a.getInteger(R.styleable.Slider_sl_minValue, mMinValue);
+        setmMinValue(a.getInteger(R.styleable.Slider_sl_minValue, getmMinValue()));
         mMaxValue = a.getInteger(R.styleable.Slider_sl_maxValue, mMaxValue);
         mStepValue = a.getInteger(R.styleable.Slider_sl_stepValue, mStepValue);
         setValue(a.getInteger(R.styleable.Slider_sl_value, getValue()), false);
@@ -216,7 +224,7 @@ public class Slider extends View{
     }
 
     public float getExactValue(){
-        return (mMaxValue - mMinValue) * getPosition() + mMinValue;
+        return (mMaxValue - getmMinValue()) * getPosition() + getmMinValue();
     }
 
     public float getPosition(){
@@ -255,8 +263,8 @@ public class Slider extends View{
     }
 
     public void setValue(float value, boolean animation){
-        value = Math.min(mMaxValue, Math.max(value, mMinValue));
-        setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
+        value = Math.min(mMaxValue, Math.max(value, getmMinValue()));
+        setPosition((value - getmMinValue()) / (mMaxValue - getmMinValue()), animation);
     }
 
     public void setOnPositionChangeListener(OnPositionChangeListener listener){
@@ -380,7 +388,7 @@ public class Slider extends View{
         if(!mDiscreteMode)
             return position;
 
-        int totalOffset = mMaxValue - mMinValue;
+        int totalOffset = mMaxValue - getmMinValue();
         int valueOffset = Math.round(totalOffset * position);
         int stepOffset = valueOffset / mStepValue;
         int lowerValue = stepOffset * mStepValue;
