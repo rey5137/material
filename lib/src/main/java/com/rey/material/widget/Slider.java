@@ -9,10 +9,12 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.rey.material.R;
+import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
@@ -76,6 +79,12 @@ public class Slider extends View{
     private ThumbRadiusAnimator mThumbRadiusAnimator;
     private ThumbStrokeAnimator mThumbStrokeAnimator;
     private ThumbMoveAnimator mThumbMoveAnimator;
+
+    public interface OnPositionChangeListener{
+        public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue);
+    }
+
+    private OnPositionChangeListener mOnPositionChangeListener;
 
     public Slider(Context context) {
         super(context);
@@ -206,24 +215,52 @@ public class Slider extends View{
     }
 
     public void setPosition(float pos, boolean animation){
-        if(animation) {
-            if(!mThumbMoveAnimator.startAnimation(pos)){
+        setPosition(pos, animation, animation);
+    }
+
+    private void setPosition(float pos, boolean moveAnimation, boolean transformAnimation){
+        boolean change = getPosition() != pos;
+        int oldValue = getValue();
+        float oldPos = getPosition();
+
+        if(!moveAnimation || !mThumbMoveAnimator.startAnimation(pos)){
+            mThumbPosition = pos;
+
+            if(transformAnimation) {
                 if(!mIsDragging)
                     mThumbRadiusAnimator.startAnimation(mThumbRadius);
                 mThumbStrokeAnimator.startAnimation(pos == 0 ? 0 : 1);
             }
+            else{
+                mThumbCurrentRadius = mThumbRadius;
+                mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
+                invalidate();
+            }
         }
-        else {
-            mThumbPosition = pos;
-            mThumbCurrentRadius = mThumbRadius;
-            mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
-            invalidate();
-        }
+
+        int newValue = getValue();
+        float newPos = getPosition();
+
+        if(change && mOnPositionChangeListener != null)
+            mOnPositionChangeListener.onPositionChanged(this, oldPos, newPos, oldValue, newValue);
     }
 
     public void setValue(float value, boolean animation){
         value = Math.min(mMaxValue, Math.max(value, mMinValue));
         setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
+    }
+
+    public void setOnPositionChangeListener(OnPositionChangeListener listener){
+        mOnPositionChangeListener = listener;
+    }
+
+    @Override
+    public void setBackgroundDrawable(Drawable drawable) {
+        Drawable background = getBackground();
+        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
+            ((RippleDrawable) background).setBackgroundDrawable(drawable);
+        else
+            super.setBackgroundDrawable(drawable);
     }
 
     @Override
@@ -371,9 +408,9 @@ public class Slider extends View{
                     }
                     else{
                         float offset = (event.getX() - mMemoPoint.x) / mDrawRect.width();
-                        mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
+                        float position = Math.min(1f, Math.max(0f, mThumbPosition + offset));
+                        setPosition(position, false, true);
                         mMemoPoint.x = event.getX();
-                        mThumbStrokeAnimator.startAnimation(mThumbPosition == 0 ? 0 : 1);
                         invalidate();
                     }
                 }
@@ -617,12 +654,14 @@ public class Slider extends View{
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+                invalidate();
+                return true;
             }
-            else
+            else {
                 mThumbCurrentRadius = mRadius;
-
-            invalidate();
-            return true;
+                invalidate();
+                return false;
+            }
         }
 
         public void stopAnimation() {
@@ -678,12 +717,14 @@ public class Slider extends View{
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+                invalidate();
+                return true;
             }
-            else
+            else {
                 mThumbFillPercent = mFillPercent;
-
-            invalidate();
-            return true;
+                invalidate();
+                return false;
+            }
         }
 
         public void stopAnimation() {
@@ -755,16 +796,14 @@ public class Slider extends View{
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
+                invalidate();
+                return true;
             }
             else {
                 mThumbPosition = position;
-                mThumbCurrentRadius = mThumbRadius;
-                mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
+                invalidate();
+                return false;
             }
-
-            invalidate();
-
-            return true;
         }
 
         public void stopAnimation() {

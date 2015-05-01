@@ -1,7 +1,7 @@
 Material
 =====================
 
-![](https://img.shields.io/maven-central/v/com.github.rey5137/material.svg)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.rey5137/material.svg)](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
 
 MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is [Rey Pham](https://github.com/rey5137).
 
@@ -9,6 +9,7 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Demo](#demo)
 * [Getting Started](#getting-started)
 * [Donation](#donation)
+* [Contributing](#contributing)
 
 ##Features
 - [Progress](https://github.com/rey5137/Material/wiki/Progress)
@@ -75,12 +76,12 @@ Add Gradle dependency:
 
 ```gradle
 dependencies {
-   compile 'com.github.rey5137:material:1.0.0'
+   compile 'com.github.rey5137:material:1.1.0'
 }
 ```
 
 * Or
-[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.0.0/material-1.0.0.aar)
+[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar)
 
 AppCompat and CardView library is required by Material library.
 
@@ -90,7 +91,26 @@ dependencies {
    compile 'com.android.support:cardview-v7:21.0.3'
 }
 ```
-Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view [Wiki](https://github.com/rey5137/Material/wiki).
+Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view [Wiki](https://github.com/rey5137/Material/wiki). Note that default style of widgets depend on theme of AppCompat. Here is an example:
+
+```xml
+     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+        <!-- colorPrimary is used for the default action bar background -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+        <!-- colorAccent is used as the default value for colorControlActivated
+             which is used to tint widgets -->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- You can also set colorControlNormal, colorControlActivated
+             colorControlHighlight & colorSwitchThumbNormal. -->
+    </style>
+```
 
 ## Donation
 You can support the project and thank the author for his hard work.
@@ -100,14 +120,15 @@ You can support the project and thank the author for his hard work.
 **PayPal**
 - [Donate] (https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pea5137%40gmail%2ecom&lc=US&item_name=Rey%20Pham&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
 
+## Contributing
+Want to contribute? You are welcome! 
+Note that all pull request should go to `dev` branch.
+
 Developed By
 ------------
 
 * Rey Pham - <pea5137@gmail.com>
 
-Contributing
-------------
-Want to contribute? You are welcome!
 
 License
 --------

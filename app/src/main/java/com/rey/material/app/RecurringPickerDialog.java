@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Adapter;
@@ -28,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.rey.material.demo.R;
 import com.rey.material.util.ThemeUtil;
@@ -86,7 +88,8 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         setContentView(v);
 
         FrameLayout fl_mode = (FrameLayout)v.findViewById(R.id.rd_fl_mode);
-        LinearLayout ll_repeat = (LinearLayout)v.findViewById(R.id.rd_ll_repeat);
+        final ScrollView sv_repeat = (ScrollView)v.findViewById(R.id.rd_sv_repeat);
+        final LinearLayout ll_repeat = (LinearLayout)v.findViewById(R.id.rd_ll_repeat);
         mModeSpinner = (Spinner)fl_mode.findViewById(R.id.rd_spn_mode);
         mEndSpinner = (Spinner)v.findViewById(R.id.rd_spn_end);
         mPeriodEditText = (EditText)v.findViewById(R.id.rd_et_period);
@@ -97,6 +100,13 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
         mEndNumUnitTextView = (TextView)v.findViewById(R.id.rd_tv_end_num_unit);
         mEndDateButton = (Button)v.findViewById(R.id.rd_bt_end_date);
         mWeekView = (WeekView)v.findViewById(R.id.rd_wv_week);
+
+        sv_repeat.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                showDivider(ll_repeat.getMeasuredHeight() > sv_repeat.getMeasuredHeight());
+            }
+        });
 
         mHeaderBackground = new HeaderDrawable(getContext());
 

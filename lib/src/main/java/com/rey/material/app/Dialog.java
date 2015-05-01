@@ -65,7 +65,11 @@ public class Dialog extends android.app.Dialog{
     private final Handler mHandler = new Handler();
     private final Runnable mDismissAction = new Runnable() {
         public void run() {
-            Dialog.super.dismiss();
+            //dirty fix for java.lang.IllegalArgumentException: View not attached to window manager
+            try {
+                Dialog.super.dismiss();
+            }
+            catch(IllegalArgumentException ex){}
         }
     };
 
@@ -80,8 +84,9 @@ public class Dialog extends android.app.Dialog{
     public static final int ACTION_NEUTRAL = ViewUtil.generateViewId();
 
     public Dialog(Context context) {
-        this(context, 0);
+        this(context, R.style.Material_App_Dialog_Light);
     }
+
 
     public Dialog(Context context, int style) {
         super(context, style);
@@ -957,7 +962,9 @@ public class Dialog extends android.app.Dialog{
 
         protected Dialog mDialog;
 
-        public Builder(){}
+        public Builder(){
+            this(R.style.Material_App_Dialog_Light);
+        }
 
         public Builder(int styleId){
             mStyleId = styleId;
@@ -994,13 +1001,19 @@ public class Dialog extends android.app.Dialog{
         }
 
         @Override
-        public void onPositiveActionClicked(DialogFragment fragment) {}
+        public void onPositiveActionClicked(DialogFragment fragment) {
+            fragment.dismiss();
+        }
 
         @Override
-        public void onNegativeActionClicked(DialogFragment fragment) {}
+        public void onNegativeActionClicked(DialogFragment fragment) {
+            fragment.dismiss();
+        }
 
         @Override
-        public void onNeutralActionClicked(DialogFragment fragment) {}
+        public void onNeutralActionClicked(DialogFragment fragment) {
+            fragment.dismiss();
+        }
 
         @Override
         public Dialog build(Context context) {

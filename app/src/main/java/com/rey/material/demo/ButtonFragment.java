@@ -1,6 +1,8 @@
 package com.rey.material.demo;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,7 +49,6 @@ public class ButtonFragment extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getActivity(), "Button Clicked!\nEvent's fired when in anim end.", Toast.LENGTH_SHORT).show();
                 if(v instanceof  FloatingActionButton){
                     FloatingActionButton bt = (FloatingActionButton)v;
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
@@ -59,7 +60,6 @@ public class ButtonFragment extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getActivity(), "Button Clicked!\nEvent's fired when out anim end.", Toast.LENGTH_SHORT).show();
                 if(v instanceof  FloatingActionButton){
                     FloatingActionButton bt = (FloatingActionButton)v;
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);

@@ -24,6 +24,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -581,7 +582,7 @@ public class ContactEditText extends EditText{
         public View getView(int position, View convertView, ViewGroup parent) {
             ContactView v = (ContactView)convertView;
             if(v == null) {
-                v = new ContactView(getContext(), null, 0, position == 0 ? R.style.SelectedContactView : R.style.ReplacementContactView);
+                v = (ContactView)LayoutInflater.from(parent.getContext()).inflate(position == 0 ? R.layout.row_contact_selected : R.layout.row_contact_replace, parent, false);
                 v.setOnClickListener(this);
             }
 

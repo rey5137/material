@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -24,6 +25,7 @@ import android.view.animation.Interpolator;
 import android.widget.Checkable;
 
 import com.rey.material.R;
+import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
@@ -69,6 +71,11 @@ public class Switch extends View implements Checkable {
     private static final int COLOR_SHADOW_START = 0x4C000000;
     private static final int COLOR_SHADOW_END = 0x00000000;
 
+    public interface OnCheckedChangeListener{
+        public void onCheckedChanged(Switch view, boolean checked);
+    }
+
+    private OnCheckedChangeListener mOnCheckedChangeListener;
 
     public Switch(Context context) {
         super(context);
@@ -168,6 +175,15 @@ public class Switch extends View implements Checkable {
         buildShadow();
     }
 
+    @Override
+    public void setBackgroundDrawable(Drawable drawable) {
+        Drawable background = getBackground();
+        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
+            ((RippleDrawable) background).setBackgroundDrawable(drawable);
+        else
+            super.setBackgroundDrawable(drawable);
+    }
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
 		if(l == mRippleManager)
@@ -177,11 +193,18 @@ public class Switch extends View implements Checkable {
 			setOnClickListener(mRippleManager);
 		}
 	}
-		
+
+    public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
+        mOnCheckedChangeListener = listener;
+    }
+
 	@Override
 	public void setChecked(boolean checked) {		
-		if(mChecked != checked)
-			mChecked = checked;
+		if(mChecked != checked) {
+            mChecked = checked;
+            if(mOnCheckedChangeListener != null)
+                mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
+        }
 		
 		float desPos = mChecked ? 1f : 0f;
 		
