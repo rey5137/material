@@ -1,5 +1,6 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -10,16 +11,18 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -50,6 +53,7 @@ public class Slider extends View{
     private int mStepValue = 1;
 
     private boolean mDiscreteMode = false;
+    private boolean mDisableOnMinimumValue = true;
 
     private int mPrimaryColor;
     private int mSecondaryColor;
@@ -75,10 +79,28 @@ public class Slider extends View{
     private int mTextHeight;
     private int mMemoValue;
     private String mValueText;
+    float mTouchDownX;
+    private int mScaledTouchSlop;
 
     private ThumbRadiusAnimator mThumbRadiusAnimator;
     private ThumbStrokeAnimator mThumbStrokeAnimator;
     private ThumbMoveAnimator mThumbMoveAnimator;
+
+    public int getmMinValue() {
+        return mMinValue;
+    }
+
+    public void setmMinValue(int mMinValue) {
+        this.mMinValue = mMinValue;
+    }
+
+    public boolean ismDisableOnMinimumValue() {
+        return mDisableOnMinimumValue;
+    }
+
+    public void setmDisableOnMinimumValue(boolean mDisableOnMinimumValue) {
+        this.mDisableOnMinimumValue = mDisableOnMinimumValue;
+    }
 
     public interface OnPositionChangeListener{
         public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue);
@@ -126,6 +148,8 @@ public class Slider extends View{
         mMemoPoint = new PointF();
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mScaledTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     public void applyStyle(int resId){
@@ -137,6 +161,7 @@ public class Slider extends View{
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
         mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
+        setmDisableOnMinimumValue(a.getBoolean(R.styleable.Slider_sl_disableOnMinimumValue , true));
         mPrimaryColor = a.getColor(R.styleable.Slider_sl_primaryColor, ThemeUtil.colorControlActivated(context, 0xFF000000));
         mSecondaryColor = a.getColor(R.styleable.Slider_sl_secondaryColor, ThemeUtil.colorControlNormal(context, 0xFF000000));
         mTrackSize = a.getDimensionPixelSize(R.styleable.Slider_sl_trackSize, ThemeUtil.dpToPx(context, 2));
@@ -155,7 +180,7 @@ public class Slider extends View{
         int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
         mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
         mGravity = a.getInt(R.styleable.Slider_android_gravity, Gravity.CENTER_VERTICAL);
-        mMinValue = a.getInteger(R.styleable.Slider_sl_minValue, mMinValue);
+        setmMinValue(a.getInteger(R.styleable.Slider_sl_minValue, getmMinValue()));
         mMaxValue = a.getInteger(R.styleable.Slider_sl_maxValue, mMaxValue);
         mStepValue = a.getInteger(R.styleable.Slider_sl_stepValue, mStepValue);
         setValue(a.getInteger(R.styleable.Slider_sl_value, getValue()), false);
@@ -207,7 +232,7 @@ public class Slider extends View{
     }
 
     public float getExactValue(){
-        return (mMaxValue - mMinValue) * getPosition() + mMinValue;
+        return (mMaxValue - getmMinValue()) * getPosition() + getmMinValue();
     }
 
     public float getPosition(){
@@ -246,8 +271,8 @@ public class Slider extends View{
     }
 
     public void setValue(float value, boolean animation){
-        value = Math.min(mMaxValue, Math.max(value, mMinValue));
-        setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
+        value = Math.min(mMaxValue, Math.max(value, getmMinValue()));
+        setPosition((value - getmMinValue()) / (mMaxValue - getmMinValue()), animation);
     }
 
     public void setOnPositionChangeListener(OnPositionChangeListener listener){
@@ -371,7 +396,7 @@ public class Slider extends View{
         if(!mDiscreteMode)
             return position;
 
-        int totalOffset = mMaxValue - mMinValue;
+        int totalOffset = mMaxValue - getmMinValue();
         int valueOffset = Math.round(totalOffset * position);
         int stepOffset = valueOffset / mStepValue;
         int lowerValue = stepOffset * mStepValue;
@@ -385,6 +410,18 @@ public class Slider extends View{
         return position;
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public boolean isInScrollingContainer() {
+        ViewParent p = getParent();
+        while (p != null && p instanceof ViewGroup) {
+            if (((ViewGroup) p).shouldDelayChildPressedState()) {
+                return true;
+            }
+            p = p.getParent();
+        }
+        return false;
+    }
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
@@ -395,10 +432,14 @@ public class Slider extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
-                mMemoPoint.set(event.getX(), event.getY());
-                if(mIsDragging)
-                    mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
+                if (isInScrollingContainer())
+                    mTouchDownX = event.getX();
+                else {
+                    mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
+                    mMemoPoint.set(event.getX(), event.getY());
+                    if (mIsDragging)
+                        mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
@@ -412,6 +453,15 @@ public class Slider extends View{
                         setPosition(position, false, true);
                         mMemoPoint.x = event.getX();
                         invalidate();
+                    }
+                } else {
+                    final float x = event.getX();
+                    if (Math.abs(x - mTouchDownX) > mScaledTouchSlop) {
+                        mIsDragging = true;
+                        mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
+                        float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                        setPosition(position, true);
+                        attemptClaimDrag();
                     }
                 }
                 break;
@@ -434,6 +484,12 @@ public class Slider extends View{
         }
 
         return true;
+    }
+
+    private void attemptClaimDrag() {
+        if (getParent() != null) {
+            getParent().requestDisallowInterceptTouchEvent(true);
+        }
     }
 
     private void getTrackPath(float x, float y, float radius){
@@ -589,7 +645,7 @@ public class Slider extends View{
 
         float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float y = mDrawRect.centerY();
-        int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
+        int filledPrimaryColor = ColorUtil.getMiddleColor(ismDisableOnMinimumValue() ? mSecondaryColor : mPrimaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
         getTrackPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);

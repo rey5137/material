@@ -14,10 +14,6 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(MATERIAL_KEYSTORE_FILE)
-            storePassword MATERIAL_KEYSTORE_PASSWORD
-            keyAlias MATERIAL_KEYSTORE_ALIAS
-            keyPassword MATERIAL_KEYSTORE_PASSWORD
         }
     }
 
