@@ -94,6 +94,14 @@ public class Slider extends View{
         this.mMinValue = mMinValue;
     }
 
+    public boolean ismDisableOnMinimumValue() {
+        return mDisableOnMinimumValue;
+    }
+
+    public void setmDisableOnMinimumValue(boolean mDisableOnMinimumValue) {
+        this.mDisableOnMinimumValue = mDisableOnMinimumValue;
+    }
+
     public interface OnPositionChangeListener{
         public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue);
     }
@@ -153,7 +161,7 @@ public class Slider extends View{
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
         mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
-        mDisableOnMinimumValue = a.getBoolean(R.styleable.Slider_sl_disableOnMinimumValue , true);
+        setmDisableOnMinimumValue(a.getBoolean(R.styleable.Slider_sl_disableOnMinimumValue , true));
         mPrimaryColor = a.getColor(R.styleable.Slider_sl_primaryColor, ThemeUtil.colorControlActivated(context, 0xFF000000));
         mSecondaryColor = a.getColor(R.styleable.Slider_sl_secondaryColor, ThemeUtil.colorControlNormal(context, 0xFF000000));
         mTrackSize = a.getDimensionPixelSize(R.styleable.Slider_sl_trackSize, ThemeUtil.dpToPx(context, 2));
@@ -637,7 +645,7 @@ public class Slider extends View{
 
         float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float y = mDrawRect.centerY();
-        int filledPrimaryColor = ColorUtil.getMiddleColor(mDisableOnMinimumValue ? mSecondaryColor : mPrimaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
+        int filledPrimaryColor = ColorUtil.getMiddleColor(ismDisableOnMinimumValue() ? mSecondaryColor : mPrimaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
         getTrackPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
