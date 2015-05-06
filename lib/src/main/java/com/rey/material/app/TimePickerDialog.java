@@ -156,7 +156,6 @@ public class TimePickerDialog extends Dialog{
             mPmView = new CircleCheckedTextView(context);
             mTimePicker = new TimePicker(context);
 
-            mTimePicker.set24Hour(isDefault24Hour());
             mTimePicker.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding);
             mTimePicker.setOnTimeChangedListener(this);
             mAmView.setCheckedImmediately(mIsAm);
@@ -169,13 +168,6 @@ public class TimePickerDialog extends Dialog{
             addView(mPmView);
 
             setWillNotDraw(false);
-        }
-
-        private boolean isDefault24Hour(){
-            SimpleDateFormat format = (SimpleDateFormat)SimpleDateFormat.getTimeInstance(SimpleDateFormat.FULL);
-            String pattern = format.toLocalizedPattern();
-
-            return pattern.indexOf("k") >= 0;
         }
 
         public void applyStyle(int resId){

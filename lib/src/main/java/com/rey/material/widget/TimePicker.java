@@ -11,6 +11,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,8 @@ import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
 import com.rey.material.util.ViewUtil;
+
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Rey on 12/19/2014.
@@ -133,7 +136,10 @@ public class TimePicker extends View{
         resId = a.getResourceId(R.styleable.TimePicker_tp_outInterpolator, 0);
         mOutInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
         setMode(a.getInteger(R.styleable.TimePicker_tp_mode, mMode), false);
-        set24Hour(a.getBoolean(R.styleable.TimePicker_tp_24Hour, m24Hour));
+        if(a.hasValue(R.styleable.TimePicker_tp_24Hour))
+            set24Hour(a.getBoolean(R.styleable.TimePicker_tp_24Hour, m24Hour));
+        else
+            set24Hour(DateFormat.is24HourFormat(context));
         setHour(a.getInteger(R.styleable.TimePicker_tp_hour, mHour));
         setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, mMinute));
 
