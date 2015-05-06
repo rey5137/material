@@ -4,14 +4,11 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.transition.Slide;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.rey.material.widget.RadioButton;
 import com.rey.material.widget.Slider;
 
 public class SliderFragment extends Fragment{
@@ -33,7 +30,7 @@ public class SliderFragment extends Fragment{
         tv_continuous.setText(String.format("pos=%.1f value=%d", sl_continuous.getPosition(), sl_continuous.getValue()));
         sl_continuous.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
             @Override
-            public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue) {
+            public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
                 tv_continuous.setText(String.format("pos=%.1f value=%d", newPos, newValue));
             }
         });
@@ -43,7 +40,7 @@ public class SliderFragment extends Fragment{
         tv_discrete.setText(String.format("pos=%.1f value=%d", sl_discrete.getPosition(), sl_discrete.getValue()));
         sl_discrete.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
             @Override
-            public void onPositionChanged(Slider view, float oldPos, float newPos, int oldValue, int newValue) {
+            public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
                 tv_discrete.setText(String.format("pos=%.1f value=%d", newPos, newValue));
             }
         });

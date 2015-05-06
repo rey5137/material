@@ -279,6 +279,10 @@ public class Spinner extends FrameLayout {
 	public int getSelectedItemPosition(){
 		return mSelectedPosition;
 	}
+
+    public Object getSelectedItem(){
+        return mAdapter == null ? null : mAdapter.getItem(mSelectedPosition);
+    }
 		
 	public SpinnerAdapter getAdapter() {
 		return mAdapter;
