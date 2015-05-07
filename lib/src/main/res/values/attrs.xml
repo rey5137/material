@@ -65,6 +65,9 @@
         <attr name="pv_autostart" format="boolean"/> 
         <attr name="pv_circular" format="boolean"/> 
         <attr name="pv_progressStyle" format="reference"/>
+        <attr name="pv_progressMode"/>
+        <attr name="pv_progress" />
+        <attr name="pv_secondaryProgress" />
     </declare-styleable>
         
     <declare-styleable name="RippleView">

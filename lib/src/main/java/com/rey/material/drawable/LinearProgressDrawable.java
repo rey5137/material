@@ -434,6 +434,13 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
 		return mProgressMode;
 	}
 
+    public void setProgressMode(int mode){
+        if(mProgressMode != mode) {
+            mProgressMode = mode;
+            invalidateSelf();
+        }
+    }
+
 	public float getProgress(){
 		return mProgressPercent;
 	}

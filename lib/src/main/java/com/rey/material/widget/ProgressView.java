@@ -61,41 +61,42 @@ public class ProgressView extends View {
         mCircular = a.getBoolean(R.styleable.ProgressView_pv_circular, true);
         mProgressId = a.getResourceId(R.styleable.ProgressView_pv_progressStyle, 0);
 
-        a.recycle();
-
         if(mProgressId == 0)
             mProgressId = mCircular ? R.style.Material_Drawable_CircularProgress : R.style.Material_Drawable_LinearProgress;
 
-        if(mCircular)
+        if(mCircular) {
             mProgressDrawable = new CircularProgressDrawable.Builder(context, mProgressId).build();
-        else
+            if(a.hasValue(R.styleable.ProgressView_pv_progressMode))
+                ((CircularProgressDrawable)mProgressDrawable).setProgressMode(a.getInt(R.styleable.ProgressView_pv_progressMode, MODE_INDETERMINATE));
+        }
+        else{
             mProgressDrawable = new LinearProgressDrawable.Builder(context, mProgressId).build();
+            if(a.hasValue(R.styleable.ProgressView_pv_progressMode))
+                ((LinearProgressDrawable)mProgressDrawable).setProgressMode(a.getInt(R.styleable.ProgressView_pv_progressMode, MODE_INDETERMINATE));
+        }
+
+        if(a.hasValue(R.styleable.ProgressView_pv_progress))
+            setProgress(a.getFloat(R.styleable.ProgressView_pv_progress, 0));
+
+        if(a.hasValue(R.styleable.ProgressView_pv_secondaryProgress))
+            setSecondaryProgress(a.getFloat(R.styleable.ProgressView_pv_secondaryProgress, 0));
+
+        a.recycle();
 
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
             setBackground(mProgressDrawable);
         else
             setBackgroundDrawable(mProgressDrawable);
     }
-	
-	@Override
-    public void setVisibility(int v) {
-        if(getVisibility() != v) {
-            super.setVisibility(v);
 
-            if (getProgressMode() == MODE_INDETERMINATE && mAutostart) {
-                if (v == GONE || v == INVISIBLE)
-                	stop();
-                else
-                	start();
-            }
-        }
-    }
-	
 	@Override
 	protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
 		super.onVisibilityChanged(changedView, visibility);
 
-	    if (getProgressMode() == MODE_INDETERMINATE && mAutostart) {
+        if(changedView != this)
+            return;
+
+	    if (mAutostart) {
 	    	if (visibility == GONE || visibility == INVISIBLE)
 	    		stop();
             else
@@ -106,18 +107,18 @@ public class ProgressView extends View {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-	    if (getProgressMode() == MODE_INDETERMINATE && mAutostart) 
+        if(getVisibility() == View.VISIBLE && mAutostart)
 	    	start();
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
-		if (getProgressMode() == MODE_INDETERMINATE && mAutostart) 
+		if (mAutostart)
 	    	stop();
 		
 	    super.onDetachedFromWindow();
 	}
-	 
+
 	public int getProgressMode(){
 		if(mCircular)
 			return ((CircularProgressDrawable)mProgressDrawable).getProgressMode();
