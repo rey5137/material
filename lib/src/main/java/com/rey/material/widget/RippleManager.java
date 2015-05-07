@@ -18,9 +18,9 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 
 	private View.OnClickListener mClickListener;
 	private View mView;
-		
+
 	public RippleManager(){}
-	
+
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
@@ -28,7 +28,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 			return;
 
 		mView = v;
-		
+
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, defStyleRes);
         int rippleStyle = a.getResourceId(R.styleable.RippleView_rd_style, 0);
 		RippleDrawable drawable = null;
@@ -50,7 +50,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 				mView.setBackgroundDrawable(drawable);
 		}
 	}
-	
+
 	public boolean isDelayClick(){
         Drawable background = mView.getBackground();
         if(background instanceof RippleDrawable)
@@ -60,7 +60,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 
         return false;
 	}
-	
+
 	public void setDelayClick(boolean delay){
         Drawable background = mView.getBackground();
         if(background instanceof RippleDrawable)
@@ -68,7 +68,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
         else if(background instanceof ToolbarRippleDrawable)
             ((ToolbarRippleDrawable)background).setDelayClick(delay);
 	}
-	
+
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;
 	}
@@ -78,23 +78,23 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		Drawable background = mView.getBackground();
         return background instanceof RippleDrawable && ((RippleDrawable) background).onTouch(mView, event);
     }
-	
+
 	@Override
 	public void onClick(View v) {
 		Drawable background = mView.getBackground();
 		long delay = 0;
-						
+
 		if(background instanceof RippleDrawable)
 			delay = ((RippleDrawable)background).getClickDelayTime();
 		else if(background instanceof ToolbarRippleDrawable)
 			delay = ((ToolbarRippleDrawable)background).getClickDelayTime();
-			
+
 		if(delay > 0 && mView.getHandler() != null)
 			mView.getHandler().postDelayed(this, delay);
 		else
 			run();
 	}
-		
+
 	@Override
     public void run() {
     	if(mClickListener != null)
@@ -107,12 +107,12 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 			((RippleDrawable)background).cancel();
 		else if(background instanceof ToolbarRippleDrawable)
 			((ToolbarRippleDrawable)background).cancel();
-		
+
 		if(v instanceof ViewGroup){
 			ViewGroup vg = (ViewGroup)v;
 			for(int i = 0, count = vg.getChildCount(); i < count; i++)
 				RippleManager.cancelRipple(vg.getChildAt(i));
 		}
 	}
-	
+
 }
