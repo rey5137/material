@@ -83,12 +83,14 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	public void onClick(View v) {
 		Drawable background = mView.getBackground();
 		long delay = 0;
-						
-		if(background instanceof RippleDrawable)
-			delay = ((RippleDrawable)background).getClickDelayTime();
-		else if(background instanceof ToolbarRippleDrawable)
-			delay = ((ToolbarRippleDrawable)background).getClickDelayTime();
-			
+
+		if(isDelayClick()) {
+			if (background instanceof RippleDrawable)
+				delay = ((RippleDrawable) background).getClickDelayTime();
+			else if (background instanceof ToolbarRippleDrawable)
+				delay = ((ToolbarRippleDrawable) background).getClickDelayTime();
+		}
+
 		if(delay > 0 && mView.getHandler() != null)
 			mView.getHandler().postDelayed(this, delay);
 		else

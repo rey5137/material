@@ -77,7 +77,7 @@ public class ListPopupWindow {
 
     static {
         try {
-            sClipToWindowEnabledMethod = PopupWindow.class.getDeclaredMethod(
+            sClipToWindowEnabledMethod = android.widget.PopupWindow.class.getDeclaredMethod(
                     "setClipToScreenEnabled", boolean.class);
         } catch (NoSuchMethodException e) {
             Log.i(TAG, "Could not find method setClipToScreenEnabled() on PopupWindow. Oh well.");
@@ -683,7 +683,7 @@ public class ListPopupWindow {
 					}
 					
 				});
-        }        
+        }
     }
 
     /**
@@ -1064,6 +1064,15 @@ public class ListPopupWindow {
         };
     }
 
+    private int getSystemBarHeight(String resourceName) {
+        int height = 0;
+        int resourceId = mContext.getResources().getIdentifier(resourceName, "dimen", "android");
+        if (resourceId > 0) {
+            height = mContext.getResources().getDimensionPixelSize(resourceId);
+        }
+        return height;
+    }
+
     /**
      * <p>Builds the popup window's content and returns the height the popup
      * should have. Returns -1 when the content already exists.</p>
@@ -1072,6 +1081,10 @@ public class ListPopupWindow {
      */
     private int buildDropDown() {        
         int otherHeights = 0;
+        int systemBarsReservedSpace = Math.max(
+                getSystemBarHeight("status_bar_height"),
+                getSystemBarHeight("navigation_bar_height")
+        );
 
         if (mDropDownList == null) {
         	ViewGroup dropDownView;
@@ -1198,7 +1211,8 @@ public class ListPopupWindow {
         boolean ignoreBottomDecorations =
                 mPopup.getInputMethodMode() == PopupWindow.INPUT_METHOD_NOT_NEEDED;
         final int maxHeight = mPopup.getMaxAvailableHeight(
-                getAnchorView(), mDropDownVerticalOffset /*, ignoreBottomDecorations*/);
+                getAnchorView(), mDropDownVerticalOffset /*, ignoreBottomDecorations*/)
+                - systemBarsReservedSpace;
         
         if (mDropDownAlwaysVisible || mDropDownHeight == ViewGroup.LayoutParams.MATCH_PARENT) {
             return maxHeight + padding;
@@ -1800,5 +1814,5 @@ public class ListPopupWindow {
             }
         }
     }
-    
+
 }
