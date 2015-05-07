@@ -107,7 +107,7 @@
         <item name="rd_maskType">rectangle</item>
         <item name="rd_cornerRadius">2dp</item>
         <item name="rd_padding">0dp</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
     </style>
 
     <style name="Material.Drawable.Ripple.Touch" parent="Material.Drawable.Ripple">

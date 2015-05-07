@@ -50,29 +50,10 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 				mView.setBackgroundDrawable(drawable);
 		}
 	}
-	
-	public boolean isDelayClick(){
-        Drawable background = mView.getBackground();
-        if(background instanceof RippleDrawable)
-            return ((RippleDrawable)background).isDelayClick();
-        else if(background instanceof ToolbarRippleDrawable)
-            return ((ToolbarRippleDrawable)background).isDelayClick();
-
-        return false;
-	}
-	
-	public void setDelayClick(boolean delay){
-        Drawable background = mView.getBackground();
-        if(background instanceof RippleDrawable)
-            ((RippleDrawable)background).setDelayClick(delay);
-        else if(background instanceof ToolbarRippleDrawable)
-            ((ToolbarRippleDrawable)background).setDelayClick(delay);
-	}
-	
+		
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;
 	}
-
 
 	public boolean onTouchEvent(MotionEvent event){
 		Drawable background = mView.getBackground();

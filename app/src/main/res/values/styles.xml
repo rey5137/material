@@ -202,14 +202,14 @@
         <item name="fab_backgroundColor">#FFDFDFDF</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon.Light</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
     </style>
 
     <style name="FloatingWaveActionButton" parent="Material.Drawable.Ripple.Wave.Light">
         <item name="fab_backgroundColor">#FFDFDFDF</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon.Light</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
     </style>
 
     <style name="FloatingColorActionButton" parent="Material.Drawable.Ripple.Touch.Light">
@@ -217,7 +217,7 @@
         <item name="fab_backgroundColor">#FF2196F3</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon</item>
-        <item name="rd_delayClick">true</item>
+        <item name="rd_delayClick">untilRelease</item>
     </style>
 
     <style name="FloatingWaveColorActionButton" parent="Material.Drawable.Ripple.Wave.Light">
@@ -225,7 +225,7 @@
         <item name="fab_backgroundColor">#FF2196F3</item>
         <item name="fab_elevation">4dp</item>
         <item name="fab_iconLineMorphing">@style/FloatingActionButtonIcon</item>
-        <item name="rd_delayClick">true</item>
+        <item name="rd_delayClick">afterRelease</item>
     </style>
 
     <style name="FloatingActionButtonIcon" >
@@ -269,7 +269,7 @@
 
     <style name="ReplacementContactView" parent="Material.Drawable.Ripple.Wave.Light">
         <item name="rd_cornerRadius">0dp</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
 
         <item name="android:minHeight">56dp</item>
         <item name="cv_buttonSize">0dp</item>
@@ -284,7 +284,7 @@
     <style name="SelectedContactView" parent="Material.Drawable.Ripple.Wave.Light">
         <item name="android:background">#FF00B8D4</item>
         <item name="rd_cornerRadius">0dp</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
 
         <item name="android:minHeight">72dp</item>
         <item name="cv_buttonSrc">@drawable/ic_cancel_white_24dp</item>

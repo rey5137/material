@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.Recurring;
 import com.rey.material.app.RecurringPickerDialog;
+import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.FloatingActionButton;
 
@@ -53,6 +54,8 @@ public class ButtonFragment extends Fragment{
                     FloatingActionButton bt = (FloatingActionButton)v;
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
                 }
+
+                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
 			}
 		};
 		
@@ -64,6 +67,8 @@ public class ButtonFragment extends Fragment{
                     FloatingActionButton bt = (FloatingActionButton)v;
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
                 }
+
+                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
 			}
 		};
 		
