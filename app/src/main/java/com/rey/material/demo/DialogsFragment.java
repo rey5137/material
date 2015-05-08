@@ -135,10 +135,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                 builder = new SimpleDialog.Builder(R.style.SimpleDialog){
 
                     @Override
-                    protected Dialog onBuild(Context context, int styleId) {
-                        Dialog dialog = super.onBuild(context, styleId);
+                    protected void onBuildDone(Dialog dialog) {
                         dialog.layoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        return dialog;
                     }
 
                     @Override

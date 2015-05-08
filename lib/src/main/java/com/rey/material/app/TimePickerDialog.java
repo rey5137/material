@@ -23,7 +23,6 @@ import com.rey.material.widget.CircleCheckedTextView;
 import com.rey.material.widget.TimePicker;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -109,6 +108,7 @@ public class TimePickerDialog extends Dialog{
         private int mHeaderHeight;
         private int mTextTimeColor;
         private int mTextTimeSize;
+        private boolean mIsLeadingZero;
 
         private boolean mIsAm = true;
         private int mCheckBoxSize;
@@ -127,6 +127,7 @@ public class TimePickerDialog extends Dialog{
         private static final String TIME_DIVIDER = ":";
         private static final String BASE_TEXT = "0";
         private static final String FORMAT = "%02d";
+        private static final String FORMAT_NO_LEADING_ZERO = "%d";
 
         private boolean mLocationDirty = true;
         private float mBaseY;
@@ -180,6 +181,7 @@ public class TimePickerDialog extends Dialog{
             mHeaderHeight = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_headerHeight, ThemeUtil.dpToPx(context, 120));
             mTextTimeColor = a.getColor(R.styleable.TimePickerDialog_tp_textTimeColor, 0xFF000000);
             mTextTimeSize = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_textTimeSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material));
+            mIsLeadingZero = a.getBoolean(R.styleable.TimePickerDialog_tp_leadingZero, false);
             String am = a.getString(R.styleable.TimePickerDialog_tp_am);
             String pm = a.getString(R.styleable.TimePickerDialog_tp_pm);
             a.recycle();
@@ -216,7 +218,7 @@ public class TimePickerDialog extends Dialog{
 
             mPaint.setTypeface(mTimePicker.getTypeface());
 
-            mHour = String.format(FORMAT, !mTimePicker.is24Hour() && mTimePicker.getHour() == 0 ? 12 : mTimePicker.getHour());
+            mHour = String.format(mIsLeadingZero ? FORMAT : FORMAT_NO_LEADING_ZERO, !mTimePicker.is24Hour() && mTimePicker.getHour() == 0 ? 12 : mTimePicker.getHour());
             mMinute = String.format(FORMAT, mTimePicker.getMinute());
 
             if(!mTimePicker.is24Hour())
@@ -300,7 +302,7 @@ public class TimePickerDialog extends Dialog{
         public void onHourChanged(int oldValue, int newValue) {
             int oldHour = mTimePicker.is24Hour() || mIsAm ? oldValue : oldValue + 12;
 
-            mHour = String.format(FORMAT, !mTimePicker.is24Hour() && newValue == 0 ? 12 : newValue);
+            mHour = String.format(mIsLeadingZero ? FORMAT : FORMAT_NO_LEADING_ZERO, !mTimePicker.is24Hour() && newValue == 0 ? 12 : newValue);
             mLocationDirty = true;
             invalidate(0, 0, mHeaderRealWidth, mHeaderRealHeight);
 

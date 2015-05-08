@@ -436,6 +436,7 @@
         <attr name="tp_textTimeSize" format="dimension|reference" />
         <attr name="tp_am" format="string|reference"/>
         <attr name="tp_pm" format="string|reference"/>
+        <attr name="tp_leadingZero" format="boolean|reference"/>
     </declare-styleable>
 
     <attr name="dp_textHighlightColor" format="color|reference" />

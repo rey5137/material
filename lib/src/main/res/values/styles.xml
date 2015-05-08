@@ -397,6 +397,7 @@
         <item name="tp_headerHeight">120dp</item>
         <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
         <item name="tp_textTimeColor">#90FFFFFF</item>
+        <item name="tp_leadingZero">false</item>
     </style>
 
     <style name="Material.App.Dialog.TimePicker.Light" parent="Material.App.Dialog.Light">
@@ -415,6 +416,7 @@
         <item name="tp_headerHeight">120dp</item>
         <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
         <item name="tp_textTimeColor">#90FFFFFF</item>
+        <item name="tp_leadingZero">false</item>
     </style>
 
     <style name="Material.Widget.YearPicker">
