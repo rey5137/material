@@ -17,6 +17,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewGroupCompat;
 import android.support.v7.internal.widget.TintManager;
 import android.support.v7.internal.widget.TintTypedArray;
 import android.support.v7.internal.widget.ViewUtils;
@@ -33,6 +35,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -97,6 +100,8 @@ public class Spinner extends FrameLayout {
 	private TintManager mTintManager;
 	
 	private RippleManager mRippleManager = new RippleManager();
+
+    private boolean mIsRtl = false;
 		
 	public Spinner(Context context) {
 		super(context);
@@ -154,9 +159,11 @@ public class Spinner extends FrameLayout {
         TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
         mLabelEnable = a.getBoolean(R.styleable.Spinner_spn_labelEnable, false);
+
         if(mLabelEnable){
             mLabelView = new LabelView(context);
-            mLabelView.setGravity(GravityCompat.START);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
             mLabelView.setSingleLine(true);
             int labelPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_labelPadding, 0);
             int labelTextSize = a.getDimensionPixelSize(R.styleable.Spinner_spn_labelTextSize, 0);
@@ -219,8 +226,10 @@ public class Spinner extends FrameLayout {
         Interpolator arrowInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : null;
         boolean arrowClockwise = a.getBoolean(R.styleable.Spinner_spn_arrowAnimClockwise, true);
 
-        mArrowDrawable = new ArrowDrawable(ArrowDrawable.MODE_DOWN, mArrowSize, arrowColor, arrowAnimDuration, arrowInterpolator, arrowClockwise);
-        mArrowDrawable.setCallback(this);
+        if(mArrowSize > 0) {
+            mArrowDrawable = new ArrowDrawable(ArrowDrawable.MODE_DOWN, mArrowSize, arrowColor, arrowAnimDuration, arrowInterpolator, arrowClockwise);
+            mArrowDrawable.setCallback(this);
+        }
 
         mDividerHeight = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerHeight, 0);
         mDividerPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerPadding, 0);
@@ -257,7 +266,21 @@ public class Spinner extends FrameLayout {
             setAdapter(mAdapter);
     }
 
-	public View getSelectedView() {
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+
+            if(mLabelView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
+
+            requestLayout();
+        }
+    }
+
+    public View getSelectedView() {
         View v = getChildAt(getChildCount() - 1);
 		return v == mLabelView ? null : v;
 	}
@@ -435,7 +458,7 @@ public class Spinner extends FrameLayout {
     }
     
     private int getArrowDrawableWidth(){
-    	return mArrowSize + mArrowPadding * 2;
+    	return mArrowDrawable != null ? mArrowSize + mArrowPadding * 2 : 0;
     }
     
     private int getDividerDrawableHeight(){
@@ -528,13 +551,32 @@ public class Spinner extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    	int childLeft = getPaddingLeft();
-		int childRight = r - l - getPaddingRight() - getArrowDrawableWidth();
+        int w = r - l;
+        int h = b - t;
+        int arrowWidth = getArrowDrawableWidth();
+
+        if(mArrowDrawable != null) {
+            int top = getPaddingTop() + (mLabelView == null ? 0 : mLabelView.getMeasuredHeight());
+            int bottom = h - getDividerDrawableHeight() - getPaddingBottom();
+            if(mIsRtl)
+                mArrowDrawable.setBounds(getPaddingLeft(), top, getPaddingLeft() + arrowWidth, bottom);
+            else
+                mArrowDrawable.setBounds(getWidth() - getPaddingRight() - arrowWidth, top, getWidth() - getPaddingRight(), bottom);
+        }
+
+        if(mDividerDrawable != null)
+            mDividerDrawable.setBounds(getPaddingLeft(), h - mDividerHeight - getPaddingBottom(), w - getPaddingRight(), h - getPaddingBottom());
+
+    	int childLeft = mIsRtl ? (getPaddingLeft() + arrowWidth) : getPaddingLeft();
+		int childRight = mIsRtl ? (w - getPaddingRight()) : (w - getPaddingRight() - arrowWidth);
 		int childTop = getPaddingTop();
-		int childBottom = b - t - getPaddingBottom();
+		int childBottom = h - getPaddingBottom();
 
         if(mLabelView != null){
-            mLabelView.layout(childLeft, childTop, childLeft + mLabelView.getMeasuredWidth(), childTop + mLabelView.getMeasuredHeight());
+            if(mIsRtl)
+                mLabelView.layout(childRight - mLabelView.getMeasuredWidth(), childTop, childRight, childTop + mLabelView.getMeasuredHeight());
+            else
+                mLabelView.layout(childLeft, childTop, childLeft + mLabelView.getMeasuredWidth(), childTop + mLabelView.getMeasuredHeight());
             childTop += mLabelView.getMeasuredHeight();
         }
 
@@ -543,7 +585,11 @@ public class Spinner extends FrameLayout {
 			int x, y;
 			
 			int horizontalGravity = mGravity & Gravity.HORIZONTAL_GRAVITY_MASK;
-			
+			if(horizontalGravity == Gravity.START)
+                horizontalGravity = mIsRtl ? Gravity.RIGHT : Gravity.LEFT;
+            else if(horizontalGravity == Gravity.END)
+                horizontalGravity = mIsRtl ? Gravity.LEFT : Gravity.RIGHT;
+
 			switch (horizontalGravity) {
 				case Gravity.LEFT:
 					x = childLeft;
@@ -560,7 +606,7 @@ public class Spinner extends FrameLayout {
 			}
 			
 			int verticalGravity = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
-			
+
 			switch (verticalGravity) {
 				case Gravity.TOP:
 					y = childTop;
@@ -579,25 +625,21 @@ public class Spinner extends FrameLayout {
 			v.layout(x, y, x + v.getMeasuredWidth(), y + v.getMeasuredHeight());
 		}		
     }
-    
-    @Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		mArrowDrawable.setBounds(w - getArrowDrawableWidth() - getPaddingRight(), getPaddingTop() + (mLabelView == null ? 0 : mLabelView.getMeasuredHeight()), w - getPaddingRight(), h - getDividerDrawableHeight() - getPaddingBottom());
-		if(mDividerDrawable != null)
-			mDividerDrawable.setBounds(getPaddingLeft(), h - mDividerHeight - getPaddingBottom(), w - getPaddingRight(), h - getPaddingBottom());
-	}
-    
+
     @Override
 	public void draw(@NonNull Canvas canvas) {
 		super.draw(canvas);
-		mArrowDrawable.draw(canvas);
-		if(mDividerDrawable != null)
-			mDividerDrawable.draw(canvas);		
+        if(mDividerDrawable != null)
+            mDividerDrawable.draw(canvas);
+        if(mArrowDrawable != null)
+            mArrowDrawable.draw(canvas);
 	}
     
     @Override
     protected void drawableStateChanged() {
     	super.drawableStateChanged();
+        if(mArrowDrawable != null)
+            mArrowDrawable.setState(getDrawableState());
     	if(mDividerDrawable != null)
     		mDividerDrawable.setState(getDrawableState());
     }
@@ -656,9 +698,17 @@ public class Spinner extends FrameLayout {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             	    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             	lv.setSelection(getSelectedItemPosition());
+                if(mArrowAnimSwitchMode)
+                    lv.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            lv.getViewTreeObserver().removeOnPreDrawListener(this);
+                            mArrowDrawable.setMode(ArrowDrawable.MODE_UP, true);
+                            return true;
+                        }
+                    });
             }
-            if(mArrowAnimSwitchMode)
-            	mArrowDrawable.setMode(ArrowDrawable.MODE_UP, true);
+
         }
 	}
 	
