@@ -75,7 +75,7 @@ public class ListPopupWindow {
 
     static {
         try {
-            sClipToWindowEnabledMethod = PopupWindow.class.getDeclaredMethod(
+            sClipToWindowEnabledMethod = android.widget.PopupWindow.class.getDeclaredMethod(
                     "setClipToScreenEnabled", boolean.class);
         } catch (NoSuchMethodException e) {
             Log.i(TAG, "Could not find method setClipToScreenEnabled() on PopupWindow. Oh well.");
@@ -681,7 +681,7 @@ public class ListPopupWindow {
 					}
 					
 				});
-        }        
+        }
     }
 
     /**
