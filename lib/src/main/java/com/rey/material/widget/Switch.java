@@ -435,11 +435,9 @@ public class Switch extends View implements Checkable {
 	public void draw(@NonNull Canvas canvas) {
 		super.draw(canvas);
 
-        int save = canvas.save();
-        if(mIsRtl)
-            canvas.scale(-1f, 1f, mDrawRect.centerX(), mDrawRect.centerY());
-
 		float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
 		float y = mDrawRect.centerY();
 				
 		getTrackPath(x, y, mThumbRadius);
@@ -457,8 +455,6 @@ public class Switch extends View implements Checkable {
         mPaint.setColor(ColorUtil.getMiddleColor(getThumbColor(false), getThumbColor(true), mThumbPosition));
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(x, y, mThumbRadius, mPaint);
-
-        canvas.restoreToCount(save);
 	}
 
 	private void resetAnimation(){	
