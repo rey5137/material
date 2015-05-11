@@ -64,6 +64,8 @@ public class SnackBar extends FrameLayout {
 	public static final int STATE_SHOWED = 1;
 	public static final int STATE_SHOWING = 2;
 	public static final int STATE_DISMISSING = 3;
+
+    private boolean mIsRtl = false;
 	
 	public interface OnActionClickListener{
 		
@@ -138,19 +140,36 @@ public class SnackBar extends FrameLayout {
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+                mText.setTextDirection((mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR));
+                mAction.setTextDirection((mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR));
+            }
+
+            requestLayout();
+        }
+    }
+
     @Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		int width = 0;
-		int height = 0;
+		int width;
+		int height;
 		
 		if(mAction.getVisibility() == View.VISIBLE){
 			mAction.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec);
-			mText.measure(MeasureSpec.makeMeasureSpec(widthSize - (mAction.getMeasuredWidth() - mText.getPaddingRight()), widthMode), heightMeasureSpec);
-			width = mText.getMeasuredWidth() + mAction.getMeasuredWidth() - mText.getPaddingRight();
+            int padding = mIsRtl ? mText.getPaddingLeft() : mText.getPaddingRight();
+            mText.measure(MeasureSpec.makeMeasureSpec(widthSize - (mAction.getMeasuredWidth() - padding), widthMode), heightMeasureSpec);
+            width = mText.getMeasuredWidth() + mAction.getMeasuredWidth() - padding;
 		}
 		else{
 			mText.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), heightMeasureSpec);
@@ -194,11 +213,17 @@ public class SnackBar extends FrameLayout {
 		int childBottom = b - t - getPaddingBottom();
 				
 		if(mAction.getVisibility() == View.VISIBLE){
-			mAction.layout(childRight - mAction.getMeasuredWidth(), childTop, childRight, childBottom);
-			mText.layout(childLeft, childTop, childRight - mAction.getMeasuredWidth() + mText.getPaddingRight(), childBottom);
+            if(mIsRtl) {
+                mAction.layout(childLeft, childTop, childLeft + mAction.getMeasuredWidth(), childBottom);
+                childLeft += mAction.getMeasuredWidth() - mText.getPaddingLeft();
+            }
+            else {
+                mAction.layout(childRight - mAction.getMeasuredWidth(), childTop, childRight, childBottom);
+                childRight -= mAction.getMeasuredWidth() - mText.getPaddingRight();
+            }
 		}
-		else			
-			mText.layout(childLeft, childTop, childRight, childBottom);
+
+        mText.layout(childLeft, childTop, childRight, childBottom);
 	}		
 
 	@SuppressWarnings("deprecation")
