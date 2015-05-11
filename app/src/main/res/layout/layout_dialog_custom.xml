@@ -14,6 +14,7 @@
         app:et_supportMode="none"
         android:hint="Signal strength"
         android:text="Excellent"
+        android:textDirection="locale"
         android:enabled="false"
         android:paddingTop="8dp"/>
 
@@ -26,6 +27,7 @@
         app:et_supportMode="none"
         android:hint="Security"
         android:text="802.1x EAP"
+        android:textDirection="locale"
         android:enabled="false"
         android:paddingTop="8dp"/>
 
@@ -38,6 +40,7 @@
         android:textColor="@color/abc_primary_text_material_dark"
         android:textColorHint="@color/abc_secondary_text_material_dark"
         android:hint="Password"
+        android:textDirection="locale"
         android:paddingTop="8dp"
         android:inputType="textPassword"/>
 

@@ -318,6 +318,7 @@
         <item name="di_elevation">4dp</item>
         <item name="di_maxElevation">4dp</item>
         <item name="di_cornerRadius">2dp</item>
+        <item name="di_layoutDirection">locale</item>
         <item name="di_titleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
         <item name="di_titleTextColor">@color/abc_primary_text_material_dark</item>
         <item name="di_actionRipple">@style/Material.Drawable.Ripple.Wave</item>

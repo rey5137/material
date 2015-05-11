@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -122,6 +123,7 @@ public class Dialog extends android.app.Dialog{
         mCardView.setUseCompatPadding(true);
 
         mTitle.setId(TITLE);
+        mTitle.setGravity(Gravity.START);
         mTitle.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding - mActionPadding);
         mPositiveAction.setId(ACTION_POSITIVE);
         mPositiveAction.setPadding(mActionPadding, 0, mActionPadding, 0);
@@ -175,6 +177,7 @@ public class Dialog extends android.app.Dialog{
         maxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
         elevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, ThemeUtil.dpToPx(context, 4)));
         cornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, ThemeUtil.dpToPx(context, 2)));
+        layoutDirection(a.getInteger(R.styleable.Dialog_di_layoutDirection, View.LAYOUT_DIRECTION_LOCALE));
 
         titleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
         if(ThemeUtil.getType(a, R.styleable.Dialog_di_titleTextColor) != TypedValue.TYPE_NULL)
@@ -521,6 +524,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    public Dialog layoutDirection(int direction){
+        ViewCompat.setLayoutDirection(mCardView, direction);
+        return this;
+    }
+
     public Dialog inAnimation(int resId){
         mInAnimationId = resId;
         return this;
@@ -723,6 +731,8 @@ public class Dialog extends android.app.Dialog{
         private int mContentMarginRight;
         private int mContentMarginBottom;
 
+        private boolean mIsRtl = false;
+
         public DialogCardView(Context context) {
             super(context);
 
@@ -756,6 +766,26 @@ public class Dialog extends android.app.Dialog{
             if(mShowDivider != show) {
                 mShowDivider = show;
                 invalidate();
+            }
+        }
+
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+        @Override
+        public void onRtlPropertiesChanged(int layoutDirection) {
+            boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+            if(mIsRtl != rtl) {
+                mIsRtl = rtl;
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+                    int direction = mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR;
+
+                    mTitle.setTextDirection(direction);
+                    mPositiveAction.setTextDirection(direction);
+                    mNegativeAction.setTextDirection(direction);
+                    mNeutralAction.setTextDirection(direction);
+                }
+
+                requestLayout();
             }
         }
 
@@ -887,7 +917,10 @@ public class Dialog extends android.app.Dialog{
             childBottom -= getPaddingBottom();
 
             if(mTitle.getVisibility() == View.VISIBLE) {
-                mTitle.layout(childLeft, childTop, childRight, childTop + mTitle.getMeasuredHeight());
+                if(mIsRtl)
+                    mTitle.layout(childRight - mTitle.getMeasuredWidth(), childTop, childRight, childTop + mTitle.getMeasuredHeight());
+                else
+                    mTitle.layout(childLeft, childTop, childLeft + mTitle.getMeasuredWidth(), childTop + mTitle.getMeasuredHeight());
                 childTop += mTitle.getMeasuredHeight();
             }
 
@@ -912,25 +945,46 @@ public class Dialog extends android.app.Dialog{
                 }
             }
             else{
+                int actionLeft = childLeft + mActionOuterPadding;
                 int actionRight = childRight - mActionOuterPadding;
                 int actionTop = childBottom - mActionOuterHeight + temp;
                 int actionBottom = childBottom - temp;
                 boolean hasAction = false;
 
-                if(mPositiveAction.getVisibility() == View.VISIBLE){
-                    mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
-                    actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
-                    hasAction = true;
-                }
+                if(mIsRtl){
+                    if (mPositiveAction.getVisibility() == View.VISIBLE) {
+                        mPositiveAction.layout(actionLeft , actionTop, actionLeft + mPositiveAction.getMeasuredWidth(), actionBottom);
+                        actionLeft += mPositiveAction.getMeasuredWidth() + mActionPadding;
+                        hasAction = true;
+                    }
 
-                if(mNegativeAction.getVisibility() == View.VISIBLE) {
-                    mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
-                    hasAction = true;
-                }
+                    if (mNegativeAction.getVisibility() == View.VISIBLE) {
+                        mNegativeAction.layout(actionLeft, actionTop, actionLeft + mNegativeAction.getMeasuredWidth(), actionBottom);
+                        hasAction = true;
+                    }
 
-                if(mNeutralAction.getVisibility() == View.VISIBLE) {
-                    mNeutralAction.layout(childLeft + mActionOuterPadding, actionTop, childLeft + mActionOuterPadding + mNeutralAction.getMeasuredWidth(), actionBottom);
-                    hasAction = true;
+                    if (mNeutralAction.getVisibility() == View.VISIBLE) {
+                        mNeutralAction.layout(actionRight - mNeutralAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                        hasAction = true;
+                    }
+                }
+                else {
+
+                    if (mPositiveAction.getVisibility() == View.VISIBLE) {
+                        mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                        actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
+                        hasAction = true;
+                    }
+
+                    if (mNegativeAction.getVisibility() == View.VISIBLE) {
+                        mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                        hasAction = true;
+                    }
+
+                    if (mNeutralAction.getVisibility() == View.VISIBLE) {
+                        mNeutralAction.layout(actionLeft, actionTop, actionLeft + mNeutralAction.getMeasuredWidth(), actionBottom);
+                        hasAction = true;
+                    }
                 }
 
                 if(hasAction)
