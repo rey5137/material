@@ -1810,6 +1810,8 @@ public class ListPopupWindow {
             } catch (Exception e) {
                 Log.i(TAG, "Could not call setClipToScreenEnabled() on PopupWindow. Oh well.");
             }
+        } else if(clip && Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
+            mPopup.setClippingEnabled(false);
         }
     }
 
