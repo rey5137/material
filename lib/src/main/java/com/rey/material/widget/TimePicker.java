@@ -25,8 +25,6 @@ import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
 import com.rey.material.util.ViewUtil;
 
-import java.text.SimpleDateFormat;
-
 /**
  * Created by Rey on 12/19/2014.
  */
@@ -58,11 +56,7 @@ public class TimePicker extends View{
 
     private float[] mLocations = new float[72];
     private Rect mRect;
-    private static final String[] TICKS = new String[]{
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
-            "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "00",
-            "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "00"
-    };
+    private String[] mTicks;
 
     private int mMode = MODE_HOUR;
 
@@ -113,8 +107,27 @@ public class TimePicker extends View{
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRect = new Rect();
 
+        initTickLabels();
+
         setWillNotDraw(false);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    /**
+     * Init the localized label of ticks. The value of ticks in order:
+     * 1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
+     * "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "0",
+     * "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "0"
+     */
+    private void initTickLabels(){
+        String format = "%2d";
+        mTicks = new String[36];
+        for(int i = 0; i < 23; i++)
+            mTicks[i] = String.format(format, i + 1);
+        mTicks[23] = String.format(format, 0);
+        mTicks[35] = mTicks[23];
+        for(int i = 24; i < 35; i++)
+            mTicks[i] = String.format(format, (i - 23) * 5);
     }
 
     public void applyStyle(int styleId){
@@ -315,7 +328,7 @@ public class TimePicker extends View{
 
         if(m24Hour){
             for(int i = 0; i < 12; i++){
-                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
                 if(i == 0)
                     mSecondInnerRadius = mInnerRadius - mSelectionRadius - mRect.height();
 
@@ -328,11 +341,11 @@ public class TimePicker extends View{
                 angle += step;
             }
 
-            for(int i = 12; i < TICKS.length; i++){
+            for(int i = 12; i < mTicks.length; i++){
                 x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
                 y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
 
-                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
                 mLocations[i * 2] = x;
                 mLocations[i * 2 + 1] = y + mRect.height() / 2f;
 
@@ -344,18 +357,18 @@ public class TimePicker extends View{
                 x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
                 y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
 
-                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
                 mLocations[i * 2] = x;
                 mLocations[i * 2 + 1] = y + mRect.height() / 2f;
 
                 angle += step;
             }
 
-            for(int i = 24; i < TICKS.length; i++){
+            for(int i = 24; i < mTicks.length; i++){
                 x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
                 y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
 
-                mPaint.getTextBounds(TICKS[i], 0, TICKS[i].length(), mRect);
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
                 mLocations[i * 2] = x;
                 mLocations[i * 2 + 1] = y + mRect.height() / 2f;
 
@@ -516,7 +529,7 @@ public class TimePicker extends View{
             for(int i = 0; i < length; i++) {
                 index = start + i;
                 mPaint.setColor(index == selectedTick ? mTextHighlightColor : mTextColor);
-                canvas.drawText(TICKS[index], mLocations[index * 2], mLocations[index * 2 + 1], mPaint);
+                canvas.drawText(mTicks[index], mLocations[index * 2], mLocations[index * 2 + 1], mPaint);
             }
         }
         else{
@@ -607,7 +620,7 @@ public class TimePicker extends View{
                 x = mLocations[index * 2] + (float)Math.cos(angle) * outOffset;
                 y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * outOffset;
                 mPaint.setColor(index == outSelectedTick ? textHighlightOutColor : textOutColor);
-                canvas.drawText(TICKS[index], x, y, mPaint);
+                canvas.drawText(mTicks[index], x, y, mPaint);
                 angle += step;
             }
 
@@ -616,7 +629,7 @@ public class TimePicker extends View{
                 x = mLocations[index * 2] + (float)Math.cos(angle) * inOffset;
                 y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * inOffset;
                 mPaint.setColor(index == inSelectedTick ? textHighlightInColor : textInColor);
-                canvas.drawText(TICKS[index], x, y, mPaint);
+                canvas.drawText(mTicks[index], x, y, mPaint);
                 angle += step;
             }
         }

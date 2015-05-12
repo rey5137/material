@@ -64,6 +64,8 @@ public class YearPicker extends ListView{
 
     private int[] mTextColors = new int[2];
 
+    private static final String YEAR_FORMAT = "%4d";
+
     public YearPicker(Context context) {
         super(context);
 
@@ -322,7 +324,7 @@ public class YearPicker extends ListView{
 
             int year = (Integer)getItem(position);
             v.setTag(year);
-            v.setText(String.valueOf(year));
+            v.setText(String.format(YEAR_FORMAT, year));
             v.setCheckedImmediately(year == mCurYear);
             return v;
         }

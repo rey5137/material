@@ -9,10 +9,12 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,6 +161,12 @@ public class TimePickerDialog extends Dialog{
 
             mTimePicker.setPadding(mContentPadding, mContentPadding, mContentPadding, mContentPadding);
             mTimePicker.setOnTimeChangedListener(this);
+            mAmView.setGravity(Gravity.CENTER);
+            mPmView.setGravity(Gravity.CENTER);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+                mAmView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                mPmView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+            }
             mAmView.setCheckedImmediately(mIsAm);
             mPmView.setCheckedImmediately(!mIsAm);
             mAmView.setOnClickListener(this);

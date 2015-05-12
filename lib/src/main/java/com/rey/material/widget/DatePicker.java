@@ -59,7 +59,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mMonthRealHeight;
 
     private Calendar mCalendar;
-    private boolean mIsMondayFirst;
+    private int mFirstDayOfWeek;
     private String[] mLabels = new String[7];
     private static String[] mDayTexts;
 
@@ -87,6 +87,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mPaddingTop;
     private int mPaddingRight;
     private int mPaddingBottom;
+
+    private static final String DAY_FORMAT = "%2d";
+    private static final String YEAR_FORMAT = "%4d";
 
     public DatePicker(Context context) {
         super(context);
@@ -131,7 +134,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mDayPadding = ThemeUtil.dpToPx(context, 4);
 
         mCalendar = Calendar.getInstance();
-        mIsMondayFirst = mCalendar.getFirstDayOfWeek() == Calendar.MONDAY;
+        mFirstDayOfWeek = mCalendar.getFirstDayOfWeek();
 
         int index = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         DateFormat format = new SimpleDateFormat(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? "EEEEE" : "E");
@@ -285,7 +288,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         }
 
         if(mDayTexts[day - 1] == null)
-            mDayTexts[day - 1] = String.valueOf(day);
+            mDayTexts[day - 1] = String.format(DAY_FORMAT, day);
 
         return mDayTexts[day - 1];
     }
@@ -487,10 +490,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             mCalendar.set(Calendar.YEAR, mYear);
 
             mMaxDay = mCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-            mFirstDayCol = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
-            if(mIsMondayFirst)
-                mFirstDayCol = mFirstDayCol == 0 ? 6 : mFirstDayCol - 1;
-            mMonthText = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + mYear;
+            int dayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
+            mFirstDayCol = dayOfWeek < mFirstDayOfWeek ? dayOfWeek + 7 - mFirstDayOfWeek : dayOfWeek - mFirstDayOfWeek;
+            mMonthText = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + String.format(YEAR_FORMAT, mYear);
         }
 
         @Override
@@ -541,7 +543,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             for(int i = 0; i < 7; i++){
                 x = (i + 0.5f) * mDayWidth + paddingLeft;
                 y = paddingTop;
-                int index = mIsMondayFirst ? (i == 6 ? 0 : i + 1) : i;
+                int index = (i + mFirstDayOfWeek - 1) % 7;
                 canvas.drawText(mLabels[index], x, y, mPaint);
             }
 
