@@ -156,6 +156,7 @@
         <item name="lmd_strokeCap">butt</item>
         <item name="lmd_strokeJoin">miter</item>
         <item name="lmd_clockwise">true</item>
+        <item name="lmd_layoutDirection">locale</item>
     </style>
 
     <style name="Material.Drawable.NavigationDrawerIcon.Light" parent="Material.Drawable.NavigationDrawerIcon">
