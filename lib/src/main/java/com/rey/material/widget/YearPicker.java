@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -306,6 +307,8 @@ public class YearPicker extends ListView{
             if(v == null){
                 v = new CircleCheckedTextView(getContext());
                 v.setGravity(Gravity.CENTER);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    v.setTextAlignment(TEXT_ALIGNMENT_CENTER);
                 v.setMinHeight(mItemRealHeight);
                 v.setMaxHeight(mItemRealHeight);
                 v.setAnimDuration(mAnimDuration);
