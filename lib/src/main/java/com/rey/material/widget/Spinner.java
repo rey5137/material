@@ -698,7 +698,7 @@ public class Spinner extends FrameLayout {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             	    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             	lv.setSelection(getSelectedItemPosition());
-                if(mArrowAnimSwitchMode)
+                if(mArrowDrawable != null && mArrowAnimSwitchMode)
                     lv.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                         @Override
                         public boolean onPreDraw() {
@@ -713,7 +713,8 @@ public class Spinner extends FrameLayout {
 	}
 	
 	private void onPopupDismissed(){
-		mArrowDrawable.setMode(ArrowDrawable.MODE_DOWN, true);
+        if(mArrowDrawable != null)
+		    mArrowDrawable.setMode(ArrowDrawable.MODE_DOWN, true);
 	}
 		
 	private int measureContentWidth(SpinnerAdapter adapter, Drawable background) {

@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -62,6 +63,8 @@ public class YearPicker extends ListView{
     };
 
     private int[] mTextColors = new int[2];
+
+    private static final String YEAR_FORMAT = "%4d";
 
     public YearPicker(Context context) {
         super(context);
@@ -306,6 +309,8 @@ public class YearPicker extends ListView{
             if(v == null){
                 v = new CircleCheckedTextView(getContext());
                 v.setGravity(Gravity.CENTER);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    v.setTextAlignment(TEXT_ALIGNMENT_CENTER);
                 v.setMinHeight(mItemRealHeight);
                 v.setMaxHeight(mItemRealHeight);
                 v.setAnimDuration(mAnimDuration);
@@ -319,7 +324,7 @@ public class YearPicker extends ListView{
 
             int year = (Integer)getItem(position);
             v.setTag(year);
-            v.setText(String.valueOf(year));
+            v.setText(String.format(YEAR_FORMAT, year));
             v.setCheckedImmediately(year == mCurYear);
             return v;
         }

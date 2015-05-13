@@ -2,8 +2,11 @@ package com.rey.material.app;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
+import android.text.TextDirectionHeuristic;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -124,6 +127,7 @@ public class SimpleDialog extends Dialog {
         mScrollView.setClipToPadding(false);
         mScrollView.setFillViewport(true);
         mScrollView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+        ViewCompat.setLayoutDirection(mScrollView, View.LAYOUT_DIRECTION_INHERIT);
     }
 
     private void initMessageView(){
@@ -221,6 +225,7 @@ public class SimpleDialog extends Dialog {
         mListView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
         mListView.setVerticalFadingEdgeEnabled(false);
         mListView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
+        ViewCompat.setLayoutDirection(mListView, View.LAYOUT_DIRECTION_INHERIT);
 
         mAdapter = new InternalAdapter();
         mListView.setAdapter(mAdapter);
@@ -269,8 +274,27 @@ public class SimpleDialog extends Dialog {
 
     private class InternalScrollView extends ScrollView{
 
+        private boolean mIsRtl = false;
+
         public InternalScrollView(Context context) {
             super(context);
+        }
+
+        public void onRtlPropertiesChanged(int layoutDirection) {
+            boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+            if(mIsRtl != rtl) {
+                mIsRtl = rtl;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    View v = getChildAt(0);
+                    if (v != null && v == mMessage)
+                        mMessage.setTextDirection(mIsRtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
+                }
+                requestLayout();
+            }
+        }
+
+        public boolean isLayoutRtl(){
+            return mIsRtl;
         }
 
         @Override
@@ -284,8 +308,22 @@ public class SimpleDialog extends Dialog {
 
     private class InternalListView extends ListView{
 
+        private boolean mIsRtl = false;
+
         public InternalListView(Context context) {
             super(context);
+        }
+
+        public void onRtlPropertiesChanged(int layoutDirection) {
+            boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+            if(mIsRtl != rtl) {
+                mIsRtl = rtl;
+                requestLayout();
+            }
+        }
+
+        public boolean isLayoutRtl(){
+            return mIsRtl;
         }
 
         @Override
@@ -409,9 +447,11 @@ public class SimpleDialog extends Dialog {
                 v = (mMode == MODE_MULTI_ITEMS) ? new CheckBox(parent.getContext(), null, 0, mCheckBoxStyle) : new RadioButton(parent.getContext(), null, 0, mRadioButtonStyle);
                 if(mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
                     v.setMinHeight(mItemHeight);
-                v.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
+                v.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    v.setTextDirection(((InternalListView)parent).isLayoutRtl() ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
                 v.setTextAppearance(v.getContext(), mItemTextAppearance);
-                v.setPadding(mContentPadding, 0, 0, 0);
+                ViewCompat.setPaddingRelative(v, mContentPadding, 0, 0, 0);
             }
 
             v.setTag(position);

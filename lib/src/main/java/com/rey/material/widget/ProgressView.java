@@ -12,6 +12,7 @@ import android.view.View;
 import com.rey.material.R;
 import com.rey.material.drawable.CircularProgressDrawable;
 import com.rey.material.drawable.LinearProgressDrawable;
+import com.rey.material.util.ViewUtil;
 
 public class ProgressView extends View {
 
@@ -83,10 +84,7 @@ public class ProgressView extends View {
 
         a.recycle();
 
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-            setBackground(mProgressDrawable);
-        else
-            setBackgroundDrawable(mProgressDrawable);
+        ViewUtil.setBackground(this, mProgressDrawable);
     }
 
 	@Override

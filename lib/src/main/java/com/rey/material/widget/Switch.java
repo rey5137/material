@@ -10,6 +10,7 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -70,6 +71,8 @@ public class Switch extends View implements Checkable {
 
     private static final int COLOR_SHADOW_START = 0x4C000000;
     private static final int COLOR_SHADOW_END = 0x00000000;
+
+    private boolean mIsRtl = false;
 
     public interface OnCheckedChangeListener{
         public void onCheckedChanged(Switch view, boolean checked);
@@ -222,26 +225,39 @@ public class Switch extends View implements Checkable {
 		if(isEnabled())
 			setChecked(!mChecked);
 	}
-				
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+            invalidate();
+        }
+    }
+
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		super.onTouchEvent(event);
 		mRippleManager.onTouchEvent(event);
-		
+
+        float x = event.getX();
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
+
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				mMemoX = event.getX();
+				mMemoX = x;
 				mStartX = mMemoX;
 				mStartTime = SystemClock.uptimeMillis();
 				break;
 			case MotionEvent.ACTION_MOVE:
-				float offset = (event.getX() - mMemoX) / (mDrawRect.width() - mThumbRadius * 2);
+				float offset = (x - mMemoX) / (mDrawRect.width() - mThumbRadius * 2);
 				mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
-				mMemoX = event.getX();
+				mMemoX = x;
 				invalidate();
 				break;
 			case MotionEvent.ACTION_UP:	
-				float velocity = (event.getX() - mStartX) / (SystemClock.uptimeMillis() - mStartTime) * 1000;
+				float velocity = (x - mStartX) / (SystemClock.uptimeMillis() - mStartTime) * 1000;
 				if(Math.abs(velocity) >= mFlingVelocity)
 					setChecked(velocity > 0);
 				else if((!mChecked && mThumbPosition < 0.1f) || (mChecked && mThumbPosition > 0.9f))
@@ -420,6 +436,8 @@ public class Switch extends View implements Checkable {
 		super.draw(canvas);
 
 		float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
 		float y = mDrawRect.centerY();
 				
 		getTrackPath(x, y, mThumbRadius);

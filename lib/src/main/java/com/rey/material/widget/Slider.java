@@ -80,6 +80,8 @@ public class Slider extends View{
     private ThumbStrokeAnimator mThumbStrokeAnimator;
     private ThumbMoveAnimator mThumbMoveAnimator;
 
+    private boolean mIsRtl = false;
+
     /**
      * Interface definition for a callback to be invoked when thumb's position changed.
      */
@@ -352,6 +354,15 @@ public class Slider extends View{
     }
 
     @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+            invalidate();
+        }
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mDrawRect.left = getPaddingLeft() + mThumbRadius;
         mDrawRect.right = w - getPaddingRight() - mThumbRadius;
@@ -432,24 +443,29 @@ public class Slider extends View{
         if(!isEnabled())
             return false;
 
+        float x = event.getX();
+        float y = event.getY();
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(event.getX(), event.getY(), mThumbRadius) && !mThumbMoveAnimator.isRunning();
-                mMemoPoint.set(event.getX(), event.getY());
+                mIsDragging = isThumbHit(x, y, mThumbRadius) && !mThumbMoveAnimator.isRunning();
+                mMemoPoint.set(x, y);
                 if(mIsDragging)
                     mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
                     if(mDiscreteMode) {
-                        float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                        float position = correctPosition(Math.min(1f, Math.max(0f, (x - mDrawRect.left) / mDrawRect.width())));
                         setPosition(position, true, true, true);
                     }
                     else{
-                        float offset = (event.getX() - mMemoPoint.x) / mDrawRect.width();
+                        float offset = (x - mMemoPoint.x) / mDrawRect.width();
                         float position = Math.min(1f, Math.max(0f, mThumbPosition + offset));
                         setPosition(position, false, true, true);
-                        mMemoPoint.x = event.getX();
+                        mMemoPoint.x = x;
                         invalidate();
                     }
                 }
@@ -459,8 +475,8 @@ public class Slider extends View{
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
                 }
-                else if(distance(mMemoPoint.x, mMemoPoint.y, event.getX(), event.getY()) <= mTouchSlop){
-                    float position = correctPosition(Math.min(1f, Math.max(0f, (event.getX() - mDrawRect.left) / mDrawRect.width())));
+                else if(distance(mMemoPoint.x, mMemoPoint.y, x, y) <= mTouchSlop){
+                    float position = correctPosition(Math.min(1f, Math.max(0f, (x - mDrawRect.left) / mDrawRect.width())));
                     setPosition(position, true, true, true);
                 }
                 break;
@@ -627,16 +643,19 @@ public class Slider extends View{
         super.draw(canvas);
 
         float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
         float y = mDrawRect.centerY();
         int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
 
         getTrackPath(x, y, mThumbCurrentRadius);
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(mSecondaryColor);
+        mPaint.setColor(mIsRtl ? filledPrimaryColor : mSecondaryColor);
         canvas.drawPath(mRightTrackPath, mPaint);
-        mPaint.setColor(filledPrimaryColor);
+        mPaint.setColor(mIsRtl ? mSecondaryColor : filledPrimaryColor);
         canvas.drawPath(mLeftTrackPath, mPaint);
 
+        mPaint.setColor(filledPrimaryColor);
         if(mDiscreteMode){
             float factor = 1f - mThumbCurrentRadius / mThumbRadius;
 

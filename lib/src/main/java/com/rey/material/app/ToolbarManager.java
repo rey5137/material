@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -239,10 +240,7 @@ public class ToolbarManager {
             View child = menuView.getChildAt(i);
             if(mRippleStyle != 0){
                 if(child.getBackground() == null || !(child.getBackground() instanceof ToolbarRippleDrawable))
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                        child.setBackground(getBackground());
-                    else
-                        child.setBackgroundDrawable(getBackground());
+                    ViewUtil.setBackground(child, getBackground());
             }
         }
 

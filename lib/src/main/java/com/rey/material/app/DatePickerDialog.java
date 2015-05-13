@@ -177,7 +177,8 @@ public class DatePickerDialog extends Dialog {
         private float mSecondWidth;
 
         private static final String BASE_TEXT = "0";
-        private static final String DAY_FORMAT = "%02d";
+        private static final String DAY_FORMAT = "%2d";
+        private static final String YEAR_FORMAT = "%4d";
 
         public DatePickerLayout(Context context) {
             super(context);
@@ -367,7 +368,7 @@ public class DatePickerDialog extends Dialog {
                 mWeekDay = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
                 mMonth = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
                 mDay = String.format(DAY_FORMAT, newDay);
-                mYear = String.valueOf(newYear);
+                mYear = String.format(YEAR_FORMAT, newYear);
 
                 if(oldMonth != newMonth || oldYear != newYear)
                     mDatePicker.goTo(newMonth, newYear);

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class TabPageIndicator extends HorizontalScrollView implements ViewPager.OnPageChangeListener, android.view.View.OnClickListener{
@@ -309,12 +310,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setEllipsize(TruncateAt.END);
             tv.setOnClickListener(this);
             tv.setTag(i);
-            if(mTabRippleStyle > 0){
-            	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            		tv.setBackground(new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
-				else
-					tv.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
-            }					
+            if(mTabRippleStyle > 0)
+                ViewUtil.setBackground(tv, new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
             	
             if(mMode == MODE_SCROLL){
             	tv.setPadding(mTabPadding, 0, mTabPadding, 0);

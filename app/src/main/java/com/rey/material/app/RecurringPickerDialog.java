@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,6 +34,7 @@ import android.widget.ScrollView;
 
 import com.rey.material.demo.R;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.CompoundButton;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.RadioButton;
@@ -110,12 +112,9 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
 
         mHeaderBackground = new HeaderDrawable(getContext());
 
-        fl_mode.setPadding(mContentPadding, 0, mContentPadding, 0);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            fl_mode.setBackground(mHeaderBackground);
-        else
-            fl_mode.setBackgroundDrawable(mHeaderBackground);
-        ll_repeat.setPadding(mContentPadding, mActionOuterPadding, mContentPadding, mActionPadding);
+        ViewCompat.setPaddingRelative(fl_mode, mContentPadding, 0, mContentPadding, 0);
+        ViewUtil.setBackground(fl_mode, mHeaderBackground);
+        ViewCompat.setPaddingRelative(ll_repeat, mContentPadding, mActionOuterPadding, mContentPadding, mActionPadding);
 
         mModeAdapter = new ModeAdapter();
         mModeSpinner.setAdapter(mModeAdapter);
@@ -415,7 +414,6 @@ public class RecurringPickerDialog extends Dialog implements WeekView.OnDaySelec
     }
 
     private void onEndSelected(int endMode){
-        int oldEndMode = mRecurring.getEndMode();
         mRecurring.setEndMode(endMode);
         mRecurring.setEndSetting(0);
 

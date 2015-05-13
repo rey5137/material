@@ -133,6 +133,11 @@
 	        <enum name="bevel" value="0x00000002" />
         </attr>
         <attr name="lmd_clockwise" format="boolean"/>
+        <attr name="lmd_layoutDirection" format="integer">
+            <enum name="ltr" value="0x00000000" />
+            <enum name="rtl" value="0x00000001" />
+            <enum name="locale" value="0x00000003" />
+        </attr>
     </declare-styleable>
     
     <declare-styleable name="RadioButtonDrawable">
@@ -368,6 +373,11 @@
         <attr name="di_elevation" format="dimension|reference" />
         <attr name="di_maxElevation" format="dimension|reference" />
         <attr name="di_cornerRadius" format="dimension|reference" />
+        <attr name="di_layoutDirection" format="integer">
+            <enum name="ltr" value="0" />
+            <enum name="rtl" value="1" />
+            <enum name="locale" value="3" />
+        </attr>
         <attr name="di_titleTextAppearance" format="reference" />
         <attr name="di_titleTextColor" format="color|reference" />
         <attr name="di_actionBackground" format="reference" />

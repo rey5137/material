@@ -2,6 +2,7 @@ package com.rey.material.drawable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -18,7 +19,10 @@ import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.support.v4.text.TextUtilsCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
@@ -51,12 +55,13 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	private boolean mClockwise;
 	private Paint.Cap mStrokeCap;
 	private Paint.Join mStrokeJoin;
+    private boolean mIsRtl;
 	
 	private Path mPath;
 	
 	private State[] mStates;
 	
-	private LineMorphingDrawable(State[] states, int curState, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom, int animDuration, Interpolator interpolator, int strokeSize, int strokeColor, Paint.Cap strokeCap, Paint.Join strokeJoin, boolean clockwise){
+	private LineMorphingDrawable(State[] states, int curState, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom, int animDuration, Interpolator interpolator, int strokeSize, int strokeColor, Paint.Cap strokeCap, Paint.Join strokeJoin, boolean clockwise, boolean isRtl){
 		mStates = states;
 		mPaddingLeft = paddingLeft;
 		mPaddingTop = paddingTop;
@@ -69,7 +74,8 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 		mStrokeColor = strokeColor;
 		mStrokeCap = strokeCap;
 		mStrokeJoin = strokeJoin;
-		mClockwise = clockwise;		
+		mClockwise = clockwise;
+        mIsRtl = isRtl;
 		
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
@@ -90,7 +96,10 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	public void draw(Canvas canvas) {
 		int restoreCount = canvas.save();		
 		float degrees = (mClockwise ? 180 : -180) * ((mPrevState < mCurState ?  0f : 1f) + mAnimProgress);
-				
+
+        if(mIsRtl)
+            canvas.scale(-1f, 1f, mDrawBound.centerX(), mDrawBound.centerY());
+
 		canvas.rotate(degrees, mDrawBound.centerX(), mDrawBound.centerY());		
 		canvas.drawPath(mPath, mPaint);
 		canvas.restoreToCount(restoreCount);
@@ -390,6 +399,7 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 		private boolean mClockwise;
 		private Paint.Cap mStrokeCap;
 		private Paint.Join mStrokeJoin;
+        private boolean mIsRtl;
 		
 		private State[] mStates;
 		
@@ -437,6 +447,12 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			else
 				strokeJoin(Paint.Join.BEVEL);
 			clockwise(a.getBoolean(R.styleable.LineMorphingDrawable_lmd_clockwise, true));
+
+            int direction = a.getInteger(R.styleable.LineMorphingDrawable_lmd_layoutDirection, View.LAYOUT_DIRECTION_LTR);
+            if(direction == View.LAYOUT_DIRECTION_LOCALE)
+                rtl(TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_RTL);
+            else
+                rtl(direction == View.LAYOUT_DIRECTION_RTL);
 			
 			a.recycle();
 		}
@@ -563,7 +579,7 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			if(mInterpolator == null)
 				mInterpolator = new AccelerateInterpolator();
 							
-			return new LineMorphingDrawable(mStates, mCurState, mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom, mAnimDuration, mInterpolator, mStrokeSize, mStrokeColor, mStrokeCap, mStrokeJoin, mClockwise);
+			return new LineMorphingDrawable(mStates, mCurState, mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom, mAnimDuration, mInterpolator, mStrokeSize, mStrokeColor, mStrokeCap, mStrokeJoin, mClockwise, mIsRtl);
 		}
 		
 		public Builder states(State... states){			
@@ -638,6 +654,11 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			mClockwise = clockwise;
 			return this;
 		}
+
+        public Builder rtl(boolean rtl){
+            mIsRtl = rtl;
+            return this;
+        }
 		
 	}
 }

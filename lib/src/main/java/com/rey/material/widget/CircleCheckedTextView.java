@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.animation.Interpolator;
 
 import com.rey.material.drawable.CircleDrawable;
+import com.rey.material.util.ViewUtil;
 
 /**
  * Created by Rey on 2/5/2015.
@@ -52,10 +53,7 @@ public class CircleCheckedTextView extends android.widget.CheckedTextView {
         mBackground = new CircleDrawable();
         mBackground.setInEditMode(isInEditMode());
         mBackground.setAnimEnable(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            setBackground(mBackground);
-        else
-            setBackgroundDrawable(mBackground);
+        ViewUtil.setBackground(this, mBackground);
         mBackground.setAnimEnable(true);
     }
 

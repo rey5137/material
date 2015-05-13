@@ -89,6 +89,8 @@ public class EditText extends FrameLayout {
 
     private TextView.OnSelectionChangedListener mOnSelectionChangedListener;
 
+    private boolean mIsRtl = false;
+
     public EditText(Context context) {
         super(context);
 
@@ -178,10 +180,7 @@ public class EditText extends FrameLayout {
         mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
         mDivider.setInEditMode(isInEditMode());
         mDivider.setAnimEnable(false);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mInputView.setBackground(mDivider);
-        else
-            mInputView.setBackgroundDrawable(mDivider);
+        ViewUtil.setBackground(mInputView, mDivider);
         mDivider.setAnimEnable(true);
 
         if(text != null)
@@ -192,6 +191,8 @@ public class EditText extends FrameLayout {
         if(mLabelEnable){
             mLabelVisible = true;
             mLabelView = new LabelView(context);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
             mLabelView.setGravity(GravityCompat.START);
             mLabelView.setSingleLine(true);
             int labelPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_labelPadding, 0);
@@ -292,6 +293,25 @@ public class EditText extends FrameLayout {
         if(mLabelEnable){
             mLabelView.setText(mInputView.getHint());
             setLabelVisible(!TextUtils.isEmpty(mInputView.getText().toString()), false);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+                if(mLabelView != null)
+                    mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
+
+                if(mSupportView != null)
+                    mSupportView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
+            }
+
+            requestLayout();
         }
     }
 
