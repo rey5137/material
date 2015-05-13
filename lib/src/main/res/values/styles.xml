@@ -277,7 +277,7 @@
     </style>
 
     <style name="Material.Widget.SnackBar.Mobile" parent="Material.Widget.SnackBar">
-        <item name="sb_marginLeft">0dp</item>
+        <item name="sb_marginStart">0dp</item>
         <item name="sb_marginBottom">0dp</item>
         <item name="sb_width">match_parent</item>
         <item name="sb_height">48dp</item>
@@ -293,7 +293,7 @@
     </style>
 
     <style name="Material.Widget.SnackBar.Tablet" parent="Material.Widget.SnackBar">
-        <item name="sb_marginLeft">16dp</item>
+        <item name="sb_marginStart">16dp</item>
         <item name="sb_marginBottom">16dp</item>
         <item name="sb_width">wrap_content</item>
         <item name="sb_height">48dp</item>

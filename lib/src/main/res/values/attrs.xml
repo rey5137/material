@@ -296,7 +296,7 @@
         </attr>
         <attr name="sb_minHeight" format="reference|dimension"/>
         <attr name="sb_maxHeight" format="reference|dimension"/>
-        <attr name="sb_marginLeft" format="reference|dimension"/>
+        <attr name="sb_marginStart" format="reference|dimension"/>
         <attr name="sb_marginBottom" format="reference|dimension"/>
         <attr name="sb_textSize" format="reference|dimension"/>
         <attr name="sb_textColor" format="reference|color"/>
