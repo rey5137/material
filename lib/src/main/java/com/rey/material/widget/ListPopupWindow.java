@@ -1079,10 +1079,6 @@ public class ListPopupWindow {
      */
     private int buildDropDown() {        
         int otherHeights = 0;
-        int systemBarsReservedSpace = Math.max(
-                getSystemBarHeight("status_bar_height"),
-                getSystemBarHeight("navigation_bar_height")
-        );
 
         if (mDropDownList == null) {
         	ViewGroup dropDownView;
@@ -1203,7 +1199,16 @@ public class ListPopupWindow {
             }
         } else {
             mTempRect.setEmpty();
-        }       
+        }
+
+        int systemBarsReservedSpace = 0;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //  getMaxAvailableHeight() on Lollipop seems to ignore the system bars.
+            systemBarsReservedSpace = Math.max(
+                    getSystemBarHeight("status_bar_height"),
+                    getSystemBarHeight("navigation_bar_height")
+            );
+        }
 
         // Max height available on the screen for a popup.
         boolean ignoreBottomDecorations =
