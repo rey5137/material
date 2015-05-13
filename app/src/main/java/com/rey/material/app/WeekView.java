@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -108,34 +109,36 @@ public class WeekView extends FrameLayout{
             mBackgroundColors = new ColorStateList(states, colors);
         }
 
-        Calendar cal = Calendar.getInstance();
-        mFirstDayOfWeek = cal.getFirstDayOfWeek();
-        int color = mBackgroundColors.getColorForState(getDrawableState(), mBackgroundColors.getDefaultColor());
-
-        for(int i = 0; i < 7; i++){
-            int dayOFWeek = mFirstDayOfWeek + i;
-            if(dayOFWeek > Calendar.SATURDAY)
-                dayOFWeek = Calendar.SUNDAY;
-            cal.set(Calendar.DAY_OF_WEEK, dayOFWeek);
-
-            CircleCheckedTextView view = new CircleCheckedTextView(context, attrs, defStyleAttr, defStyleRes);
-            view.setText(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()).toUpperCase());
-            view.setTag(dayOFWeek);
-            view.setOnCheckedChangeListener(mCheckListener);
-            view.setOnClickListener(mClickListener);
-            view.setCheckedImmediately(false);
-            view.setPadding(0, 0, 0, 0);
-            view.setBackgroundColor(color);
-            view.setAnimDuration(animDuration);
-            view.setId(ViewUtil.generateViewId());
-
-            if(i == 0) {
-                mOriginalTextSize = view.getTextSize();
-                mPaint.setTypeface(view.getTypeface());
-            }
-
-            addView(view);
-        }
+//        Calendar cal = Calendar.getInstance();
+//        mFirstDayOfWeek = cal.getFirstDayOfWeek();
+//        int color = mBackgroundColors.getColorForState(getDrawableState(), mBackgroundColors.getDefaultColor());
+//
+//        for(int i = 0; i < 7; i++){
+//            int dayOFWeek = mFirstDayOfWeek + i;
+//            if(dayOFWeek > Calendar.SATURDAY)
+//                dayOFWeek -= Calendar.SATURDAY;
+//            cal.set(Calendar.DAY_OF_WEEK, dayOFWeek);
+//
+//            CircleCheckedTextView view = new CircleCheckedTextView(context, attrs, defStyleAttr, defStyleRes);
+//            view.setText(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()).toUpperCase());
+//            view.setTag(dayOFWeek);
+//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+//                view.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+//            view.setOnCheckedChangeListener(mCheckListener);
+//            view.setOnClickListener(mClickListener);
+//            view.setCheckedImmediately(false);
+//            view.setPadding(0, 0, 0, 0);
+//            view.setBackgroundColor(color);
+//            view.setAnimDuration(animDuration);
+//            view.setId(ViewUtil.generateViewId());
+//
+//            if(i == 0) {
+//                mOriginalTextSize = view.getTextSize();
+//                mPaint.setTypeface(view.getTypeface());
+//            }
+//
+//            addView(view);
+//        }
     }
 
     @Override

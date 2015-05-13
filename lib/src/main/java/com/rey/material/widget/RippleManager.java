@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 public final class RippleManager implements View.OnClickListener, Runnable{
 
@@ -43,12 +44,8 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 
 		a.recycle();
 
-		if(drawable != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mView.setBackground(drawable);
-			else
-				mView.setBackgroundDrawable(drawable);
-		}
+		if(drawable != null)
+            ViewUtil.setBackground(mView, drawable);
 	}
 		
 	public void setOnClickListener(View.OnClickListener l) {

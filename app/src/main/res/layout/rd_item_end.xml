@@ -4,5 +4,6 @@
     android:layout_height="wrap_content"
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
     android:textColor="@color/abc_primary_text_material_light"
+    android:textDirection="locale"
     android:paddingRight="8dp"
     android:gravity="center_vertical"/>

@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.rey.material.demo.R;
 import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.ImageButton;
 import com.rey.material.widget.RippleManager;
 import com.squareup.picasso.Picasso;
@@ -126,10 +127,7 @@ public class ContactView extends FrameLayout implements Target{
             int resId = a.getResourceId(R.styleable.ContactView_cv_buttonSrc, 0);
             if(resId != 0)
                 mButton.setImageResource(resId);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                mButton.setBackground(BlankDrawable.getInstance());
-            else
-                mButton.setBackgroundDrawable(BlankDrawable.getInstance());
+            ViewUtil.setBackground(mButton, BlankDrawable.getInstance());
             mButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             mButton.setFocusableInTouchMode(false);
             mButton.setFocusable(false);

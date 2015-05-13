@@ -25,7 +25,7 @@
             app:spn_arrowColor="#FFFFFFFF"
             app:spn_dividerHeight="0dp"
             app:rd_style="@style/Material.Drawable.Ripple.Wave"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="start|center_vertical"/>
 
     </FrameLayout>
 
@@ -98,6 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textDirection="locale"
                 android:textColor="@color/abc_primary_text_material_light"
                 android:text="@string/rd_month_same_day"
                 android:gravity="center_vertical"
@@ -109,6 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textDirection="locale"
                 android:textColor="@color/abc_primary_text_material_light"
                 tools:text="@string/rd_month_last"
                 android:gravity="center_vertical"/>
@@ -117,7 +119,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="8dp"
-                android:layout_marginLeft="-8dp">
+                android:layout_marginLeft="-8dp"
+                android:layout_marginStart="-8dp">
 
                 <com.rey.material.widget.Spinner
                     style="@style/Material.Widget.Spinner"
@@ -137,6 +140,7 @@
                     android:singleLine="true"
                     android:inputType="number"
                     android:layout_toRightOf="@id/rd_spn_end"
+                    android:layout_toEndOf="@id/rd_spn_end"
                     android:layout_centerVertical="true"
                     app:et_labelEnable="false"
                     app:et_inputId="@+id/rd_et_end_num_input"
@@ -149,7 +153,9 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/abc_primary_text_material_light"
                     android:layout_toRightOf="@id/rd_et_end_num"
+                    android:layout_toEndOf="@id/rd_et_end_num"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_centerVertical="true"
                     android:singleLine="true"
                     android:ellipsize="end"
@@ -161,6 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/rd_spn_end"
+                    android:layout_toEndOf="@id/rd_spn_end"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_centerVertical="true"

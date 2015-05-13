@@ -390,10 +390,7 @@ public class Dialog extends android.app.Dialog{
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
     public Dialog positiveActionBackground(Drawable drawable){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mPositiveAction.setBackground(drawable);
-        else
-            mPositiveAction.setBackgroundDrawable(drawable);
+        ViewUtil.setBackground(mPositiveAction, drawable);
         return this;
     }
 
@@ -439,10 +436,7 @@ public class Dialog extends android.app.Dialog{
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
     public Dialog negativeActionBackground(Drawable drawable){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mNegativeAction.setBackground(drawable);
-        else
-            mNegativeAction.setBackgroundDrawable(drawable);
+        ViewUtil.setBackground(mNegativeAction, drawable);
         return this;
     }
 
@@ -488,10 +482,7 @@ public class Dialog extends android.app.Dialog{
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
     public Dialog neutralActionBackground(Drawable drawable){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mNeutralAction.setBackground(drawable);
-        else
-            mNeutralAction.setBackgroundDrawable(drawable);
+        ViewUtil.setBackground(mNeutralAction, drawable);
         return this;
     }
 

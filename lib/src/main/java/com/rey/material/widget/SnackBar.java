@@ -29,6 +29,7 @@ import android.widget.RelativeLayout;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 
 public class SnackBar extends FrameLayout {
 
@@ -130,11 +131,7 @@ public class SnackBar extends FrameLayout {
 
 
         mBackground = new BackgroundDrawable();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            setBackground(mBackground);
-        else
-            setBackgroundDrawable(mBackground);
-
+        ViewUtil.setBackground(this, mBackground);
         setClickable(true);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
@@ -431,12 +428,8 @@ public class SnackBar extends FrameLayout {
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public SnackBar actionRipple(int resId){
-		if(resId != 0){
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mAction.setBackground(new RippleDrawable.Builder(getContext(), resId).build());
-			else
-				mAction.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), resId).build());
-		}	
+		if(resId != 0)
+            ViewUtil.setBackground(mAction, new RippleDrawable.Builder(getContext(), resId).build());
 		return this;
 	}
 	

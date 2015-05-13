@@ -180,10 +180,7 @@ public class EditText extends FrameLayout {
         mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
         mDivider.setInEditMode(isInEditMode());
         mDivider.setAnimEnable(false);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mInputView.setBackground(mDivider);
-        else
-            mInputView.setBackgroundDrawable(mDivider);
+        ViewUtil.setBackground(mInputView, mDivider);
         mDivider.setAnimEnable(true);
 
         if(text != null)
