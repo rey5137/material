@@ -93,11 +93,11 @@ dependencies {
 Make sure to add the snapshot repository:
 
 ```gradle
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
     }
+}
 ```
 
 AppCompat and CardView library is required by Material library.
