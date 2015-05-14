@@ -2,8 +2,11 @@ package com.rey.material.app;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.view.ViewCompat;
+import android.text.TextDirectionHeuristic;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -47,7 +50,15 @@ public class SimpleDialog extends Dialog {
     protected static final int MODE_MULTI_ITEMS = 3;
     protected static final int MODE_CUSTOM = 4;
 
+    /**
+     * Interface definition for a callback to be invoked when the checked state of an item changed.
+     */
     public interface OnSelectionChangedListener{
+        /**
+         * Called when the checked state of an item changed.
+         * @param index The index of item.
+         * @param selected The checked state.
+         */
         public void onSelectionChanged(int index, boolean selected);
     }
 
@@ -124,6 +135,7 @@ public class SimpleDialog extends Dialog {
         mScrollView.setClipToPadding(false);
         mScrollView.setFillViewport(true);
         mScrollView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+        ViewCompat.setLayoutDirection(mScrollView, View.LAYOUT_DIRECTION_INHERIT);
     }
 
     private void initMessageView(){
@@ -133,6 +145,11 @@ public class SimpleDialog extends Dialog {
         mMessage.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
     }
 
+    /**
+     * Set a message text to this SimpleDialog.
+     * @param message
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog message(CharSequence message){
         if(mScrollView == null)
             initScrollView();
@@ -153,10 +170,20 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set a message text to this SimpleDialog.
+     * @param id The resourceId of text.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog message(int id){
         return message(id == 0 ? null : getContext().getResources().getString(id));
     }
 
+    /**
+     * Sets the text color, size, style of the message view from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog messageTextAppearance(int resId){
         if(mMessageTextAppearanceId != resId){
             mMessageTextAppearanceId = resId;
@@ -166,6 +193,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the text color of the message view.
+     * @param color The color value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog messageTextColor(int color){
         if(mMessageTextColor != color){
             mMessageTextColor = color;
@@ -175,6 +207,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the style of radio button.
+     * @param resId The resourceId of style.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog radioButtonStyle(int resId){
         if(mRadioButtonStyle != resId){
             mRadioButtonStyle = resId;
@@ -184,6 +221,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the style of check box.
+     * @param resId The resourceId of style.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog checkBoxStyle(int resId){
         if(mCheckBoxStyle != resId){
             mCheckBoxStyle = resId;
@@ -193,6 +235,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the height of item
+     * @param height The size in pixels.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog itemHeight(int height){
         if(mItemHeight != height){
             mItemHeight = height;
@@ -202,6 +249,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the text color, size, style of the item view from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog itemTextAppearance(int resId){
         if(mItemTextAppearance != resId){
             mItemTextAppearance = resId;
@@ -221,11 +273,18 @@ public class SimpleDialog extends Dialog {
         mListView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
         mListView.setVerticalFadingEdgeEnabled(false);
         mListView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
+        ViewCompat.setLayoutDirection(mListView, View.LAYOUT_DIRECTION_INHERIT);
 
         mAdapter = new InternalAdapter();
         mListView.setAdapter(mAdapter);
     }
 
+    /**
+     * Set the list of items in single-choice mode.
+     * @param items The list of items.
+     * @param selectedIndex The index of selected item.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog items(CharSequence[] items, int selectedIndex){
         if(mListView == null)
             initListView();
@@ -236,6 +295,12 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set the list of items in multi-choice mode.
+     * @param items The list of items.
+     * @param selectedIndexes The indexes of selected items.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog multiChoiceItems(CharSequence[] items, int... selectedIndexes){
         if(mListView == null)
             initListView();
@@ -246,31 +311,67 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set a listener will be called when the checked state of a item is changed.
+     * @param listener The {@link SimpleDialog.OnSelectionChangedListener} will be called.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog onSelectionChangedListener(OnSelectionChangedListener listener){
         mOnSelectionChangedListener = listener;
         return this;
     }
 
+    /**
+     * @return The list of index of all selected items.
+     */
     public int[] getSelectedIndexes(){
         return mAdapter == null ? null : mAdapter.getSelectedIndexes();
     }
 
+    /**
+     * @return The list of value of all selected items.
+     */
     public CharSequence[] getSelectedValues(){
         return mAdapter.getSelectedValues();
     }
 
+    /**
+     * @return The index of selected item.
+     */
     public int getSelectedIndex(){
         return mAdapter == null ? -1 : mAdapter.getLastSelectedIndex();
     }
 
+    /**
+     * @return The value of selected item.
+     */
     public CharSequence getSelectedValue(){
         return mAdapter.getLastSelectedValue();
     }
 
     private class InternalScrollView extends ScrollView{
 
+        private boolean mIsRtl = false;
+
         public InternalScrollView(Context context) {
             super(context);
+        }
+
+        public void onRtlPropertiesChanged(int layoutDirection) {
+            boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+            if(mIsRtl != rtl) {
+                mIsRtl = rtl;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    View v = getChildAt(0);
+                    if (v != null && v == mMessage)
+                        mMessage.setTextDirection(mIsRtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
+                }
+                requestLayout();
+            }
+        }
+
+        public boolean isLayoutRtl(){
+            return mIsRtl;
         }
 
         @Override
@@ -284,8 +385,22 @@ public class SimpleDialog extends Dialog {
 
     private class InternalListView extends ListView{
 
+        private boolean mIsRtl = false;
+
         public InternalListView(Context context) {
             super(context);
+        }
+
+        public void onRtlPropertiesChanged(int layoutDirection) {
+            boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+            if(mIsRtl != rtl) {
+                mIsRtl = rtl;
+                requestLayout();
+            }
+        }
+
+        public boolean isLayoutRtl(){
+            return mIsRtl;
         }
 
         @Override
@@ -409,9 +524,11 @@ public class SimpleDialog extends Dialog {
                 v = (mMode == MODE_MULTI_ITEMS) ? new CheckBox(parent.getContext(), null, 0, mCheckBoxStyle) : new RadioButton(parent.getContext(), null, 0, mRadioButtonStyle);
                 if(mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
                     v.setMinHeight(mItemHeight);
-                v.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
+                v.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    v.setTextDirection(((InternalListView)parent).isLayoutRtl() ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
                 v.setTextAppearance(v.getContext(), mItemTextAppearance);
-                v.setPadding(mContentPadding, 0, 0, 0);
+                ViewCompat.setPaddingRelative(v, mContentPadding, 0, 0, 0);
             }
 
             v.setTag(position);

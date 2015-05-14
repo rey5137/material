@@ -53,7 +53,7 @@
 		        android:textColor="#FF2196F3"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="true"/>
+		        app:rd_delayClick="afterRelease"/>
 	        
 	    </LinearLayout>
 	    
@@ -89,7 +89,7 @@
 		        android:textColor="#FF2196F3"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="true"/>
+		        app:rd_delayClick="afterRelease"/>
 	        
 	    </LinearLayout>
 	    
@@ -133,7 +133,7 @@
 		        android:textColor="#FFFFFFFF"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="true"/>
+		        app:rd_delayClick="afterRelease"/>
 	        
 	    </LinearLayout>
 	    
@@ -169,7 +169,7 @@
 		        android:textColor="#FFFFFFFF"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="true"/>
+		        app:rd_delayClick="afterRelease"/>
 	        
 	    </LinearLayout>
 	    

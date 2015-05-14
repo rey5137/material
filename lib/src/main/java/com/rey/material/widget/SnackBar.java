@@ -29,6 +29,7 @@ import android.widget.RelativeLayout;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 
 public class SnackBar extends FrameLayout {
 
@@ -39,7 +40,7 @@ public class SnackBar extends FrameLayout {
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	
 	private BackgroundDrawable mBackground;
-	private int mMarginLeft;
+	private int mMarginStart;
 	private int mMarginBottom;
 	private int mWidth;
 	private int mHeight;
@@ -59,21 +60,52 @@ public class SnackBar extends FrameLayout {
     };
 	
 	private int mState = STATE_DISMISSED;
-		
+
+	/**
+	 * Indicate this SnackBar is already dismissed.
+	 */
 	public static final int STATE_DISMISSED = 0;
-	public static final int STATE_SHOWED = 1;
+	/**
+	 * Indicate this SnackBar is already shown.
+	 */
+	public static final int STATE_SHOWN = 1;
+	/**
+	 * Indicate this SnackBar is being shown.
+	 */
 	public static final int STATE_SHOWING = 2;
+	/**
+	 * Indicate this SnackBar is being dismissed.
+	 */
 	public static final int STATE_DISMISSING = 3;
-	
+
+    private boolean mIsRtl = false;
+
+	/**
+	 * Interface definition for a callback to be invoked when action button is clicked.
+	 */
 	public interface OnActionClickListener{
-		
+
+		/**
+		 * Called when action button is clicked.
+		 * @param sb The SnackBar fire this event.
+		 * @param actionId The ActionId of this SnackBar.
+		 */
 		public void onActionClick(SnackBar sb, int actionId);
 	}
 	
 	private OnActionClickListener mActionClickListener;
-	
+
+	/**
+	 * Interface definition for a callback to be invoked when SnackBar's state is changed.
+	 */
 	public interface OnStateChangeListener{
-		
+
+		/**
+		 * Called when SnackBar's state is changed.
+		 * @param sb The SnackBar fire this event.
+		 * @param oldState The old state of SnackBar.
+		 * @param newState The new state of SnackBar.
+		 */
 		public void onStateChange(SnackBar sb, int oldState, int newState);
 	}
 	
@@ -103,7 +135,6 @@ public class SnackBar extends FrameLayout {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mText = new TextView(context);
@@ -128,14 +159,26 @@ public class SnackBar extends FrameLayout {
 
 
         mBackground = new BackgroundDrawable();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            setBackground(mBackground);
-        else
-            setBackgroundDrawable(mBackground);
-
+        ViewUtil.setBackground(this, mBackground);
         setClickable(true);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+                mText.setTextDirection((mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR));
+                mAction.setTextDirection((mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR));
+            }
+
+            requestLayout();
+        }
     }
 
     @Override
@@ -144,13 +187,14 @@ public class SnackBar extends FrameLayout {
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		int width = 0;
-		int height = 0;
+		int width;
+		int height;
 		
 		if(mAction.getVisibility() == View.VISIBLE){
 			mAction.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec);
-			mText.measure(MeasureSpec.makeMeasureSpec(widthSize - (mAction.getMeasuredWidth() - mText.getPaddingRight()), widthMode), heightMeasureSpec);
-			width = mText.getMeasuredWidth() + mAction.getMeasuredWidth() - mText.getPaddingRight();
+            int padding = mIsRtl ? mText.getPaddingLeft() : mText.getPaddingRight();
+            mText.measure(MeasureSpec.makeMeasureSpec(widthSize - (mAction.getMeasuredWidth() - padding), widthMode), heightMeasureSpec);
+            width = mText.getMeasuredWidth() + mAction.getMeasuredWidth() - padding;
 		}
 		else{
 			mText.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), heightMeasureSpec);
@@ -194,14 +238,19 @@ public class SnackBar extends FrameLayout {
 		int childBottom = b - t - getPaddingBottom();
 				
 		if(mAction.getVisibility() == View.VISIBLE){
-			mAction.layout(childRight - mAction.getMeasuredWidth(), childTop, childRight, childBottom);
-			mText.layout(childLeft, childTop, childRight - mAction.getMeasuredWidth() + mText.getPaddingRight(), childBottom);
+            if(mIsRtl) {
+                mAction.layout(childLeft, childTop, childLeft + mAction.getMeasuredWidth(), childBottom);
+                childLeft += mAction.getMeasuredWidth() - mText.getPaddingLeft();
+            }
+            else {
+                mAction.layout(childRight - mAction.getMeasuredWidth(), childTop, childRight, childBottom);
+                childRight -= mAction.getMeasuredWidth() - mText.getPaddingRight();
+            }
 		}
-		else			
-			mText.layout(childLeft, childTop, childRight, childBottom);
+
+        mText.layout(childLeft, childTop, childRight, childBottom);
 	}		
 
-	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
@@ -224,7 +273,7 @@ public class SnackBar extends FrameLayout {
 			mHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_height, WRAP_CONTENT);
         int minHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_minHeight, 0);
         int maxHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_maxHeight, 0);
-		mMarginLeft = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginLeft, 0);
+		mMarginStart = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginStart, 0);
 		mMarginBottom = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginBottom, 0);
 		int textSize = a.getDimensionPixelSize(R.styleable.SnackBar_sb_textSize, 0);
 		boolean hasTextColor = a.hasValue(R.styleable.SnackBar_sb_textColor);		
@@ -315,56 +364,111 @@ public class SnackBar extends FrameLayout {
         return this;
     }
 
+	/**
+	 * Set the text that this SnackBar is to display.
+	 * @param text The text is displayed.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar text(CharSequence text){
 		mText.setText(text);
 		return this;
 	}
-	
+
+	/**
+	 * Set the text that this SnackBar is to display.
+	 * @param id The resourceId of text is displayed.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar text(int id){
 		return text(getContext().getResources().getString(id));
 	}
-	
+
+	/**
+	 * Set the text color.
+	 * @param color The color of text.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar textColor(int color){
 		mText.setTextColor(color);
 		return this;
 	}
-	
-	public SnackBar textSize(int size){
-		mText.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+
+	/**
+	 * Set the text size to the given value, interpreted as "scaled pixel" units.
+	 * @param size The size of text.
+	 * @return This SnackBar for chaining methods.
+	 */
+	public SnackBar textSize(float size){
+		mText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 		return this;
 	}
-	
+
+	/**
+	 * Sets the text color, size, style from the specified TextAppearance resource.
+	 * @param resId The resourceId value.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar textAppearance(int resId){
 		if(resId != 0)
 			mText.setTextAppearance(getContext(), resId);
 		return this;
 	}
-	
+
+	/**
+	 * Causes words in the text that are longer than the view is wide to be ellipsized instead of broken in the middle.
+	 * @param at
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar ellipsize(TruncateAt at){
 		mText.setEllipsize(at);
 		return this;
 	}
-	
+
+	/**
+	 * Sets the text will be single-line or not.
+	 * @param b
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar singleLine(boolean b){
 		mText.setSingleLine(b);
 		return this;
 	}
-	
+
+	/**
+	 * Makes the text at most this many lines tall.
+	 * @param lines The maximum line value.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar maxLines(int lines){
 		mText.setMaxLines(lines);
 		return this;
 	}
-	
+
+	/**
+	 * Makes the text exactly this many lines tall.
+	 * @param lines The line number.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar lines(int lines){
 		mText.setLines(lines);
 		return this;
 	}
-	
+
+	/**
+	 * Set the actionId of this SnackBar. Used to determine the current action of this SnackBar.
+	 * @param id The actionId value.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionId(int id){
 		mActionId = id;		
 		return this;
 	}
-	
+
+	/**
+	 * Set the text that the ActionButton is to display.
+	 * @param text If null, then the ActionButton will be hidden.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionText(CharSequence text){
 		if(TextUtils.isEmpty(text))
 			mAction.setVisibility(View.INVISIBLE);
@@ -374,139 +478,257 @@ public class SnackBar extends FrameLayout {
 		}
 		return this;
 	}
-	
+
+	/**
+	 * Set the text that the ActionButton is to display.
+	 * @param id If 0, then the ActionButton will be hidden.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionText(int id){
 		if(id == 0)
 			return actionText(null);
 		
 		return actionText(getContext().getResources().getString(id));
 	}
-	
+
+	/**
+	 * Set the text color of the ActionButton for all states.
+	 * @param color The color of text.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionTextColor(int color){
 		mAction.setTextColor(color);
 		return this;
 	}
-	
+
+	/**
+	 * Set the text color of the ActionButton.
+	 * @param colors
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionTextColor(ColorStateList colors){
 		mAction.setTextColor(colors);
 		return this;
 	}
-	
+
+	/**
+	 * Sets the text color, size, style of the ActionButton from the specified TextAppearance resource.
+	 * @param resId The resourceId value.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionTextAppearance(int resId){
 		if(resId != 0)
 			mAction.setTextAppearance(getContext(), resId);
 		return this;
 	}
-	
-	public SnackBar actionTextSize(int size){
-		mAction.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+
+	/**
+	 * Set the text size of the ActionButton to the given value, interpreted as "scaled pixel" units.
+	 * @param size The size of text.
+	 * @return This SnackBar for chaining methods.
+	 */
+	public SnackBar actionTextSize(float size){
+		mAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
 		return this;
 	}
-	
-	@SuppressWarnings("deprecation")
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
+	/**
+	 * Set the style of RippleEffect of the ActionButton.
+	 * @param resId The resourceId of RippleEffect.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionRipple(int resId){
-		if(resId != 0){
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mAction.setBackground(new RippleDrawable.Builder(getContext(), resId).build());
-			else
-				mAction.setBackgroundDrawable(new RippleDrawable.Builder(getContext(), resId).build());
-		}	
+		if(resId != 0)
+            ViewUtil.setBackground(mAction, new RippleDrawable.Builder(getContext(), resId).build());
 		return this;
 	}
-	
+
+	/**
+	 * Set the duration this SnackBar will be shown before dismissing.
+	 * @param duration If 0, then the SnackBar will not be dismissed until {@link #dismiss() dismiss()} is called.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar duration(long duration){
 		mDuration = duration;
 		return this;
 	}
-	
+
+	/**
+	 * Set the background color of this SnackBar.
+	 * @param color The color of background.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar backgroundColor(int color){
 		mBackground.setColor(color);
 		return this;
 	}
-	
+
+	/**
+	 * Set the background's corner radius of this SnackBar.
+	 * @param radius The corner radius.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar backgroundRadius(int radius){
 		mBackground.setRadius(radius);
 		return this;
 	}
-	
+
+	/**
+	 * Set the horizontal padding between this SnackBar and it's text and button.
+	 * @param padding
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar horizontalPadding(int padding){
 		mText.setPadding(padding, mText.getPaddingTop(), padding, mText.getPaddingBottom());	
 		mAction.setPadding(padding, mAction.getPaddingTop(), padding, mAction.getPaddingBottom());
 		return this;
 	}
-	
+
+	/**
+	 * Set the vertical padding between this SnackBar and it's text and button.
+	 * @param padding
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar verticalPadding(int padding){
 		mText.setPadding(mText.getPaddingLeft(), padding, mText.getPaddingRight(), padding);	
 		mAction.setPadding(mAction.getPaddingLeft(), padding, mAction.getPaddingRight(), padding);
 		return this;
 	}
-	
+
+	/**
+	 * Set the padding between this SnackBar and it's text and button.
+	 * @param horizontalPadding The horizontal padding.
+	 * @param verticalPadding The vertical padding.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar padding(int horizontalPadding, int verticalPadding){
 		mText.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);		
 		mAction.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);		
 		return this;
 	}
-	
+
+	/**
+	 * Makes this SnackBar exactly this many pixels wide.
+	 * @param width The width value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar width(int width){
 		mWidth = width;
 		return this;
 	}
-	
+
+	/**
+	 * Makes this SnackBar at least this many pixels wide
+	 * @param width The minimum width value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar minWidth(int width){
 		mText.setMinWidth(width);
 		return this;
 	}
-	
+
+	/**
+	 * Makes this SnackBar at most this many pixels wide
+	 * @param width The maximum width value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar maxWidth(int width){
 		mText.setMaxWidth(width);
 		return this;
 	}
-	
+
+	/**
+	 * Makes this SnackBar exactly this many pixels tall.
+	 * @param height The height value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar height(int height){
 		mHeight = height;
 		return this;
 	}
 
+	/**
+	 * Makes this SnackBar at most this many pixels tall
+	 * @param height The maximum height value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
     public SnackBar maxHeight(int height){
         mMaxHeight = height;
         return this;
     }
 
+	/**
+	 * Makes this SnackBar at least this many pixels tall
+	 * @param height The maximum height value in pixels.
+	 * @return This SnackBar for chaining methods.
+	 */
     public SnackBar minHeight(int height){
         mMinHeight = height;
         return this;
     }
-	
-	public SnackBar marginLeft(int size){
-		mMarginLeft = size;
+
+	/**
+	 * Set the start margin between this SnackBar and it's parent.
+	 * @param size
+	 * @return This SnackBar for chaining methods.
+	 */
+	public SnackBar marginStart(int size){
+		mMarginStart = size;
 		return this;
 	}
-	
+
+	/**
+	 * Set the bottom margin between this SnackBar and it's parent.
+	 * @param size
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar marginBottom(int size){
 		mMarginBottom = size;
 		return this;
 	}
-	
+
+	/**
+	 * Set the listener will be called when the ActionButton is clicked.
+	 * @param listener The {@link SnackBar.OnActionClickListener} will be called.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar actionClickListener(OnActionClickListener listener){
 		mActionClickListener = listener;
 		return this;
 	}
-	
+
+	/**
+	 * Set the listener will be called when this SnackBar's state is changed.
+	 * @param listener The {@link SnackBar.OnStateChangeListener} will be called.
+	 * @return This SnackBar for chaining methods.
+	 */
 	public SnackBar stateChangeListener(OnStateChangeListener listener){
 		mStateChangeListener = listener;
 		return this;
 	}
 
+	/**
+	 * Indicate that this SnackBar should remove itself from parent view after being dismissed.
+	 * @param b
+	 * @return This SnackBar for chaining methods.
+	 */
     public SnackBar removeOnDismiss(boolean b){
         mRemoveOnDismiss = b;
         return this;
     }
 
+	/**
+	 * Show this SnackBar. It will auto attach to the activity's root view.
+	 * @param activity
+	 */
 	public void show(Activity activity){
         show((ViewGroup)activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT));
 	}
 
+	/**
+	 * Show this SnackBar. It will auto attach to the parent view.
+	 * @param parent Must be {@linke android.widget.FrameLayout} or {@link android.widget.RelativeLayout}
+	 */
     public void show(ViewGroup parent){
         if(mState == STATE_SHOWING || mState == STATE_DISMISSING)
             return;
@@ -521,6 +743,10 @@ public class SnackBar extends FrameLayout {
         show();
     }
 
+	/**
+	 * Show this SnackBar.
+	 * Make sure it already attached to a parent view or this method will do nothing.
+	 */
     public void show(){
         ViewGroup parent = (ViewGroup)getParent();
         if(parent == null || mState == STATE_SHOWING || mState == STATE_DISMISSING)
@@ -531,8 +757,11 @@ public class SnackBar extends FrameLayout {
 
             params.width = mWidth;
             params.height = mHeight;
-            params.gravity = Gravity.BOTTOM;
-            params.leftMargin = mMarginLeft;
+            params.gravity = Gravity.START | Gravity.BOTTOM;
+			if(mIsRtl)
+				params.rightMargin = mMarginStart;
+			else
+            	params.leftMargin = mMarginStart;
             params.bottomMargin = mMarginBottom;
         }
         else if(parent instanceof RelativeLayout){
@@ -541,11 +770,15 @@ public class SnackBar extends FrameLayout {
             params.width = mWidth;
             params.height = mHeight;
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            params.leftMargin = mMarginLeft;
+			params.addRule(RelativeLayout.ALIGN_PARENT_START);
+			if(mIsRtl)
+				params.rightMargin = mMarginStart;
+			else
+            	params.leftMargin = mMarginStart;
             params.bottomMargin = mMarginBottom;
         }
 
-        if(mInAnimationId != 0 && mState != STATE_SHOWED){
+        if(mInAnimationId != 0 && mState != STATE_SHOWN){
             Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
             anim.setAnimationListener(new Animation.AnimationListener() {
 
@@ -560,7 +793,7 @@ public class SnackBar extends FrameLayout {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    setState(STATE_SHOWED);
+                    setState(STATE_SHOWN);
                     startTimer();
                 }
             });
@@ -568,7 +801,7 @@ public class SnackBar extends FrameLayout {
         }
         else{
             setVisibility(View.VISIBLE);
-            setState(STATE_SHOWED);
+            setState(STATE_SHOWN);
             startTimer();
         }
     }
@@ -578,9 +811,12 @@ public class SnackBar extends FrameLayout {
 		if(mDuration > 0)
 			postDelayed(mDismissRunnable, mDuration);
 	}
-	
+
+	/**
+	 * Dismiss this SnackBar. It must be in {@link #STATE_SHOWN} to be dismissed.
+	 */
 	public void dismiss(){
-		if(mState != STATE_SHOWED)
+		if(mState != STATE_SHOWN)
 			return;
 		
 		removeCallbacks(mDismissRunnable);
@@ -617,7 +853,11 @@ public class SnackBar extends FrameLayout {
 		}		
 		
 	}
-	
+
+	/**
+	 * Get the current state of this SnackBar.
+	 * @return The current state of this SnackBar. Can be {@link #STATE_DISMISSED}, {@link #STATE_DISMISSING}, {@link #STATE_SHOWING} or {@link #STATE_SHOWN}.
+	 */
 	public int getState(){
 		return mState;
 	}

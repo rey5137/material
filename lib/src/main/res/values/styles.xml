@@ -107,7 +107,7 @@
         <item name="rd_maskType">rectangle</item>
         <item name="rd_cornerRadius">2dp</item>
         <item name="rd_padding">0dp</item>
-        <item name="rd_delayClick">false</item>
+        <item name="rd_delayClick">none</item>
     </style>
 
     <style name="Material.Drawable.Ripple.Touch" parent="Material.Drawable.Ripple">
@@ -156,6 +156,7 @@
         <item name="lmd_strokeCap">butt</item>
         <item name="lmd_strokeJoin">miter</item>
         <item name="lmd_clockwise">true</item>
+        <item name="lmd_layoutDirection">locale</item>
     </style>
 
     <style name="Material.Drawable.NavigationDrawerIcon.Light" parent="Material.Drawable.NavigationDrawerIcon">
@@ -276,7 +277,7 @@
     </style>
 
     <style name="Material.Widget.SnackBar.Mobile" parent="Material.Widget.SnackBar">
-        <item name="sb_marginLeft">0dp</item>
+        <item name="sb_marginStart">0dp</item>
         <item name="sb_marginBottom">0dp</item>
         <item name="sb_width">match_parent</item>
         <item name="sb_height">48dp</item>
@@ -292,7 +293,7 @@
     </style>
 
     <style name="Material.Widget.SnackBar.Tablet" parent="Material.Widget.SnackBar">
-        <item name="sb_marginLeft">16dp</item>
+        <item name="sb_marginStart">16dp</item>
         <item name="sb_marginBottom">16dp</item>
         <item name="sb_width">wrap_content</item>
         <item name="sb_height">48dp</item>
@@ -318,6 +319,7 @@
         <item name="di_elevation">4dp</item>
         <item name="di_maxElevation">4dp</item>
         <item name="di_cornerRadius">2dp</item>
+        <item name="di_layoutDirection">locale</item>
         <item name="di_titleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
         <item name="di_titleTextColor">@color/abc_primary_text_material_dark</item>
         <item name="di_actionRipple">@style/Material.Drawable.Ripple.Wave</item>
@@ -397,6 +399,7 @@
         <item name="tp_headerHeight">120dp</item>
         <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
         <item name="tp_textTimeColor">#90FFFFFF</item>
+        <item name="tp_leadingZero">false</item>
     </style>
 
     <style name="Material.App.Dialog.TimePicker.Light" parent="Material.App.Dialog.Light">
@@ -415,6 +418,7 @@
         <item name="tp_headerHeight">120dp</item>
         <item name="tp_textTimeSize">@dimen/abc_text_size_display_2_material</item>
         <item name="tp_textTimeColor">#90FFFFFF</item>
+        <item name="tp_leadingZero">false</item>
     </style>
 
     <style name="Material.Widget.YearPicker">

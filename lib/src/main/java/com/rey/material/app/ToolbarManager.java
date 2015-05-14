@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 
 import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -40,8 +41,16 @@ public class ToolbarManager {
     private boolean mGroupChanged = false;
     private boolean mMenuDataChanged = true;
 
+    /**
+     * Interface definition for a callback to be invoked when the current group is changed.
+     */
     public interface OnToolbarGroupChangedListener {
 
+        /**
+         * Called when the current group changed.
+         * @param oldGroupId The id of old group.
+         * @param groupId The id of new group.
+         */
         public void onToolbarGroupChanged(int oldGroupId, int groupId);
 
     }
@@ -127,10 +136,17 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * @return The current group of the Toolbar.
+     */
     public int getCurrentGroup(){
         return mCurrentGroup;
     }
 
+    /**
+     * Set current group of the Toolbar.
+     * @param groupId The id of group.
+     */
     public void setCurrentGroup(int groupId){
         if(mCurrentGroup != groupId){
             int oldGroupId = mCurrentGroup;
@@ -203,6 +219,9 @@ public class ToolbarManager {
             mNavigationManager.notifyStateProgressChanged(isBackState, progress);
     }
 
+    /**
+     * @return The navigation is in back state or not.
+     */
     public boolean isNavigationBackState(){
         return mNavigationManager != null && mNavigationManager.isBackState();
     }
@@ -235,15 +254,11 @@ public class ToolbarManager {
             mToolbar.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
 
         ActionMenuView menuView = getMenuView();
-
-        for(int i = 0; i < menuView.getChildCount(); i++){
+        for(int i = 0, count = menuView == null ? 0 : menuView.getChildCount(); i < count; i++){
             View child = menuView.getChildAt(i);
             if(mRippleStyle != 0){
                 if(child.getBackground() == null || !(child.getBackground() instanceof ToolbarRippleDrawable))
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                        child.setBackground(getBackground());
-                    else
-                        child.setBackgroundDrawable(getBackground());
+                    ViewUtil.setBackground(child, getBackground());
             }
         }
 
@@ -255,7 +270,7 @@ public class ToolbarManager {
 
     private void animateOut(){
         ActionMenuView menuView = getMenuView();
-        int count = menuView.getChildCount();
+        int count = menuView == null ? 0 : menuView.getChildCount();
         Animation slowestAnimation = null;
         mAnimations.clear();
         mAnimations.ensureCapacity(count);
@@ -287,7 +302,7 @@ public class ToolbarManager {
     private void animateIn(){
         ActionMenuView menuView = getMenuView();
 
-        for(int i = 0, count = menuView.getChildCount(); i < count; i++){
+        for(int i = 0, count = menuView == null ? 0 : menuView.getChildCount(); i < count; i++){
             View child = menuView.getChildAt(i);
             Animation anim = mAnimator.getInAnimation(child, i);
             if(anim != null)
@@ -295,10 +310,25 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * Interface definition for creating animation of menu item view when switch group.
+     */
     public interface Animator{
 
+        /**
+         * Get the animation of the menu item view will be removed.
+         * @param v The menu item view.
+         * @param position The position of item.
+         * @return
+         */
         public Animation getOutAnimation(View v, int position);
 
+        /**
+         * Get the animation of the menu item view will be added.
+         * @param v The menu item view.
+         * @param position The position of item.
+         * @return
+         */
         public Animation getInAnimation(View v, int position);
     }
 
@@ -313,15 +343,18 @@ public class ToolbarManager {
 
         @Override
         public Animation getOutAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(v.getContext(), mAnimationOut);
+            return mAnimationOut == 0 ? null : AnimationUtils.loadAnimation(v.getContext(), mAnimationOut);
         }
 
         @Override
         public Animation getInAnimation(View v, int position) {
-            return AnimationUtils.loadAnimation(v.getContext(), mAnimationIn);
+            return mAnimationIn == 0 ?  null : AnimationUtils.loadAnimation(v.getContext(), mAnimationIn);
         }
     }
 
+    /**
+     * Abstract class to manage the state of navigation icon.
+     */
     public static abstract class NavigationManager{
 
         protected NavigationDrawerDrawable mNavigationIcon;

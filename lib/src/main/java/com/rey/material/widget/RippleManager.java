@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.rey.material.R;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 public final class RippleManager implements View.OnClickListener, Runnable{
 
@@ -20,9 +21,15 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	private View mView;
 		
 	public RippleManager(){}
-	
-	@SuppressWarnings("deprecation")
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
+    /**
+     * Should be called in the construction method of view to create a RippleDrawable.
+     * @param v
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     */
 	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		if(v.isInEditMode())
 			return;
@@ -43,36 +50,13 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 
 		a.recycle();
 
-		if(drawable != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-				mView.setBackground(drawable);
-			else
-				mView.setBackgroundDrawable(drawable);
-		}
+		if(drawable != null)
+            ViewUtil.setBackground(mView, drawable);
 	}
-	
-	public boolean isDelayClick(){
-        Drawable background = mView.getBackground();
-        if(background instanceof RippleDrawable)
-            return ((RippleDrawable)background).isDelayClick();
-        else if(background instanceof ToolbarRippleDrawable)
-            return ((ToolbarRippleDrawable)background).isDelayClick();
-
-        return false;
-	}
-	
-	public void setDelayClick(boolean delay){
-        Drawable background = mView.getBackground();
-        if(background instanceof RippleDrawable)
-            ((RippleDrawable)background).setDelayClick(delay);
-        else if(background instanceof ToolbarRippleDrawable)
-            ((ToolbarRippleDrawable)background).setDelayClick(delay);
-	}
-	
+		
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;
 	}
-
 
 	public boolean onTouchEvent(MotionEvent event){
 		Drawable background = mView.getBackground();
@@ -101,6 +85,10 @@ public final class RippleManager implements View.OnClickListener, Runnable{
     		mClickListener.onClick(mView);
     }
 
+    /**
+     * Cancel the ripple effect of this view and all of it's children.
+     * @param v
+     */
 	public static void cancelRipple(View v){
 		Drawable background = v.getBackground();
 		if(background instanceof RippleDrawable)

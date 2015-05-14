@@ -16,6 +16,7 @@ import com.rey.material.app.DialogFragment;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.app.TimePickerDialog;
 import com.rey.material.widget.Button;
+import com.rey.material.widget.EditText;
 
 import java.text.SimpleDateFormat;
 
@@ -134,15 +135,14 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                 builder = new SimpleDialog.Builder(R.style.SimpleDialog){
 
                     @Override
-                    protected Dialog onBuild(Context context, int styleId) {
-                        Dialog dialog = super.onBuild(context, styleId);
+                    protected void onBuildDone(Dialog dialog) {
                         dialog.layoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        return dialog;
                     }
 
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
-                        Toast.makeText(fragment.getDialog().getContext(), "Connected", Toast.LENGTH_SHORT).show();
+                        EditText et_pass = (EditText)fragment.getDialog().findViewById(R.id.custom_et_password);
+                        Toast.makeText(fragment.getDialog().getContext(), "Connected. pass=" + et_pass.getText().toString(), Toast.LENGTH_SHORT).show();
                         super.onPositiveActionClicked(fragment);
                     }
 

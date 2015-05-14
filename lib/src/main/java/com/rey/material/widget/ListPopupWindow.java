@@ -54,11 +54,9 @@ import android.widget.ListAdapter;
 import com.rey.material.R;
 
 /**
- * Static library support version of the framework's {@link android.widget.ListPopupWindow}.
- * Used to write apps that run on platforms prior to Android L. When running
- * on Android L or above, this implementation is still used; it does not try
- * to switch to the framework's implementation. See the framework SDK
- * documentation for a class overview.
+ * This is a copy of android.support.v7.widget.ListPopupWindow.
+ * Just change DropDownListView's parent class to com.rey.material.widget.ListView to support
+ * RippleEffect in child view.
  *
  * @see android.widget.ListPopupWindow
  */

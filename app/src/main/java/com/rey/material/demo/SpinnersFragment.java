@@ -32,7 +32,10 @@ public class SpinnersFragment extends Fragment{
 
         Spinner spn_label = (Spinner)v.findViewById(R.id.spinner_label);
         Spinner spn_no_arrow = (Spinner)v.findViewById(R.id.spinner_no_arrow);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.row_spn, new String[]{"Item 1", "Item 2", "Item 333333333333333"});
+		String[] items = new String[20];
+		for(int i = 0; i < items.length; i++)
+			items[i] = String.valueOf(i + 1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.row_spn, items);
         adapter.setDropDownViewResource(R.layout.row_spn_dropdown);
         spn_label.setAdapter(adapter);
         spn_no_arrow.setAdapter(adapter);

@@ -59,13 +59,26 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mMonthRealHeight;
 
     private Calendar mCalendar;
-    private boolean mIsMondayFirst;
+    private int mFirstDayOfWeek;
     private String[] mLabels = new String[7];
     private static String[] mDayTexts;
 
     private MonthAdapter mAdapter;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected date is changed.
+     */
     public interface OnDateChangedListener {
+
+        /**
+         * Called when the selected date is changed.
+         * @param oldDay The day value of old date.
+         * @param oldMonth The month value of old date.
+         * @param oldYear The year value of old date.
+         * @param newDay The day value of new date.
+         * @param newMonth The month value of new date.
+         * @param newYear The year value of new date.
+         */
         public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear);
     }
 
@@ -87,6 +100,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     private int mPaddingTop;
     private int mPaddingRight;
     private int mPaddingBottom;
+
+    private static final String DAY_FORMAT = "%2d";
+    private static final String YEAR_FORMAT = "%4d";
 
     public DatePicker(Context context) {
         super(context);
@@ -131,7 +147,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mDayPadding = ThemeUtil.dpToPx(context, 4);
 
         mCalendar = Calendar.getInstance();
-        mIsMondayFirst = mCalendar.getFirstDayOfWeek() == Calendar.MONDAY;
+        mFirstDayOfWeek = mCalendar.getFirstDayOfWeek();
 
         int index = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         DateFormat format = new SimpleDateFormat(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? "EEEEE" : "E");
@@ -285,15 +301,29 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         }
 
         if(mDayTexts[day - 1] == null)
-            mDayTexts[day - 1] = String.valueOf(day);
+            mDayTexts[day - 1] = String.format(DAY_FORMAT, day);
 
         return mDayTexts[day - 1];
     }
 
+    /**
+     * Set the range of selectable dates.
+     * @param minDay The day value of minimum date.
+     * @param minMonth The month value of minimum date.
+     * @param minYear The year value of minimum date.
+     * @param maxDay The day value of maximum date.
+     * @param maxMonth The month value of maximum date.
+     * @param maxYear The year value of maximum date.
+     */
     public void setDateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
         mAdapter.setDateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
+    /**
+     * Jump to the view of a specific month.
+     * @param month
+     * @param year
+     */
     public void goTo(int month, int year){
         int position = mAdapter.positionOfMonth(month, year);
         postSetSelectionFromTop(position, 0);
@@ -309,6 +339,12 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         });
     }
 
+    /**
+     * Set the selected date of this DatePicker.
+     * @param day The day value of selected date.
+     * @param month The month value of selected date.
+     * @param year The year value of selected date.
+     */
     public void setDate(int day, int month, int year){
         if(mAdapter.getYear() == year && mAdapter.getMonth() == month && mAdapter.getDay() == day)
             return;
@@ -317,22 +353,40 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         goTo(month, year);
     }
 
+    /**
+     * Set the listener will be called when the selected date is changed.
+     * @param listener The {@link DatePicker.OnDateChangedListener} will be called.
+     */
     public void setOnDateChangedListener(OnDateChangedListener listener){
         mOnDateChangedListener = listener;
     }
 
+    /**
+     * @return The day value of selected date.
+     */
     public int getDay(){
         return mAdapter.getDay();
     }
 
+    /**
+     * @return The month value of selected date.
+     */
     public int getMonth(){
         return mAdapter.getMonth();
     }
 
+    /**
+     * @return The year value of selected date.
+     */
     public int getYear(){
         return mAdapter.getYear();
     }
 
+    /**
+     * Get the formatted string of selected date.
+     * @param formatter The DateFormat used to format the date.
+     * @return
+     */
     public String getFormattedDate(DateFormat formatter){
         mCalendar.set(Calendar.YEAR, mAdapter.getYear());
         mCalendar.set(Calendar.MONTH, mAdapter.getMonth());
@@ -487,10 +541,9 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             mCalendar.set(Calendar.YEAR, mYear);
 
             mMaxDay = mCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-            mFirstDayCol = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
-            if(mIsMondayFirst)
-                mFirstDayCol = mFirstDayCol == 0 ? 6 : mFirstDayCol - 1;
-            mMonthText = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + mYear;
+            int dayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
+            mFirstDayCol = dayOfWeek < mFirstDayOfWeek ? dayOfWeek + 7 - mFirstDayOfWeek : dayOfWeek - mFirstDayOfWeek;
+            mMonthText = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + String.format(YEAR_FORMAT, mYear);
         }
 
         @Override
@@ -541,7 +594,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             for(int i = 0; i < 7; i++){
                 x = (i + 0.5f) * mDayWidth + paddingLeft;
                 y = paddingTop;
-                int index = mIsMondayFirst ? (i == 6 ? 0 : i + 1) : i;
+                int index = (i + mFirstDayOfWeek - 1) % 7;
                 canvas.drawText(mLabels[index], x, y, mPaint);
             }
 
@@ -592,20 +645,18 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
             switch (event.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     mTouchedDay = getTouchedDay(event.getX(), event.getY());
-                    if(mTouchedDay > 0)
-                        return true;
-                    break;
+                    return true;
                 case MotionEvent.ACTION_UP:
-                    if(getTouchedDay(event.getX(), event.getY()) == mTouchedDay)
+                    if(getTouchedDay(event.getX(), event.getY()) == mTouchedDay && mTouchedDay > 0) {
                         mAdapter.setDate(mTouchedDay, mMonth, mYear, true);
-                    mTouchedDay = -1;
+                        mTouchedDay = -1;
+                    }
                     return true;
                 case MotionEvent.ACTION_CANCEL:
                     mTouchedDay = -1;
-                    break;
+                    return true;
             }
-
-            return false;
+            return true;
         }
 
         private void resetAnimation(){

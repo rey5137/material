@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -48,8 +49,16 @@ public class YearPicker extends ListView{
 
     private Paint mPaint;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected year is changed.
+     */
     public interface OnYearChangedListener{
 
+        /**
+         * Called then the selected year is changed.
+         * @param oldValue The old year value.
+         * @param newValue The new year value.
+         */
         public void onYearChanged(int oldValue, int newValue);
 
     }
@@ -62,6 +71,8 @@ public class YearPicker extends ListView{
     };
 
     private int[] mTextColors = new int[2];
+
+    private static final String YEAR_FORMAT = "%4d";
 
     public YearPicker(Context context) {
         super(context);
@@ -152,10 +163,19 @@ public class YearPicker extends ListView{
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Set the range of selectable year value.
+     * @param min The minimum selectable year value.
+     * @param max The maximum selectable year value.
+     */
     public void setYearRange(int min, int max){
         mAdapter.setYearRange(min, max);
     }
 
+    /**
+     * Jump to a specific year.
+     * @param year
+     */
     public void goTo(int year){
         int position = mAdapter.positionOfYear(year) - mPositionShift;
         int offset = mDistanceShift;
@@ -176,6 +196,10 @@ public class YearPicker extends ListView{
         });
     }
 
+    /**
+     * Set the selected year.
+     * @param year The selected year value.
+     */
     public void setYear(int year){
         if(mAdapter.getYear() == year)
             return;
@@ -184,10 +208,17 @@ public class YearPicker extends ListView{
         goTo(year);
     }
 
+    /**
+     * @return The selected year value.
+     */
     public int getYear(){
         return mAdapter.getYear();
     }
 
+    /**
+     * Set a listener will be called when the selected year value is changed.
+     * @param listener The {@link YearPicker.OnYearChangedListener} will be called.
+     */
     public void setOnYearChangedListener(OnYearChangedListener listener){
         mOnYearChangedListener = listener;
     }
@@ -306,6 +337,8 @@ public class YearPicker extends ListView{
             if(v == null){
                 v = new CircleCheckedTextView(getContext());
                 v.setGravity(Gravity.CENTER);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    v.setTextAlignment(TEXT_ALIGNMENT_CENTER);
                 v.setMinHeight(mItemRealHeight);
                 v.setMaxHeight(mItemRealHeight);
                 v.setAnimDuration(mAnimDuration);
@@ -319,7 +352,7 @@ public class YearPicker extends ListView{
 
             int year = (Integer)getItem(position);
             v.setTag(year);
-            v.setText(String.valueOf(year));
+            v.setText(String.format(YEAR_FORMAT, year));
             v.setCheckedImmediately(year == mCurYear);
             return v;
         }

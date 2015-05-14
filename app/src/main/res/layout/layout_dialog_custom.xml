@@ -14,6 +14,7 @@
         app:et_supportMode="none"
         android:hint="Signal strength"
         android:text="Excellent"
+        android:textDirection="locale"
         android:enabled="false"
         android:paddingTop="8dp"/>
 
@@ -26,17 +27,20 @@
         app:et_supportMode="none"
         android:hint="Security"
         android:text="802.1x EAP"
+        android:textDirection="locale"
         android:enabled="false"
         android:paddingTop="8dp"/>
 
     <com.rey.material.widget.EditText
         style="@style/Material.Widget.EditText"
+        android:id="@+id/custom_et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:et_supportMode="charCounter"
         android:textColor="@color/abc_primary_text_material_dark"
         android:textColorHint="@color/abc_secondary_text_material_dark"
         android:hint="Password"
+        android:textDirection="locale"
         android:paddingTop="8dp"
         android:inputType="textPassword"/>
 

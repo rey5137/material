@@ -10,6 +10,7 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -71,7 +72,17 @@ public class Switch extends View implements Checkable {
     private static final int COLOR_SHADOW_START = 0x4C000000;
     private static final int COLOR_SHADOW_END = 0x00000000;
 
+    private boolean mIsRtl = false;
+
+    /**
+     * Interface definition for a callback to be invoked when the checked state is changed.
+     */
     public interface OnCheckedChangeListener{
+        /**
+         * Called when the checked state is changed.
+         * @param view The Switch view.
+         * @param checked The checked state.
+         */
         public void onCheckedChanged(Switch view, boolean checked);
     }
 
@@ -194,6 +205,10 @@ public class Switch extends View implements Checkable {
 		}
 	}
 
+    /**
+     * Set a listener will be called when the checked state is changed.
+     * @param listener The {@link Switch.OnCheckedChangeListener} will be called.
+     */
     public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
         mOnCheckedChangeListener = listener;
     }
@@ -212,6 +227,20 @@ public class Switch extends View implements Checkable {
 			startAnimation();
 	}
 
+    /**
+     * Change the checked state of this Switch immediately without showing animation.
+     * @param checked The checked state.
+     */
+    public void setCheckedImmediately(boolean checked){
+        if(mChecked != checked) {
+            mChecked = checked;
+            if(mOnCheckedChangeListener != null)
+                mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
+        }
+        mThumbPosition = mChecked ? 1f : 0f;
+        invalidate();
+    }
+
 	@Override
 	public boolean isChecked() {
 		return mChecked;
@@ -222,26 +251,39 @@ public class Switch extends View implements Checkable {
 		if(isEnabled())
 			setChecked(!mChecked);
 	}
-				
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+            invalidate();
+        }
+    }
+
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		super.onTouchEvent(event);
 		mRippleManager.onTouchEvent(event);
-		
+
+        float x = event.getX();
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
+
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				mMemoX = event.getX();
+				mMemoX = x;
 				mStartX = mMemoX;
 				mStartTime = SystemClock.uptimeMillis();
 				break;
 			case MotionEvent.ACTION_MOVE:
-				float offset = (event.getX() - mMemoX) / (mDrawRect.width() - mThumbRadius * 2);
+				float offset = (x - mMemoX) / (mDrawRect.width() - mThumbRadius * 2);
 				mThumbPosition = Math.min(1f, Math.max(0f, mThumbPosition + offset));
-				mMemoX = event.getX();
+				mMemoX = x;
 				invalidate();
 				break;
 			case MotionEvent.ACTION_UP:	
-				float velocity = (event.getX() - mStartX) / (SystemClock.uptimeMillis() - mStartTime) * 1000;
+				float velocity = (x - mStartX) / (SystemClock.uptimeMillis() - mStartTime) * 1000;
 				if(Math.abs(velocity) >= mFlingVelocity)
 					setChecked(velocity > 0);
 				else if((!mChecked && mThumbPosition < 0.1f) || (mChecked && mThumbPosition > 0.9f))
@@ -420,6 +462,8 @@ public class Switch extends View implements Checkable {
 		super.draw(canvas);
 
 		float x = (mDrawRect.width() - mThumbRadius * 2) * mThumbPosition + mDrawRect.left + mThumbRadius;
+        if(mIsRtl)
+            x = 2 * mDrawRect.centerX() - x;
 		float y = mDrawRect.centerY();
 				
 		getTrackPath(x, y, mThumbRadius);

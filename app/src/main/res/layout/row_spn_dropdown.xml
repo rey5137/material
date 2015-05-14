@@ -10,5 +10,5 @@
 	    android:textColor="#FF000000"
 	    android:paddingLeft="16dp"
 	    android:paddingRight="16dp"
-		app:rd_delayClick="true"/>
+		app:rd_delayClick="afterRelease"/>
 

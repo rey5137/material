@@ -57,6 +57,10 @@ public class RadioButton extends CompoundButton {
         }
     }
 
+    /**
+     * Change the checked state of this button immediately without showing animation.
+     * @param checked The checked state.
+     */
     public void setCheckedImmediately(boolean checked){
         if(mButtonDrawable instanceof RadioButtonDrawable){
             RadioButtonDrawable drawable = (RadioButtonDrawable)mButtonDrawable;

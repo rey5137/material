@@ -65,6 +65,9 @@
         <attr name="pv_autostart" format="boolean"/> 
         <attr name="pv_circular" format="boolean"/> 
         <attr name="pv_progressStyle" format="reference"/>
+        <attr name="pv_progressMode"/>
+        <attr name="pv_progress" />
+        <attr name="pv_secondaryProgress" />
     </declare-styleable>
         
     <declare-styleable name="RippleView">
@@ -100,7 +103,11 @@
         <attr name="rd_topPadding" format="reference|dimension"/>
         <attr name="rd_rightPadding" format="reference|dimension"/>
         <attr name="rd_bottomPadding" format="reference|dimension"/>
-        <attr name="rd_delayClick" format="boolean"/>
+        <attr name="rd_delayClick" format="integer">
+            <enum name="none" value="0x00000000" />
+            <enum name="untilRelease" value="0x00000001" />
+            <enum name="afterRelease" value="0x00000002" />
+        </attr>
     </declare-styleable>
     
     <declare-styleable name="LineMorphingDrawable">
@@ -126,6 +133,11 @@
 	        <enum name="bevel" value="0x00000002" />
         </attr>
         <attr name="lmd_clockwise" format="boolean"/>
+        <attr name="lmd_layoutDirection" format="integer">
+            <enum name="ltr" value="0x00000000" />
+            <enum name="rtl" value="0x00000001" />
+            <enum name="locale" value="0x00000003" />
+        </attr>
     </declare-styleable>
     
     <declare-styleable name="RadioButtonDrawable">
@@ -284,7 +296,7 @@
         </attr>
         <attr name="sb_minHeight" format="reference|dimension"/>
         <attr name="sb_maxHeight" format="reference|dimension"/>
-        <attr name="sb_marginLeft" format="reference|dimension"/>
+        <attr name="sb_marginStart" format="reference|dimension"/>
         <attr name="sb_marginBottom" format="reference|dimension"/>
         <attr name="sb_textSize" format="reference|dimension"/>
         <attr name="sb_textColor" format="reference|color"/>
@@ -361,6 +373,11 @@
         <attr name="di_elevation" format="dimension|reference" />
         <attr name="di_maxElevation" format="dimension|reference" />
         <attr name="di_cornerRadius" format="dimension|reference" />
+        <attr name="di_layoutDirection" format="integer">
+            <enum name="ltr" value="0" />
+            <enum name="rtl" value="1" />
+            <enum name="locale" value="3" />
+        </attr>
         <attr name="di_titleTextAppearance" format="reference" />
         <attr name="di_titleTextColor" format="color|reference" />
         <attr name="di_actionBackground" format="reference" />
@@ -429,6 +446,7 @@
         <attr name="tp_textTimeSize" format="dimension|reference" />
         <attr name="tp_am" format="string|reference"/>
         <attr name="tp_pm" format="string|reference"/>
+        <attr name="tp_leadingZero" format="boolean|reference"/>
     </declare-styleable>
 
     <attr name="dp_textHighlightColor" format="color|reference" />
