@@ -83,6 +83,23 @@ dependencies {
 * Or
 [Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar)
 
+You can try the SNAPSHOT version:
+
+```gradle
+dependencies {
+   compile 'com.github.rey5137:material:1.1.1-SNAPSHOT'
+}
+```
+Make sure to add the snapshot repository:
+
+```gradle
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+```
+
 AppCompat and CardView library is required by Material library.
 
 ```gradle
