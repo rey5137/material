@@ -129,6 +129,20 @@
 </li>
 </ul>
 
+<p>You can try the SNAPSHOT version:</p>
+
+<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.1.1-SNAPSHOT<span class="pl-pds">'</span></span>
+}</pre></div>
+
+<p>Make sure to add the snapshot repository:</p>
+
+<div class="highlight highlight-gradle"><pre><span class="pl-en">repositories</span> {
+    maven {
+        url <span class="pl-s"><span class="pl-pds">"</span>https://oss.sonatype.org/content/repositories/snapshots<span class="pl-pds">"</span></span>
+    }
+}</pre></div>
+
 <p>AppCompat and CardView library is required by Material library.</p>
 
 <div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
