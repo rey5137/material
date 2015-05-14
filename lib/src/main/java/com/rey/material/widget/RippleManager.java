@@ -21,9 +21,15 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	private View mView;
 		
 	public RippleManager(){}
-	
-	@SuppressWarnings("deprecation")
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
+    /**
+     * Should be called in the construction method of view to create a RippleDrawable.
+     * @param v
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     */
 	public void onCreate(View v, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		if(v.isInEditMode())
 			return;
@@ -79,6 +85,10 @@ public final class RippleManager implements View.OnClickListener, Runnable{
     		mClickListener.onClick(mView);
     }
 
+    /**
+     * Cancel the ripple effect of this view and all of it's children.
+     * @param v
+     */
 	public static void cancelRipple(View v){
 		Drawable background = v.getBackground();
 		if(background instanceof RippleDrawable)

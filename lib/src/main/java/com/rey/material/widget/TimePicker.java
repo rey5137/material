@@ -68,12 +68,29 @@ public class TimePicker extends View{
 
     private boolean mEdited = false;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected time is changed.
+     */
     public interface OnTimeChangedListener{
 
+        /**
+         * Called when the select mode is changed
+         * @param mode The current mode. Can be {@link #MODE_HOUR} or {@link #MODE_MINUTE}.
+         */
         public void onModeChanged(int mode);
 
+        /**
+         * Called then the selected hour is changed.
+         * @param oldValue The old hour value.
+         * @param newValue The new hour value.
+         */
         public void onHourChanged(int oldValue, int newValue);
 
+        /**
+         * Called then the selected minute is changed.
+         * @param oldValue The old minute value.
+         * @param newValue The new minute value.
+         */
         public void onMinuteChanged(int oldValue, int newValue);
     }
 
@@ -200,22 +217,39 @@ public class TimePicker extends View{
         return mOutInterpolator;
     }
 
+    /**
+     * @return The current select mode. Can be {@link #MODE_HOUR} or {@link #MODE_MINUTE}.
+     */
     public int getMode(){
         return mMode;
     }
 
+    /**
+     * @return The selected hour value.
+     */
     public int getHour(){
         return mHour;
     }
 
+    /**
+     * @return The selected minute value.
+     */
     public int getMinute(){
         return mMinute;
     }
 
+    /**
+     * @return this TimePicker use 24-hour format or not.
+     */
     public boolean is24Hour(){
         return m24Hour;
     }
 
+    /**
+     * Set the select mode of this TimePicker.
+     * @param mode The select mode. Can be {@link #MODE_HOUR} or {@link #MODE_MINUTE}.
+     * @param animation Indicate that should show animation when switch select mode or not.
+     */
     public void setMode(int mode, boolean animation){
         if(mMode != mode){
             mMode = mode;
@@ -230,6 +264,10 @@ public class TimePicker extends View{
         }
     }
 
+    /**
+     * Set the selected hour value.
+     * @param hour The selected hour value.
+     */
     public void setHour(int hour){
         if(m24Hour)
             hour = Math.max(hour, 0) % 24;
@@ -248,6 +286,10 @@ public class TimePicker extends View{
         }
     }
 
+    /**
+     * Set the selected minute value.
+     * @param minute The selected minute value.
+     */
     public void setMinute(int minute){
         minute = Math.min(Math.max(minute, 0), 59);
 
@@ -263,10 +305,18 @@ public class TimePicker extends View{
         }
     }
 
+    /**
+     * Set a listener will be called when the selected time is changed.
+     * @param listener The {@link TimePicker.OnTimeChangedListener} will be called.
+     */
     public void setOnTimeChangedListener(OnTimeChangedListener listener){
         mOnTimeChangedListener = listener;
     }
 
+    /**
+     * Set this TimePicker use 24-hour format or not.
+     * @param b
+     */
     public void set24Hour(boolean b){
         if(m24Hour != b){
             m24Hour = b;

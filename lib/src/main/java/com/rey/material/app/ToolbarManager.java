@@ -41,8 +41,16 @@ public class ToolbarManager {
     private boolean mGroupChanged = false;
     private boolean mMenuDataChanged = true;
 
+    /**
+     * Interface definition for a callback to be invoked when the current group is changed.
+     */
     public interface OnToolbarGroupChangedListener {
 
+        /**
+         * Called when the current group changed.
+         * @param oldGroupId The id of old group.
+         * @param groupId The id of new group.
+         */
         public void onToolbarGroupChanged(int oldGroupId, int groupId);
 
     }
@@ -128,10 +136,17 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * @return The current group of the Toolbar.
+     */
     public int getCurrentGroup(){
         return mCurrentGroup;
     }
 
+    /**
+     * Set current group of the Toolbar.
+     * @param groupId The id of group.
+     */
     public void setCurrentGroup(int groupId){
         if(mCurrentGroup != groupId){
             int oldGroupId = mCurrentGroup;
@@ -204,6 +219,9 @@ public class ToolbarManager {
             mNavigationManager.notifyStateProgressChanged(isBackState, progress);
     }
 
+    /**
+     * @return The navigation is in back state or not.
+     */
     public boolean isNavigationBackState(){
         return mNavigationManager != null && mNavigationManager.isBackState();
     }
@@ -292,10 +310,25 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * Interface definition for creating animation of menu item view when switch group.
+     */
     public interface Animator{
 
+        /**
+         * Get the animation of the menu item view will be removed.
+         * @param v The menu item view.
+         * @param position The position of item.
+         * @return
+         */
         public Animation getOutAnimation(View v, int position);
 
+        /**
+         * Get the animation of the menu item view will be added.
+         * @param v The menu item view.
+         * @param position The position of item.
+         * @return
+         */
         public Animation getInAnimation(View v, int position);
     }
 
@@ -319,6 +352,9 @@ public class ToolbarManager {
         }
     }
 
+    /**
+     * Abstract class to manage the state of navigation icon.
+     */
     public static abstract class NavigationManager{
 
         protected NavigationDrawerDrawable mNavigationIcon;

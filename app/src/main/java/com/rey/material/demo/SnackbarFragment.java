@@ -35,7 +35,7 @@ public class SnackbarFragment extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				if(mSnackBar.getState() == SnackBar.STATE_SHOWED)
+				if(mSnackBar.getState() == SnackBar.STATE_SHOWN)
 					mSnackBar.dismiss();
 				else{
 					switch (v.getId()) {

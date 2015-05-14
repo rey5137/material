@@ -49,8 +49,16 @@ public class YearPicker extends ListView{
 
     private Paint mPaint;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected year is changed.
+     */
     public interface OnYearChangedListener{
 
+        /**
+         * Called then the selected year is changed.
+         * @param oldValue The old year value.
+         * @param newValue The new year value.
+         */
         public void onYearChanged(int oldValue, int newValue);
 
     }
@@ -155,10 +163,19 @@ public class YearPicker extends ListView{
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Set the range of selectable year value.
+     * @param min The minimum selectable year value.
+     * @param max The maximum selectable year value.
+     */
     public void setYearRange(int min, int max){
         mAdapter.setYearRange(min, max);
     }
 
+    /**
+     * Jump to a specific year.
+     * @param year
+     */
     public void goTo(int year){
         int position = mAdapter.positionOfYear(year) - mPositionShift;
         int offset = mDistanceShift;
@@ -179,6 +196,10 @@ public class YearPicker extends ListView{
         });
     }
 
+    /**
+     * Set the selected year.
+     * @param year The selected year value.
+     */
     public void setYear(int year){
         if(mAdapter.getYear() == year)
             return;
@@ -187,10 +208,17 @@ public class YearPicker extends ListView{
         goTo(year);
     }
 
+    /**
+     * @return The selected year value.
+     */
     public int getYear(){
         return mAdapter.getYear();
     }
 
+    /**
+     * Set a listener will be called when the selected year value is changed.
+     * @param listener The {@link YearPicker.OnYearChangedListener} will be called.
+     */
     public void setOnYearChangedListener(OnYearChangedListener listener){
         mOnYearChangedListener = listener;
     }

@@ -65,7 +65,20 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
     private MonthAdapter mAdapter;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected date is changed.
+     */
     public interface OnDateChangedListener {
+
+        /**
+         * Called when the selected date is changed.
+         * @param oldDay The day value of old date.
+         * @param oldMonth The month value of old date.
+         * @param oldYear The year value of old date.
+         * @param newDay The day value of new date.
+         * @param newMonth The month value of new date.
+         * @param newYear The year value of new date.
+         */
         public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear);
     }
 
@@ -293,10 +306,24 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         return mDayTexts[day - 1];
     }
 
+    /**
+     * Set the range of selectable dates.
+     * @param minDay The day value of minimum date.
+     * @param minMonth The month value of minimum date.
+     * @param minYear The year value of minimum date.
+     * @param maxDay The day value of maximum date.
+     * @param maxMonth The month value of maximum date.
+     * @param maxYear The year value of maximum date.
+     */
     public void setDateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
         mAdapter.setDateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
     }
 
+    /**
+     * Jump to the view of a specific month.
+     * @param month
+     * @param year
+     */
     public void goTo(int month, int year){
         int position = mAdapter.positionOfMonth(month, year);
         postSetSelectionFromTop(position, 0);
@@ -312,6 +339,12 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         });
     }
 
+    /**
+     * Set the selected date of this DatePicker.
+     * @param day The day value of selected date.
+     * @param month The month value of selected date.
+     * @param year The year value of selected date.
+     */
     public void setDate(int day, int month, int year){
         if(mAdapter.getYear() == year && mAdapter.getMonth() == month && mAdapter.getDay() == day)
             return;
@@ -320,22 +353,40 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         goTo(month, year);
     }
 
+    /**
+     * Set the listener will be called when the selected date is changed.
+     * @param listener The {@link DatePicker.OnDateChangedListener} will be called.
+     */
     public void setOnDateChangedListener(OnDateChangedListener listener){
         mOnDateChangedListener = listener;
     }
 
+    /**
+     * @return The day value of selected date.
+     */
     public int getDay(){
         return mAdapter.getDay();
     }
 
+    /**
+     * @return The month value of selected date.
+     */
     public int getMonth(){
         return mAdapter.getMonth();
     }
 
+    /**
+     * @return The year value of selected date.
+     */
     public int getYear(){
         return mAdapter.getYear();
     }
 
+    /**
+     * Get the formatted string of selected date.
+     * @param formatter The DateFormat used to format the date.
+     * @return
+     */
     public String getFormattedDate(DateFormat formatter){
         mCalendar.set(Calendar.YEAR, mAdapter.getYear());
         mCalendar.set(Calendar.MONTH, mAdapter.getMonth());

@@ -122,11 +122,18 @@ public class FloatingActionButton extends View {
 
         setClickable(true);
     }
-	
+
+    /**
+     * @return The radius of the button.
+     */
 	public int getRadius(){
 		return mBackground.getRadius();
 	}
-	
+
+    /**
+     * Set radius of the button.
+     * @param radius The radius in pixel.
+     */
 	public void setRadius(int radius){
 		if(mBackground.setRadius(radius))
 			requestLayout();
@@ -149,27 +156,46 @@ public class FloatingActionButton extends View {
 		else if(mBackground.setShadow(elevation, elevation))
 			requestLayout();
 	}
-	
+
+    /**
+     * @return The line state of LineMorphingDrawable that is used as this button's icon.
+     */
 	public int getLineMorphingState(){
 		if(mIcon != null && mIcon instanceof LineMorphingDrawable)
 			return ((LineMorphingDrawable)mIcon).getLineState();
 		
 		return -1;
 	}
-	
+
+    /**
+     * Set the line state of LineMorphingDrawable that is used as this button's icon.
+     * @param state The line state.
+     * @param animation Indicate should show animation when switch line state or not.
+     */
 	public void setLineMorphingState(int state, boolean animation){
 		if(mIcon != null && mIcon instanceof LineMorphingDrawable)
             ((LineMorphingDrawable)mIcon).switchLineState(state, animation);
 	}
-	
+
+    /**
+     * @return The background color of this button.
+     */
 	public int getBackgroundColor(){
 		return mBackground.getColor();
 	}
-	
+
+    /**
+     * @return The drawable is used as this button's icon.
+     */
 	public Drawable getIcon(){
 		return mIcon;
 	}
-	
+
+    /**
+     * Set the drawable that is used as this button's icon.
+     * @param icon The drawable.
+     * @param animation Indicate should show animation when switch drawable or not.
+     */
 	public void setIcon(Drawable icon, boolean animation){
         if(icon == null)
             return;
@@ -197,18 +223,38 @@ public class FloatingActionButton extends View {
 		mBackground.setColor(color);
         invalidate();
 	}
-		
+
+    /**
+     * Show this button at the specific location. If this button isn't attached to any parent view yet,
+     * it will be add to activity's root view. If not, it will just update the location.
+     * @param activity The activity that this button will be attached to.
+     * @param x The x value of anchor point.
+     * @param y The y value of anchor point.
+     * @param gravity The gravity apply with this button.
+     *
+     * @see android.view.Gravity
+     */
 	public void show(Activity activity, int x, int y, int gravity){		
 		if(getParent() == null){						
 			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
-			updateParams(x, y, gravity, params);	
-			
+			updateParams(x, y, gravity, params);
+
 			activity.getWindow().addContentView(this, params);
 		}
 		else
 			updateLocation(x, y, gravity);
 	}
-	
+
+    /**
+     * Show this button at the specific location. If this button isn't attached to any parent view yet,
+     * it will be add to activity's root view. If not, it will just update the location.
+     * @param parent The parent view. Should be {@link android.widget.FrameLayout} or {@link android.widget.RelativeLayout}
+     * @param x The x value of anchor point.
+     * @param y The y value of anchor point.
+     * @param gravity The gravity apply with this button.
+     *
+     * @see android.view.Gravity
+     */
 	public void show(ViewGroup parent, int x, int y, int gravity){		
 		if(getParent() == null){						
 			ViewGroup.LayoutParams params = parent.generateLayoutParams(null);
@@ -221,7 +267,15 @@ public class FloatingActionButton extends View {
 		else
 			updateLocation(x, y, gravity);
 	}
-	
+
+    /**
+     * Update the location of this button. This method only work if it's already attached to a parent view.
+     * @param x The x value of anchor point.
+     * @param y The y value of anchor point.
+     * @param gravity The gravity apply with this button.
+     *
+     * @see android.view.Gravity
+     */
 	public void updateLocation(int x, int y, int gravity){
 		if(getParent() != null)
 			updateParams(x, y, gravity, getLayoutParams());
@@ -284,7 +338,10 @@ public class FloatingActionButton extends View {
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
 	}
-	
+
+    /**
+     * Remove this button from parent view.
+     */
 	public void dismiss(){
 		if(getParent() != null)
 			((ViewGroup)getParent()).removeView(this);		

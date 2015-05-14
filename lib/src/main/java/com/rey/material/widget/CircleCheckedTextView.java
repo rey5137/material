@@ -66,6 +66,10 @@ public class CircleCheckedTextView extends android.widget.CheckedTextView {
         mBackground.setColor(color);
     }
 
+    /**
+     * Set the duration of background's animation.
+     * @param duration The duration
+     */
     public void setAnimDuration(int duration) {
         mBackground.setAnimDuration(duration);
     }

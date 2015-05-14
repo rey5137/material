@@ -80,9 +80,21 @@ public class Dialog extends android.app.Dialog{
     private boolean mCancelable = true;
     private boolean mCanceledOnTouchOutside = true;
 
+    /**
+     * The viewId of title view.
+     */
     public static final int TITLE = ViewUtil.generateViewId();
+    /**
+     * The viewId of positive action button.
+     */
     public static final int ACTION_POSITIVE = ViewUtil.generateViewId();
+    /**
+     * The viewId of negative action button.
+     */
     public static final int ACTION_NEGATIVE = ViewUtil.generateViewId();
+    /**
+     * The viewId of neutral action button.
+     */
     public static final int ACTION_NEUTRAL = ViewUtil.generateViewId();
 
     public Dialog(Context context) {
@@ -241,6 +253,10 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Clear the content of this Dialog.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog clearContent(){
         title(0);
         positiveAction(0);
@@ -253,12 +269,23 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the params of this Dialog layout.
+     * @param width The width param. Can be the size in pixels, or {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} or {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}.
+     * @param height The height param. Can be the size in pixels, or {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} or {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog layoutParams(int width, int height){
         mLayoutWidth = width;
         mLayoutHeight = height;
         return this;
     }
 
+    /**
+     * Set the dim amount of the region outside this Dialog.
+     * @param amount The dim amount in [0..1].
+     * @return The Dialog for chaining methods.
+     */
     public Dialog dimAmount(float amount){
         Window window = getWindow();
         if(amount > 0f){
@@ -272,45 +299,85 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the background color of this Dialog
+     * @param color The color value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog backgroundColor(int color){
         mCardView.setCardBackgroundColor(color);
         return this;
     }
 
-    public Dialog elevation(float radius){
-        if(mCardView.getMaxCardElevation() < radius)
-            mCardView.setMaxCardElevation(radius);
+    /**
+     * Set the elevation value of this Dialog.
+     * @param elevation
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog elevation(float elevation){
+        if(mCardView.getMaxCardElevation() < elevation)
+            mCardView.setMaxCardElevation(elevation);
 
-        mCardView.setCardElevation(radius);
+        mCardView.setCardElevation(elevation);
         return this;
     }
 
-    public Dialog maxElevation(float radius){
-        mCardView.setMaxCardElevation(radius);
+    /**
+     * Set the maximum elevation value of this Dialog.
+     * @param elevation
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog maxElevation(float elevation){
+        mCardView.setMaxCardElevation(elevation);
         return this;
     }
 
+    /**
+     * Set the corner radius of this Dialog.
+     * @param radius The corner radius.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog cornerRadius(float radius){
         mCardView.setRadius(radius);
         return this;
     }
 
+    /**
+     * Set the divider's color of this Dialog.
+     * @param color The color value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog dividerColor(int color){
         mCardView.setDividerColor(color);
         return this;
     }
 
+    /**
+     * Set the height of divider of this Dialog.
+     * @param height The size value in pixels.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog dividerHeight(int height){
         mCardView.setDividerHeight(height);
         return this;
     }
 
+    /**
+     * Set the title of this Dialog.
+     * @param title The title text.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog title(CharSequence title){
         mTitle.setText(title);
         mTitle.setVisibility(TextUtils.isEmpty(title) ? View.GONE : View.VISIBLE);
         return this;
     }
 
+    /**
+     * Set the title of this Dialog.
+     * @param id The resourceId of text.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog title(int id){
         return title(id == 0 ? null : getContext().getResources().getString(id));
     }
@@ -325,16 +392,31 @@ public class Dialog extends android.app.Dialog{
         title(titleId);
     }
 
+    /**
+     * Set the text's color of Dialog's title.
+     * @param color The color value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog titleColor(int color){
         mTitle.setTextColor(color);
         return this;
     }
 
+    /**
+     * Sets the text color, size, style of the title view from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog titleTextAppearance(int resId){
         mTitle.setTextAppearance(getContext(), resId);
         return this;
     }
 
+    /**
+     * Set the background drawable of all action buttons.
+     * @param id The resourceId of drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionBackground(int id){
         positiveActionBackground(id);
         negativeActionBackground(id);
@@ -342,6 +424,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the background drawable of all action buttons.
+     * @param drawable The background drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionBackground(Drawable drawable){
         positiveActionBackground(drawable);
         negativeActionBackground(drawable);
@@ -349,6 +436,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the RippleEffect of all action buttons.
+     * @param resId The resourceId of style.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionRipple(int resId){
         positiveActionRipple(resId);
         negativeActionRipple(resId);
@@ -356,6 +448,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Sets the text color, size, style of all action buttons from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionTextAppearance(int resId){
         positiveActionTextAppearance(resId);
         negativeActionTextAppearance(resId);
@@ -363,6 +460,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Sets the text color of all action buttons.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionTextColor(ColorStateList color){
         positiveActionTextColor(color);
         negativeActionTextColor(color);
@@ -370,6 +472,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Sets the text color of all action buttons.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog actionTextColor(int color){
         positiveActionTextColor(color);
         negativeActionTextColor(color);
@@ -377,164 +484,318 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the text of positive action button.
+     * @param action
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveAction(CharSequence action){
         mPositiveAction.setText(action);
         mPositiveAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
         return this;
     }
 
+    /**
+     * Set the text of positive action button.
+     * @param id The resourceId of text.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveAction(int id){
         return positiveAction(id == 0 ? null : getContext().getResources().getString(id));
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
+    /**
+     * Set the background drawable of positive action button.
+     * @param drawable The background drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionBackground(Drawable drawable){
         ViewUtil.setBackground(mPositiveAction, drawable);
         return this;
     }
 
+    /**
+     * Set the background drawable of positive action button.
+     * @param id The resourceId of drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionBackground(int id){
         return positiveActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
+    /**
+     * Set the RippleEffect of positive action button.
+     * @param resId The resourceId of style.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionRipple(int resId){
         RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
         return positiveActionBackground(drawable);
     }
 
+    /**
+     * Sets the text color, size, style of positive action button from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionTextAppearance(int resId){
         mPositiveAction.setTextAppearance(getContext(), resId);
         return this;
     }
 
+    /**
+     * Sets the text color of positive action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionTextColor(ColorStateList color){
         mPositiveAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Sets the text color of positive action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionTextColor(int color){
         mPositiveAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Set a listener will be called when positive action button is clicked.
+     * @param listener The {@link android.view.View.OnClickListener} will be called.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog positiveActionClickListener(View.OnClickListener listener){
         mPositiveAction.setOnClickListener(listener);
         return this;
     }
 
+    /**
+     * Set the text of negative action button.
+     * @param action
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeAction(CharSequence action){
         mNegativeAction.setText(action);
         mNegativeAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
         return this;
     }
 
+    /**
+     * Set the text of negative action button.
+     * @param id The resourceId of text.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeAction(int id){
         return negativeAction(id == 0 ? null : getContext().getResources().getString(id));
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
+    /**
+     * Set the background drawable of negative action button.
+     * @param drawable The background drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionBackground(Drawable drawable){
         ViewUtil.setBackground(mNegativeAction, drawable);
         return this;
     }
 
+    /**
+     * Set the background drawable of neagtive action button.
+     * @param id The resourceId of drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionBackground(int id){
         return negativeActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
+    /**
+     * Set the RippleEffect of negative action button.
+     * @param resId The resourceId of style.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionRipple(int resId){
         RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
         return negativeActionBackground(drawable);
     }
 
+    /**
+     * Sets the text color, size, style of negative action button from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionTextAppearance(int resId){
         mNegativeAction.setTextAppearance(getContext(), resId);
         return this;
     }
 
+    /**
+     * Sets the text color of negative action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionTextColor(ColorStateList color){
         mNegativeAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Sets the text color of negative action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionTextColor(int color){
         mNegativeAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Set a listener will be called when negative action button is clicked.
+     * @param listener The {@link android.view.View.OnClickListener} will be called.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog negativeActionClickListener(View.OnClickListener listener){
         mNegativeAction.setOnClickListener(listener);
         return this;
     }
 
+    /**
+     * Set the text of neutral action button.
+     * @param action
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralAction(CharSequence action){
         mNeutralAction.setText(action);
         mNeutralAction.setVisibility(TextUtils.isEmpty(action) ? View.GONE : View.VISIBLE);
         return this;
     }
 
+    /**
+     * Set the text of neutral action button.
+     * @param id The resourceId of text.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralAction(int id){
         return neutralAction(id == 0 ? null : getContext().getResources().getString(id));
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @SuppressWarnings("deprecation")
+    /**
+     * Set the background drawable of neutral action button.
+     * @param drawable The background drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionBackground(Drawable drawable){
         ViewUtil.setBackground(mNeutralAction, drawable);
         return this;
     }
 
+    /**
+     * Set the background drawable of neutral action button.
+     * @param id The resourceId of drawable.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionBackground(int id){
         return neutralActionBackground(id == 0 ? null : getContext().getResources().getDrawable(id));
     }
 
+    /**
+     * Set the RippleEffect of neutral action button.
+     * @param resId The resourceId of style.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionRipple(int resId){
         RippleDrawable drawable = new RippleDrawable.Builder(getContext(), resId).build();
         return neutralActionBackground(drawable);
     }
 
+    /**
+     * Sets the text color, size, style of neutral action button from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionTextAppearance(int resId){
         mNeutralAction.setTextAppearance(getContext(), resId);
         return this;
     }
 
+    /**
+     * Sets the text color of neutral action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionTextColor(ColorStateList color){
         mNeutralAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Sets the text color of neutral action button.
+     * @param color
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionTextColor(int color){
         mNeutralAction.setTextColor(color);
         return this;
     }
 
+    /**
+     * Set a listener will be called when neutral action button is clicked.
+     * @param listener The {@link android.view.View.OnClickListener} will be called.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog neutralActionClickListener(View.OnClickListener listener){
         mNeutralAction.setOnClickListener(listener);
         return this;
     }
 
+    /**
+     * Set the layout direction of this Dialog
+     * @param direction The layout direction value. Can be {@link android.view.View#LAYOUT_DIRECTION_LTR}, {@link android.view.View#LAYOUT_DIRECTION_RTL} or {@link android.view.View#LAYOUT_DIRECTION_LOCALE}
+     * @return The Dialog for chaining methods.
+     */
     public Dialog layoutDirection(int direction){
         ViewCompat.setLayoutDirection(mCardView, direction);
         return this;
     }
 
+    /**
+     * Set the animation when Dialog enter the screen.
+     * @param resId The resourceId of animation.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog inAnimation(int resId){
         mInAnimationId = resId;
         return this;
     }
 
+    /**
+     * Set the animation when Dialog exit the screen.
+     * @param resId The resourceId of animation.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog outAnimation(int resId){
         mOutAnimationId = resId;
         return this;
     }
 
+    /**
+     * Indicate that Dialog should show divider when the content is longer than container view.
+     * @param show
+     * @return The Dialog for chaining methods.
+     */
     public Dialog showDivider(boolean show){
         mCardView.setShowDivider(show);
         return this;
     }
 
+    /**
+     * Set the content view of this Dialog.
+     * @param v The content view.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog contentView(View v){
         if(mContent != v) {
             if(mContent != null)
@@ -549,6 +810,11 @@ public class Dialog extends android.app.Dialog{
         return this;
     }
 
+    /**
+     * Set the content view of this Dialog.
+     * @param layoutId The reourceId of layout.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog contentView(int layoutId){
         if(layoutId == 0)
             return this;
@@ -557,23 +823,49 @@ public class Dialog extends android.app.Dialog{
         return contentView(v);
     }
 
+    /**
+     * Sets whether this dialog is cancelable with the
+     * {@link android.view.KeyEvent#KEYCODE_BACK BACK} key.
+     *  @return The Dialog for chaining methods.
+     */
     public Dialog cancelable(boolean cancelable){
         super.setCancelable(cancelable);
         mCancelable = cancelable;
         return this;
     }
 
+    /**
+     * Sets whether this dialog is canceled when touched outside the window's
+     * bounds. If setting to true, the dialog is set to be cancelable if not
+     * already set.
+     *
+     * @param cancel Whether the dialog should be canceled when touched outside
+     * @return The Dialog for chaining methods.
+     */
     public Dialog canceledOnTouchOutside(boolean cancel){
         super.setCanceledOnTouchOutside(cancel);
         mCanceledOnTouchOutside = cancel;
         return this;
     }
 
+    /**
+     * Set the margin between content view and Dialog border.
+     * @param margin The margin size in pixels.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog contentMargin(int margin){
         mCardView.setContentMargin(margin);
         return this;
     }
 
+    /**
+     * Set the margin between content view and Dialog border.
+     * @param left The left margin size in pixels.
+     * @param top The top margin size in pixels.
+     * @param right The right margin size in pixels.
+     * @param bottom The bottom margin size in pixels.
+     * @return The Dialog for chaining methods.
+     */
     public Dialog contentMargin(int left, int top, int right, int bottom){
         mCardView.setContentMargin(left, top, right, bottom);
         return this;

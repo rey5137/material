@@ -74,7 +74,15 @@ public class Switch extends View implements Checkable {
 
     private boolean mIsRtl = false;
 
+    /**
+     * Interface definition for a callback to be invoked when the checked state is changed.
+     */
     public interface OnCheckedChangeListener{
+        /**
+         * Called when the checked state is changed.
+         * @param view The Switch view.
+         * @param checked The checked state.
+         */
         public void onCheckedChanged(Switch view, boolean checked);
     }
 
@@ -197,6 +205,10 @@ public class Switch extends View implements Checkable {
 		}
 	}
 
+    /**
+     * Set a listener will be called when the checked state is changed.
+     * @param listener The {@link Switch.OnCheckedChangeListener} will be called.
+     */
     public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
         mOnCheckedChangeListener = listener;
     }
@@ -214,6 +226,20 @@ public class Switch extends View implements Checkable {
 		if(mThumbPosition != desPos)
 			startAnimation();
 	}
+
+    /**
+     * Change the checked state of this Switch immediately without showing animation.
+     * @param checked The checked state.
+     */
+    public void setCheckedImmediately(boolean checked){
+        if(mChecked != checked) {
+            mChecked = checked;
+            if(mOnCheckedChangeListener != null)
+                mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
+        }
+        mThumbPosition = mChecked ? 1f : 0f;
+        invalidate();
+    }
 
 	@Override
 	public boolean isChecked() {

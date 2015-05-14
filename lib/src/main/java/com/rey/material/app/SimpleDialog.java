@@ -50,7 +50,15 @@ public class SimpleDialog extends Dialog {
     protected static final int MODE_MULTI_ITEMS = 3;
     protected static final int MODE_CUSTOM = 4;
 
+    /**
+     * Interface definition for a callback to be invoked when the checked state of an item changed.
+     */
     public interface OnSelectionChangedListener{
+        /**
+         * Called when the checked state of an item changed.
+         * @param index The index of item.
+         * @param selected The checked state.
+         */
         public void onSelectionChanged(int index, boolean selected);
     }
 
@@ -137,6 +145,11 @@ public class SimpleDialog extends Dialog {
         mMessage.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
     }
 
+    /**
+     * Set a message text to this SimpleDialog.
+     * @param message
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog message(CharSequence message){
         if(mScrollView == null)
             initScrollView();
@@ -157,10 +170,20 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set a message text to this SimpleDialog.
+     * @param id The resourceId of text.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog message(int id){
         return message(id == 0 ? null : getContext().getResources().getString(id));
     }
 
+    /**
+     * Sets the text color, size, style of the message view from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog messageTextAppearance(int resId){
         if(mMessageTextAppearanceId != resId){
             mMessageTextAppearanceId = resId;
@@ -170,6 +193,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the text color of the message view.
+     * @param color The color value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog messageTextColor(int color){
         if(mMessageTextColor != color){
             mMessageTextColor = color;
@@ -179,6 +207,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the style of radio button.
+     * @param resId The resourceId of style.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog radioButtonStyle(int resId){
         if(mRadioButtonStyle != resId){
             mRadioButtonStyle = resId;
@@ -188,6 +221,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the style of check box.
+     * @param resId The resourceId of style.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog checkBoxStyle(int resId){
         if(mCheckBoxStyle != resId){
             mCheckBoxStyle = resId;
@@ -197,6 +235,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the height of item
+     * @param height The size in pixels.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog itemHeight(int height){
         if(mItemHeight != height){
             mItemHeight = height;
@@ -206,6 +249,11 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Sets the text color, size, style of the item view from the specified TextAppearance resource.
+     * @param resId The resourceId value.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog itemTextAppearance(int resId){
         if(mItemTextAppearance != resId){
             mItemTextAppearance = resId;
@@ -231,6 +279,12 @@ public class SimpleDialog extends Dialog {
         mListView.setAdapter(mAdapter);
     }
 
+    /**
+     * Set the list of items in single-choice mode.
+     * @param items The list of items.
+     * @param selectedIndex The index of selected item.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog items(CharSequence[] items, int selectedIndex){
         if(mListView == null)
             initListView();
@@ -241,6 +295,12 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set the list of items in multi-choice mode.
+     * @param items The list of items.
+     * @param selectedIndexes The indexes of selected items.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog multiChoiceItems(CharSequence[] items, int... selectedIndexes){
         if(mListView == null)
             initListView();
@@ -251,23 +311,40 @@ public class SimpleDialog extends Dialog {
         return this;
     }
 
+    /**
+     * Set a listener will be called when the checked state of a item is changed.
+     * @param listener The {@link SimpleDialog.OnSelectionChangedListener} will be called.
+     * @return The SimpleDialog for chaining methods.
+     */
     public SimpleDialog onSelectionChangedListener(OnSelectionChangedListener listener){
         mOnSelectionChangedListener = listener;
         return this;
     }
 
+    /**
+     * @return The list of index of all selected items.
+     */
     public int[] getSelectedIndexes(){
         return mAdapter == null ? null : mAdapter.getSelectedIndexes();
     }
 
+    /**
+     * @return The list of value of all selected items.
+     */
     public CharSequence[] getSelectedValues(){
         return mAdapter.getSelectedValues();
     }
 
+    /**
+     * @return The index of selected item.
+     */
     public int getSelectedIndex(){
         return mAdapter == null ? -1 : mAdapter.getLastSelectedIndex();
     }
 
+    /**
+     * @return The value of selected item.
+     */
     public CharSequence getSelectedValue(){
         return mAdapter.getLastSelectedValue();
     }

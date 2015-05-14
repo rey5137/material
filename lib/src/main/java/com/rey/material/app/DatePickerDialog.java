@@ -36,7 +36,20 @@ public class DatePickerDialog extends Dialog {
     private DatePickerLayout mDatePickerLayout;
     private float mCornerRadius;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected date is changed.
+     */
     public interface OnDateChangedListener{
+
+        /**
+         * Called when the selected date is changed.
+         * @param oldDay The day value of old date.
+         * @param oldMonth The month value of old date.
+         * @param oldYear The year value of old date.
+         * @param newDay The day value of new date.
+         * @param newMonth The month value of new date.
+         * @param newYear The year value of new date.
+         */
         public void onDateChanged(int oldDay, int oldMonth, int oldYear, int newDay, int newMonth, int newYear);
     }
 
@@ -79,43 +92,88 @@ public class DatePickerDialog extends Dialog {
         return super.cornerRadius(radius);
     }
 
+    /**
+     * Set the range of selectable dates.
+     * @param minDay The day value of minimum date.
+     * @param minMonth The month value of minimum date.
+     * @param minYear The year value of minimum date.
+     * @param maxDay The day value of maximum date.
+     * @param maxMonth The month value of maximum date.
+     * @param maxYear The year value of maximum date.
+     * @return The DatePickerDialog for chaining methods.
+     */
     public DatePickerDialog dateRange(int minDay, int minMonth, int minYear, int maxDay, int maxMonth, int maxYear){
         mDatePickerLayout.setDateRange(minDay, minMonth, minYear, maxDay, maxMonth, maxYear);
         return this;
     }
 
+    /**
+     * Set the range of selectable dates.
+     * @param minTime The minimum date in milis.
+     * @param maxTime The maximum date in milis
+     * @return The DatePickerDialog for chaining methods.
+     */
     public DatePickerDialog dateRange(long minTime, long maxTime){
         mDatePickerLayout.setDateRange(minTime, maxTime);
         return this;
     }
 
+    /**
+     * Set the selected date of this DatePickerDialog.
+     * @param day The day value of selected date.
+     * @param month The month value of selected date.
+     * @param year The year value of selected date.
+     * @return The DatePickerDialog for chaining methods.
+     */
     public DatePickerDialog date(int day, int month, int year){
         mDatePickerLayout.setDate(day, month, year);
         return this;
     }
 
+    /**
+     * Set the selected date of this DatePickerDialog.
+     * @param time The date in milis.
+     * @return The DatePickerDialog for chaining methods.
+     */
     public DatePickerDialog date(long time){
         mDatePickerLayout.setDate(time);
         return this;
     }
 
+    /**
+     * Set the listener will be called when the selected date is changed.
+     * @param listener The {@link DatePickerDialog.OnDateChangedListener} will be called.
+     * @return The DatePickerDialog for chaining methods.
+     */
     public DatePickerDialog onDateChangedListener(OnDateChangedListener listener){
         mOnDateChangedListener = listener;
         return this;
     }
 
+    /**
+     * @return The day value of selected date.
+     */
     public int getDay(){
         return mDatePickerLayout.getDay();
     }
 
+    /**
+     * @return The month value of selected date.
+     */
     public int getMonth(){
         return mDatePickerLayout.getMonth();
     }
 
+    /**
+     * @return The year value of selected date.
+     */
     public int getYear(){
         return mDatePickerLayout.getYear();
     }
 
+    /**
+     * @return The selected date.
+     */
     public long getDate(){
         Calendar cal = getCalendar();
         cal.set(Calendar.MILLISECOND, 0);
@@ -132,6 +190,11 @@ public class DatePickerDialog extends Dialog {
         return mDatePickerLayout.getCalendar();
     }
 
+    /**
+     * Get the formatted string of selected date.
+     * @param formatter The DateFormat used to format the date.
+     * @return
+     */
     public String getFormattedDate(DateFormat formatter){
         return mDatePickerLayout.getFormattedDate(formatter);
     }

@@ -47,6 +47,10 @@ public class CheckBox extends CompoundButton {
         drawable.setAnimEnable(true);
     }
 
+    /**
+     * Change the checked state of this button immediately without showing animation.
+     * @param checked The checked state.
+     */
     public void setCheckedImmediately(boolean checked){
         if(mButtonDrawable instanceof CheckBoxDrawable){
             CheckBoxDrawable drawable = (CheckBoxDrawable)mButtonDrawable;

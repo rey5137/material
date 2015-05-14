@@ -135,7 +135,6 @@ public class SnackBar extends FrameLayout {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mText = new TextView(context);
@@ -252,7 +251,6 @@ public class SnackBar extends FrameLayout {
         mText.layout(childLeft, childTop, childRight, childBottom);
 	}		
 
-	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);

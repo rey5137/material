@@ -35,8 +35,18 @@ public class TimePickerDialog extends Dialog{
     private TimePickerLayout mTimePickerLayout;
     private float mCornerRadius;
 
+    /**
+     * Interface definition for a callback to be invoked when the selected time is changed.
+     */
     public interface OnTimeChangedListener{
 
+        /**
+         * Called when the selected time is changed.
+         * @param oldHour The hour value of old time.
+         * @param oldMinute The minute value of old time.
+         * @param newHour The hour value of new time.
+         * @param newMinute The minute value of new time.
+         */
         public void onTimeChanged(int oldHour, int oldMinute, int newHour, int newMinute);
 
     }
@@ -78,29 +88,54 @@ public class TimePickerDialog extends Dialog{
         return super.cornerRadius(radius);
     }
 
+    /**
+     * Set the selected hour value.
+     * @param hour The selected hour value.
+     * @return The TimePickerDialog for chaining methods.
+     */
     public TimePickerDialog hour(int hour){
         mTimePickerLayout.setHour(hour);
         return this;
     }
 
+    /**
+     * Set the selected minute value.
+     * @param minute The selected minute value.
+     * @return The TimePickerDialog for chaining methods.
+     */
     public TimePickerDialog minute(int minute){
         mTimePickerLayout.setMinute(minute);
         return this;
     }
 
+    /**
+     * Set a listener will be called when the selected time is changed.
+     * @param listener The {@link TimePickerDialog.OnTimeChangedListener} will be called.
+     */
     public TimePickerDialog onTimeChangedListener(OnTimeChangedListener listener){
         mTimePickerLayout.setOnTimeChangedListener(listener);
         return this;
     }
 
+    /**
+     * @return The selected hour value.
+     */
     public int getHour(){
         return mTimePickerLayout.getHour();
     }
 
+    /**
+     * @return The selected minute value.
+     */
     public int getMinute(){
         return mTimePickerLayout.getMinute();
     }
 
+    /**
+     * Get the formatted string of selected time.
+     * @param formatter The DateFormat used to format the time.
+     * @return
+     */
     public String getFormattedTime(DateFormat formatter){
         return mTimePickerLayout.getFormattedTime(formatter);
     }

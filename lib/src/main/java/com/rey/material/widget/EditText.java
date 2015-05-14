@@ -59,10 +59,22 @@ public class EditText extends FrameLayout {
     private boolean mLabelVisible;
 	private int mSupportMode;
     private int mAutoCompleteMode;
-	
+
+    /**
+     * Indicate this EditText should not show a support text.  
+     */
 	public static final int SUPPORT_MODE_NONE 					= 0;
+    /**
+     * Indicate this EditText should show a helper text, or error text if it's set. 
+     */
 	public static final int SUPPORT_MODE_HELPER 				= 1;
+    /**
+     * Indicate this EditText should show a helper text, along with error text if it's set.
+     */
 	public static final int SUPPORT_MODE_HELPER_WITH_ERROR 		= 2;
+    /**
+     * Indicate this EditText should show a char counter text.
+     */
 	public static final int SUPPORT_MODE_CHAR_COUNTER 			= 3;
 
     public static final int AUTOCOMPLETE_MODE_NONE 				= 0;
@@ -407,15 +419,26 @@ public class EditText extends FrameLayout {
 		mInputView.layout(childLeft, childTop, childRight, childBottom);
 	}
 
+    /**
+     * Set the helper text of this EditText. Only work with support mode {@link #SUPPORT_MODE_HELPER} and {@link #SUPPORT_MODE_HELPER_WITH_ERROR}.
+     * @param helper The helper text.
+     */
 	public void setHelper(CharSequence helper){
 		mSupportHelper = helper;
 		setError(mSupportError);
 	}
-	
+
+    /**
+     * @return The helper text of this EditText.
+     */
 	public CharSequence getHelper(){
 		return mSupportHelper;
 	}
-	
+
+    /**
+     * Set the error text of this EditText. Only work with support mode {@link #SUPPORT_MODE_HELPER} and {@link #SUPPORT_MODE_HELPER_WITH_ERROR}.
+     * @param error The error text. Set null will clear the error.
+     */
 	public void setError(CharSequence error){
 		mSupportError = error;
 		
@@ -433,11 +456,17 @@ public class EditText extends FrameLayout {
 			mSupportView.setText(mSupportHelper);
 		}
 	}
-	
+
+    /**
+     * @return The error text of this EditText.
+     */
 	public CharSequence getError(){
 		return mSupportError;
 	}
-	
+
+    /**
+     * Clear the error text. Only work with support mode {@link #SUPPORT_MODE_HELPER} and {@link #SUPPORT_MODE_HELPER_WITH_ERROR}.
+     */
 	public void clearError(){
 		setError(null);
 	}
@@ -611,7 +640,7 @@ public class EditText extends FrameLayout {
      * <p>Sets the optional hint text that is displayed at the bottom of the
      * the matching list.  This can be used as a cue to the user on how to
      * best use the list, or to provide extra information.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param hint the text to be displayed to the user
      *
@@ -627,7 +656,7 @@ public class EditText extends FrameLayout {
 
     /**
      * Gets the optional hint text displayed at the bottom of the the matching list.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return The hint text, if any
      *
@@ -645,7 +674,7 @@ public class EditText extends FrameLayout {
      * <p>Returns the current width for the auto-complete drop down list. This can
      * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
      * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the width for the drop down list
      *
@@ -661,7 +690,7 @@ public class EditText extends FrameLayout {
      * <p>Sets the current width for the auto-complete drop down list. This can
      * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
      * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param width the width to use
      *
@@ -678,7 +707,7 @@ public class EditText extends FrameLayout {
      * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
      * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
      * of the drop down's content.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the height for the drop down list
      *
@@ -695,7 +724,7 @@ public class EditText extends FrameLayout {
      * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
      * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
      * of the drop down's content.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param height the height to use
      *
@@ -709,7 +738,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Returns the id for the view that the auto-complete drop down list is anchored to.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the view's id, or {@link View#NO_ID} if none specified
      *
@@ -725,7 +754,7 @@ public class EditText extends FrameLayout {
      * <p>Sets the view to which the auto-complete drop down list should anchor. The view
      * corresponding to this id will not be loaded until the next time it is needed to avoid
      * loading a view which is not yet instantiated.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param id the id to anchor the drop down list view to
      *
@@ -739,7 +768,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Gets the background of the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the background drawable
      *
@@ -753,7 +782,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Sets the background of the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param d the drawable to set as the background
      *
@@ -767,7 +796,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Sets the background of the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param id the id of the drawable to set as the background
      *
@@ -781,7 +810,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Sets the vertical offset used for the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param offset the vertical offset
      *
@@ -795,7 +824,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Gets the vertical offset used for the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the vertical offset
      *
@@ -809,7 +838,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Sets the horizontal offset used for the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param offset the horizontal offset
      *
@@ -823,7 +852,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Gets the horizontal offset used for the auto-complete drop-down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the horizontal offset
      *
@@ -838,7 +867,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Returns the number of characters the user must type before the drop
      * down list is shown.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the minimum number of characters to type to show the drop down
      *
@@ -859,7 +888,7 @@ public class EditText extends FrameLayout {
      * <p>When <code>threshold</code> is less than or equals 0, a threshold of
      * 1 is applied.</p>
      *
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param threshold the number of characters to type before the drop down
      *                  is shown
@@ -877,7 +906,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Sets the listener that will be notified when the user clicks an item
      * in the drop down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param l the item click listener
      */
@@ -890,7 +919,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Sets the listener that will be notified when the user selects an item
      * in the drop down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param l the item selected listener
      */
@@ -903,7 +932,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Returns the listener that is notified whenever the user clicks an item
      * in the drop down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the item click listener
      */
@@ -916,7 +945,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Returns the listener that is notified whenever the user selects an
      * item in the drop down list.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the item selected listener
      */
@@ -928,7 +957,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Returns a filterable list adapter used for auto completion.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return a data adapter used for auto completion
      */
@@ -951,7 +980,7 @@ public class EditText extends FrameLayout {
      * startManagingCursor()}),
      * or by manually closing the cursor when the AutoCompleteTextView is dismissed.</p>
      *
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param adapter the adapter holding the auto completion data
      *
@@ -970,7 +999,7 @@ public class EditText extends FrameLayout {
      * or exceeds the {@link #getThreshold} requirement.  You can override
      * this to impose a different standard for when filtering will be
      * triggered.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public boolean enoughToFilter() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -980,7 +1009,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Indicates whether the popup menu is showing.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return true if the popup menu is showing, false otherwise
      */
@@ -993,7 +1022,7 @@ public class EditText extends FrameLayout {
     /**
      * <p>Clear the list selection.  This may only be temporary, as user input will often bring
      * it back.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public void clearListSelection() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -1003,7 +1032,7 @@ public class EditText extends FrameLayout {
 
     /**
      * Set the position of the dropdown view selection.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param position The position to move the selector to.
      */
@@ -1017,7 +1046,7 @@ public class EditText extends FrameLayout {
      * Get the position of the dropdown view selection, if there is one.  Returns
      * {@link android.widget.ListView#INVALID_POSITION ListView.INVALID_POSITION} if there is no dropdown or if
      * there is no selection.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @return the position of the current selection, if there is one, or
      * {@link android.widget.ListView#INVALID_POSITION ListView.INVALID_POSITION} if not.
@@ -1034,7 +1063,7 @@ public class EditText extends FrameLayout {
      * <p>Performs the text completion by converting the selected item from
      * the drop down list into a string, replacing the text box's content with
      * this string and finally dismissing the drop down menu.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public void performCompletion() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -1045,7 +1074,7 @@ public class EditText extends FrameLayout {
     /**
      * Identifies whether the view is currently performing a text completion, so subclasses
      * can decide whether to respond to text changed events.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public boolean isPerformingCompletion() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -1053,7 +1082,7 @@ public class EditText extends FrameLayout {
         return ((AutoCompleteTextView)mInputView).isPerformingCompletion();
     }
 
-    /** <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p> */
+    /** <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p> */
     public void onFilterComplete(int count) {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
             ((InternalAutoCompleteTextView)mInputView).superOnFilterComplete(count);
@@ -1063,7 +1092,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Closes the drop down if present on screen.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public void dismissDropDown() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -1073,7 +1102,7 @@ public class EditText extends FrameLayout {
 
     /**
      * <p>Displays the drop down on screen.</p>
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      */
     public void showDropDown() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
@@ -1083,7 +1112,7 @@ public class EditText extends FrameLayout {
 
     /**
      * Sets the validator used to perform text validation.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @param validator The validator used to validate the text entered in this widget.
      *
@@ -1099,7 +1128,7 @@ public class EditText extends FrameLayout {
     /**
      * Returns the Validator set with {@link #setValidator},
      * or <code>null</code> if it was not set.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
      * @see #performValidation()
@@ -1113,7 +1142,7 @@ public class EditText extends FrameLayout {
     /**
      * If a validator was set on this view and the current string is not valid,
      * ask the validator to fix it.
-     * <p>Only work when autoCompleMode is AUTOCOMPLETE_MODE_SINGLE or AUTOCOMPLETE_MODE_MULTI</p>
+     * <p>Only work when autoComplete mode is {@link #AUTOCOMPLETE_MODE_SINGLE} or {@link #AUTOCOMPLETE_MODE_MULTI}</p>
      *
      * @see #getValidator()
      * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
@@ -1152,11 +1181,28 @@ public class EditText extends FrameLayout {
 	public Editable getText (){
 		return mInputView.getText();
 	}
-	
+
+    /**
+     * Convenience for {@link android.text.Selection#selectAll}.
+     */
 	public void selectAll (){
 		mInputView.selectAll();
 	}
-	
+
+    /**
+     * Causes words in the text that are longer than the view is wide
+     * to be ellipsized instead of broken in the middle.  You may also
+     * want to {@link #setSingleLine} or {@link #setHorizontallyScrolling}
+     * to constrain the text to a single line.  Use <code>null</code>
+     * to turn off ellipsizing.
+     *
+     * If {@link #setMaxLines} has been used to set two or more lines,
+     * only {@link android.text.TextUtils.TruncateAt#END} and
+     * {@link android.text.TextUtils.TruncateAt#MARQUEE} are supported
+     * (other ellipsizing types will not do anything).
+     *
+     * @attr ref android.R.styleable#TextView_ellipsize
+     */
 	public void setEllipsize (TruncateAt ellipsis){
 		mInputView.setEllipsize(ellipsis);
 	}
