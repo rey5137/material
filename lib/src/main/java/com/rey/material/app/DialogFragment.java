@@ -11,6 +11,9 @@ import android.view.View;
  */
 public class DialogFragment extends android.support.v4.app.DialogFragment{
 
+    /**
+     * Interface definition for passing style data.
+     */
     public interface Builder{
         /**
          * Get a Dialog instance used for this fragment.

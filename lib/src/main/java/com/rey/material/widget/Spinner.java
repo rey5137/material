@@ -53,12 +53,33 @@ public class Spinner extends FrameLayout {
 	private static final int MAX_ITEMS_MEASURED = 15;
 	
 	private static final int INVALID_POSITION = -1;
-	
+
+    /**
+     * Interface definition for a callback to be invoked when a item's view is clicked.
+     */
 	public interface OnItemClickListener{
+        /**
+         * Called when a item's view is clicked.
+         * @param parent The Spinner view.
+         * @param view The item view.
+         * @param position The position of item.
+         * @param id The id of item.
+         * @return false will make the Spinner doesn't select this item.
+         */
 		boolean onItemClick(Spinner parent, View view, int position, long id);
 	}
-	
+
+    /**
+     * Interface definition for a callback to be invoked when an item is selected.
+     */
 	public interface OnItemSelectedListener{
+        /**
+         * Called when an item is selected.
+         * @param parent The Spinner view.
+         * @param view The item view.
+         * @param position The position of item.
+         * @param id The id of item.
+         */
 		void onItemSelected(Spinner parent, View view, int position, long id);
 	}
 
@@ -99,7 +120,7 @@ public class Spinner extends FrameLayout {
 	
 	private TintManager mTintManager;
 	
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 
     private boolean mIsRtl = false;
 		
@@ -138,7 +159,7 @@ public class Spinner extends FrameLayout {
 			super.addView(tv);
 		}
 		
-		setOnClickListener(new View.OnClickListener(){
+		setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showPopup();
@@ -154,7 +175,7 @@ public class Spinner extends FrameLayout {
         CharSequence memoLabel = mLabelView == null ? null : mLabelView.getText();
 
         removeAllViews();
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
@@ -280,11 +301,18 @@ public class Spinner extends FrameLayout {
         }
     }
 
+    /**
+     * @return The selected item's view.
+     */
     public View getSelectedView() {
         View v = getChildAt(getChildCount() - 1);
 		return v == mLabelView ? null : v;
 	}
 
+    /**
+     * Set the selected position of this Spinner.
+     * @param position The selected position.
+     */
 	public void setSelection(int position) {
 		if(mAdapter != null)
 			position = Math.min(position, mAdapter.getCount() - 1);
@@ -298,19 +326,32 @@ public class Spinner extends FrameLayout {
 			onDataInvalidated();
 		}
 	}
-	
+
+    /**
+     * @return The selected posiiton.
+     */
 	public int getSelectedItemPosition(){
 		return mSelectedPosition;
 	}
 
+    /**
+     * @return The selected item.
+     */
     public Object getSelectedItem(){
         return mAdapter == null ? null : mAdapter.getItem(mSelectedPosition);
     }
-		
+
+    /**
+     * @return The adapter back this Spinner.
+     */
 	public SpinnerAdapter getAdapter() {
 		return mAdapter;
 	}
 
+    /**
+     * Set an adapter for this Spinner.
+     * @param adapter
+     */
 	public void setAdapter(SpinnerAdapter adapter) {	
 		if(mAdapter != null)
 			mAdapter.unregisterDataSetObserver(mDataSetObserver);
@@ -326,39 +367,110 @@ public class Spinner extends FrameLayout {
         else
             mTempAdapter = new DropDownAdapter(adapter);        
 	}
-	
+
+    /**
+     * Set the background drawable for the spinner's popup window of choices.
+     *
+     * @param background Background drawable
+     *
+     * @attr ref android.R.styleable#Spinner_popupBackground
+     */
     public void setPopupBackgroundDrawable(Drawable background) {
     	mPopup.setBackgroundDrawable(background);
     }
 
+    /**
+     * Set the background drawable for the spinner's popup window of choices.
+     *
+     * @param resId Resource ID of a background drawable
+     *
+     * @attr ref android.R.styleable#Spinner_popupBackground
+     */
     public void setPopupBackgroundResource(int resId) {
         setPopupBackgroundDrawable(mTintManager.getDrawable(resId));
     }
 
+    /**
+     * Get the background drawable for the spinner's popup window of choices.
+     *
+     * @return background Background drawable
+     *
+     * @attr ref android.R.styleable#Spinner_popupBackground
+     */
     public Drawable getPopupBackground() {
         return mPopup.getBackground();
     }
 
+    /**
+     * Set a vertical offset in pixels for the spinner's popup window of choices.
+     *
+     * @param pixels Vertical offset in pixels
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownVerticalOffset
+     */
     public void setDropDownVerticalOffset(int pixels) {
         mPopup.setVerticalOffset(pixels);
     }
-    
+
+    /**
+     * Get the configured vertical offset in pixels for the spinner's popup window of choices.
+     *
+     * @return Vertical offset in pixels
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownVerticalOffset
+     */
     public int getDropDownVerticalOffset() {
         return mPopup.getVerticalOffset();
     }
 
+    /**
+     * Set a horizontal offset in pixels for the spinner's popup window of choices.
+     *
+     * @param pixels Horizontal offset in pixels
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownHorizontalOffset
+     */
     public void setDropDownHorizontalOffset(int pixels) {
         mPopup.setHorizontalOffset(pixels);
     }
-    
+
+    /**
+     * Get the configured horizontal offset in pixels for the spinner's popup window of choices.
+     *
+     * @return Horizontal offset in pixels
+     *
+     * @attr ref android.R.styleable#ListPopupWindow_dropDownHorizontalOffset
+     */
     public int getDropDownHorizontalOffset() {
         return mPopup.getHorizontalOffset();
     }
-    
+
+    /**
+     * Set the width of the spinner's popup window of choices in pixels. This value
+     * may also be set to {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}
+     * to match the width of the Spinner itself, or
+     * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} to wrap to the measured size
+     * of contained dropdown list items.
+     *
+     * @param pixels Width in pixels, WRAP_CONTENT, or MATCH_PARENT
+     *
+     * @attr ref android.R.styleable#Spinner_dropDownWidth
+     */
     public void setDropDownWidth(int pixels) {
         mDropDownWidth = pixels;
     }
 
+    /**
+     * Get the configured width of the spinner's popup window of choices in pixels.
+     * The returned value may also be {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}
+     * meaning the popup window will match the width of the Spinner itself, or
+     * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} to wrap to the measured size
+     * of contained dropdown list items.
+     *
+     * @return Width in pixels, WRAP_CONTENT, or MATCH_PARENT
+     *
+     * @attr ref android.R.styleable#Spinner_dropDownWidth
+     */
     public int getDropDownWidth() {
         return mDropDownWidth;
     }
@@ -385,6 +497,13 @@ public class Spinner extends FrameLayout {
         super.setMinimumWidth(minWidth);
     }
 
+    /**
+     * Describes how the selected item view is positioned.
+     *
+     * @param gravity See {@link android.view.Gravity}
+     *
+     * @attr ref android.R.styleable#Spinner_gravity
+     */
     public void setGravity(int gravity) {
         if (mGravity != gravity) {
             if ((gravity & Gravity.HORIZONTAL_GRAVITY_MASK) == 0) 
@@ -423,20 +542,46 @@ public class Spinner extends FrameLayout {
             super.setBackgroundDrawable(drawable);
     }
 
+    protected RippleManager getRippleManager(){
+        if(mRippleManager == null){
+            synchronized (RippleManager.class){
+                if(mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+
+        return mRippleManager;
+    }
+
     @Override
-	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
-			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
-		}
-	}
-    
+    public void setOnClickListener(OnClickListener l) {
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
+            super.setOnClickListener(l);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+        return  getRippleManager().onTouchEvent(event) || result;
+    }
+
+    /**
+     * Set a listener that will be called when a item's view is clicked.
+     * @param l The {@link Spinner.OnItemClickListener} will be called.
+     */
     public void setOnItemClickListener(OnItemClickListener l) {
         mOnItemClickListener = l;
     }
-    
+
+    /**
+     * Set a listener that will be called when an item is selected.
+     * @param l The {@link Spinner.OnItemSelectedListener} will be called.
+     */
     public void setOnItemSelectedListener(OnItemSelectedListener l) {
         mOnItemSelectedListener = l;
     }
@@ -444,12 +589,6 @@ public class Spinner extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
     	return true;
-    }
-    
-    @Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
-    	boolean result = super.onTouchEvent(event);
-		return  mRippleManager.onTouchEvent(event) || result;
     }
 
     @Override

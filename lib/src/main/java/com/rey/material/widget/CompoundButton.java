@@ -13,7 +13,7 @@ import com.rey.material.drawable.RippleDrawable;
 
 public class CompoundButton extends android.widget.CompoundButton {
 
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 	protected Drawable mButtonDrawable;
 
     public CompoundButton(Context context) {
@@ -61,7 +61,7 @@ public class CompoundButton extends android.widget.CompoundButton {
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -73,20 +73,32 @@ public class CompoundButton extends android.widget.CompoundButton {
             super.setBackgroundDrawable(drawable);
     }
 
+	protected RippleManager getRippleManager(){
+		if(mRippleManager == null){
+			synchronized (RippleManager.class){
+				if(mRippleManager == null)
+					mRippleManager = new RippleManager();
+			}
+		}
+
+		return mRippleManager;
+	}
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
+		RippleManager rippleManager = getRippleManager();
+		if (l == rippleManager)
 			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
+		else {
+			rippleManager.setOnClickListener(l);
+			setOnClickListener(rippleManager);
 		}
 	}
-		
+
 	@Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
+	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		return mRippleManager.onTouchEvent(event) || result;
+		return  getRippleManager().onTouchEvent(event) || result;
 	}
 	
 	@Override

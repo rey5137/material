@@ -32,7 +32,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	private int mMode;
 	private int mTabPadding;
 	private int mTabRippleStyle;	
-	private int mTextApperance;
+	private int mTextAppearance;
 		
 	private int mIndicatorOffset;
 	private int mIndicatorWidth;
@@ -115,7 +115,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         mTabRippleStyle = a.getResourceId(R.styleable.TabPageIndicator_tpi_tabRipple, 0);
         int indicatorColor = a.getColor(R.styleable.TabPageIndicator_tpi_indicatorColor, ThemeUtil.colorAccent(context, 0xFFFFFFFF));
         mIndicatorHeight = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_indicatorHeight, ThemeUtil.dpToPx(context, 2));
-        mTextApperance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
+        mTextAppearance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
         mMode = a.getInteger(R.styleable.TabPageIndicator_tpi_mode, MODE_SCROLL);
 
         a.recycle();
@@ -172,11 +172,19 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         
         post(mTabAnimSelector);
     }
-    
+
+    /**
+     * Set a listener will be called when the current page is changed.
+     * @param listener The {@link android.support.v4.view.ViewPager.OnPageChangeListener} will be called.
+     */
 	public void setOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         mListener = listener;
     }
-    
+
+    /**
+     * Set the ViewPager associate with this indicator view.
+     * @param view The ViewPager view.
+     */
     public void setViewPager(ViewPager view) {
         if (mViewPager == view) 
             return;
@@ -199,7 +207,12 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         
         notifyDataSetChanged();
     }
-    
+
+    /**
+     * Set the ViewPager associate with this indicator view and the current position;
+     * @param view The ViewPager view.
+     * @param initialPosition The current position.
+     */
     public void setViewPager(ViewPager view, int initialPosition) {
     	setViewPager(view);
         setCurrentItem(initialPosition);
@@ -271,7 +284,11 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		
 		mViewPager.setCurrentItem(position, true);
 	}
-	
+
+    /**
+     * Set the current page of this TabPageIndicator.
+     * @param position The position of current page.
+     */
 	public void setCurrentItem(int position) {
 		if(mSelectedPosition != position){
 			CheckedTextView tv = getTabView(mSelectedPosition);	
@@ -305,7 +322,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setCheckMarkDrawable(null);
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
-            tv.setTextAppearance(getContext(), mTextApperance);
+            tv.setTextAppearance(getContext(), mTextAppearance);
             tv.setSingleLine(true);
             tv.setEllipsize(TruncateAt.END);
             tv.setOnClickListener(this);
@@ -359,7 +376,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setCheckMarkDrawable(null);
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
-            tv.setTextAppearance(getContext(), mTextApperance);
+            tv.setTextAppearance(getContext(), mTextAppearance);
             tv.setSingleLine(true);
             tv.setEllipsize(TruncateAt.END);
             tv.setTag(i);

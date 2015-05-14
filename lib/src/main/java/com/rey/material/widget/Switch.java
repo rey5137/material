@@ -33,7 +33,7 @@ import com.rey.material.util.ViewUtil;
 
 public class Switch extends View implements Checkable {
 		
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 	
 	private boolean mRunning = false;
 	
@@ -74,7 +74,15 @@ public class Switch extends View implements Checkable {
 
     private boolean mIsRtl = false;
 
+    /**
+     * Interface definition for a callback to be invoked when the checked state is changed.
+     */
     public interface OnCheckedChangeListener{
+        /**
+         * Called when the checked state is changed.
+         * @param view The Switch view.
+         * @param checked The checked state.
+         */
         public void onCheckedChanged(Switch view, boolean checked);
     }
 
@@ -121,7 +129,7 @@ public class Switch extends View implements Checkable {
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
 
@@ -187,16 +195,32 @@ public class Switch extends View implements Checkable {
             super.setBackgroundDrawable(drawable);
     }
 
+	protected RippleManager getRippleManager(){
+		if(mRippleManager == null){
+			synchronized (RippleManager.class){
+				if(mRippleManager == null)
+					mRippleManager = new RippleManager();
+			}
+		}
+
+		return mRippleManager;
+	}
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
+		RippleManager rippleManager = getRippleManager();
+		if (l == rippleManager)
 			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
+		else {
+			rippleManager.setOnClickListener(l);
+			setOnClickListener(rippleManager);
 		}
 	}
 
+    /**
+     * Set a listener will be called when the checked state is changed.
+     * @param listener The {@link Switch.OnCheckedChangeListener} will be called.
+     */
     public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
         mOnCheckedChangeListener = listener;
     }
@@ -214,6 +238,20 @@ public class Switch extends View implements Checkable {
 		if(mThumbPosition != desPos)
 			startAnimation();
 	}
+
+    /**
+     * Change the checked state of this Switch immediately without showing animation.
+     * @param checked The checked state.
+     */
+    public void setCheckedImmediately(boolean checked){
+        if(mChecked != checked) {
+            mChecked = checked;
+            if(mOnCheckedChangeListener != null)
+                mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
+        }
+        mThumbPosition = mChecked ? 1f : 0f;
+        invalidate();
+    }
 
 	@Override
 	public boolean isChecked() {
@@ -238,7 +276,7 @@ public class Switch extends View implements Checkable {
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		super.onTouchEvent(event);
-		mRippleManager.onTouchEvent(event);
+		getRippleManager().onTouchEvent(event);
 
         float x = event.getX();
         if(mIsRtl)

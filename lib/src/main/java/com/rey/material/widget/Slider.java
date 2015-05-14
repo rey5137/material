@@ -36,7 +36,7 @@ import com.rey.material.util.ViewUtil;
  */
 public class Slider extends View{
 
-    private RippleManager mRippleManager = new RippleManager();
+    private RippleManager mRippleManager;
 
     private Paint mPaint;
     private RectF mDrawRect;
@@ -148,7 +148,7 @@ public class Slider extends View{
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
         mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
@@ -217,18 +217,33 @@ public class Slider extends View{
         return mValueText;
     }
 
+    /**
+     * @return The minimum selectable value.
+     */
     public int getMinValue(){
         return mMinValue;
     }
 
+    /**
+     * @return The maximum selectable value.
+     */
     public int getMaxValue(){
         return mMaxValue;
     }
 
+    /**
+     * @return The step value.
+     */
     public int getStepValue(){
         return mStepValue;
     }
 
+    /**
+     * Set the randge of selectable value.
+     * @param min The minimum selectable value.
+     * @param max The maximum selectable value.
+     * @param animation Indicate that should show animation when thumb's current position changed.
+     */
     public void setValueRange(int min, int max, boolean animation){
         if(max < min || (min == mMinValue && max == mMaxValue))
             return;
@@ -243,18 +258,32 @@ public class Slider extends View{
             mOnPositionChangeListener.onPositionChanged(this, false, oldPosition, oldPosition, Math.round(oldValue), getValue());
     }
 
+    /**
+     * @return The selected value.
+     */
     public int getValue(){
         return Math.round(getExactValue());
     }
 
+    /**
+     * @return The exact selected value.
+     */
     public float getExactValue(){
         return (mMaxValue - mMinValue) * getPosition() + mMinValue;
     }
 
+    /**
+     * @return The current position of thumb in [0..1] range.
+     */
     public float getPosition(){
         return mThumbMoveAnimator.isRunning() ? mThumbMoveAnimator.getPosition() : mThumbPosition;
     }
 
+    /**
+     * Set current position of thumb.
+     * @param pos The position in [0..1] range.
+     * @param animation Indicate that should show animation when change thumb's position.
+     */
     public void setPosition(float pos, boolean animation){
         setPosition(pos, animation, animation, false);
     }
@@ -286,11 +315,20 @@ public class Slider extends View{
             mOnPositionChangeListener.onPositionChanged(this, fromUser, oldPos, newPos, oldValue, newValue);
     }
 
+    /**
+     * Set the selected value of this Slider.
+     * @param value The selected value.
+     * @param animation Indicate that should show animation when change thumb's position.
+     */
     public void setValue(float value, boolean animation){
         value = Math.min(mMaxValue, Math.max(value, mMinValue));
         setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
     }
 
+    /**
+     * Set a listener will be called when thumb's position changed.
+     * @param listener The {@link Slider.OnPositionChangeListener} will be called.
+     */
     public void setOnPositionChangeListener(OnPositionChangeListener listener){
         mOnPositionChangeListener = listener;
     }
@@ -304,13 +342,25 @@ public class Slider extends View{
             super.setBackgroundDrawable(drawable);
     }
 
+    protected RippleManager getRippleManager(){
+        if(mRippleManager == null){
+            synchronized (RippleManager.class){
+                if(mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+
+        return mRippleManager;
+    }
+
     @Override
     public void setOnClickListener(OnClickListener l) {
-        if(l == mRippleManager)
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
             super.setOnClickListener(l);
-        else{
-            mRippleManager.setOnClickListener(l);
-            setOnClickListener(mRippleManager);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
         }
     }
 
@@ -438,7 +488,7 @@ public class Slider extends View{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
-        mRippleManager.onTouchEvent(event);
+        getRippleManager().onTouchEvent(event);
 
         if(!isEnabled())
             return false;

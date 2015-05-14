@@ -123,40 +123,60 @@ public class ProgressView extends View {
 		else
 			return ((LinearProgressDrawable)mProgressDrawable).getProgressMode();
 	}
-	
+
+    /**
+     * @return The current progress of this view in [0..1] range.
+     */
 	public float getProgress(){
 		if(mCircular)
 			return ((CircularProgressDrawable)mProgressDrawable).getProgress();
 		else
 			return ((LinearProgressDrawable)mProgressDrawable).getProgress();
 	}
-	
+
+    /**
+     * @return The current secondary progress of this view in [0..1] range.
+     */
 	public float getSecondaryProgress(){
 		if(mCircular)
 			return ((CircularProgressDrawable)mProgressDrawable).getSecondaryProgress();
 		else
 			return ((LinearProgressDrawable)mProgressDrawable).getSecondaryProgress();
 	}
-	
+
+    /**
+     * Set the current progress of this view.
+     * @param percent The progress value in [0..1] range.
+     */
 	public void setProgress(float percent){
 		if(mCircular)
 			((CircularProgressDrawable)mProgressDrawable).setProgress(percent);
 		else
 			((LinearProgressDrawable)mProgressDrawable).setProgress(percent);
 	}
-	
+
+    /**
+     * Set the current secondary progress of this view.
+     * @param percent The progress value in [0..1] range.
+     */
 	public void setSecondaryProgress(float percent){
 		if(mCircular)
 			((CircularProgressDrawable)mProgressDrawable).setSecondaryProgress(percent);
 		else
 			((LinearProgressDrawable)mProgressDrawable).setSecondaryProgress(percent);
 	}
-	
+
+    /**
+     * Start showing progress.
+     */
 	public void start(){
 		if(mProgressDrawable != null)
 			((Animatable)mProgressDrawable).start();
 	}
-	
+
+    /**
+     * Stop showing progress.
+     */
 	public void stop(){
 		if(mProgressDrawable != null)
 			((Animatable)mProgressDrawable).stop();
