@@ -324,6 +324,7 @@
     
     <declare-styleable name="FloatingActionButton">
         <attr name="fab_backgroundColor" format="reference|color"/>
+        <attr name="fab_backgroundAnimDuration" format="reference|integer"/>
         <attr name="fab_radius" format="reference|dimension"/>
         <attr name="fab_elevation" format="reference|dimension"/>
         <attr name="fab_iconSrc" format="reference"/>
