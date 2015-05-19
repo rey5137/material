@@ -43,6 +43,8 @@ public class Dialog extends android.app.Dialog{
     private ContainerFrameLayout mContainer;
     private int mLayoutWidth;
     private int mLayoutHeight;
+    private int mMaxWidth;
+    private int mMaxHeight;
 
     protected TextView mTitle;
     protected Button mPositiveAction;
@@ -183,7 +185,8 @@ public class Dialog extends android.app.Dialog{
             layout_height = a.getInteger(R.styleable.Dialog_android_layout_height, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams(layout_width, layout_height);
-
+        maxWidth(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxWidth, 0));
+        maxHeight(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxHeight, 0));
         dimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
         backgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, ThemeUtil.windowBackground(context, 0xFFFFFFFF)));
         maxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
@@ -278,6 +281,26 @@ public class Dialog extends android.app.Dialog{
     public Dialog layoutParams(int width, int height){
         mLayoutWidth = width;
         mLayoutHeight = height;
+        return this;
+    }
+
+    /**
+     * Set the maximum width of this Dialog layout.
+     * @param width The maximum width in pixels.
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog maxWidth(int width){
+        mMaxWidth = width;
+        return this;
+    }
+
+    /**
+     * Set the maximum height of this Dialog layout.
+     * @param height The maximum height in pixels.
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog maxHeight(int height){
+        mMaxHeight = height;
         return this;
     }
 
@@ -1083,7 +1106,11 @@ public class Dialog extends android.app.Dialog{
             int paddingBottom = Math.max(mDialogVerticalPadding, mCardView.getPaddingBottom());
 
             int maxWidth = widthSize - paddingLeft - paddingRight;
+            if(mMaxWidth > 0)
+                maxWidth = Math.min(maxWidth, mMaxWidth);
             int maxHeight = heightSize - paddingTop - paddingBottom;
+            if(mMaxHeight > 0)
+                maxHeight = Math.min(maxHeight, mMaxHeight);
 
             int width = mLayoutWidth == ViewGroup.LayoutParams.MATCH_PARENT ? maxWidth : mLayoutWidth;
             int height = mLayoutHeight == ViewGroup.LayoutParams.MATCH_PARENT ? maxHeight : mLayoutHeight;

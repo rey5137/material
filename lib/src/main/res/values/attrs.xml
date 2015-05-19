@@ -379,6 +379,8 @@
             <enum name="rtl" value="1" />
             <enum name="locale" value="3" />
         </attr>
+        <attr name="di_maxWidth" format="dimension|reference" />
+        <attr name="di_maxHeight" format="dimension|reference" />
         <attr name="di_titleTextAppearance" format="reference" />
         <attr name="di_titleTextColor" format="color|reference" />
         <attr name="di_actionBackground" format="reference" />
