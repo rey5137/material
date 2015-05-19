@@ -258,6 +258,22 @@
         <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
     </style>
 
+    <style name="Material.Widget.FloatingActionButton.Mini" parent="Material.Drawable.Ripple.Touch">
+        <item name="fab_radius">20dp</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconSize">24dp</item>
+        <item name="fab_interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
+    </style>
+
+    <style name="Material.Widget.FloatingActionButton.Mini.Light" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="fab_radius">20dp</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconSize">24dp</item>
+        <item name="fab_interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="fab_animDuration">@android:integer/config_mediumAnimTime</item>
+    </style>
+
     <style name="Material.Widget.SnackBar">
         <item name="sb_backgroundColor">#FF323232</item>
         <item name="sb_backgroundCornerRadius">0dp</item>

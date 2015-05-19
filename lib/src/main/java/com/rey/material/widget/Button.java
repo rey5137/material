@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 
 public class Button extends android.widget.Button {
 
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 
     public Button(Context context) {
         super(context);
@@ -48,7 +48,7 @@ public class Button extends android.widget.Button {
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -60,20 +60,32 @@ public class Button extends android.widget.Button {
             super.setBackgroundDrawable(drawable);
     }
 
+    protected RippleManager getRippleManager(){
+        if(mRippleManager == null){
+            synchronized (RippleManager.class){
+                if(mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+
+        return mRippleManager;
+    }
+
     @Override
 	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
-			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
-		}	
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
+            super.setOnClickListener(l);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
+        }
 	}
 	
 	@Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		return  mRippleManager.onTouchEvent(event) || result;
+		return  getRippleManager().onTouchEvent(event) || result;
 	}
 
 }

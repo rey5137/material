@@ -36,7 +36,7 @@ import com.rey.material.util.ViewUtil;
  */
 public class Slider extends View{
 
-    private RippleManager mRippleManager = new RippleManager();
+    private RippleManager mRippleManager;
 
     private Paint mPaint;
     private RectF mDrawRect;
@@ -148,7 +148,7 @@ public class Slider extends View{
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
         mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
@@ -342,13 +342,25 @@ public class Slider extends View{
             super.setBackgroundDrawable(drawable);
     }
 
+    protected RippleManager getRippleManager(){
+        if(mRippleManager == null){
+            synchronized (RippleManager.class){
+                if(mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+
+        return mRippleManager;
+    }
+
     @Override
     public void setOnClickListener(OnClickListener l) {
-        if(l == mRippleManager)
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
             super.setOnClickListener(l);
-        else{
-            mRippleManager.setOnClickListener(l);
-            setOnClickListener(mRippleManager);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
         }
     }
 
@@ -476,7 +488,7 @@ public class Slider extends View{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
-        mRippleManager.onTouchEvent(event);
+        getRippleManager().onTouchEvent(event);
 
         if(!isEnabled())
             return false;

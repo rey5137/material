@@ -46,7 +46,7 @@ public class FloatingActionButton extends View {
     private SwitchIconAnimator mSwitchIconAnimator;
 	private int mIconSize;
 		
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 			
 	public static FloatingActionButton make(Context context, int resId){
 		return new FloatingActionButton(context, null, resId);
@@ -112,7 +112,7 @@ public class FloatingActionButton extends View {
         else if(iconSrc != 0)
             setIcon(context.getResources().getDrawable(iconSrc), false);
 
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
         Drawable background = getBackground();
         if(background != null && background instanceof RippleDrawable){
             RippleDrawable drawable = (RippleDrawable)background;
@@ -382,16 +382,28 @@ public class FloatingActionButton extends View {
 			mIcon.draw(canvas);
 	}
 
+	protected RippleManager getRippleManager(){
+		if(mRippleManager == null){
+			synchronized (RippleManager.class){
+				if(mRippleManager == null)
+					mRippleManager = new RippleManager();
+			}
+		}
+
+		return mRippleManager;
+	}
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
+		RippleManager rippleManager = getRippleManager();
+		if (l == rippleManager)
 			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
-		}	
+		else {
+			rippleManager.setOnClickListener(l);
+			setOnClickListener(rippleManager);
+		}
 	}
-	
+
 	@Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
 		int action = event.getActionMasked();
@@ -400,7 +412,7 @@ public class FloatingActionButton extends View {
 			return false;
 		
 		boolean result = super.onTouchEvent(event);		
-		return  mRippleManager.onTouchEvent(event) || result;
+		return  getRippleManager().onTouchEvent(event) || result;
 	}
 	
 	private class OvalShadowDrawable extends Drawable{

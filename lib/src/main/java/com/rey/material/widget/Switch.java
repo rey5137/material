@@ -33,7 +33,7 @@ import com.rey.material.util.ViewUtil;
 
 public class Switch extends View implements Checkable {
 		
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 	
 	private boolean mRunning = false;
 	
@@ -129,7 +129,7 @@ public class Switch extends View implements Checkable {
     }
 
     private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
 
@@ -195,13 +195,25 @@ public class Switch extends View implements Checkable {
             super.setBackgroundDrawable(drawable);
     }
 
+	protected RippleManager getRippleManager(){
+		if(mRippleManager == null){
+			synchronized (RippleManager.class){
+				if(mRippleManager == null)
+					mRippleManager = new RippleManager();
+			}
+		}
+
+		return mRippleManager;
+	}
+
 	@Override
 	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
+		RippleManager rippleManager = getRippleManager();
+		if (l == rippleManager)
 			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
+		else {
+			rippleManager.setOnClickListener(l);
+			setOnClickListener(rippleManager);
 		}
 	}
 
@@ -264,7 +276,7 @@ public class Switch extends View implements Checkable {
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		super.onTouchEvent(event);
-		mRippleManager.onTouchEvent(event);
+		getRippleManager().onTouchEvent(event);
 
         float x = event.getX();
         if(mIsRtl)

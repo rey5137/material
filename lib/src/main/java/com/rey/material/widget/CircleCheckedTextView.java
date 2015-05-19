@@ -17,7 +17,7 @@ public class CircleCheckedTextView extends android.widget.CheckedTextView {
     private CircleDrawable mBackground;
 
     public interface OnCheckedChangeListener{
-        public void onCheckedChanged(CircleCheckedTextView view, boolean checked);
+        void onCheckedChanged(CircleCheckedTextView view, boolean checked);
     }
 
     private OnCheckedChangeListener mCheckedChangeListener;

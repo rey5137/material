@@ -120,7 +120,7 @@ public class Spinner extends FrameLayout {
 	
 	private TintManager mTintManager;
 	
-	private RippleManager mRippleManager = new RippleManager();
+	private RippleManager mRippleManager;
 
     private boolean mIsRtl = false;
 		
@@ -159,7 +159,7 @@ public class Spinner extends FrameLayout {
 			super.addView(tv);
 		}
 		
-		setOnClickListener(new View.OnClickListener(){
+		setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showPopup();
@@ -175,7 +175,7 @@ public class Spinner extends FrameLayout {
         CharSequence memoLabel = mLabelView == null ? null : mLabelView.getText();
 
         removeAllViews();
-        mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
@@ -542,15 +542,33 @@ public class Spinner extends FrameLayout {
             super.setBackgroundDrawable(drawable);
     }
 
+    protected RippleManager getRippleManager(){
+        if(mRippleManager == null){
+            synchronized (RippleManager.class){
+                if(mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+
+        return mRippleManager;
+    }
+
     @Override
-	public void setOnClickListener(OnClickListener l) {
-		if(l == mRippleManager)
-			super.setOnClickListener(l);
-		else{
-			mRippleManager.setOnClickListener(l);
-			setOnClickListener(mRippleManager);
-		}
-	}
+    public void setOnClickListener(OnClickListener l) {
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
+            super.setOnClickListener(l);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+        return  getRippleManager().onTouchEvent(event) || result;
+    }
 
     /**
      * Set a listener that will be called when a item's view is clicked.
@@ -571,12 +589,6 @@ public class Spinner extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
     	return true;
-    }
-    
-    @Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
-    	boolean result = super.onTouchEvent(event);
-		return  mRippleManager.onTouchEvent(event) || result;
     }
 
     @Override

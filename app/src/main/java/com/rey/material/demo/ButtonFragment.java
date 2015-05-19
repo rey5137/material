@@ -86,37 +86,37 @@ public class ButtonFragment extends Fragment{
 		bt_float_color.setOnClickListener(listener_delay);
 		bt_float_wave_color.setOnClickListener(listener_delay);
 
-        bt_flat.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                RecurringPickerDialog.Builder builder = new RecurringPickerDialog.Builder(R.style.Material_App_Dialog_Light){
-                    @Override
-                    public void onPositiveActionClicked(DialogFragment fragment) {
-                        RecurringPickerDialog dialog = (RecurringPickerDialog)fragment.getDialog();
-                        Toast.makeText(fragment.getActivity(), dialog.getRecurring().toString(), Toast.LENGTH_LONG).show();
-                        fragment.dismiss();
-                    }
-
-                    @Override
-                    public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(fragment.getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
-                        fragment.dismiss();
-                    }
-                };
-                Recurring recurring = new Recurring();
-                recurring.setStartTime(System.currentTimeMillis());
-                recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
-                recurring.setEnabledWeekday(Calendar.SUNDAY, true);
-                recurring.setEnabledWeekday(Calendar.TUESDAY, true);
-                builder.recurring(recurring)
-                        .datePickerLayoutStyle(R.style.Material_App_Dialog_DatePicker_Light)
-                        .positiveAction("OK")
-                        .negativeAction("CANCEL");
-
-                DialogFragment fragment = DialogFragment.newInstance(builder);
-                fragment.show(getFragmentManager(), null);
-            }
-        });
+//        bt_flat.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                RecurringPickerDialog.Builder builder = new RecurringPickerDialog.Builder(R.style.Material_App_Dialog_Light){
+//                    @Override
+//                    public void onPositiveActionClicked(DialogFragment fragment) {
+//                        RecurringPickerDialog dialog = (RecurringPickerDialog)fragment.getDialog();
+//                        Toast.makeText(fragment.getActivity(), dialog.getRecurring().toString(), Toast.LENGTH_LONG).show();
+//                        fragment.dismiss();
+//                    }
+//
+//                    @Override
+//                    public void onNegativeActionClicked(DialogFragment fragment) {
+//                        Toast.makeText(fragment.getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
+//                        fragment.dismiss();
+//                    }
+//                };
+//                Recurring recurring = new Recurring();
+//                recurring.setStartTime(System.currentTimeMillis());
+//                recurring.setRepeatMode(Recurring.REPEAT_WEEKLY);
+//                recurring.setEnabledWeekday(Calendar.SUNDAY, true);
+//                recurring.setEnabledWeekday(Calendar.TUESDAY, true);
+//                builder.recurring(recurring)
+//                        .datePickerLayoutStyle(R.style.Material_App_Dialog_DatePicker_Light)
+//                        .positiveAction("OK")
+//                        .negativeAction("CANCEL");
+//
+//                DialogFragment fragment = DialogFragment.newInstance(builder);
+//                fragment.show(getFragmentManager(), null);
+//            }
+//        });
 
 		return v;
 	}
