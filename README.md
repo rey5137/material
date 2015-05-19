@@ -70,6 +70,8 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
        src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
 </a>
 
+Or try it [here](https://appetize.io/app/xtkzxpwcd8vagcvqhvtx7qy6vr).
+
 ## Getting Started
 
 Add Gradle dependency:
