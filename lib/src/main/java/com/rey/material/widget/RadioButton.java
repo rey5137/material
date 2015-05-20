@@ -1,9 +1,10 @@
 package com.rey.material.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
-import com.rey.material.drawable.CheckBoxDrawable;
+import com.rey.material.R;
 import com.rey.material.drawable.RadioButtonDrawable;
 
 public class RadioButton extends CompoundButton {
@@ -33,6 +34,10 @@ public class RadioButton extends CompoundButton {
     }
 	
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        if (attrs != null) {
+            TypedArray styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.RadioButtonDrawable);
+            mIsDrawableOnRight = styledAttrs.getBoolean(R.styleable.RadioButtonDrawable_rbd_drawableOnRight, false);
+        }
 		applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -45,6 +50,10 @@ public class RadioButton extends CompoundButton {
         drawable.setInEditMode(isInEditMode());
         drawable.setAnimEnable(false);
         setButtonDrawable(drawable);
+        if(mIsDrawableOnRight) {
+            setButtonDrawable(null);
+            setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+        }
         drawable.setAnimEnable(true);
     }
 	

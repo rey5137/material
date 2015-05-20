@@ -15,6 +15,7 @@ public class CompoundButton extends android.widget.CompoundButton {
 
 	private RippleManager mRippleManager;
 	protected Drawable mButtonDrawable;
+    protected boolean mIsDrawableOnRight;
 
     public CompoundButton(Context context) {
         super(context);
@@ -51,7 +52,7 @@ public class CompoundButton extends android.widget.CompoundButton {
 			
 			a.recycle();
 		}
-		
+
 		setClickable(true);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 	}
@@ -117,5 +118,13 @@ public class CompoundButton extends android.widget.CompoundButton {
             padding += mButtonDrawable.getIntrinsicWidth();   
         
         return padding;
+    }
+
+    @Override
+    public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {
+        if(mIsDrawableOnRight) {
+            mButtonDrawable = right;
+        }
+        super.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
     }
 }
