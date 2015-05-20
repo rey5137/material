@@ -50,7 +50,8 @@
             android:text="Checkbox 3"
             android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>  
+            android:gravity="center_vertical"
+            app:cbd_drawableOnRight="true"/>
 	    
 	    <TextView 
 			android:layout_width="match_parent"
@@ -89,7 +90,8 @@
             android:text="Radio Button 3"
             android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>   
+            android:gravity="center_vertical"
+            app:rbd_drawableOnRight="true"/>
 	    
 	    <TextView 
 			android:layout_width="match_parent"

@@ -148,6 +148,7 @@
         <attr name="rbd_innerRadius" format="reference|dimension"/>
         <attr name="rbd_strokeColor" format="reference|color"/>
         <attr name="rbd_animDuration" format="reference|integer"/>
+        <attr name="rbd_drawableOnRight" format="boolean"/>
     </declare-styleable>
     
     <declare-styleable name="CheckBoxDrawable">
@@ -159,6 +160,7 @@
         <attr name="cbd_strokeColor" format="reference|color"/>
         <attr name="cbd_tickColor" format="reference|color"/>
         <attr name="cbd_animDuration" format="reference|integer"/>
+        <attr name="cbd_drawableOnRight" format="boolean"/>
     </declare-styleable>
     
     <declare-styleable name="Switch">
