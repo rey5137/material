@@ -191,6 +191,7 @@ public class ToolbarManager {
      */
     public void setNavigationManager(NavigationManager navigationManager){
         mNavigationManager = navigationManager;
+        notifyNavigationStateInvalidated();
     }
 
     /**
