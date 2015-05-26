@@ -10,4 +10,13 @@
 		<item name="colorSwitchThumbNormal">@color/colorSwitchThumbNormal</item>
 	</style>
 
+    <array name="button">
+        <item>@style/Material.Drawable.Ripple.Touch.Light</item>
+        <item>@style/Material.Drawable.Ripple.Wave.Light</item>
+    </array>
+
+    <array name="themable">
+        <item>@array/button</item>
+    </array>
+
 </resources>

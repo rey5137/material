@@ -17,7 +17,7 @@
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
+            android:padding="8dp"
 		    android:textColor="#FF000000"
 		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
 		    android:text="Flat"/>
@@ -30,14 +30,15 @@
 	        android:gravity="center">
 	        
 	        <com.rey.material.widget.Button
-                style="@style/FlatButtonRippleStyle"
 		        android:id="@+id/button_bt_flat"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
 		        android:textColor="#FF000000"
 		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-		        android:text="BUTTON"/>
+		        android:text="BUTTON"
+                android:background="@null"
+                app:v_styleId="@array/button"/>
 	        
 	        <View
 	            android:layout_width="0dp"

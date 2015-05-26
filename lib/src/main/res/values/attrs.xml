@@ -14,6 +14,38 @@
     <attr name="rd_style" format="reference"/>
     <attr name="rd_enable" format="boolean"/>
 
+    <declare-styleable name="View">
+        <attr name="android:background" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:backgroundTintMode" />
+        <attr name="android:elevation" />
+        <attr name="android:fadeScrollbars" />
+        <attr name="android:fadingEdgeLength" />
+        <attr name="android:minHeight" />
+        <attr name="android:minWidth" />
+        <attr name="android:padding" />
+        <attr name="android:paddingBottom" />
+        <attr name="android:paddingEnd" />
+        <attr name="android:paddingLeft" />
+        <attr name="android:paddingRight" />
+        <attr name="android:paddingStart" />
+        <attr name="android:paddingTop" />
+        <attr name="android:requiresFadingEdge" />
+        <attr name="android:scrollbarDefaultDelayBeforeFade" />
+        <attr name="android:scrollbarFadeDuration" />
+        <attr name="android:scrollbarSize" />
+        <attr name="android:scrollbarStyle" />
+        <attr name="android:soundEffectsEnabled" />
+        <attr name="android:textAlignment" />
+        <attr name="android:textDirection" />
+        <attr name="android:visibility" />
+        <attr name="android:layoutDirection" />
+    </declare-styleable>
+
+    <declare-styleable name="ThemableView">
+        <attr name="v_styleId" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="CircularProgressDrawable">        
         <attr name="cpd_padding" format="reference|dimension"/> 
         <attr name="cpd_initialAngle" format="reference|integer"/> 
