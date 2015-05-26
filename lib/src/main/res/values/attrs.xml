@@ -42,6 +42,76 @@
         <attr name="android:layoutDirection" />
     </declare-styleable>
 
+    <declare-styleable name="TextView">
+        <attr name="android:drawableBottom" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:drawableLeft" />
+        <attr name="android:drawablePadding" />
+        <attr name="android:drawableRight" />
+        <attr name="android:drawableStart" />
+        <attr name="android:drawableTop" />
+        <attr name="android:fontFamily" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:gravity" />
+        <attr name="android:lines" />
+        <attr name="android:letterSpacing" />
+        <attr name="android:lineSpacingExtra" />
+        <attr name="android:lineSpacingMultiplier" />
+        <attr name="android:height" />
+        <attr name="android:ems" />
+        <attr name="android:width" />
+        <attr name="android:includeFontPadding" />
+        <attr name="android:cursorVisible" />
+        <attr name="android:maxEms" />
+        <attr name="android:maxHeight" />
+        <attr name="android:maxLength" />
+        <attr name="android:maxLines" />
+        <attr name="android:maxWidth" />
+        <attr name="android:minEms" />
+        <attr name="android:minHeight" />
+        <attr name="android:minLines" />
+        <attr name="android:minWidth" />
+        <attr name="android:scrollHorizontally" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:singleLine" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textScaleX" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+    </declare-styleable>
+
+    <declare-styleable name="TextViewAppearance">
+        <attr name="android:textAppearance" />
+    </declare-styleable>
+
+    <declare-styleable name="TextAppearance">
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+        <attr name="android:fontFamily" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:letterSpacing" />
+    </declare-styleable>
+
     <declare-styleable name="ThemableView">
         <attr name="v_styleId" format="reference"/>
     </declare-styleable>
