@@ -23,7 +23,9 @@ import android.widget.Toast;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.app.ToolbarManager;
+import com.rey.material.drawable.ThemeDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
@@ -69,7 +71,7 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
         mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
-                if(mToolbarManager.getCurrentGroup() != 0)
+                if (mToolbarManager.getCurrentGroup() != 0)
                     mToolbarManager.setCurrentGroup(0);
                 else
                     dl_navigator.openDrawer(Gravity.START);
@@ -95,24 +97,28 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 		vp.setAdapter(mPagerAdapter);
 		tpi.setViewPager(vp);
 		tpi.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			
-			@Override
-			public void onPageSelected(int position) {
-				mDrawerAdapter.setSelected(mItems[position]);
+
+            @Override
+            public void onPageSelected(int position) {
+                mDrawerAdapter.setSelected(mItems[position]);
                 mSnackBar.dismiss();
-			}
-			
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {}
-			
-			@Override
-			public void onPageScrollStateChanged(int state) {}
-			
-		});
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+
+        });
 
         mDrawerAdapter.setSelected(Tab.PROGRESS);
 		vp.setCurrentItem(0);
-	}
+
+        ViewUtil.setBackground(getWindow().getDecorView(), new ThemeDrawable(R.array.bg_window));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -10,13 +10,61 @@
 		<item name="colorSwitchThumbNormal">@color/colorSwitchThumbNormal</item>
 	</style>
 
-    <array name="button">
-        <item>@style/Material.Drawable.Ripple.Touch.Light</item>
-        <item>@style/Material.Drawable.Ripple.Wave.Light</item>
+    <array name="bg_window">
+        <item>@drawable/bg_window_light</item>
+        <item>@drawable/bg_window_dark</item>
+    </array>
+
+    <array name="button_flat">
+        <item>@style/LightFlatButtonRippleStyle</item>
+        <item>@style/DarkFlatButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_color">
+        <item>@style/LightFlatColorButtonRippleStyle</item>
+        <item>@style/DarkFlatColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_wave">
+        <item>@style/LightFlatWaveButtonRippleStyle</item>
+        <item>@style/DarkFlatWaveButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_wave_color">
+        <item>@style/LightFlatWaveColorButtonRippleStyle</item>
+        <item>@style/DarkFlatWaveColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise">
+        <item>@style/LightRaiseButtonRippleStyle</item>
+        <item>@style/DarkRaiseButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_color">
+        <item>@style/LightRaiseColorButtonRippleStyle</item>
+        <item>@style/DarkRaiseColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_wave">
+        <item>@style/LightRaiseWaveButtonRippleStyle</item>
+        <item>@style/DarkRaiseWaveButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_wave_color">
+        <item>@style/LightRaiseWaveColorButtonRippleStyle</item>
+        <item>@style/DarkRaiseWaveColorButtonRippleStyle</item>
     </array>
 
     <array name="themable">
-        <item>@array/button</item>
+        <item>@array/bg_window</item>
+        <item>@array/button_flat</item>
+        <item>@array/button_flat_color</item>
+        <item>@array/button_flat_wave</item>
+        <item>@array/button_flat_wave_color</item>
+        <item>@array/button_raise</item>
+        <item>@array/button_raise_color</item>
+        <item>@array/button_raise_wave</item>
+        <item>@array/button_raise_wave_color</item>
     </array>
 
 </resources>

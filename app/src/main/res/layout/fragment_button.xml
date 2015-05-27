@@ -34,11 +34,9 @@
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF000000"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
                 android:background="@null"
-                app:v_styleId="@array/button"/>
+                app:v_styleId="@array/button_flat"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -46,15 +44,13 @@
 		        android:layout_weight="0.1"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/FlatColorButtonRippleStyle"
 		        android:id="@+id/button_bt_flat_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF2196F3"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="afterRelease"/>
+                android:background="@null"
+				app:v_styleId="@array/button_flat_color"/>
 	        
 	    </LinearLayout>
 	    
@@ -67,14 +63,13 @@
 	        android:paddingTop="8dp">
 	        
 	        <com.rey.material.widget.Button
-                style="@style/FlatWaveButtonRippleStyle"
 		        android:id="@+id/button_bt_flat_wave"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF000000"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-		        android:text="BUTTON"/>
+		        android:text="BUTTON"
+                android:background="@null"
+                app:v_styleId="@array/button_flat_wave"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -82,15 +77,13 @@
 		        android:layout_weight="0.1"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/FlatWaveColorButtonRippleStyle"
 		        android:id="@+id/button_bt_flat_wave_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF2196F3"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="afterRelease"/>
+                android:background="@null"
+                app:v_styleId="@array/button_flat_wave_color"/>
 	        
 	    </LinearLayout>
 	    
@@ -111,14 +104,12 @@
 	        android:gravity="center">
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseButtonRippleStyle"
 		        android:id="@+id/button_bt_raise"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF000000"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-		        android:text="BUTTON"/>
+		        android:text="BUTTON"
+                app:v_styleId="@array/button_raise"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -126,15 +117,12 @@
 		        android:layout_weight="0.1"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseColorButtonRippleStyle"
 		        android:id="@+id/button_bt_raise_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FFFFFFFF"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="afterRelease"/>
+                app:v_styleId="@array/button_raise_color"/>
 	        
 	    </LinearLayout>
 	    
@@ -147,14 +135,12 @@
 	        android:paddingTop="8dp">
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseWaveButtonRippleStyle"
 		        android:id="@+id/button_bt_raise_wave"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FF000000"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-		        android:text="BUTTON"/>
+		        android:text="BUTTON"
+                app:v_styleId="@array/button_raise_wave"/>
 	        
 	        <View
 	            android:layout_width="0dp"
@@ -162,15 +148,12 @@
 		        android:layout_weight="0.1"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseWaveColorButtonRippleStyle"
 		        android:id="@+id/button_bt_raise_wave_color"
 		        android:layout_width="0dp"
 		        android:layout_height="@dimen/bt_height"
 		        android:layout_weight="0.4"
-		        android:textColor="#FFFFFFFF"
-		        android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 		        android:text="BUTTON"
-		        app:rd_delayClick="afterRelease"/>
+                app:v_styleId="@array/button_raise_wave_color"/>
 	        
 	    </LinearLayout>
 	    

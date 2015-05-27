@@ -628,6 +628,10 @@ public class ThemeManager {
         mDispatcher.dispatchThemeChanged(theme);
     }
 
+    public Context getContext(){
+        return mContext;
+    }
+
     public int getCurrentTheme(){
         return mCurrentTheme;
     }
@@ -649,19 +653,24 @@ public class ThemeManager {
         return styles[getCurrentTheme()];
     }
 
-    public void registerOnThemeChangedListener(View v){
-        mDispatcher.registerListener(v);
+    public int getStyle(int styleId, int theme){
+        int[] styles = mStyles.get(styleId);
+        return styles[theme];
     }
 
-    public void unregisterOnThemeChangedListener(View v){
-        mDispatcher.unregisterListener(v);
+    public void registerOnThemeChangedListener(OnThemeChangedListener listener){
+        mDispatcher.registerListener(listener);
+    }
+
+    public void unregisterOnThemeChangedListener(OnThemeChangedListener listener){
+        mDispatcher.unregisterListener(listener);
     }
 
     public interface EventDispatcher{
 
-        public void registerListener(View v);
+        public void registerListener(OnThemeChangedListener listener);
 
-        public void unregisterListener(View v);
+        public void unregisterListener(OnThemeChangedListener listener);
 
         public void dispatchThemeChanged(int theme);
     }
@@ -675,13 +684,13 @@ public class ThemeManager {
         }
 
         @Override
-        public void registerListener(View v) {
-            mBus.register(v);
+        public void registerListener(OnThemeChangedListener listener) {
+            mBus.register(listener);
         }
 
         @Override
-        public void unregisterListener(View v) {
-            mBus.unregister(v);
+        public void unregisterListener(OnThemeChangedListener listener) {
+            mBus.unregister(listener);
         }
 
         @Override
