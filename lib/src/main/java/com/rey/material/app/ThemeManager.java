@@ -1,5 +1,6 @@
 package com.rey.material.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -8,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -46,6 +48,11 @@ public class ThemeManager {
 
     public static final int THEME_UNDEFINED = Integer.MIN_VALUE;
 
+    /**
+     * Apply any View style attributes to a view.
+     * @param v The view is applied.
+     * @param resId The style resourceId.
+     */
     public static void applyStyle(View v, int resId){
         TypedArray a = v.getContext().obtainStyledAttributes(null, R.styleable.View, 0, resId);
 
@@ -288,6 +295,11 @@ public class ThemeManager {
             applyStyle((TextView)v, resId);
     }
 
+    /**
+     * Apply any TextView style attributes to a view.
+     * @param v The view is applied.
+     * @param resId The style resourceId.
+     */
     private static void applyStyle(TextView v, int resId){
         String fontFamily = null;
         int typefaceIndex = -1;
@@ -568,6 +580,14 @@ public class ThemeManager {
         v.setTypeface(tf, styleIndex);
     }
 
+    /**
+     * Get the styleId from attributes.
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     * @return The styleId.
+     */
     public static int getStyleId(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ThemableView, defStyleAttr, defStyleRes);
         int styleId = a.getResourceId(R.styleable.ThemableView_v_styleId, 0);
@@ -576,10 +596,19 @@ public class ThemeManager {
         return styleId;
     }
 
+    /**
+     * Init ThemeManager. Should be call in {@link Application#onCreate()}.
+     * @param context The context object. Should be {#link Application} object.
+     * @param resId The resourceId of array of all styleId.
+     */
     public static void init(Context context, int resId){
         getInstance().setup(context, resId);
     }
 
+    /**
+     * Get the singleton instance of ThemeManager.
+     * @return The singleton instance of ThemeManager.
+     */
     public static ThemeManager getInstance(){
         if(mInstance == null){
             synchronized (ThemeManager.class){
@@ -632,36 +661,74 @@ public class ThemeManager {
         return mContext;
     }
 
+    /**
+     * Get the current theme.
+     * @return The current theme.
+     */
     public int getCurrentTheme(){
         return mCurrentTheme;
     }
 
-    public void setCurrentTheme(int theme){
+    /**
+     * Set the current theme. Should be called in main thread (UI thread).
+     * @param theme The current theme.
+     * @return True if set theme successfully, False if method's called on main thread or theme already set.
+     */
+    public boolean setCurrentTheme(int theme){
+        if (Looper.getMainLooper().getThread() != Thread.currentThread())
+            return false;
+
         if(mCurrentTheme != theme){
             mCurrentTheme = theme;
             getSharedPreferences().edit().putInt(KEY_THEME, mCurrentTheme).commit();
             dispatchThemeChanged(mCurrentTheme);
+            return true;
         }
+
+        return false;
     }
 
+    /**
+     * Get the total theme.
+     * @return The total theme.
+     */
     public int getThemeCount(){
         return mThemeCount;
     }
 
+    /**
+     * Get current style of a styleId.
+     * @param styleId The styleId.
+     * @return The current style.
+     */
     public int getCurrentStyle(int styleId){
         int[] styles = mStyles.get(styleId);
         return styles[getCurrentTheme()];
     }
 
+    /**
+     * Get a specific style of a styleId.
+     * @param styleId The styleId.
+     * @param theme The theme.
+     * @return The specific style.
+     */
     public int getStyle(int styleId, int theme){
         int[] styles = mStyles.get(styleId);
         return styles[theme];
     }
 
+    /**
+     * Register a listener will be called when current theme changed.
+     * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be registered.
+     */
     public void registerOnThemeChangedListener(OnThemeChangedListener listener){
         mDispatcher.registerListener(listener);
     }
 
+    /**
+     * Unregister a listener from be called when current theme changed.
+     * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be unregistered.
+     */
     public void unregisterOnThemeChangedListener(OnThemeChangedListener listener){
         mDispatcher.unregisterListener(listener);
     }

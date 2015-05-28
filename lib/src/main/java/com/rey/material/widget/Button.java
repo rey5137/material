@@ -16,8 +16,8 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 
 	private RippleManager mRippleManager;
 
-    private int mStyleId;
-    private int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     public Button(Context context) {
         super(context);
@@ -54,7 +54,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 

@@ -10,37 +10,24 @@ public class RadioButton extends CompoundButton {
 
     public RadioButton(Context context) {
         super(context);
-
-        init(context, null, 0, 0);
     }
 
     public RadioButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init(context, attrs, 0, 0);
     }
 
 	public RadioButton(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		
-		init(context, attrs, defStyleAttr, 0);
 	}
 
     public RadioButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
-	
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
-        applyStyle(getContext(), null, 0, resId);
-    }
+    @Override
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         RadioButtonDrawable drawable = new RadioButtonDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).build();
         drawable.setInEditMode(isInEditMode());
         drawable.setAnimEnable(false);

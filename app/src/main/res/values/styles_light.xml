@@ -80,4 +80,15 @@
         <item name="android:textColor">@color/abc_primary_text_material_dark</item>
     </style>
 
+    <!-- Switch Style -->
+
+    <style name="LightRadioButtonDrawable" parent="Material.Drawable.RadioButton"/>
+
+    <style name="LightCheckBoxDrawable" parent="Material.Drawable.CheckBox"/>
+
+    <style name="LightSwitch" parent="Material.Widget.Switch">
+        <item name="sw_trackColor">@drawable/color_track_light</item>
+        <item name="sw_thumbColor">@drawable/color_thumb_light</item>
+    </style>
+
 </resources>

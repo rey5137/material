@@ -176,12 +176,6 @@
         <item name="rd_bottomPadding">2dp</item>
     </style>
 
-	<!-- Switch Style -->
-	
-	<style name="RadioButtonDrawable" parent="Material.Drawable.RadioButton"/>
-    
-    <style name="CheckBoxDrawable" parent="Material.Drawable.CheckBox"/>
-
     <!-- SnackBar Style -->
 
     <style name="SnackBarSingleLine" parent="Material.Widget.SnackBar.Mobile">
