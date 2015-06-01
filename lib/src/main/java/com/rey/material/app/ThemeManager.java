@@ -126,12 +126,16 @@ public class ThemeManager {
             else if(attr == R.styleable.View_android_paddingBottom)
                 bottomPadding = a.getDimensionPixelSize(attr, -1);
             else if(attr == R.styleable.View_android_paddingStart) {
-                startPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
-                startPaddingDefined = (startPadding != Integer.MIN_VALUE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    startPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
+                    startPaddingDefined = (startPadding != Integer.MIN_VALUE);
+                }
             }
             else if(attr == R.styleable.View_android_paddingEnd) {
-                endPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
-                endPaddingDefined = (endPadding != Integer.MIN_VALUE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    endPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
+                    endPaddingDefined = (endPadding != Integer.MIN_VALUE);
+                }
             }
             else if(attr == R.styleable.View_android_fadeScrollbars)
                 v.setScrollbarFadingEnabled(a.getBoolean(attr, true));
