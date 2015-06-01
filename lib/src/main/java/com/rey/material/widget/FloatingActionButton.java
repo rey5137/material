@@ -90,7 +90,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 	}
 
     public void applyStyle(int resId){
-        ThemeManager.applyStyle(this, resId);
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 

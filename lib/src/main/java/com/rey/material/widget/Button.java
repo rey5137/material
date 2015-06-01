@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 import java.lang.reflect.Field;
 
@@ -50,7 +51,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 	}
 
     public void applyStyle(int resId){
-        ThemeManager.applyStyle(this, resId);
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 

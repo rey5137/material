@@ -212,7 +212,6 @@
         <item name="sl_minValue">0</item>
         <item name="sl_maxValue">100</item>
         <item name="sl_stepValue">1</item>
-        <item name="sl_value">0</item>
         <item name="sl_discreteMode">false</item>
         <item name="sl_textSize">@dimen/abc_text_size_small_material</item>
         <item name="sl_textColor">#FFFFFFFF</item>

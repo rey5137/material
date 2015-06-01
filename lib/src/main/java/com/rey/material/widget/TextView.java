@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
+import com.rey.material.util.ViewUtil;
 
 public class TextView extends android.widget.TextView implements ThemeManager.OnThemeChangedListener{
 
@@ -53,7 +54,7 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
     }
 
     public void applyStyle(int resId){
-        ThemeManager.applyStyle(this, resId);
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 

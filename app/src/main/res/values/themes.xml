@@ -110,6 +110,16 @@
         <item>@style/DarkFABWaveColor</item>
     </array>
 
+    <array name="slider">
+        <item>@style/LightSlider</item>
+        <item>@style/DarkSlider</item>
+    </array>
+
+    <array name="slider_discrete">
+        <item>@style/LightSliderDiscrete</item>
+        <item>@style/DarkSliderDiscrete</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
         <item>@array/text_title</item>
@@ -131,6 +141,8 @@
         <item>@array/fab_color</item>
         <item>@array/fab_wave</item>
         <item>@array/fab_wave_color</item>
+        <item>@array/slider</item>
+        <item>@array/slider_discrete</item>
     </array>
 
 </resources>

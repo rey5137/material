@@ -166,4 +166,15 @@
         <item name="rd_delayClick">afterRelease</item>
     </style>
 
+    <!-- Slider Style -->
+
+    <style name="LightSlider" parent="Material.Widget.Slider">
+        <item name="sl_primaryColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="LightSliderDiscrete" parent="Material.Widget.Slider.Discrete">
+        <item name="sl_primaryColor">@color/colorPrimary</item>
+        <item name="sl_stepValue">10</item>
+    </style>
+
 </resources>
