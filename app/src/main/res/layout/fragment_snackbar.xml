@@ -13,27 +13,23 @@
 	    android:gravity="center"
         android:padding="8dp">
 	    
-        <TextView 
+        <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Mobile Snackbar"/>
 	    
 	        <com.rey.material.widget.Button
-                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_mobile_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
 			    android:textColor="#FF000000"
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
-			    android:text="SINGLE LINE"/>
+			    android:text="SINGLE LINE"
+                app:v_styleId="@array/button_raise"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_mobile_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -41,29 +37,26 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    android:layout_marginTop="8dp"/>
+			    android:layout_marginTop="8dp"
+                app:v_styleId="@array/button_raise"/>
 
-		<TextView 
+		<com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Tablet Snackbar"/>
 	    
 	        <com.rey.material.widget.Button
-                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_tablet_single"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
 			    android:textColor="#FF000000"
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
-			    android:text="SINGLE LINE"/>
+			    android:text="SINGLE LINE"
+                app:v_styleId="@array/button_raise"/>
 	        
 	        <com.rey.material.widget.Button
-                style="@style/RaiseButtonRippleStyle"
 				android:id="@+id/snackbar_bt_tablet_multi"
 			    android:layout_width="128dp"
 			    android:layout_height="@dimen/bt_height"
@@ -71,7 +64,8 @@
 			    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
 			    android:gravity="center"
 			    android:text="MULTI LINE"
-			    android:layout_marginTop="8dp"/>
+			    android:layout_marginTop="8dp"
+                app:v_styleId="@array/button_raise"/>
 	        	        	        
 	</LinearLayout>
     

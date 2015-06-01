@@ -13,13 +13,10 @@
 	    android:gravity="center"
         android:padding="8dp">
 	                    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Checkbox"/>
 	    
 	    <com.rey.material.widget.CheckBox
@@ -27,7 +24,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 1"
-            android:textSize="14sp"
             android:checked="true"
             android:gravity="center_vertical"
             app:v_styleId="@array/checkbox"/>
@@ -37,7 +33,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 2"
-            android:textSize="14sp"
             android:checked="false"
             android:gravity="center_vertical"
             app:v_styleId="@array/checkbox"/>
@@ -47,18 +42,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 3"
-            android:textSize="14sp"
             android:checked="false"
             android:gravity="center_vertical"
             app:v_styleId="@array/checkbox"/>
 	    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Radio Button"/>
 	    
 	    <com.rey.material.widget.RadioButton
@@ -66,7 +57,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 1"
-            android:textSize="14sp"
             android:checked="true"
             android:gravity="center_vertical"
             app:v_styleId="@array/radio_button"/>
@@ -76,7 +66,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 2"
-            android:textSize="14sp"
             android:checked="false"
             android:gravity="center_vertical"
             app:v_styleId="@array/radio_button"/>
@@ -86,18 +75,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 3"
-            android:textSize="14sp"
             android:checked="false"
             android:gravity="center_vertical"
             app:v_styleId="@array/radio_button"/>
 	    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Switch"/>
 	    
 	    <com.rey.material.widget.Switch

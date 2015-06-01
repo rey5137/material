@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- TextView Style -->
+
+    <style name="DarkTitleText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Title</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="DarkBodyText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+
     <!-- Button Style -->
 
     <style name="DarkFlatButtonRippleStyle" parent="Material.Drawable.Ripple.Touch">
@@ -84,15 +97,75 @@
 
     <style name="DarkRadioButtonDrawable" parent="Material.Drawable.RadioButton">
         <item name="rbd_strokeColor">@drawable/color_switch_dark</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
     </style>
 
     <style name="DarkCheckBoxDrawable" parent="Material.Drawable.CheckBox">
         <item name="cbd_strokeColor">@drawable/color_switch_dark</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
     </style>
 
     <style name="DarkSwitch" parent="Material.Widget.Switch">
         <item name="sw_trackColor">@drawable/color_track_dark</item>
         <item name="sw_thumbColor">@drawable/color_thumb_dark</item>
+    </style>
+
+    <!-- FAB Style -->
+
+    <style name="DarkFloatingActionButtonIcon" >
+        <item name="lmd_state">@xml/fab_icon_states</item>
+        <item name="lmd_curState">0</item>
+        <item name="lmd_padding">2dp</item>
+        <item name="lmd_animDuration">400</item>
+        <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
+        <item name="lmd_strokeSize">4dp</item>
+        <item name="lmd_strokeColor">#FF000000</item>
+        <item name="lmd_strokeCap">round</item>
+        <item name="lmd_strokeJoin">round</item>
+        <item name="lmd_clockwise">true</item>
+    </style>
+
+    <style name="DarkFABIcon" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkFABLine" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_iconLineMorphing">@style/DarkFloatingActionButtonIcon</item>
+    </style>
+
+    <style name="DarkFAB" parent="Material.Drawable.Ripple.Touch">
+        <item name="fab_backgroundColor">#FF494949</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="DarkFABColor" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">untilRelease</item>
+    </style>
+
+    <style name="DarkFABWave" parent="Material.Drawable.Ripple.Wave">
+        <item name="fab_backgroundColor">#FF494949</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="DarkFABWaveColor" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">afterRelease</item>
     </style>
 
 </resources>

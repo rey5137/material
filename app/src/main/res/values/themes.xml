@@ -15,6 +15,16 @@
         <item>@drawable/bg_window_dark</item>
     </array>
 
+    <array name="text_title">
+        <item>@style/LightTitleText</item>
+        <item>@style/DarkTitleText</item>
+    </array>
+
+    <array name="text_body">
+        <item>@style/LightBodyText</item>
+        <item>@style/DarkBodyText</item>
+    </array>
+
     <array name="button_flat">
         <item>@style/LightFlatButtonRippleStyle</item>
         <item>@style/DarkFlatButtonRippleStyle</item>
@@ -70,8 +80,40 @@
         <item>@style/DarkSwitch</item>
     </array>
 
+    <array name="fab_icon">
+        <item>@style/LightFABIcon</item>
+        <item>@style/DarkFABIcon</item>
+    </array>
+
+    <array name="fab_line">
+        <item>@style/LightFABLine</item>
+        <item>@style/DarkFABLine</item>
+    </array>
+
+    <array name="fab">
+        <item>@style/LightFAB</item>
+        <item>@style/DarkFAB</item>
+    </array>
+
+    <array name="fab_color">
+        <item>@style/LightFABColor</item>
+        <item>@style/DarkFABColor</item>
+    </array>
+
+    <array name="fab_wave">
+        <item>@style/LightFABWave</item>
+        <item>@style/DarkFABWave</item>
+    </array>
+
+    <array name="fab_wave_color">
+        <item>@style/LightFABWaveColor</item>
+        <item>@style/DarkFABWaveColor</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
+        <item>@array/text_title</item>
+        <item>@array/text_body</item>
         <item>@array/button_flat</item>
         <item>@array/button_flat_color</item>
         <item>@array/button_flat_wave</item>
@@ -83,6 +125,12 @@
         <item>@array/checkbox</item>
         <item>@array/radio_button</item>
         <item>@array/switches</item>
+        <item>@array/fab_icon</item>
+        <item>@array/fab_line</item>
+        <item>@array/fab</item>
+        <item>@array/fab_color</item>
+        <item>@array/fab_wave</item>
+        <item>@array/fab_wave_color</item>
     </array>
 
 </resources>

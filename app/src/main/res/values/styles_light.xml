@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- TextView Style -->
+
+    <style name="LightTitleText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Title</item>
+        <item name="android:textColor">#FF000000</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="LightBodyText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FF000000</item>
+    </style>
+
     <!-- Button Style -->
 
     <style name="LightFlatButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
@@ -82,13 +95,75 @@
 
     <!-- Switch Style -->
 
-    <style name="LightRadioButtonDrawable" parent="Material.Drawable.RadioButton"/>
+    <style name="LightRadioButtonDrawable" parent="Material.Drawable.RadioButton">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FF000000</item>
+    </style>
 
-    <style name="LightCheckBoxDrawable" parent="Material.Drawable.CheckBox"/>
+    <style name="LightCheckBoxDrawable" parent="Material.Drawable.CheckBox">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FF000000</item>
+    </style>
 
     <style name="LightSwitch" parent="Material.Widget.Switch">
         <item name="sw_trackColor">@drawable/color_track_light</item>
         <item name="sw_thumbColor">@drawable/color_thumb_light</item>
+    </style>
+
+    <!-- FAB Style -->
+
+    <style name="LightFloatingActionButtonIcon" >
+        <item name="lmd_state">@xml/fab_icon_states</item>
+        <item name="lmd_curState">0</item>
+        <item name="lmd_padding">2dp</item>
+        <item name="lmd_animDuration">400</item>
+        <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
+        <item name="lmd_strokeSize">3dp</item>
+        <item name="lmd_strokeColor">#FFFFFFFF</item>
+        <item name="lmd_strokeCap">butt</item>
+        <item name="lmd_strokeJoin">miter</item>
+        <item name="lmd_clockwise">true</item>
+    </style>
+
+    <style name="LightFABIcon" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="LightFABLine" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorPrimary</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+    </style>
+
+    <style name="LightFAB" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="fab_backgroundColor">#FFDFDFDF</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/DarkFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="LightFABColor" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorPrimary</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">untilRelease</item>
+    </style>
+
+    <style name="LightFABWave" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="fab_backgroundColor">#FFDFDFDF</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/DarkFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="LightFABWaveColor" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorPrimary</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">afterRelease</item>
     </style>
 
 </resources>

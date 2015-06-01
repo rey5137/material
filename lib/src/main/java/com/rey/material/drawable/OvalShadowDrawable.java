@@ -88,6 +88,15 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
         return false;
     }
 
+    public boolean setAnimationDuration(int duration){
+        if(mAnimDuration != duration){
+            mAnimDuration = duration;
+            return true;
+        }
+
+        return false;
+    }
+
     public void setColor(ColorStateList colorStateList){
         mColorStateList = colorStateList;
         onStateChange(getState());
@@ -280,6 +289,7 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
             else{
                 mPrevColor = color;
                 mCurColor = color;
+                invalidateSelf();
             }
             return true;
         }
@@ -287,6 +297,12 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
             mPrevColor = color;
 
         return false;
+    }
+
+    @Override
+    public void jumpToCurrentState() {
+        super.jumpToCurrentState();
+        stop();
     }
 
     private void resetAnimation(){
