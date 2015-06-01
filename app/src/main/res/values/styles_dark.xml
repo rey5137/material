@@ -179,4 +179,20 @@
         <item name="sl_stepValue">10</item>
     </style>
 
+    <!-- Spinner Style -->
+
+    <style name="DarkSpinner" parent="Material.Widget.Spinner">
+        <item name="rd_style">@style/Material.Drawable.Ripple.Wave</item>
+        <item name="spn_labelEnable">true</item>
+        <item name="spn_arrowSwitchMode">true</item>
+        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="spn_arrowColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkSpinnerNoArrow" parent="DarkSpinner">
+        <item name="spn_arrowSize">0dp</item>
+        <item name="spn_popupItemAnimation">@anim/abc_fade_in</item>
+    </style>
+
 </resources>

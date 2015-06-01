@@ -120,6 +120,16 @@
         <item>@style/DarkSliderDiscrete</item>
     </array>
 
+    <array name="spinner">
+        <item>@style/LightSpinner</item>
+        <item>@style/DarkSpinner</item>
+    </array>
+
+    <array name="spinner_no_arrow">
+        <item>@style/LightSpinnerNoArrow</item>
+        <item>@style/DarkSpinnerNoArrow</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
         <item>@array/text_title</item>
@@ -143,6 +153,8 @@
         <item>@array/fab_wave_color</item>
         <item>@array/slider</item>
         <item>@array/slider_discrete</item>
+        <item>@array/spinner</item>
+        <item>@array/spinner_no_arrow</item>
     </array>
 
 </resources>

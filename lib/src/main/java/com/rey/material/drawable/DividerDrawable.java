@@ -62,6 +62,13 @@ public class DividerDrawable extends Drawable implements Animatable{
 		mAnimEnable = true;
 	}
 
+    public void setHeight(int height){
+        if(mHeight != height){
+            mHeight = height;
+            invalidateSelf();
+        }
+    }
+
     public void setPadding(int left, int right){
         if(mPaddingLeft != left || mPaddingRight != right){
             mPaddingLeft = left;
@@ -90,7 +97,11 @@ public class DividerDrawable extends Drawable implements Animatable{
 		mColorStateList = colorStateList;
 		onStateChange(getState());
 	}
-	
+
+    public void setAnimationDuration(int duration){
+        mAnimDuration = duration;
+    }
+
 	private PathEffect getPathEffect(){
 		if(mPathEffect == null)
 			mPathEffect = new DashPathEffect(new float[]{0.2f, mHeight * 2}, 0f);
