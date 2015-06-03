@@ -25,12 +25,12 @@
 
     <style name="LightFlatColorButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
         <item name="android:background">@null</item>
-        <item name="rd_backgroundColor">#33219AFF</item>
-        <item name="rd_rippleColor">#33219AFF</item>
+        <item name="rd_backgroundColor">@color/colorPrimaryQuarter</item>
+        <item name="rd_rippleColor">@color/colorPrimaryQuarter</item>
         <item name="rd_cornerRadius">4dp</item>
         <item name="rd_delayClick">afterRelease</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
-        <item name="android:textColor">#FF2196F3</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
     <style name="LightFlatWaveButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
@@ -42,11 +42,11 @@
 
     <style name="LightFlatWaveColorButtonRippleStyle" parent="Material.Drawable.Ripple.Wave.Light">
         <item name="android:background">@null</item>
-        <item name="rd_rippleColor">#902DA0FF</item>
+        <item name="rd_rippleColor">@color/colorPrimaryHalf</item>
         <item name="rd_cornerRadius">4dp</item>
         <item name="rd_delayClick">afterRelease</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
-        <item name="android:textColor">#FF2196F3</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
     <style name="LightRaiseButtonRippleStyle" parent="Material.Drawable.Ripple.Touch.Light">
@@ -191,6 +191,31 @@
     <style name="LightSpinnerNoArrow" parent="LightSpinner">
         <item name="spn_arrowSize">0dp</item>
         <item name="spn_popupItemAnimation">@anim/abc_fade_in</item>
+    </style>
+
+    <!-- TabPageIndicator -->
+
+    <style  name="LightTabPageIndicator"  parent="Material.Widget.TabPageIndicator">
+        <item name="tpi_tabPadding">12dp</item>
+        <item name="tpi_tabRipple">@style/LightTabRippleStyle</item>
+        <item name="tpi_indicatorHeight">3dp</item>
+        <item name="tpi_indicatorColor">@color/colorAccent</item>
+        <item name="android:textAppearance">@style/LightTabTextAppearance</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="tpi_mode">scroll</item>
+    </style>
+
+    <style name="LightTabTextAppearance" parent="@style/Base.TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">@drawable/color_tpi</item>
+    </style>
+
+    <style name="LightTabRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@null</item>
+        <item name="rd_rippleColor">@color/colorAccent</item>
+        <item name="rd_rippleAnimDuration">300</item>
+        <item name="rd_maskType">rectangle</item>
+        <item name="rd_cornerRadius">0dp</item>
+        <item name="rd_padding">0dp</item>
     </style>
 
 </resources>

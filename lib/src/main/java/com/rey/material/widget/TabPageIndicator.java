@@ -19,24 +19,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-public class TabPageIndicator extends HorizontalScrollView implements ViewPager.OnPageChangeListener, android.view.View.OnClickListener{
+public class TabPageIndicator extends HorizontalScrollView implements ViewPager.OnPageChangeListener, android.view.View.OnClickListener, ThemeManager.OnThemeChangedListener{
+
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
 	private LinearLayout mTabContainer;	
 	private ViewPager mViewPager;
 	
 	private int mMode;
-	private int mTabPadding;
-	private int mTabRippleStyle;	
-	private int mTextAppearance;
+	private int mTabPadding = -1;
+	private int mTabRippleStyle = 0;
+	private int mTextAppearance = 0;
 		
 	private int mIndicatorOffset;
 	private int mIndicatorWidth;
-	private int mIndicatorHeight;
+	private int mIndicatorHeight = -1;
 	
 	private Paint mPaint;
 	
@@ -93,6 +97,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(ThemeUtil.colorAccent(context, 0xFFFFFFFF));
 
         mTabContainer = new LinearLayout(context);
         mTabContainer.setOrientation(LinearLayout.HORIZONTAL);
@@ -102,35 +107,85 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		
 		if(isInEditMode())
 			addTemporaryTab();
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, defStyleAttr, defStyleRes);
 
-        mTabPadding = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_tabPadding, ThemeUtil.dpToPx(context, 12));
-        mTabRippleStyle = a.getResourceId(R.styleable.TabPageIndicator_tpi_tabRipple, 0);
-        int indicatorColor = a.getColor(R.styleable.TabPageIndicator_tpi_indicatorColor, ThemeUtil.colorAccent(context, 0xFFFFFFFF));
-        mIndicatorHeight = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_indicatorHeight, ThemeUtil.dpToPx(context, 2));
-        mTextAppearance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
-        mMode = a.getInteger(R.styleable.TabPageIndicator_tpi_mode, MODE_SCROLL);
+        int textAppearance = 0;
+        int mode = -1;
+        int rippleStyle = 0;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+            if(attr == R.styleable.TabPageIndicator_tpi_tabPadding)
+                mTabPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_tpi_tabRipple)
+                rippleStyle = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_tpi_indicatorColor)
+                mPaint.setColor(a.getColor(attr, 0));
+            else if(attr == R.styleable.TabPageIndicator_tpi_indicatorHeight)
+                mIndicatorHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_android_textAppearance)
+                textAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_tpi_mode)
+                mode = a.getInteger(attr, 0);
+        }
 
         a.recycle();
 
-        removeAllViews();
-        if(mMode == MODE_SCROLL) {
-            addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            setFillViewport(false);
-        }
-        else if(mMode == MODE_FIXED){
-            addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            setFillViewport(true);
+        if(mTabPadding < 0)
+            mTabPadding = ThemeUtil.dpToPx(context, 12);
+
+        if(mIndicatorHeight < 0)
+            mIndicatorHeight = ThemeUtil.dpToPx(context, 2);
+
+        if(mode >= 0){
+            if(mMode != mode || getChildCount() == 0){
+                mMode = mode;
+                removeAllViews();
+                if(mMode == MODE_SCROLL) {
+                    addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    setFillViewport(false);
+                }
+                else if(mMode == MODE_FIXED){
+                    addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    setFillViewport(true);
+                }
+            }
         }
 
-        mPaint.setColor(indicatorColor);
+        if(textAppearance != 0 && mTextAppearance != textAppearance){
+            mTextAppearance = textAppearance;
+            for(int i = 0, count = mTabContainer.getChildCount(); i < count; i++){
+                CheckedTextView tv = (CheckedTextView)mTabContainer.getChildAt(i);
+                tv.setTextAppearance(context, mTextAppearance);
+            }
+        }
+
+        if(rippleStyle != 0 && rippleStyle != mTabRippleStyle){
+            mTabRippleStyle = rippleStyle;
+            for(int i = 0, count = mTabContainer.getChildCount(); i < count; i++)
+                ViewUtil.setBackground(mTabContainer.getChildAt(i), new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
+        }
+
+        requestLayout();
+    }
+
+    @Override
+    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
     }
 
     @Override
@@ -138,14 +193,22 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         super.onAttachedToWindow();
         // Re-post the selector we saved
         if (mTabAnimSelector != null)            
-            post(mTabAnimSelector);        
+            post(mTabAnimSelector);
+
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onEvent(null);
+        }
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (mTabAnimSelector != null) 
-            removeCallbacks(mTabAnimSelector);        
+            removeCallbacks(mTabAnimSelector);
+
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
     
     private CheckedTextView getTabView(int position){

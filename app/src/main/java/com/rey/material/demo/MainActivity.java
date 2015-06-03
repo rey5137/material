@@ -118,6 +118,7 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 		vp.setCurrentItem(0);
 
         ViewUtil.setBackground(getWindow().getDecorView(), new ThemeDrawable(R.array.bg_window));
+        ViewUtil.setBackground(mToolbar, new ThemeDrawable(R.array.bg_toolbar));
     }
 
 	@Override
@@ -135,14 +136,14 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.tb_contextual:
+            case R.id.tb_switch:
                 mToolbarManager.setCurrentGroup(R.id.tb_group_contextual);
                 break;
             case R.id.tb_done:
             case R.id.tb_done_all:
                 mToolbarManager.setCurrentGroup(0);
                 break;
-            case R.id.tb_refresh:
+            case R.id.tb_theme:
                 int theme = (ThemeManager.getInstance().getCurrentTheme() + 1) % ThemeManager.getInstance().getThemeCount();
                 ThemeManager.getInstance().setCurrentTheme(theme);
                 Toast.makeText(this, "Current theme: " + theme, Toast.LENGTH_SHORT).show();

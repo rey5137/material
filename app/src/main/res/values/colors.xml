@@ -8,8 +8,11 @@
 	<color name="colorControlActivated">#FF03A9F4</color>
 	<color name="colorSwitchThumbNormal">#FF78909C</color>
 
+    <color name="colorPrimaryQuarter">#3303A9F4</color>
+    <color name="colorPrimaryHalf">#9003A9F4</color>
     <color name="colorControlNormalHalf">#9078909C</color>
     <color name="colorControlActivatedHalf">#9003A9F4</color>
+    <color name="colorAccentQuarter">#3300E5FF</color>
     <color name="colorAccentHalf">#9000E5FF</color>
 
     <array name="progress_colors">

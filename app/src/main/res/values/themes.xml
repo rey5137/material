@@ -15,6 +15,11 @@
         <item>@drawable/bg_window_dark</item>
     </array>
 
+    <array name="bg_toolbar">
+        <item>@drawable/bg_toolbar_light</item>
+        <item>@drawable/bg_toolbar_dark</item>
+    </array>
+
     <array name="text_title">
         <item>@style/LightTitleText</item>
         <item>@style/DarkTitleText</item>
@@ -130,8 +135,14 @@
         <item>@style/DarkSpinnerNoArrow</item>
     </array>
 
+    <array name="tab_indicator">
+        <item>@style/LightTabPageIndicator</item>
+        <item>@style/DarkTabPageIndicator</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
+        <item>@array/bg_toolbar</item>
         <item>@array/text_title</item>
         <item>@array/text_body</item>
         <item>@array/button_flat</item>
@@ -155,6 +166,7 @@
         <item>@array/slider_discrete</item>
         <item>@array/spinner</item>
         <item>@array/spinner_no_arrow</item>
+        <item>@array/tab_indicator</item>
     </array>
 
 </resources>
