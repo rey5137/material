@@ -87,7 +87,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 	}
 
     private boolean mLabelEnable = false;
-    private LabelView mLabelView;
+    private android.widget.TextView mLabelView;
 
 	private SpinnerAdapter mAdapter;
 	private OnItemClickListener mOnItemClickListener;
@@ -182,12 +182,13 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private LabelView getLabelView(){
+    private android.widget.TextView getLabelView(){
         if(mLabelView == null){
-            mLabelView = new LabelView(getContext());
+            mLabelView = new android.widget.TextView(getContext());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
                 mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
             mLabelView.setSingleLine(true);
+            mLabelView.setDuplicateParentStateEnabled(true);
         }
 
         return mLabelView;
@@ -205,6 +206,8 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         boolean arrowClockwise = true;
         int dividerAnimDuration = -1;
         ColorStateList dividerColor = null;
+        ColorStateList labelTextColor = null;
+        int labelTextSize = -1;
 
         for(int i = 0, count = a.getIndexCount(); i < count; i++){
             int attr = a.getIndex(i);
@@ -214,13 +217,9 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             else if(attr == R.styleable.Spinner_spn_labelPadding)
                 getLabelView().setPadding(0, 0, 0, a.getDimensionPixelSize(attr, 0));
             else if (attr == R.styleable.Spinner_spn_labelTextSize)
-                getLabelView().setTextSize(TypedValue.COMPLEX_UNIT_PX, a.getDimensionPixelSize(attr, 0));
-            else if(attr == R.styleable.Spinner_spn_labelTextColor) {
-                getLabelView().setTextColor(a.getColorStateList(attr));
-//                getLabelView().setTextColor(new Random().nextInt());
-                //TODO: fix bug text color is override.
-                System.out.println(this + " " + getLabelView().getTextColors() + " " + getLabelView().getCurrentTextColor());
-            }
+                labelTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_labelTextColor)
+                labelTextColor = a.getColorStateList(attr);
             else if(attr == R.styleable.Spinner_spn_labelTextAppearance)
                 getLabelView().setTextAppearance(context, a.getResourceId(attr, 0));
             else if(attr == R.styleable.Spinner_spn_labelEllipsize){
@@ -290,6 +289,12 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         }
 
         a.recycle();
+
+        if(labelTextColor != null)
+            getLabelView().setTextColor(labelTextColor);
+
+        if(labelTextSize >= 0)
+            getLabelView().setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
 
         if(mLabelEnable)
             addView(getLabelView(), 0, new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -1223,26 +1228,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 			if (mAdapter != null)
                 mAdapter.unregisterDataSetObserver(observer);            
 		}
-    }
-
-    private class LabelView extends android.widget.TextView{
-
-        public LabelView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void setTextColor(ColorStateList colors) {
-            super.setTextColor(colors);
-
-            System.out.println("asd: " + Spinner.this + " " + colors);
-        }
-
-        @Override
-        protected int[] onCreateDrawableState(int extraSpace) {
-            return Spinner.this.getDrawableState();
-        }
-
     }
 
 	private class DropdownPopup extends ListPopupWindow {
