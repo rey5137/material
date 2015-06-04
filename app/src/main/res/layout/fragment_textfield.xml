@@ -31,16 +31,14 @@
             android:completionThreshold="2"/>
 
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="text"
             android:hint="Input with label"
             app:et_inputId="@+id/textfield_et_label_input"
-            app:et_supportMode="none" />
+            app:et_supportMode="none"
+            app:v_styleId="@array/edittext"/>
 	    
         <com.rey.material.widget.EditText
             style="@style/Material.Widget.EditText.Light"
@@ -53,7 +51,7 @@
             android:inputType="textMultiLine"
             android:hint="Input with char counter"
             app:et_inputId="@+id/textfield_et_char_counter_input"
-            app:et_labelTextColor="@drawable/color_label"
+            app:et_labelTextColor="@drawable/color_label_light"
             app:et_supportMode="charCounter"
             app:et_supportMaxChars="20"
             app:et_supportTextErrorColor="#FFFF0000"
@@ -70,7 +68,7 @@
             android:inputType="textPassword"
             android:hint="Input with helper"
             app:et_inputId="@+id/textfield_et_helper_input"
-            app:et_labelTextColor="@drawable/color_label"
+            app:et_labelTextColor="@drawable/color_label_light"
             app:et_supportMode="helper"
             app:et_supportTextErrorColor="#FFFF0000"
             app:et_helper="Enter password"
@@ -87,7 +85,7 @@
             android:inputType="textPassword"
             android:hint="Input with helper + error"
             app:et_inputId="@+id/textfield_et_label_error_input"
-            app:et_labelTextColor="@drawable/color_label"
+            app:et_labelTextColor="@drawable/color_label_light"
             app:et_supportMode="helperWithError"
             app:et_supportTextErrorColor="#FFFF0000"
             app:et_helper="Enter password"
@@ -106,7 +104,7 @@
             android:text="Input text"
             android:enabled="false"
             app:et_inputId="@+id/textfield_et_disable_input"
-            app:et_labelTextColor="@drawable/color_label"
+            app:et_labelTextColor="@drawable/color_label_light"
             app:et_supportMode="none"/>
         	        
 	</LinearLayout>

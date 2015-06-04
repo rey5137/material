@@ -140,6 +140,11 @@
         <item>@style/DarkTabPageIndicator</item>
     </array>
 
+    <array name="edittext">
+        <item>@style/LightEditText</item>
+        <item>@style/DarkEditText</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
         <item>@array/bg_toolbar</item>
@@ -167,6 +172,7 @@
         <item>@array/spinner</item>
         <item>@array/spinner_no_arrow</item>
         <item>@array/tab_indicator</item>
+        <item>@array/edittext</item>
     </array>
 
 </resources>

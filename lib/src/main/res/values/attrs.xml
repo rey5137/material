@@ -112,6 +112,17 @@
         <attr name="android:letterSpacing" />
     </declare-styleable>
 
+    <declare-styleable name="AutoCompleteTextView">
+        <attr name="android:completionHint" />
+        <attr name="android:completionThreshold" />
+        <attr name="android:dropDownAnchor" />
+        <attr name="android:dropDownHeight" />
+        <attr name="android:dropDownHorizontalOffset" />
+        <attr name="android:dropDownVerticalOffset" />
+        <attr name="android:dropDownWidth" />
+        <attr name="android:popupBackground" />
+    </declare-styleable>
+
     <declare-styleable name="ThemableView">
         <attr name="v_styleId" format="reference"/>
     </declare-styleable>

@@ -8,8 +8,11 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.rey.material.R;
@@ -61,7 +64,18 @@ public class ViewUtil {
      * @param resId The style resourceId.
      */
     public static void applyStyle(View v, int resId){
-        TypedArray a = v.getContext().obtainStyledAttributes(null, R.styleable.View, 0, resId);
+        applyStyle(v, null, 0, resId);
+    }
+
+    /**
+     * Apply any View style attributes to a view.
+     * @param v The view is applied.
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     */
+    public static void applyStyle(View v, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        TypedArray a = v.getContext().obtainStyledAttributes(attrs, R.styleable.View, defStyleAttr, defStyleRes);
 
         int leftPadding = -1;
         int topPadding = -1;
@@ -303,15 +317,17 @@ public class ViewUtil {
         a.recycle();
 
         if(v instanceof TextView)
-            applyStyle((TextView)v, resId);
+            applyStyle((TextView)v, attrs, defStyleAttr, defStyleRes);
     }
 
     /**
      * Apply any TextView style attributes to a view.
-     * @param v The view is applied.
-     * @param resId The style resourceId.
+     * @param v
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
      */
-    private static void applyStyle(TextView v, int resId){
+    private static void applyStyle(TextView v, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         String fontFamily = null;
         int typefaceIndex = -1;
         int styleIndex = -1;
@@ -329,7 +345,7 @@ public class ViewUtil {
          * to be able to parse the appearance first and then let specific tags
          * for this View override it.
          */
-        TypedArray a = v.getContext().obtainStyledAttributes(null, R.styleable.TextViewAppearance, 0, resId);
+        TypedArray a = v.getContext().obtainStyledAttributes(attrs, R.styleable.TextViewAppearance, defStyleAttr, defStyleRes);
         TypedArray appearance = null;
         int ap = a.getResourceId(R.styleable.TextViewAppearance_android_textAppearance, -1);
         a.recycle();
@@ -400,7 +416,7 @@ public class ViewUtil {
             appearance.recycle();
         }
 
-        a = v.getContext().obtainStyledAttributes(null, R.styleable.TextView, 0, resId);
+        a = v.getContext().obtainStyledAttributes(attrs, R.styleable.TextView, defStyleAttr, defStyleRes);
 
         int n = a.getIndexCount();
         for (int i = 0; i < n; i++) {
@@ -589,5 +605,42 @@ public class ViewUtil {
                 break;
         }
         v.setTypeface(tf, styleIndex);
+
+        if(v instanceof AutoCompleteTextView)
+            applyStyle((AutoCompleteTextView)v, attrs, defStyleAttr, defStyleRes);
+    }
+
+    /**
+     * Apply any AutoCompleteTextView style attributes to a view.
+     * @param v
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     */
+    private static void applyStyle(AutoCompleteTextView v,  AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        TypedArray a = v.getContext().obtainStyledAttributes(attrs, R.styleable.AutoCompleteTextView, defStyleAttr, defStyleRes);
+
+        int n = a.getIndexCount();
+        for (int i = 0; i < n; i++) {
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.AutoCompleteTextView_android_completionHint)
+                v.setCompletionHint(a.getString(attr));
+            else if(attr == R.styleable.AutoCompleteTextView_android_completionThreshold)
+                v.setThreshold(a.getInteger(attr, 0));
+            else if(attr == R.styleable.AutoCompleteTextView_android_dropDownAnchor)
+                v.setDropDownAnchor(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.AutoCompleteTextView_android_dropDownHeight)
+                v.setDropDownHeight(a.getLayoutDimension(attr, ViewGroup.LayoutParams.WRAP_CONTENT));
+            else if(attr == R.styleable.AutoCompleteTextView_android_dropDownWidth)
+                v.setDropDownWidth(a.getLayoutDimension(attr, ViewGroup.LayoutParams.WRAP_CONTENT));
+            else if(attr == R.styleable.AutoCompleteTextView_android_dropDownHorizontalOffset)
+                v.setDropDownHorizontalOffset(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.AutoCompleteTextView_android_dropDownVerticalOffset)
+                v.setDropDownVerticalOffset(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.AutoCompleteTextView_android_popupBackground)
+                v.setDropDownBackgroundDrawable(a.getDrawable(attr));
+        }
+        a.recycle();
     }
 }

@@ -62,11 +62,15 @@ public class DividerDrawable extends Drawable implements Animatable{
 		mAnimEnable = true;
 	}
 
-    public void setHeight(int height){
+    public void setDividerHeight(int height){
         if(mHeight != height){
             mHeight = height;
             invalidateSelf();
         }
+    }
+
+    public int getDividerHeight(){
+        return mHeight;
     }
 
     public void setPadding(int left, int right){

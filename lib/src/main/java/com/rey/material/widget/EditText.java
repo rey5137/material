@@ -34,10 +34,10 @@ import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.CompletionInfo;
@@ -49,16 +49,20 @@ import android.view.inputmethod.InputConnection;
 import android.widget.*;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
-public class EditText extends FrameLayout {
+public class EditText extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 
-	private boolean mLabelEnable;
-    private boolean mLabelVisible;
-	private int mSupportMode;
-    private int mAutoCompleteMode;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+
+	private boolean mLabelEnable = false;
+    private boolean mLabelVisible = false;
+	private int mSupportMode = SUPPORT_MODE_NONE;
+    private int mAutoCompleteMode = AUTOCOMPLETE_MODE_NONE;
 
     /**
      * Indicate this EditText should not show a support text.  
@@ -83,7 +87,7 @@ public class EditText extends FrameLayout {
 	
 	private ColorStateList mDividerColors;
 	private ColorStateList mDividerErrorColors;
-    private boolean mDividerCompoundPadding;
+    private boolean mDividerCompoundPadding = true;
 	
 	private ColorStateList mSupportColors;
 	private ColorStateList mSupportErrorColors;
@@ -91,8 +95,8 @@ public class EditText extends FrameLayout {
 	private CharSequence mSupportHelper;
 	private CharSequence mSupportError;
 	
-	private int mLabelInAnimId;
-	private int mLabelOutAnimId;
+	private int mLabelInAnimId = 0;
+	private int mLabelOutAnimId = 0;
 	
 	protected LabelView mLabelView;
     protected android.widget.EditText mInputView;
@@ -131,181 +135,344 @@ public class EditText extends FrameLayout {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    private LabelView getLabelView(){
+        if(mLabelView == null){
+            mLabelView = new LabelView(getContext());
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
+            mLabelView.setGravity(Gravity.START);
+            mLabelView.setSingleLine(true);
+        }
+
+        return mLabelView;
+    }
+
+    private LabelView getSupportView(){
+        if(mSupportView == null)
+            mSupportView = new LabelView(getContext());
+
+        return mSupportView;
+    }
+
+    private boolean needCreateInputView(int autoCompleteMode){
+        if(mInputView == null)
+            return true;
+
+        switch (autoCompleteMode){
+            case AUTOCOMPLETE_MODE_NONE:
+                return !(mInputView instanceof InternalEditText);
+            case AUTOCOMPLETE_MODE_SINGLE:
+                return !(mInputView instanceof InternalAutoCompleteTextView);
+            case AUTOCOMPLETE_MODE_MULTI:
+                return !(mInputView instanceof InternalMultiAutoCompleteTextView);
+            default:
+                return false;
+        }
+    }
+
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         CharSequence text = mInputView == null ? null : mInputView.getText();
-        CharSequence supportHelper = getHelper();
-        CharSequence supportError = getError();
         removeAllViews();
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EditText, defStyleAttr, defStyleRes);
 
-        mLabelEnable = a.getBoolean(R.styleable.EditText_et_labelEnable, false);
-        mSupportMode = a.getInteger(R.styleable.EditText_et_supportMode, SUPPORT_MODE_NONE);
+        int labelPadding = -1;
+        int labelTextSize = -1;
+        ColorStateList labelTextColor = null;
+        int supportPadding = -1;
+        int supportTextSize = -1;
+        ColorStateList supportColors = null;
+        String supportHelper = null;
+        String supportError = null;
+        ColorStateList dividerColors = null;
+        ColorStateList dividerErrorColors = null;
+        int dividerHeight = -1;
+        int dividerPadding = -1;
+        int dividerAnimDuration = -1;
+
+
         mAutoCompleteMode = a.getInteger(R.styleable.EditText_et_autoCompleteMode, AUTOCOMPLETE_MODE_NONE);
+        if(needCreateInputView(mAutoCompleteMode)){
+            switch (mAutoCompleteMode){
+                case AUTOCOMPLETE_MODE_SINGLE:
+                    mInputView = new InternalAutoCompleteTextView(context, attrs, defStyleAttr);
+                    break;
+                case AUTOCOMPLETE_MODE_MULTI:
+                    mInputView = new InternalMultiAutoCompleteTextView(context, attrs, defStyleAttr);
+                    break;
+                default:
+                    mInputView = new InternalEditText(context, attrs, defStyleAttr);
+                    break;
+            }
+            if(text != null)
+                mInputView.setText(text);
 
-        switch (mAutoCompleteMode){
-            case AUTOCOMPLETE_MODE_SINGLE:
-                mInputView = new InternalAutoCompleteTextView(context, attrs, defStyleAttr);
-                break;
-            case AUTOCOMPLETE_MODE_MULTI:
-                mInputView = new InternalMultiAutoCompleteTextView(context, attrs, defStyleAttr);
-                break;
-            default:
-                mInputView = new InternalEditText(context, attrs, defStyleAttr);
-                break;
+            mInputView.addTextChangedListener(new InputTextWatcher());
+
+            if(mDivider != null){
+                mDivider.setAnimEnable(false);
+                ViewUtil.setBackground(mInputView, mDivider);
+                mDivider.setAnimEnable(true);
+            }
         }
-
-        int inputId = a.getResourceId(R.styleable.EditText_et_inputId, 0);
-        mInputView.setId(inputId != 0 ? inputId : ViewUtil.generateViewId());
+        else
+            ViewUtil.applyStyle(mInputView, attrs, defStyleAttr, defStyleRes);
         mInputView.setVisibility(View.VISIBLE);
         mInputView.setFocusableInTouchMode(true);
-        mDividerColors = a.getColorStateList(R.styleable.EditText_et_dividerColor);
-        mDividerErrorColors = a.getColorStateList(R.styleable.EditText_et_dividerErrorColor);
-        if(mDividerColors == null){
-            int[][] states = new int[][]{
-                    new int[]{-android.R.attr.state_focused},
-                    new int[]{android.R.attr.state_focused, android.R.attr.state_enabled},
-            };
-            int[] colors = new int[]{
-                    ThemeUtil.colorControlNormal(context, 0xFF000000),
-                    ThemeUtil.colorControlActivated(context, 0xFF000000),
-            };
 
-            mDividerColors = new ColorStateList(states, colors);
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.EditText_et_labelEnable)
+                mLabelEnable = a.getBoolean(attr, false);
+            else if(attr == R.styleable.EditText_et_labelPadding)
+                labelPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_labelTextSize)
+                labelTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_labelTextColor)
+                labelTextColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.EditText_et_labelTextAppearance)
+                getLabelView().setTextAppearance(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.EditText_et_labelEllipsize){
+                int labelEllipsize = a.getInteger(attr, 0);
+                switch (labelEllipsize) {
+                    case 1:
+                        getLabelView().setEllipsize(TruncateAt.START);
+                        break;
+                    case 2:
+                        getLabelView().setEllipsize(TruncateAt.MIDDLE);
+                        break;
+                    case 3:
+                        getLabelView().setEllipsize(TruncateAt.END);
+                        break;
+                    case 4:
+                        getLabelView().setEllipsize(TruncateAt.MARQUEE);
+                        break;
+                    default:
+                        getLabelView().setEllipsize(TruncateAt.END);
+                        break;
+                }
+            }
+            else if(attr == R.styleable.EditText_et_labelInAnim)
+                mLabelInAnimId = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.EditText_et_labelOutAnim)
+                mLabelOutAnimId = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.EditText_et_supportMode)
+                mSupportMode = a.getInteger(attr, 0);
+            else if(attr == R.styleable.EditText_et_supportPadding)
+                supportPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_supportTextSize)
+                supportTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_supportTextColor)
+                supportColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.EditText_et_supportTextErrorColor)
+                mSupportErrorColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.EditText_et_supportTextAppearance)
+                getSupportView().setTextAppearance(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.EditText_et_supportEllipsize){
+                int supportEllipsize = a.getInteger(attr, 0);
+                switch (supportEllipsize) {
+                    case 1:
+                        getSupportView().setEllipsize(TruncateAt.START);
+                        break;
+                    case 2:
+                        getSupportView().setEllipsize(TruncateAt.MIDDLE);
+                        break;
+                    case 3:
+                        getSupportView().setEllipsize(TruncateAt.END);
+                        break;
+                    case 4:
+                        getSupportView().setEllipsize(TruncateAt.MARQUEE);
+                        break;
+                    default:
+                        getSupportView().setEllipsize(TruncateAt.END);
+                        break;
+                }
+            }
+            else if(attr == R.styleable.EditText_et_supportMaxLines)
+                getSupportView().setMaxLines(a.getInteger(attr, 0));
+            else if(attr == R.styleable.EditText_et_supportLines)
+                getSupportView().setLines(a.getInteger(attr, 0));
+            else if(attr == R.styleable.EditText_et_supportSingleLine)
+                getSupportView().setSingleLine(a.getBoolean(attr, false));
+            else if(attr == R.styleable.EditText_et_supportMaxChars)
+                mSupportMaxChars = a.getInteger(attr, 0);
+            else if(attr == R.styleable.EditText_et_helper)
+                supportHelper = a.getString(attr);
+            else if(attr == R.styleable.EditText_et_error)
+                supportError = a.getString(attr);
+            else if(attr == R.styleable.EditText_et_inputId)
+                mInputView.setId(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.EditText_et_dividerColor)
+                dividerColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.EditText_et_dividerErrorColor)
+                dividerErrorColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.EditText_et_dividerHeight)
+                dividerHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_dividerPadding)
+                dividerPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.EditText_et_dividerAnimDuration)
+                dividerAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.EditText_et_dividerCompoundPadding)
+                mDividerCompoundPadding = a.getBoolean(attr, true);
         }
 
-        if(mDividerErrorColors == null)
-            mDividerErrorColors = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFFFF0000));
+        a.recycle();
 
-        int dividerHeight = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerHeight, 0);
-        int dividerPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_dividerPadding, 0);
-        int dividerAnimDuration = a.getInteger(R.styleable.EditText_et_dividerAnimDuration, context.getResources().getInteger(android.R.integer.config_shortAnimTime));
-        mDividerCompoundPadding = a.getBoolean(R.styleable.EditText_et_dividerCompoundPadding, true);
-        mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+        if(mInputView.getId() == 0)
+            mInputView.setId(ViewUtil.generateViewId());
 
-        mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
-        mDivider.setInEditMode(isInEditMode());
-        mDivider.setAnimEnable(false);
-        ViewUtil.setBackground(mInputView, mDivider);
-        mDivider.setAnimEnable(true);
+        if(mDivider == null){
+            mDividerColors = dividerColors;
+            mDividerErrorColors = dividerErrorColors;
 
-        if(text != null)
-            mInputView.setText(text);
-        mInputView.addTextChangedListener(new InputTextWatcher());
-        addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            if(mDividerColors == null){
+                int[][] states = new int[][]{
+                        new int[]{-android.R.attr.state_focused},
+                        new int[]{android.R.attr.state_focused, android.R.attr.state_enabled},
+                };
+                int[] colors = new int[]{
+                        ThemeUtil.colorControlNormal(context, 0xFF000000),
+                        ThemeUtil.colorControlActivated(context, 0xFF000000),
+                };
+
+                mDividerColors = new ColorStateList(states, colors);
+            }
+
+            if(mDividerErrorColors == null)
+                mDividerErrorColors = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFFFF0000));
+
+            if(dividerHeight < 0)
+                dividerHeight = 0;
+
+            if(dividerPadding < 0)
+                dividerPadding = 0;
+
+            if(dividerAnimDuration < 0)
+                dividerAnimDuration = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+
+            mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
+            mDivider.setInEditMode(isInEditMode());
+            mDivider.setAnimEnable(false);
+            ViewUtil.setBackground(mInputView, mDivider);
+            mDivider.setAnimEnable(true);
+        }
+        else{
+            System.out.println(dividerHeight + " " + dividerPadding);
+
+            if(dividerHeight >= 0 || dividerPadding >= 0) {
+                if (dividerHeight < 0)
+                    dividerHeight = mDivider.getDividerHeight();
+
+                if (dividerPadding < 0)
+                    dividerPadding = mInputView.getPaddingBottom() - mDivider.getDividerHeight();
+
+                mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+                mDivider.setDividerHeight(dividerHeight);
+                mDivider.setPadding(mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0);
+
+                this.setBackgroundColor(0xFFFF0000);
+                System.out.println("asd: " + mDivider.getDividerHeight());
+            }
+
+            if(dividerColors != null)
+                mDividerColors = dividerColors;
+
+            if(dividerErrorColors != null)
+                mDividerErrorColors = dividerErrorColors;
+
+            mDivider.setColor(getError() == null ? mDividerColors : mDividerErrorColors);
+
+            if(dividerAnimDuration >= 0)
+                mDivider.setAnimationDuration(dividerAnimDuration);
+        }
+
+        if(labelPadding >= 0)
+            getLabelView().setPadding(mDivider.getPaddingLeft(), 0, mDivider.getPaddingRight(), labelPadding);
+
+        if(labelTextSize >= 0)
+            getLabelView().setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
+
+        if(labelTextColor != null)
+            getLabelView().setTextColor(labelTextColor);
 
         if(mLabelEnable){
             mLabelVisible = true;
-            mLabelView = new LabelView(context);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
-            mLabelView.setGravity(GravityCompat.START);
-            mLabelView.setSingleLine(true);
-            int labelPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_labelPadding, 0);
-            int labelTextSize = a.getDimensionPixelSize(R.styleable.EditText_et_labelTextSize, 0);
-            ColorStateList labelTextColor = a.getColorStateList(R.styleable.EditText_et_labelTextColor);
-            int labelTextAppearance = a.getResourceId(R.styleable.EditText_et_labelTextAppearance, 0);
-            int labelEllipsize = a.getInteger(R.styleable.EditText_et_labelEllipsize, 0);
-            mLabelInAnimId = a.getResourceId(R.styleable.EditText_et_labelInAnim, 0);
-            mLabelOutAnimId = a.getResourceId(R.styleable.EditText_et_labelOutAnim, 0);
-
-            mLabelView.setPadding(mDivider.getPaddingLeft(), 0, mDivider.getPaddingRight(), labelPadding);
-            if(labelTextAppearance > 0)
-                mLabelView.setTextAppearance(context, labelTextAppearance);
-            if(labelTextSize > 0)
-                mLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
-            if(labelTextColor != null)
-                mLabelView.setTextColor(labelTextColor);
-
-            switch (labelEllipsize) {
-                case 1:
-                    mLabelView.setEllipsize(TruncateAt.START);
-                    break;
-                case 2:
-                    mLabelView.setEllipsize(TruncateAt.MIDDLE);
-                    break;
-                case 3:
-                    mLabelView.setEllipsize(TruncateAt.END);
-                    break;
-                case 4:
-                    mLabelView.setEllipsize(TruncateAt.MARQUEE);
-                    break;
-                default:
-                    mLabelView.setEllipsize(TruncateAt.END);
-                    break;
-            }
+            mLabelView.setText(mInputView.getHint());
             addView(mLabelView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            setLabelVisible(!TextUtils.isEmpty(mInputView.getText().toString()), false);
         }
 
+        if(supportTextSize >= 0)
+            getSupportView().setTextSize(TypedValue.COMPLEX_UNIT_PX, supportTextSize);
+
+        if(supportColors != null) {
+            mSupportColors = supportColors;
+            getSupportView().setTextColor(mSupportColors);
+        }
+
+        if(supportPadding >= 0)
+            getSupportView().setPadding(mDivider.getPaddingLeft(), supportPadding, mDivider.getPaddingRight(), 0);
+
+        if(supportHelper != null)
+            setHelper(supportHelper);
+
+        if(supportError != null)
+            setError(supportError);
+
         if(mSupportMode != SUPPORT_MODE_NONE){
-            mSupportView = new LabelView(context);
-            int supportPadding = a.getDimensionPixelOffset(R.styleable.EditText_et_supportPadding, 0);
-            int supportTextSize = a.getDimensionPixelSize(R.styleable.EditText_et_supportTextSize, 0);
-            mSupportColors  = a.getColorStateList(R.styleable.EditText_et_supportTextColor);
-            mSupportErrorColors = a.getColorStateList(R.styleable.EditText_et_supportTextErrorColor);
-            int supportTextAppearance = a.getResourceId(R.styleable.EditText_et_supportTextAppearance, 0);
-            int supportEllipsize = a.getInteger(R.styleable.EditText_et_supportEllipsize, 0);
-            int supportMaxLines = a.getInteger(R.styleable.EditText_et_supportMaxLines, 0);
-            int supportLines = a.getInteger(R.styleable.EditText_et_supportLines, 0);
-            boolean supportSingleLine = a.getBoolean(R.styleable.EditText_et_supportSingleLine, false);
-
-            mSupportView.setPadding(mDivider.getPaddingLeft(), supportPadding, mDivider.getPaddingRight(), 0);
-            mSupportView.setTextSize(TypedValue.COMPLEX_UNIT_PX, supportTextSize);
-            mSupportView.setTextColor(mSupportColors);
-            if(supportTextAppearance > 0)
-                mSupportView.setTextAppearance(context, supportTextAppearance);
-            mSupportView.setSingleLine(supportSingleLine);
-            if(supportMaxLines > 0)
-                mSupportView.setMaxLines(supportMaxLines);
-            if(supportLines > 0)
-                mSupportView.setLines(supportLines);
-
-            switch (supportEllipsize) {
-                case 1:
-                    mSupportView.setEllipsize(TruncateAt.START);
-                    break;
-                case 2:
-                    mSupportView.setEllipsize(TruncateAt.MIDDLE);
-                    break;
-                case 3:
-                    mSupportView.setEllipsize(TruncateAt.END);
-                    break;
-                case 4:
-                    mSupportView.setEllipsize(TruncateAt.MARQUEE);
-                    break;
-                default:
-                    mSupportView.setEllipsize(TruncateAt.END);
-                    break;
-            }
-
             switch (mSupportMode) {
                 case SUPPORT_MODE_CHAR_COUNTER:
-                    mSupportMaxChars = a.getInteger(R.styleable.EditText_et_supportMaxChars, 0);
-                    mSupportView.setGravity(GravityCompat.END);
+                    getSupportView().setGravity(Gravity.END);
                     updateCharCounter(mInputView.getText().length());
                     break;
                 case SUPPORT_MODE_HELPER:
                 case SUPPORT_MODE_HELPER_WITH_ERROR:
-                    mSupportView.setGravity(GravityCompat.START);
-                    mSupportHelper = ThemeUtil.getString(a, R.styleable.EditText_et_helper, supportHelper);
-                    setError(ThemeUtil.getString(a, R.styleable.EditText_et_error, supportError));
+                    getSupportView().setGravity(GravityCompat.START);
                     break;
             }
             addView(mSupportView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
-        a.recycle();
+        addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        if(mLabelEnable){
-            mLabelView.setText(mInputView.getHint());
-            setLabelVisible(!TextUtils.isEmpty(mInputView.getText().toString()), false);
+        requestLayout();
+    }
+
+    @Override
+    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onEvent(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -489,7 +656,7 @@ public class EditText extends FrameLayout {
 	}
 
     private void setLabelVisible(boolean visible, boolean animation){
-        if(!mLabelEnable|| mLabelVisible == visible)
+        if(!mLabelEnable || mLabelVisible == visible)
             return;
 
         mLabelVisible = visible;
@@ -1823,7 +1990,7 @@ public class EditText extends FrameLayout {
 	
 	/**
      * @return the maximum number of lines displayed in this TextView, or -1 if the maximum
-     * height was set in pixels instead using {@link #setMaxHeight(int) or #setHeight(int)}.
+     * height was set in pixels instead using {@link #setMaxHeight(int) or #setDividerHeight(int)}.
      *
      * @see #setMaxLines(int)
      *
@@ -1889,7 +2056,7 @@ public class EditText extends FrameLayout {
 	
 	/**
      * @return the minimum number of lines displayed in this TextView, or -1 if the minimum
-     * height was set in pixels instead using {@link #setMinHeight(int) or #setHeight(int)}.
+     * height was set in pixels instead using {@link #setMinHeight(int) or #setDividerHeight(int)}.
      *
      * @see #setMinLines(int)
      *

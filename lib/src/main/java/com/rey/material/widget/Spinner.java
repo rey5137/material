@@ -5,20 +5,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewGroupCompat;
 import android.support.v7.internal.widget.TintManager;
 import android.support.v7.internal.widget.TintTypedArray;
 import android.support.v7.internal.widget.ViewUtils;
@@ -35,7 +27,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -46,10 +37,6 @@ import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Random;
 
 public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 		
@@ -153,7 +140,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setWillNotDraw(false);
 
         mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
@@ -351,7 +338,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 mDividerDrawable.setCallback(this);
             }
             else{
-                mDividerDrawable.setHeight(mDividerHeight);
+                mDividerDrawable.setDividerHeight(mDividerHeight);
 
                 if(dividerColor != null)
                     mDividerDrawable.setColor(dividerColor);

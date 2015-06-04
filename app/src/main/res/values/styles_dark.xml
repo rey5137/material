@@ -195,7 +195,7 @@
         <item name="spn_popupItemAnimation">@anim/abc_fade_in</item>
     </style>
 
-    <!-- TabPageIndicator -->
+    <!-- TabPageIndicator Style -->
 
     <style  name="DarkTabPageIndicator"  parent="Material.Widget.TabPageIndicator">
         <item name="tpi_tabPadding">12dp</item>
@@ -218,6 +218,17 @@
         <item name="rd_maskType">rectangle</item>
         <item name="rd_cornerRadius">0dp</item>
         <item name="rd_padding">0dp</item>
+    </style>
+
+    <!-- EditText Style-->
+
+    <style  name="DarkEditText"  parent="Material.Widget.EditText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorHint">@color/abc_secondary_text_material_dark</item>
+        <item name="et_dividerColor">@drawable/color_divider_dark</item>
+        <item name="et_dividerHeight">6dp</item>
+        <item name="et_labelTextColor">@drawable/color_label_dark</item>
     </style>
 
 </resources>
