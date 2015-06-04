@@ -19,6 +19,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 
 	private View.OnClickListener mClickListener;
 	private View mView;
+    private boolean scheduledClick = false;
 		
 	public RippleManager(){}
 
@@ -67,14 +68,26 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 	public void onClick(View v) {
 		Drawable background = mView.getBackground();
 		long delay = 0;
+        boolean singleClickEnabled = false;
 						
-		if(background instanceof RippleDrawable)
-			delay = ((RippleDrawable)background).getClickDelayTime();
-		else if(background instanceof ToolbarRippleDrawable)
-			delay = ((ToolbarRippleDrawable)background).getClickDelayTime();
-			
-		if(delay > 0 && mView.getHandler() != null)
-			mView.getHandler().postDelayed(this, delay);
+		if(background instanceof RippleDrawable) {
+            delay = ((RippleDrawable) background).getClickDelayTime();
+            singleClickEnabled = ((RippleDrawable) background).getSingleClickEnabled();
+        }
+		else if(background instanceof ToolbarRippleDrawable) {
+            delay = ((ToolbarRippleDrawable) background).getClickDelayTime();
+            singleClickEnabled = ((ToolbarRippleDrawable) background).getSingleClickEnabled();
+        }
+		if(delay > 0 && mView.getHandler() != null) {
+            if(singleClickEnabled) {
+                if(!scheduledClick) {
+                    scheduledClick = true;
+                    mView.getHandler().postDelayed(this, delay);
+                }
+            }else {
+                mView.getHandler().postDelayed(this, delay);
+            }
+        }
 		else
 			run();
 	}
@@ -83,6 +96,7 @@ public final class RippleManager implements View.OnClickListener, Runnable{
     public void run() {
     	if(mClickListener != null)
     		mClickListener.onClick(mView);
+        scheduledClick = false;
     }
 
     /**

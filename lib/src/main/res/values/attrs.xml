@@ -108,6 +108,7 @@
             <enum name="untilRelease" value="0x00000001" />
             <enum name="afterRelease" value="0x00000002" />
         </attr>
+        <attr name="rd_singleClick" format="boolean" />
     </declare-styleable>
     
     <declare-styleable name="LineMorphingDrawable">
