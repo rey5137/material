@@ -139,7 +139,6 @@ public class YearPicker extends ListView implements ThemeManager.OnThemeChangedL
         String familyName = null;
         int style = -1;
 
-
         for(int i = 0, count = a.getIndexCount(); i < count; i++){
             int attr = a.getIndex(i);
 
