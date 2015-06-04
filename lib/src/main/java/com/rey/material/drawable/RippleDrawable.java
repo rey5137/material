@@ -1,7 +1,5 @@
 package com.rey.material.drawable;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
