@@ -60,6 +60,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	private int mRippleColor;
 	private float mRippleAlphaPercent;
 	private int mDelayClickType;
+    private boolean mSingleClick;
 
 	private Interpolator mInInterpolator;
 	private Interpolator mOutInterpolator;
@@ -81,17 +82,18 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
     private static final int TYPE_TOUCH_MATCH_VIEW = -1;
 	private static final int TYPE_TOUCH = 0;
 	private static final int TYPE_WAVE = 1;
-	
+
 	private static final float[] GRADIENT_STOPS = new float[]{0f, 0.99f, 1f};
 	private static final float GRADIENT_RADIUS = 16;
 		
-	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int delayClickType,  int maxRippleRadius, int rippleAnimDuration, int rippleColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
+	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int delayClickType, boolean sigleClick,  int maxRippleRadius, int rippleAnimDuration, int rippleColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
 		setBackgroundDrawable(backgroundDrawable);
 		mBackgroundAnimDuration = backgroundAnimDuration;
 		mBackgroundColor = backgroundColor;
 		
 		mRippleType = rippleType;
         setDelayClickType(delayClickType);
+        mSingleClick = sigleClick;
 		mMaxRippleRadius = maxRippleRadius;
 		mRippleAnimDuration = rippleAnimDuration;
 		mRippleColor = rippleColor;
@@ -174,6 +176,10 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		
 		return -1;
 	}
+
+    public boolean getSingleClickEnabled(){
+        return mSingleClick;
+    }
 	
 	private void setRippleState(int state){
 		if(mState != state){
@@ -512,6 +518,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		private int mMaskTop;
 		private int mMaskRight;
 		private int mMaskBottom;
+        private boolean mSingleClickEnabled;
 		
 		public Builder(){}
 
@@ -527,6 +534,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			backgroundAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_backgroundAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			rippleType(a.getInteger(R.styleable.RippleDrawable_rd_rippleType, RippleDrawable.TYPE_TOUCH));
             delayClickType(a.getInteger(R.styleable.RippleDrawable_rd_delayClick, RippleDrawable.DELAY_CLICK_NONE));
+            singleClick(a.getBoolean(R.styleable.RippleDrawable_rd_singleClick, false));
             type = ThemeUtil.getType(a, R.styleable.RippleDrawable_rd_maxRippleRadius);
             if(type >= TypedValue.TYPE_FIRST_INT && type <= TypedValue.TYPE_LAST_INT)
                 maxRippleRadius(a.getInteger(R.styleable.RippleDrawable_rd_maxRippleRadius, -1));
@@ -560,7 +568,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			if(mOutInterpolator == null)
 				mOutInterpolator = new DecelerateInterpolator();
 			
-			return new RippleDrawable(mBackgroundDrawable, mBackgroundAnimDuration, mBackgroundColor, mRippleType, mDelayClickType, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator, mMaskType, mMaskTopLeftCornerRadius, mMaskTopRightCornerRadius, mMaskBottomRightCornerRadius, mMaskBottomLeftCornerRadius, mMaskLeft, mMaskTop, mMaskRight, mMaskBottom);
+			return new RippleDrawable(mBackgroundDrawable, mBackgroundAnimDuration, mBackgroundColor, mRippleType, mDelayClickType, mSingleClickEnabled, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator, mMaskType, mMaskTopLeftCornerRadius, mMaskTopRightCornerRadius, mMaskBottomRightCornerRadius, mMaskBottomLeftCornerRadius, mMaskLeft, mMaskTop, mMaskRight, mMaskBottom);
 		}
 		
 		public Builder backgroundDrawable(Drawable drawable){
@@ -585,6 +593,11 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 
         public Builder delayClickType(int type){
             mDelayClickType = type;
+            return this;
+        }
+
+        public Builder singleClick(boolean enabled){
+            mSingleClickEnabled = enabled;
             return this;
         }
 
