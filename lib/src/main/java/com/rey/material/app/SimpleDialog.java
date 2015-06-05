@@ -74,6 +74,9 @@ public class SimpleDialog extends Dialog {
 
     @Override
     protected void onCreate() {
+        messageTextAppearance(R.style.TextAppearance_AppCompat_Body1);
+        itemHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        itemTextAppearance(R.style.TextAppearance_AppCompat_Body1);
     }
 
     @Override
@@ -84,18 +87,36 @@ public class SimpleDialog extends Dialog {
             return this;
 
         TypedArray a = getContext().obtainStyledAttributes(resId, R.styleable.SimpleDialog);
+        int textAppearance = 0;
+        int textColor = 0;
+        boolean textColorDefined = false;
 
-        messageTextAppearance(a.getResourceId(R.styleable.SimpleDialog_di_messageTextAppearance, R.style.TextAppearance_AppCompat_Body1));
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
 
-        if(ThemeUtil.getType(a, R.styleable.SimpleDialog_di_messageTextColor) != TypedValue.TYPE_NULL)
-            messageTextColor(a.getColor(R.styleable.SimpleDialog_di_messageTextColor, 0));
-
-        radioButtonStyle(a.getResourceId(R.styleable.SimpleDialog_di_radioButtonStyle, 0));
-        checkBoxStyle(a.getResourceId(R.styleable.SimpleDialog_di_checkBoxStyle, 0));
-        itemHeight(a.getDimensionPixelSize(R.styleable.SimpleDialog_di_itemHeight, ViewGroup.LayoutParams.WRAP_CONTENT));
-        itemTextAppearance(a.getResourceId(R.styleable.SimpleDialog_di_itemTextAppearance, R.style.TextAppearance_AppCompat_Body1));
+            if(attr == R.styleable.SimpleDialog_di_messageTextAppearance)
+                textAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.SimpleDialog_di_messageTextColor) {
+                textColor = a.getColor(attr, 0);
+                textColorDefined = true;
+            }
+            else if(attr == R.styleable.SimpleDialog_di_radioButtonStyle)
+                radioButtonStyle(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.SimpleDialog_di_checkBoxStyle)
+                checkBoxStyle(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.SimpleDialog_di_itemHeight)
+                itemHeight(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SimpleDialog_di_itemTextAppearance)
+                itemTextAppearance(a.getResourceId(attr, 0));
+        }
 
         a.recycle();
+
+        if(textAppearance != 0)
+            messageTextAppearance(textAppearance);
+
+        if(textColorDefined)
+            messageTextColor(textColor);
 
         return this;
     }
