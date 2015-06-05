@@ -88,6 +88,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 	private ColorStateList mDividerColors;
 	private ColorStateList mDividerErrorColors;
     private boolean mDividerCompoundPadding = true;
+    private int mDividerPadding = -1;
 	
 	private ColorStateList mSupportColors;
 	private ColorStateList mSupportErrorColors;
@@ -191,6 +192,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         int supportPadding = -1;
         int supportTextSize = -1;
         ColorStateList supportColors = null;
+        ColorStateList supportErrorColors = null;
         String supportHelper = null;
         String supportError = null;
         ColorStateList dividerColors = null;
@@ -199,8 +201,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         int dividerPadding = -1;
         int dividerAnimDuration = -1;
 
-
-        mAutoCompleteMode = a.getInteger(R.styleable.EditText_et_autoCompleteMode, AUTOCOMPLETE_MODE_NONE);
+        mAutoCompleteMode = a.getInteger(R.styleable.EditText_et_autoCompleteMode, mAutoCompleteMode);
         if(needCreateInputView(mAutoCompleteMode)){
             switch (mAutoCompleteMode){
                 case AUTOCOMPLETE_MODE_SINGLE:
@@ -275,7 +276,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
             else if(attr == R.styleable.EditText_et_supportTextColor)
                 supportColors = a.getColorStateList(attr);
             else if(attr == R.styleable.EditText_et_supportTextErrorColor)
-                mSupportErrorColors = a.getColorStateList(attr);
+                supportErrorColors = a.getColorStateList(attr);
             else if(attr == R.styleable.EditText_et_supportTextAppearance)
                 getSupportView().setTextAppearance(context, a.getResourceId(attr, 0));
             else if(attr == R.styleable.EditText_et_supportEllipsize){
@@ -360,7 +361,8 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
             if(dividerAnimDuration < 0)
                 dividerAnimDuration = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+            mDividerPadding = dividerPadding;
+            mInputView.setPadding(0, 0, 0, mDividerPadding + dividerHeight);
 
             mDivider = new DividerDrawable(dividerHeight, mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0, mDividerColors, dividerAnimDuration);
             mDivider.setInEditMode(isInEditMode());
@@ -369,21 +371,16 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
             mDivider.setAnimEnable(true);
         }
         else{
-            System.out.println(dividerHeight + " " + dividerPadding);
-
             if(dividerHeight >= 0 || dividerPadding >= 0) {
                 if (dividerHeight < 0)
                     dividerHeight = mDivider.getDividerHeight();
 
-                if (dividerPadding < 0)
-                    dividerPadding = mInputView.getPaddingBottom() - mDivider.getDividerHeight();
+                if (dividerPadding >= 0)
+                    mDividerPadding = dividerPadding;
 
-                mInputView.setPadding(0, 0, 0, dividerPadding + dividerHeight);
+                mInputView.setPadding(0, 0, 0, mDividerPadding + dividerHeight);
                 mDivider.setDividerHeight(dividerHeight);
                 mDivider.setPadding(mDividerCompoundPadding ? mInputView.getTotalPaddingLeft() : 0, mDividerCompoundPadding ? mInputView.getTotalPaddingRight() : 0);
-
-                this.setBackgroundColor(0xFFFF0000);
-                System.out.println("asd: " + mDivider.getDividerHeight());
             }
 
             if(dividerColors != null)
@@ -417,18 +414,24 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         if(supportTextSize >= 0)
             getSupportView().setTextSize(TypedValue.COMPLEX_UNIT_PX, supportTextSize);
 
-        if(supportColors != null) {
+        if(supportColors != null)
             mSupportColors = supportColors;
-            getSupportView().setTextColor(mSupportColors);
-        }
+        else if(mSupportColors == null)
+            mSupportColors = context.getResources().getColorStateList(R.color.abc_secondary_text_material_light);
+
+        if(supportErrorColors != null)
+            mSupportErrorColors = supportErrorColors;
+        else if(mSupportErrorColors == null)
+            mSupportErrorColors = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0xFFFF0000));
 
         if(supportPadding >= 0)
             getSupportView().setPadding(mDivider.getPaddingLeft(), supportPadding, mDivider.getPaddingRight(), 0);
 
-        if(supportHelper != null)
+        if(supportHelper == null && supportError == null)
+            getSupportView().setTextColor(getError() == null ? mSupportColors : mSupportErrorColors);
+        else if(supportHelper != null)
             setHelper(supportHelper);
-
-        if(supportError != null)
+        else
             setError(supportError);
 
         if(mSupportMode != SUPPORT_MODE_NONE){
@@ -613,14 +616,14 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 			return;		
 		
 		if(mSupportError != null){
-			mSupportView.setTextColor(mSupportErrorColors);
-			mDivider.setColor(mDividerErrorColors);			
-			mSupportView.setText(mSupportMode == SUPPORT_MODE_HELPER ? mSupportError : TextUtils.concat(mSupportHelper, ", ", mSupportError));						
+			getSupportView().setTextColor(mSupportErrorColors);
+			mDivider.setColor(mDividerErrorColors);
+            getSupportView().setText(mSupportMode == SUPPORT_MODE_HELPER ? mSupportError : TextUtils.concat(mSupportHelper, ", ", mSupportError));
 		}
 		else{
-			mSupportView.setTextColor(mSupportColors);
-			mDivider.setColor(mDividerColors);			
-			mSupportView.setText(mSupportHelper);
+            getSupportView().setTextColor(mSupportColors);
+			mDivider.setColor(mDividerColors);
+            getSupportView().setText(mSupportHelper);
 		}
 	}
 
@@ -640,18 +643,18 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 	
 	private void updateCharCounter(int count){
 		if(count == 0){
-			mSupportView.setTextColor(mSupportColors);
+			getSupportView().setTextColor(mSupportColors);
 			mDivider.setColor(mDividerColors);
-			mSupportView.setText(null);   			
+            getSupportView().setText(null);
 		}
 		else{
 			if(mSupportMaxChars > 0){
-				mSupportView.setTextColor(count > mSupportMaxChars ? mSupportErrorColors : mSupportColors);
+                getSupportView().setTextColor(count > mSupportMaxChars ? mSupportErrorColors : mSupportColors);
 				mDivider.setColor(count > mSupportMaxChars ? mDividerErrorColors : mDividerColors);
-				mSupportView.setText(count + " / " + mSupportMaxChars);
+                getSupportView().setText(count + " / " + mSupportMaxChars);
 			}
     		else
-    			mSupportView.setText(String.valueOf(count));
+                getSupportView().setText(String.valueOf(count));
 		}
 	}
 

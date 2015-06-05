@@ -65,6 +65,7 @@ public class DividerDrawable extends Drawable implements Animatable{
     public void setDividerHeight(int height){
         if(mHeight != height){
             mHeight = height;
+            mPaint.setStrokeWidth(mHeight);
             invalidateSelf();
         }
     }
@@ -120,7 +121,7 @@ public class DividerDrawable extends Drawable implements Animatable{
 
 		Rect bounds = getBounds();
 		float y = bounds.bottom - mHeight / 2;
-		
+
 		if(!isRunning()){
 			mPath.reset();
 			mPath.moveTo(bounds.left + mPaddingLeft, y);

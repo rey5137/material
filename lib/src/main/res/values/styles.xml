@@ -532,7 +532,6 @@
         <item name="et_supportTextColor">@color/abc_secondary_text_material_dark</item>
         <item name="et_supportTextErrorColor">?attr/colorAccent</item>
         <item name="et_supportEllipsize">end</item>
-        <item name="et_autoCompleteMode">none</item>
     </style>
 
     <style name="Material.Widget.EditText.Light" parent="Material.Widget.EditText">

@@ -222,13 +222,27 @@
 
     <!-- EditText Style-->
 
-    <style  name="DarkEditText"  parent="Material.Widget.EditText">
+    <style name="DarkEditText"  parent="Material.Widget.EditText">
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@color/abc_primary_text_material_dark</item>
         <item name="android:textColorHint">@color/abc_secondary_text_material_dark</item>
         <item name="et_dividerColor">@drawable/color_divider_dark</item>
-        <item name="et_dividerHeight">6dp</item>
         <item name="et_labelTextColor">@drawable/color_label_dark</item>
+        <item name="et_supportTextErrorColor">#FFFF0000</item>
+        <item name="et_dividerErrorColor">#FFFF0000</item>
+    </style>
+
+    <style name="DarkContactEditText"  parent="DarkEditText">
+        <item name="et_dividerPadding">4dp</item>
+        <item name="et_autoCompleteMode">multi</item>
+        <item name="cet_spanHeight">32dp</item>
+        <item name="cet_spanMaxWidth">150dp</item>
+        <item name="cet_spanPaddingLeft">8dp</item>
+        <item name="cet_spanPaddingRight">12dp</item>
+        <item name="cet_spanTextSize">14sp</item>
+        <item name="cet_spanTextColor">@color/abc_primary_text_material_dark</item>
+        <item name="cet_spanBackgroundColor">@color/background_floating_material_dark</item>
+        <item name="cet_spanSpacing">4dp</item>
     </style>
 
 </resources>
