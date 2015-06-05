@@ -15,17 +15,30 @@
     <color name="colorAccentQuarter">#3300E5FF</color>
     <color name="colorAccentHalf">#9000E5FF</color>
 
-    <array name="progress_colors">
-        <item>#FF3F8AF8</item>
+    <array name="progress_colors_light">
+        <item>#FF03A9F4</item>
         <item>#FFD8433C</item>
         <item>#FFF2AF3A</item>
         <item>#FF279B5E</item>
     </array>
+
+    <array name="progress_colors_dark">
+        <item>#FF00E5FF</item>
+        <item>#ffd81d5a</item>
+        <item>#fff27512</item>
+        <item>#ff63bc34</item>
+    </array>
     
-    <array name="in_colors">
-        <item>#FFB5D4FF</item>
-        <item>#FFDEEAFC</item>
-        <item>#FFFAFFFE</item>
+    <array name="in_colors_light">
+        <item>#4B03A9F4</item>
+        <item>#3303A9F4</item>
+        <item>#1903A9F4</item>
+    </array>
+
+    <array name="in_colors_dark">
+        <item>#4B00E5FF</item>
+        <item>#3300E5FF</item>
+        <item>#1900E5FF</item>
     </array>
 
     <color name="tpi_checked">#FFFFFFFF</color>

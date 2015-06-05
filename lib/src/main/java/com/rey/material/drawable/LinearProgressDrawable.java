@@ -105,6 +105,90 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
 		
 		mPath = new Path();
 	}
+
+    public void applyStyle(Context context, int resId){
+        TypedArray a = context.obtainStyledAttributes(resId, R.styleable.LinearProgressDrawable);
+
+        int strokeColor = 0;
+        boolean strokeColorDefined = false;
+        int[] strokeColors = null;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.LinearProgressDrawable_pv_progress)
+                setProgress(a.getFloat(attr, 0));
+            else if(attr == R.styleable.LinearProgressDrawable_pv_secondaryProgress)
+                setSecondaryProgress(a.getFloat(attr, 0));
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_maxLineWidth){
+                TypedValue value = a.peekValue(attr);
+                if(value.type == TypedValue.TYPE_FRACTION) {
+                    mMaxLineWidthPercent = a.getFraction(attr, 1, 1, 0.75f);
+                    mMaxLineWidth = 0;
+                }
+                else {
+                    mMaxLineWidth = a.getDimensionPixelSize(attr, 0);
+                    mMaxLineWidthPercent = 0f;
+                }
+            }
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_minLineWidth){
+                TypedValue value = a.peekValue(attr);
+                if(value.type == TypedValue.TYPE_FRACTION) {
+                    mMinLineWidthPercent = a.getFraction(attr, 1, 1, 0.25f);
+                    mMinLineWidth = 0;
+                }
+                else {
+                    mMinLineWidth = a.getDimensionPixelSize(attr, 0);
+                    mMinLineWidthPercent = 0f;
+                }
+            }
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_strokeSize)
+                mStrokeSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_verticalAlign)
+                mVerticalAlign = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_strokeColor) {
+                strokeColor = a.getColor(attr, 0);
+                strokeColorDefined = true;
+            }
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_strokeColors){
+                TypedArray ta = context.getResources().obtainTypedArray(a.getResourceId(attr, 0));
+                strokeColors = new int[ta.length()];
+                for(int j = 0; j < ta.length(); j++)
+                    strokeColors[j] = ta.getColor(j, 0);
+                ta.recycle();
+            }
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_strokeSecondaryColor)
+                mStrokeSecondaryColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_reverse)
+                mReverse = a.getBoolean(attr, false);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_travelDuration)
+                mTravelDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_transformDuration)
+                mTransformDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_keepDuration)
+                mKeepDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_transformInterpolator)
+                mTransformInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.LinearProgressDrawable_pv_progressMode)
+                mProgressMode = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_inAnimDuration)
+                mInAnimationDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.LinearProgressDrawable_lpd_outAnimDuration)
+                mOutAnimationDuration = a.getInteger(attr, 0);
+        }
+
+        a.recycle();
+
+        if(strokeColors != null)
+            mStrokeColors = strokeColors;
+        else if(strokeColorDefined)
+            mStrokeColors = new int[]{strokeColor};
+
+        if(mStrokeColorIndex >= mStrokeColors.length)
+            mStrokeColorIndex = 0;
+
+        invalidateSelf();
+    }
 		
 	@Override
 	public void draw(Canvas canvas) {			

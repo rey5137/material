@@ -243,4 +243,117 @@
         <item name="cet_spanSpacing">4dp</item>
     </style>
 
+    <!-- Circular Progress Style -->
+
+    <style name="LightCircularProgressDrawable" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="LightColorCircularProgressDrawable" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColors">@array/progress_colors_light</item>
+    </style>
+
+    <style name="LightInCircularProgressDrawable" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColor">@color/colorPrimary</item>
+        <item name="cpd_inAnimDuration">800</item>
+        <item name="cpd_inStepPercent">0.5</item>
+        <item name="cpd_inStepColors">@array/in_colors_light</item>
+        <item name="cpd_outAnimDuration">400</item>
+    </style>
+
+    <style name="LightInColorCircularProgressDrawable" parent="LightInCircularProgressDrawable">
+        <item name="cpd_strokeColors">@array/progress_colors_light</item>
+    </style>
+
+    <style name="LightDeterminateCircularProgressDrawable" parent="Material.Drawable.CircularProgress.Determinate">
+        <item name="cpd_strokeColor">@color/colorPrimary</item>
+        <item name="cpd_inAnimDuration">0</item>
+        <item name="cpd_outAnimDuration">0</item>
+        <item name="cpd_initialAngle">-90</item>
+    </style>
+
+    <style name="LightDeterminateInCircularProgressDrawable" parent="LightDeterminateCircularProgressDrawable">
+        <item name="cpd_inAnimDuration">400</item>
+        <item name="cpd_outAnimDuration">400</item>
+    </style>
+
+    <style name="LightCircularProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">true</item>
+        <item name="pv_progressStyle">@style/LightCircularProgressDrawable</item>
+        <item name="pv_progressMode">indeterminate</item>
+    </style>
+
+    <style name="LightColorCircularProgressView" parent="LightCircularProgressView">
+        <item name="pv_progressStyle">@style/LightColorCircularProgressDrawable</item>
+    </style>
+
+    <style name="LightInCircularProgressView" parent="LightCircularProgressView">
+        <item name="pv_progressStyle">@style/LightInCircularProgressDrawable</item>
+    </style>
+
+    <style name="LightInColorCircularProgressView" parent="LightCircularProgressView">
+        <item name="pv_progressStyle">@style/LightInColorCircularProgressDrawable</item>
+    </style>
+
+    <style name="LightDeterminateCircularProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">true</item>
+        <item name="pv_progressStyle">@style/LightDeterminateCircularProgressDrawable</item>
+        <item name="pv_progressMode">determinate</item>
+    </style>
+
+    <style name="LightDeterminateInCircularProgressView" parent="LightDeterminateCircularProgressView">
+        <item name="pv_progressStyle">@style/LightDeterminateInCircularProgressDrawable</item>
+    </style>
+
+    <!-- Linear Progress Style -->
+
+    <style name="LightLinearProgressDrawable" parent="Material.Drawable.LinearProgress">
+        <item name="lpd_strokeColor">@color/colorPrimary</item>
+        <item name="lpd_strokeSecondaryColor">@android:color/transparent</item>
+    </style>
+
+    <style name="LightColorLinearProgressDrawable" parent="LightLinearProgressDrawable">
+        <item name="lpd_strokeColors">@array/progress_colors_light</item>
+    </style>
+
+    <style name="LightDeterminateLinearProgressDrawable" parent="Material.Drawable.LinearProgress.Determinate">
+        <item name="lpd_strokeColor">@color/colorPrimary</item>
+        <item name="lpd_strokeSecondaryColor">@color/colorPrimaryQuarter</item>
+    </style>
+
+    <style name="LightBufferLinearProgressDrawable" parent="LightDeterminateLinearProgressDrawable">
+        <item name="lpd_travelDuration">400</item>
+        <item name="lpd_transformDuration">400</item>
+        <item name="lpd_keepDuration">100</item>
+    </style>
+
+    <style name="LightLinearProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">false</item>
+        <item name="pv_progressStyle">@style/LightLinearProgressDrawable</item>
+        <item name="pv_progressMode">indeterminate</item>
+    </style>
+
+    <style name="LightColorLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/LightColorLinearProgressDrawable</item>
+    </style>
+
+    <style name="LightDeterminateLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/LightDeterminateLinearProgressDrawable</item>
+        <item name="pv_progressMode">determinate</item>
+    </style>
+
+    <style name="LightQueryLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/LightDeterminateLinearProgressDrawable</item>
+        <item name="pv_progressMode">query</item>
+    </style>
+
+    <style name="LightBufferLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/LightBufferLinearProgressDrawable</item>
+        <item name="pv_progressMode">buffer</item>
+    </style>
+
+
 </resources>

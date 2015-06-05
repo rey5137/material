@@ -31,46 +31,13 @@
     </style>
 
     <!-- Progress Style -->
-    
-    <style name="CircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress"/>
-    
-    <style name="ColorsCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress">
-        <item name="cpd_strokeColors">@array/progress_colors</item>
-    </style>
-    
-    <style name="InOutCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress">
-        <item name="cpd_inAnimDuration">800</item>
-        <item name="cpd_inStepPercent">0.5</item>
-        <item name="cpd_inStepColors">@array/in_colors</item>
-        <item name="cpd_outAnimDuration">400</item>
-    </style>
-    
-    <style name="InOutColorsCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress">
-        <item name="cpd_inAnimDuration">800</item>
-        <item name="cpd_inStepPercent">0.5</item>
-        <item name="cpd_inStepColors">@array/in_colors</item>
-        <item name="cpd_outAnimDuration">400</item>
-        <item name="cpd_strokeColors">@array/progress_colors</item>
-    </style>
-    
-    <style name="DeterminateInOutCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress.Determinate">
-        <item name="cpd_inAnimDuration">400</item>
-        <item name="cpd_outAnimDuration">400</item>
-        <item name="cpd_initialAngle">-90</item>
-    </style>
-    
-    <style name="DeterminateCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress.Determinate">
-        <item name="cpd_inAnimDuration">0</item>
-        <item name="cpd_outAnimDuration">0</item>
-        <item name="cpd_initialAngle">-90</item>
-    </style>
-    
+
     <style name="LinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress">
         <item name="lpd_strokeSecondaryColor">#00000000</item>
     </style>
     
     <style name="ColorsLinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress">
-        <item name="lpd_strokeColors">@array/progress_colors</item>
+        <item name="lpd_strokeColors">@array/progress_colors_light</item>
         <item name="lpd_strokeSecondaryColor">#00000000</item>
     </style>
     

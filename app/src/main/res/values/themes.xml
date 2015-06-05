@@ -150,6 +150,61 @@
         <item>@style/DarkEditText</item>
     </array>
 
+    <array name="pv_circular">
+        <item>@style/LightCircularProgressView</item>
+        <item>@style/DarkCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_colors">
+        <item>@style/LightColorCircularProgressView</item>
+        <item>@style/DarkColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in">
+        <item>@style/LightInCircularProgressView</item>
+        <item>@style/DarkInCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in_colors">
+        <item>@style/LightInColorCircularProgressView</item>
+        <item>@style/DarkInColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate">
+        <item>@style/LightDeterminateCircularProgressView</item>
+        <item>@style/DarkDeterminateCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate_in">
+        <item>@style/LightDeterminateInCircularProgressView</item>
+        <item>@style/DarkDeterminateInCircularProgressView</item>
+    </array>
+
+    <array name="pv_linear">
+        <item>@style/LightLinearProgressView</item>
+        <item>@style/DarkLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_color">
+        <item>@style/LightColorLinearProgressView</item>
+        <item>@style/DarkColorLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_determinate">
+        <item>@style/LightDeterminateLinearProgressView</item>
+        <item>@style/DarkDeterminateLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_query">
+        <item>@style/LightQueryLinearProgressView</item>
+        <item>@style/DarkQueryLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_buffer">
+        <item>@style/LightBufferLinearProgressView</item>
+        <item>@style/DarkBufferLinearProgressView</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
         <item>@array/bg_toolbar</item>
@@ -179,6 +234,17 @@
         <item>@array/tab_indicator</item>
         <item>@array/edittext</item>
         <item>@array/edittext_contact</item>
+        <item>@array/pv_circular</item>
+        <item>@array/pv_circular_colors</item>
+        <item>@array/pv_circular_in</item>
+        <item>@array/pv_circular_in_colors</item>
+        <item>@array/pv_circular_determinate</item>
+        <item>@array/pv_circular_determinate_in</item>
+        <item>@array/pv_linear</item>
+        <item>@array/pv_linear_color</item>
+        <item>@array/pv_linear_determinate</item>
+        <item>@array/pv_linear_query</item>
+        <item>@array/pv_linear_buffer</item>
     </array>
 
 </resources>
