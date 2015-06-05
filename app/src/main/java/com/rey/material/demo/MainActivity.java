@@ -1,5 +1,6 @@
 package com.rey.material.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -30,11 +30,7 @@ import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
 import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends ActionBarActivity implements ToolbarManager.OnToolbarGroupChangedListener {
 
@@ -90,7 +86,7 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
         });
         mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
-		mDrawerAdapter = new DrawerAdapter();
+		mDrawerAdapter = new DrawerAdapter(this);
 		lv_drawer.setAdapter(mDrawerAdapter);
 		
 		mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
@@ -187,11 +183,29 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 
 	}
 	
-	class DrawerAdapter extends BaseAdapter implements View.OnClickListener {
+	class DrawerAdapter extends BaseAdapter implements View.OnClickListener, ThemeManager.OnThemeChangedListener {
 
 		private Tab mSelectedTab;
-		
-		public void setSelected(Tab tab){
+		private int mTextColorLight;
+        private int mTextColorDark;
+        private int mBackgroundColorLight;
+        private int mBackgroundColorDark;
+
+        public DrawerAdapter(Context context){
+            mTextColorLight = context.getResources().getColor(R.color.abc_primary_text_material_light);
+            mTextColorDark = context.getResources().getColor(R.color.abc_primary_text_material_dark);
+            mBackgroundColorLight = ThemeUtil.colorPrimary(context, 0);
+            mBackgroundColorDark = ThemeUtil.colorAccent(context, 0);
+
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+        }
+
+        @Override
+        public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+            notifyDataSetInvalidated();
+        }
+
+        public void setSelected(Tab tab){
 			if(tab != mSelectedTab){
 				mSelectedTab = tab;
 				notifyDataSetInvalidated();
@@ -230,12 +244,12 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 			((TextView)v).setText(tab.toString());
 			
 			if(tab == mSelectedTab) {
-                v.setBackgroundColor(ThemeUtil.colorPrimary(MainActivity.this, 0));
+                v.setBackgroundColor(ThemeManager.getInstance().getCurrentTheme() == 0 ? mBackgroundColorLight : mBackgroundColorDark);
                 ((TextView)v).setTextColor(0xFFFFFFFF);
             }
 			else {
                 v.setBackgroundResource(0);
-                ((TextView)v).setTextColor(0xFF000000);
+                ((TextView)v).setTextColor(ThemeManager.getInstance().getCurrentTheme() == 0 ? mTextColorLight : mTextColorDark);
             }
 			
 			return v;

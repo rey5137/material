@@ -30,35 +30,6 @@
         <item name="rd_rippleColor">#33FFFFFF</item>
     </style>
 
-    <!-- Progress Style -->
-
-    <style name="LinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress">
-        <item name="lpd_strokeSecondaryColor">#00000000</item>
-    </style>
-    
-    <style name="ColorsLinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress">
-        <item name="lpd_strokeColors">@array/progress_colors_light</item>
-        <item name="lpd_strokeSecondaryColor">#00000000</item>
-    </style>
-    
-    <style name="DeterminateLinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress.Determinate">
-        <item name="lpd_strokeColor">#FF4389F3</item>
-        <item name="lpd_strokeSecondaryColor">#FFB6CDF2</item>
-    </style>
-    
-    <style name="QueryLinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress.Query">
-        <item name="lpd_strokeColor">#FF4389F3</item>
-        <item name="lpd_strokeSecondaryColor">#FFB6CDF2</item>
-    </style>
-    
-    <style name="BufferLinearProgressDrawableStyle" parent="Material.Drawable.LinearProgress.Buffer">
-        <item name="lpd_strokeColor">#FF4389F3</item>
-        <item name="lpd_strokeSecondaryColor">#FFB6CDF2</item>
-        <item name="lpd_travelDuration">400</item>
-        <item name="lpd_transformDuration">400</item>
-        <item name="lpd_keepDuration">100</item>
-    </style>
-
     <!-- SnackBar Style -->
 
     <style name="SnackBarSingleLine" parent="Material.Widget.SnackBar.Mobile">

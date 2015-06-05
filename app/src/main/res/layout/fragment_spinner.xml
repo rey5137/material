@@ -23,7 +23,6 @@
             app:v_styleId="@array/spinner"/>
 
         <com.rey.material.widget.Spinner
-            style="@style/Material.Widget.Spinner.Light"
             android:id="@+id/spinner_no_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

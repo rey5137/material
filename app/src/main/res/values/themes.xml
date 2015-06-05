@@ -135,6 +135,11 @@
         <item>@style/DarkSpinnerNoArrow</item>
     </array>
 
+    <array name="spinner_item">
+        <item>@style/LightSpinnerItem</item>
+        <item>@style/DarkSpinnerItem</item>
+    </array>
+
     <array name="tab_indicator">
         <item>@style/LightTabPageIndicator</item>
         <item>@style/DarkTabPageIndicator</item>
@@ -148,6 +153,11 @@
     <array name="edittext_contact">
         <item>@style/LightEditText</item>
         <item>@style/DarkEditText</item>
+    </array>
+
+    <array name="edittext_no_divider">
+        <item>@style/LightNoDividerEditText</item>
+        <item>@style/DarkNoDividerEditText</item>
     </array>
 
     <array name="pv_circular">
@@ -205,6 +215,11 @@
         <item>@style/DarkBufferLinearProgressView</item>
     </array>
 
+    <array name="listview">
+        <item>@style/LightListView</item>
+        <item>@style/DarkListView</item>
+    </array>
+
     <array name="themable">
         <item>@array/bg_window</item>
         <item>@array/bg_toolbar</item>
@@ -231,9 +246,11 @@
         <item>@array/slider_discrete</item>
         <item>@array/spinner</item>
         <item>@array/spinner_no_arrow</item>
+        <item>@array/spinner_item</item>
         <item>@array/tab_indicator</item>
         <item>@array/edittext</item>
         <item>@array/edittext_contact</item>
+        <item>@array/edittext_no_divider</item>
         <item>@array/pv_circular</item>
         <item>@array/pv_circular_colors</item>
         <item>@array/pv_circular_in</item>
@@ -245,6 +262,7 @@
         <item>@array/pv_linear_determinate</item>
         <item>@array/pv_linear_query</item>
         <item>@array/pv_linear_buffer</item>
+        <item>@array/listview</item>
     </array>
 
 </resources>

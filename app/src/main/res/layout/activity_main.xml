@@ -60,8 +60,8 @@
 	        android:choiceMode="singleChoice"
 	        android:divider="@null"
 	        android:dividerHeight="0dp"
-	        android:background="?android:attr/windowBackground"
-	        android:listSelector="@android:color/transparent"/>
+	        android:listSelector="@android:color/transparent"
+            app:v_styleId="@array/listview"/>
         
     </FrameLayout>    
     

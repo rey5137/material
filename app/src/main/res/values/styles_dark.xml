@@ -188,11 +188,22 @@
         <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="spn_arrowColor">@color/colorAccent</item>
+        <item name="android:popupBackground">@drawable/popup_background_dark</item>
     </style>
 
     <style name="DarkSpinnerNoArrow" parent="DarkSpinner">
         <item name="spn_arrowSize">0dp</item>
         <item name="spn_popupItemAnimation">@anim/abc_fade_in</item>
+    </style>
+
+    <style name="DarkSpinnerItem" parent="Material.Drawable.Ripple.Wave">
+        <item name="rd_rippleColor">@color/colorAccentHalf</item>
+        <item name="rd_rippleAnimDuration">300</item>
+        <item name="rd_maskType">rectangle</item>
+        <item name="rd_cornerRadius">0dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
     </style>
 
     <!-- TabPageIndicator Style -->
@@ -208,7 +219,7 @@
     </style>
 
     <style name="DarkTabTextAppearance" parent="@style/Base.TextAppearance.AppCompat.Subhead">
-        <item name="android:textColor">@drawable/color_tpi</item>
+        <item name="android:textColor">@drawable/color_tpi_dark</item>
     </style>
 
     <style name="DarkTabRippleStyle" parent="Material.Drawable.Ripple.Wave">
@@ -243,6 +254,10 @@
         <item name="cet_spanTextColor">@color/abc_primary_text_material_dark</item>
         <item name="cet_spanBackgroundColor">@color/background_floating_material_dark</item>
         <item name="cet_spanSpacing">4dp</item>
+    </style>
+
+    <style name="DarkNoDividerEditText"  parent="DarkEditText">
+        <item name="et_dividerHeight">0dp</item>
     </style>
 
     <!-- Circular Progress Style -->
@@ -358,6 +373,12 @@
     <style name="DarkBufferLinearProgressView" parent="LightLinearProgressView">
         <item name="pv_progressStyle">@style/DarkBufferLinearProgressDrawable</item>
         <item name="pv_progressMode">buffer</item>
+    </style>
+
+    <!-- ListView Style -->
+
+    <style name="DarkListView" >
+        <item name="android:background">@color/background_floating_material_dark</item>
     </style>
 
 </resources>

@@ -32,10 +32,7 @@ import java.util.Calendar;
 /**
  * Created by Rey on 12/26/2014.
  */
-public class YearPicker extends ListView implements ThemeManager.OnThemeChangedListener{
-
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+public class YearPicker extends ListView {
 
     private YearAdapter mAdapter;
 
@@ -121,16 +118,12 @@ public class YearPicker extends ListView implements ThemeManager.OnThemeChangedL
         mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
-        ViewUtil.applyStyle(this, resId);
-        applyStyle(getContext(), null, 0, resId);
-    }
-
+    @Override
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.YearPicker, defStyleAttr, defStyleRes);
 
         int year = -1;
@@ -215,31 +208,6 @@ public class YearPicker extends ListView implements ThemeManager.OnThemeChangedL
 
         mAdapter.notifyDataSetChanged();
         requestLayout();
-    }
-
-    @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
-        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
-            mCurrentStyle = style;
-            applyStyle(mCurrentStyle);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if(mStyleId != 0) {
-            ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if(mStyleId != 0)
-            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     /**
