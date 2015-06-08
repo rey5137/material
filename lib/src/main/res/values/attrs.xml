@@ -225,7 +225,8 @@
         <attr name="tpi_mode" format="integer">
             <enum name="scroll" value="0x00000000" />
             <enum name="fixed" value="0x00000001" />	        
-        </attr> 
+        </attr>
+        <attr name="tpi_singleLineText" format="boolean"/>
     </declare-styleable>
     
     <declare-styleable name="EditText">
