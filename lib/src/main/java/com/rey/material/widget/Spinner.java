@@ -366,7 +366,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -379,7 +379,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

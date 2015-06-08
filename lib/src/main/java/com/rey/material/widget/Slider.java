@@ -14,7 +14,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -279,7 +278,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -292,7 +291,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

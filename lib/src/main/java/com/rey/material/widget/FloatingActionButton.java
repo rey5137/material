@@ -6,13 +6,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PixelFormat;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -188,7 +181,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -201,7 +194,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

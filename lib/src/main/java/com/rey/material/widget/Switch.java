@@ -10,7 +10,6 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -226,7 +225,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -239,7 +238,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

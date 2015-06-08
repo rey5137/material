@@ -65,7 +65,7 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -78,7 +78,7 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

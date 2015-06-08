@@ -22,6 +22,6 @@ public class DemoApplication extends Application{
     @Override public void onCreate() {
         super.onCreate();
         refWatcher = LeakCanary.install(this);
-        ThemeManager.init(this, R.array.themable);
+        ThemeManager.init(this, 2, 0, null);
     }
 }

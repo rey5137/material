@@ -302,7 +302,7 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	}
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -315,7 +315,7 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

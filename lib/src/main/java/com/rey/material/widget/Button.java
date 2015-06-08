@@ -3,15 +3,12 @@ package com.rey.material.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v7.internal.widget.TintManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
-
-import java.lang.reflect.Field;
 
 public class Button extends android.widget.Button implements ThemeManager.OnThemeChangedListener{
 
@@ -60,7 +57,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
             mCurrentStyle = style;
@@ -73,7 +70,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
         super.onAttachedToWindow();
         if(mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
+            onThemeChanged(null);
         }
     }
 

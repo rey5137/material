@@ -3,32 +3,18 @@ package com.rey.material.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
 import com.rey.material.R;
-import com.rey.material.drawable.RippleDrawable;
-import com.rey.material.util.TypefaceUtil;
-import com.rey.material.util.ViewUtil;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.jar.Attributes;
-
-import de.greenrobot.event.EventBus;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /**
  * Created by Rey on 5/25/2015.
@@ -47,8 +33,6 @@ public class ThemeManager {
     private static final String KEY_THEME = "theme";
 
     public static final int THEME_UNDEFINED = Integer.MIN_VALUE;
-
-
 
     /**
      * Get the styleId from attributes.
@@ -69,10 +53,12 @@ public class ThemeManager {
     /**
      * Init ThemeManager. Should be call in {@link Application#onCreate()}.
      * @param context The context object. Should be {#link Application} object.
-     * @param resId The resourceId of array of all styleId.
+     * @param totalTheme The total theme.
+     * @param defaultTheme The default theme if current theme isn't set.
+     * @param dispatcher The {@link EventDispatcher} will be used to dispatch {@link OnThemeChangedEvent}. If null, then use {@link SimpleDispatcher}.
      */
-    public static void init(Context context, int resId){
-        getInstance().setup(context, resId);
+    public static void init(Context context, int totalTheme, int defaultTheme, @Nullable EventDispatcher dispatcher){
+        getInstance().setup(context, totalTheme, defaultTheme, dispatcher);
     }
 
     /**
@@ -90,23 +76,13 @@ public class ThemeManager {
         return mInstance;
     }
 
-    protected void setup(Context context, int resId){
+    protected void setup(Context context, int totalTheme, int defaultTheme, @Nullable EventDispatcher dispatcher){
         mContext = context;
-        mDispatcher = new EventBusDispatcher();
-        mCurrentTheme = getSharedPreferences().getInt(KEY_THEME, 0);
-
-        TypedArray array = context.getResources().obtainTypedArray(resId);
-        for(int i = 0, size = array.length(); i < size; i++){
-            int arrayId = array.getResourceId(i, 0);
-            int[] styles = loadStyleList(context, arrayId);
-            if(mThemeCount == 0)
-                mThemeCount = styles.length;
-            mStyles.put(arrayId, styles);
-        }
-        array.recycle();
-
+        mDispatcher = dispatcher != null ? dispatcher : new SimpleDispatcher();
+        mThemeCount = totalTheme;
+        mCurrentTheme = getSharedPreferences().getInt(KEY_THEME, defaultTheme);
         if(mCurrentTheme >= mThemeCount)
-            setCurrentTheme(0);
+            setCurrentTheme(defaultTheme);
     }
 
     private int[] loadStyleList(Context context, int resId){
@@ -117,6 +93,16 @@ public class ThemeManager {
         array.recycle();
 
         return result;
+    }
+
+    private int[] getStyleList(int styleId){
+        int[] list = mStyles.get(styleId);
+        if(list == null){
+            list = loadStyleList(mContext, styleId);
+            mStyles.put(styleId, list);
+        }
+
+        return list;
     }
 
     private SharedPreferences getSharedPreferences(){
@@ -135,6 +121,7 @@ public class ThemeManager {
      * Get the current theme.
      * @return The current theme.
      */
+    @UiThread
     public int getCurrentTheme(){
         return mCurrentTheme;
     }
@@ -172,8 +159,7 @@ public class ThemeManager {
      * @return The current style.
      */
     public int getCurrentStyle(int styleId){
-        int[] styles = mStyles.get(styleId);
-        return styles[getCurrentTheme()];
+        return getStyle(styleId, mCurrentTheme);
     }
 
     /**
@@ -183,7 +169,7 @@ public class ThemeManager {
      * @return The specific style.
      */
     public int getStyle(int styleId, int theme){
-        int[] styles = mStyles.get(styleId);
+        int[] styles = getStyleList(styleId);
         return styles[theme];
     }
 
@@ -191,7 +177,7 @@ public class ThemeManager {
      * Register a listener will be called when current theme changed.
      * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be registered.
      */
-    public void registerOnThemeChangedListener(OnThemeChangedListener listener){
+    public void registerOnThemeChangedListener(@NonNull OnThemeChangedListener listener){
         mDispatcher.registerListener(listener);
     }
 
@@ -199,7 +185,7 @@ public class ThemeManager {
      * Unregister a listener from be called when current theme changed.
      * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be unregistered.
      */
-    public void unregisterOnThemeChangedListener(OnThemeChangedListener listener){
+    public void unregisterOnThemeChangedListener(@NonNull OnThemeChangedListener listener){
         mDispatcher.unregisterListener(listener);
     }
 
@@ -212,37 +198,55 @@ public class ThemeManager {
         public void dispatchThemeChanged(int theme);
     }
 
-    public class EventBusDispatcher implements EventDispatcher{
+    public static class SimpleDispatcher implements EventDispatcher{
 
-        EventBus mBus;
-
-        public EventBusDispatcher(){
-            mBus = EventBus.builder().eventInheritance(true).build();
-        }
+        ArrayList<WeakReference<OnThemeChangedListener>> mListeners = new ArrayList<>();
 
         @Override
         public void registerListener(OnThemeChangedListener listener) {
-            mBus.register(listener);
+            boolean exist = false;
+            for(int i = mListeners.size() - 1; i >= 0; i--){
+                WeakReference<OnThemeChangedListener> ref = mListeners.get(i);
+                if(ref.get() == null)
+                    mListeners.remove(i);
+                else if(ref.get() == listener)
+                    exist = true;
+            }
+
+            if(!exist)
+                mListeners.add(new WeakReference<>(listener));
         }
 
         @Override
         public void unregisterListener(OnThemeChangedListener listener) {
-            mBus.unregister(listener);
+            for(int i = mListeners.size() - 1; i >= 0; i--){
+                WeakReference<OnThemeChangedListener> ref = mListeners.get(i);
+                if(ref.get() == null || ref.get() == listener)
+                    mListeners.remove(i);
+            }
         }
 
         @Override
         public void dispatchThemeChanged(int theme) {
-            mBus.post(new OnThemeChangedEvent(theme));
+            OnThemeChangedEvent event = new OnThemeChangedEvent(theme);
+
+            for(int i = mListeners.size() - 1; i >= 0; i--){
+                WeakReference<OnThemeChangedListener> ref = mListeners.get(i);
+                if(ref.get() == null)
+                    mListeners.remove(i);
+                else
+                    ref.get().onThemeChanged(event);
+            }
         }
     }
 
     public interface OnThemeChangedListener{
 
-        public void onEvent(OnThemeChangedEvent event);
+        void onThemeChanged(@Nullable OnThemeChangedEvent event);
 
     }
 
-    public class OnThemeChangedEvent{
+    public static class OnThemeChangedEvent{
         public final int theme;
 
         public OnThemeChangedEvent(int theme){

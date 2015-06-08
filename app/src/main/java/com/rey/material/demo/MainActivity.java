@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import com.rey.material.widget.TabPageIndicator;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity implements ToolbarManager.OnToolbarGroupChangedListener {
+public class MainActivity extends AppCompatActivity implements ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -63,8 +64,8 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
-        mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
-        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
+        mToolbarManager = new ToolbarManager(getDelegate(), mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, getSupportFragmentManager(), mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
                 if (mToolbarManager.getCurrentGroup() != 0)
@@ -201,7 +202,7 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
         }
 
         @Override
-        public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+        public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
             notifyDataSetInvalidated();
         }
 

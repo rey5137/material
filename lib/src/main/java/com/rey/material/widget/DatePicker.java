@@ -36,7 +36,7 @@ import java.util.Locale;
 /**
  * Created by Rey on 12/31/2014.
  */
-public class DatePicker extends ListView implements AbsListView.OnScrollListener, ThemeManager.OnThemeChangedListener{
+public class DatePicker extends ListView implements AbsListView.OnScrollListener{
 
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
@@ -167,16 +167,12 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         setAdapter(mAdapter);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
-        ViewUtil.applyStyle(this, resId);
-        applyStyle(getContext(), null, 0, resId);
-    }
-
+    @Override
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DatePicker, defStyleAttr, defStyleRes);
 
         String familyName = null;
@@ -272,31 +268,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
         requestLayout();
         mAdapter.notifyDataSetInvalidated();
-    }
-
-    @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
-        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
-            mCurrentStyle = style;
-            applyStyle(mCurrentStyle);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if(mStyleId != 0) {
-            ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onEvent(null);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if(mStyleId != 0)
-            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

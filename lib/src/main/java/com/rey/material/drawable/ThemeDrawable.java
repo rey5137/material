@@ -33,7 +33,7 @@ public class ThemeDrawable extends LevelListDrawable implements ThemeManager.OnT
     }
 
     @Override
-    public void onEvent(ThemeManager.OnThemeChangedEvent event) {
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         if(getLevel() != event.theme)
             setLevel(event.theme);
     }
