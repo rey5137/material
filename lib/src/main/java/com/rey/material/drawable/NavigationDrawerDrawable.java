@@ -37,6 +37,10 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
 	public boolean setIconState(int state, float progress){
 		return mLineDrawable.setLineState(state, progress);
 	}
+
+    public float getIconAnimProgress(){
+        return mLineDrawable.getAnimProgress();
+    }
 	
 	@Override
 	public void draw(Canvas canvas) {

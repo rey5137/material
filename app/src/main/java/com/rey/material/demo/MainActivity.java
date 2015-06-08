@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
         mToolbarManager = new ToolbarManager(getDelegate(), mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
-        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, getSupportFragmentManager(), mToolbar, dl_navigator) {
+        mToolbarManager.setNavigationManager(new ToolbarManager.ThemableNavigationManager(R.array.navigation_drawer, getSupportFragmentManager(), mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
                 if (mToolbarManager.getCurrentGroup() != 0)

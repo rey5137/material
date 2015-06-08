@@ -1,6 +1,7 @@
 package com.rey.material.app;
 
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -366,9 +367,9 @@ public class ToolbarManager {
         /**
          * @param styleId the style res of navigation icon.
          */
-        public NavigationManager(int styleId, Toolbar toolbar){
+        public NavigationManager(NavigationDrawerDrawable navigationIcon, Toolbar toolbar){
             mToolbar = toolbar;
-            mNavigationIcon = new NavigationDrawerDrawable.Builder(mToolbar.getContext(), styleId).build();
+            mNavigationIcon = navigationIcon;
             mToolbar.setNavigationIcon(mNavigationIcon);
             mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
                 @Override
@@ -425,11 +426,11 @@ public class ToolbarManager {
 
         /**
          *
-         * @param styledId the style res of navigation icon.
+         * @param styleId the resourceId of navigation icon style.
          * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
          */
-        public BaseNavigationManager(int styledId, FragmentManager fragmentManager, Toolbar toolbar, DrawerLayout drawerLayout){
-            super(styledId, toolbar);
+        public BaseNavigationManager(int styleId, FragmentManager fragmentManager, Toolbar toolbar, DrawerLayout drawerLayout){
+            super(new NavigationDrawerDrawable.Builder(toolbar.getContext(), styleId).build(), toolbar);
             mDrawerLayout = drawerLayout;
             mFragmentManager = fragmentManager;
 
@@ -512,6 +513,40 @@ public class ToolbarManager {
          */
         protected void onDrawerStateChanged(int newState) {
             mSyncDrawerSlidingProgress = (newState == DrawerLayout.STATE_DRAGGING || newState == DrawerLayout.STATE_SETTLING) && shouldSyncDrawerSlidingProgress();
+        }
+
+    }
+
+    /**
+     * A Manager class extend from {@link BaseNavigationManager} class and add theme supporting.
+     */
+    public static class ThemableNavigationManager extends BaseNavigationManager implements ThemeManager.OnThemeChangedListener{
+
+        private int mStyleId;
+        private int mCurrentStyle;
+
+        /**
+         *
+         * @param styleId the styleId of navigation icon.
+         * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
+         */
+        public ThemableNavigationManager(int styleId, FragmentManager fragmentManager, Toolbar toolbar, DrawerLayout drawerLayout){
+            super(ThemeManager.getInstance().getCurrentStyle(styleId), fragmentManager, toolbar, drawerLayout);
+            mStyleId = styleId;
+            mCurrentStyle = ThemeManager.getInstance().getCurrentStyle(styleId);
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+        }
+
+        @Override
+        public void onThemeChanged(@Nullable ThemeManager.OnThemeChangedEvent event) {
+            int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+            if(mCurrentStyle != style){
+                mCurrentStyle = style;
+                NavigationDrawerDrawable drawable = new NavigationDrawerDrawable.Builder(mToolbar.getContext(), mCurrentStyle).build();
+                drawable.switchIconState(mNavigationIcon.getIconState(), false);
+                mNavigationIcon = drawable;
+                mToolbar.setNavigationIcon(mNavigationIcon);
+            }
         }
 
     }

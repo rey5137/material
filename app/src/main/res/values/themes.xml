@@ -220,4 +220,9 @@
         <item>@style/DarkListView</item>
     </array>
 
+    <array name="navigation_drawer">
+        <item>@style/LightNavigationDrawerDrawable</item>
+        <item>@style/DarkNavigationDrawerDrawable</item>
+    </array>
+
 </resources>
