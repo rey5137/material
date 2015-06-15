@@ -37,6 +37,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	private int mIndicatorOffset;
 	private int mIndicatorWidth;
 	private int mIndicatorHeight;
+
+	private boolean mSingleLineText;
 	
 	private Paint mPaint;
 	
@@ -117,6 +119,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         mIndicatorHeight = a.getDimensionPixelSize(R.styleable.TabPageIndicator_tpi_indicatorHeight, ThemeUtil.dpToPx(context, 2));
         mTextAppearance = a.getResourceId(R.styleable.TabPageIndicator_android_textAppearance, 0);
         mMode = a.getInteger(R.styleable.TabPageIndicator_tpi_mode, MODE_SCROLL);
+		mSingleLineText = a.getBoolean(R.styleable.TabPageIndicator_tpi_singleLineText, false);
 
         a.recycle();
 
@@ -323,7 +326,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
             tv.setTextAppearance(getContext(), mTextAppearance);
-            tv.setSingleLine(true);
+            tv.setSingleLine(mSingleLineText);
             tv.setEllipsize(TruncateAt.END);
             tv.setOnClickListener(this);
             tv.setTag(i);
@@ -377,7 +380,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
             tv.setTextAppearance(getContext(), mTextAppearance);
-            tv.setSingleLine(true);
+            tv.setSingleLine(mSingleLineText);
             tv.setEllipsize(TruncateAt.END);
             tv.setTag(i);
             tv.setChecked(i == 0);
