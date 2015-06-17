@@ -63,24 +63,24 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
-        mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarManager = new ToolbarManager(this, mToolbar, R.id.tb_group_main, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
         mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
-                if(mToolbarManager.getCurrentGroup() != 0)
-                    mToolbarManager.setCurrentGroup(0);
+                if(mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
+                    mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 else
                     dl_navigator.openDrawer(Gravity.START);
             }
 
             @Override
             public boolean isBackState() {
-                return super.isBackState() || mToolbarManager.getCurrentGroup() != 0;
+                return super.isBackState() || mToolbarManager.getCurrentGroup() != R.id.tb_group_main;
             }
 
             @Override
             protected boolean shouldSyncDrawerSlidingProgress() {
-                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == 0;
+                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == R.id.tb_group_main;
             }
 
         });
@@ -132,7 +132,7 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
                 break;
             case R.id.tb_done:
             case R.id.tb_done_all:
-                mToolbarManager.setCurrentGroup(0);
+                mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 break;
         }
         return true;

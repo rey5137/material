@@ -179,7 +179,7 @@ public class ToolbarManager {
             Menu menu = mToolbar.getMenu();
             for(int i = 0, count = menu.size(); i < count; i++){
                 MenuItem item = menu.getItem(i);
-                item.setVisible(item.getGroupId() == mCurrentGroup);
+                item.setVisible(item.getGroupId() == mCurrentGroup || item.getGroupId() == 0);
             }
 
             mMenuDataChanged = false;
