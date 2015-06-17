@@ -41,11 +41,11 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		RippleDrawable drawable = null;
 
 		if(rippleStyle != 0)
-			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(mView.getBackground()).build();
+			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(getBackground(mView)).build();
 		else{
 			boolean rippleEnable = a.getBoolean(R.styleable.RippleView_rd_enable, false);
 			if(rippleEnable)
-				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(mView.getBackground()).build();
+				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(getBackground(mView)).build();
 		}
 
 		a.recycle();
@@ -53,6 +53,17 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		if(drawable != null)
             ViewUtil.setBackground(mView, drawable);
 	}
+
+    private Drawable getBackground(View v){
+        Drawable background = v.getBackground();
+        if(background == null)
+            return null;
+
+        if(background instanceof RippleDrawable)
+            return ((RippleDrawable)background).getBackgroundDrawable();
+
+        return background;
+    }
 		
 	public void setOnClickListener(View.OnClickListener l) {
 		mClickListener = l;

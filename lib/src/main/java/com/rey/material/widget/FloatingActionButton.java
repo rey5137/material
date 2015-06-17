@@ -6,13 +6,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PixelFormat;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -32,23 +25,26 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.LineMorphingDrawable;
 import com.rey.material.drawable.OvalShadowDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
-public class FloatingActionButton extends View {
+public class FloatingActionButton extends View implements ThemeManager.OnThemeChangedListener {
 
 	private OvalShadowDrawable mBackground;
 	private Drawable mIcon;
     private Drawable mPrevIcon;
-    private int mAnimDuration;
+    private int mAnimDuration = -1;
     private Interpolator mInterpolator;
     private SwitchIconAnimator mSwitchIconAnimator;
-	private int mIconSize;
+	private int mIconSize = -1;
 		
 	private RippleManager mRippleManager;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 			
 	public static FloatingActionButton make(Context context, int resId){
 		return new FloatingActionButton(context, null, resId);
@@ -82,38 +78,93 @@ public class FloatingActionButton extends View {
 		setClickable(true);
         mSwitchIconAnimator = new SwitchIconAnimator();
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, defStyleRes);
 
-        int radius = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_radius, ThemeUtil.dpToPx(context, 28));
-        int elevation = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_elevation, ThemeUtil.dpToPx(context, 4));
-        ColorStateList bgColor = a.getColorStateList(R.styleable.FloatingActionButton_fab_backgroundColor);
-		int bgAnimDuration = a.getInteger(R.styleable.FloatingActionButton_fab_backgroundAnimDuration, 0);
-        int iconSrc = a.getResourceId(R.styleable.FloatingActionButton_fab_iconSrc, 0);
-        int iconLineMorphing = a.getResourceId(R.styleable.FloatingActionButton_fab_iconLineMorphing, 0);
-        mIconSize = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_iconSize, ThemeUtil.dpToPx(context, 24));
-        mAnimDuration = a.getInteger(R.styleable.FloatingActionButton_fab_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
-        if(resId != 0)
-            mInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else if(mInterpolator == null)
-            mInterpolator = new DecelerateInterpolator();
+        int radius = -1;
+        int elevation = -1;
+        ColorStateList bgColor = null;
+        int bgAnimDuration = -1;
+        int iconSrc = 0;
+        int iconLineMorphing = 0;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.FloatingActionButton_fab_radius)
+                radius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_elevation)
+                elevation = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_backgroundColor)
+                bgColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.FloatingActionButton_fab_backgroundAnimDuration)
+                bgAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconSrc)
+                iconSrc = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconLineMorphing)
+                iconLineMorphing = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconSize)
+                mIconSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_animDuration)
+                mAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_interpolator){
+                int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
+                if(resId != 0)
+                    mInterpolator = AnimationUtils.loadInterpolator(context, resId);
+            }
+        }
 
         a.recycle();
 
-		if(bgColor == null)
-			bgColor = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0));
+        if(mIconSize < 0)
+            mIconSize = ThemeUtil.dpToPx(context, 24);
 
-		mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation, bgAnimDuration);
-		mBackground.setInEditMode(isInEditMode());
-        mBackground.setBounds(0, 0, getWidth(), getHeight());
-		mBackground.setCallback(this);
+        if(mAnimDuration < 0)
+            mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInterpolator == null)
+            mInterpolator = new DecelerateInterpolator();
+
+        if(mBackground == null){
+            if(radius < 0)
+                radius = ThemeUtil.dpToPx(context, 28);
+
+            if(elevation < 0)
+                elevation = ThemeUtil.dpToPx(context, 4);
+
+            if(bgColor == null)
+                bgColor = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0));
+
+            if(bgAnimDuration < 0)
+                bgAnimDuration = 0;
+
+            mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation, bgAnimDuration);
+            mBackground.setInEditMode(isInEditMode());
+            mBackground.setBounds(0, 0, getWidth(), getHeight());
+            mBackground.setCallback(this);
+        }
+        else{
+            if(radius >= 0)
+                mBackground.setRadius(radius);
+
+            if(bgColor != null)
+                mBackground.setColor(bgColor);
+
+            if(elevation >= 0)
+                mBackground.setShadow(elevation, elevation);
+
+            if(bgAnimDuration >= 0)
+                mBackground.setAnimationDuration(bgAnimDuration);
+        }
 
         if(iconLineMorphing != 0)
             setIcon(new LineMorphingDrawable.Builder(context, iconLineMorphing).build(), false);
@@ -127,9 +178,33 @@ public class FloatingActionButton extends View {
             drawable.setBackgroundDrawable(null);
             drawable.setMask(RippleDrawable.Mask.TYPE_OVAL, 0, 0, 0, 0, (int)mBackground.getPaddingLeft(), (int)mBackground.getPaddingTop(), (int)mBackground.getPaddingRight(), (int)mBackground.getPaddingBottom());
         }
-
-        setClickable(true);
     }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
+    }
+
 
     /**
      * @return The radius of the button.

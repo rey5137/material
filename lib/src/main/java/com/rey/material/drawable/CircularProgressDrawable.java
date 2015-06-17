@@ -98,7 +98,84 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 		
 		mRect = new RectF();
 	}
-		
+
+    public void applyStyle(Context context, int resId){
+        TypedArray a = context.obtainStyledAttributes(resId, R.styleable.CircularProgressDrawable);
+
+        int strokeColor = 0;
+        boolean strokeColorDefined = false;
+        int[] strokeColors = null;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.CircularProgressDrawable_cpd_padding)
+                mPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_initialAngle)
+                mInitialAngle = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_pv_progress)
+                setProgress(a.getFloat(attr, 0));
+            else if(attr == R.styleable.CircularProgressDrawable_pv_secondaryProgress)
+                setSecondaryProgress(a.getFloat(attr, 0));
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_maxSweepAngle)
+                mMaxSweepAngle = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_minSweepAngle)
+                mMinSweepAngle = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_strokeSize)
+                mStrokeSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_strokeColor) {
+                strokeColor = a.getColor(attr, 0);
+                strokeColorDefined = true;
+            }
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_strokeColors){
+                TypedArray ta = context.getResources().obtainTypedArray(a.getResourceId(attr, 0));
+                strokeColors = new int[ta.length()];
+                for(int j = 0; j < ta.length(); j++)
+                    strokeColors[j] = ta.getColor(j, 0);
+                ta.recycle();
+            }
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_strokeSecondaryColor)
+                mStrokeSecondaryColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_reverse)
+                mReverse = a.getBoolean(attr, false);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_rotateDuration)
+                mRotateDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_transformDuration)
+                mTransformDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_keepDuration)
+                mKeepDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_transformInterpolator)
+                mTransformInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.CircularProgressDrawable_pv_progressMode)
+                mProgressMode = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_inAnimDuration)
+                mInAnimationDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_inStepColors){
+                TypedArray ta = context.getResources().obtainTypedArray(a.getResourceId(attr, 0));
+                mInColors = new int[ta.length()];
+                for(int j = 0; j < ta.length(); j++)
+                    mInColors[j] = ta.getColor(j, 0);
+                ta.recycle();
+            }
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_inStepPercent)
+                mInStepPercent = a.getFloat(attr, 0);
+            else if(attr == R.styleable.CircularProgressDrawable_cpd_outAnimDuration)
+                mOutAnimationDuration = a.getInteger(attr, 0);
+        }
+
+        a.recycle();
+
+        if(strokeColors != null)
+            mStrokeColors = strokeColors;
+        else if(strokeColorDefined)
+            mStrokeColors = new int[]{strokeColor};
+
+        if(mStrokeColorIndex >= mStrokeColors.length)
+            mStrokeColorIndex = 0;
+
+        invalidateSelf();
+    }
+
 	@Override
 	public void draw(Canvas canvas) {			
 		switch (mProgressMode) {

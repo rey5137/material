@@ -14,6 +14,7 @@ import com.rey.material.app.DatePickerDialog;
 import com.rey.material.app.Dialog;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.SimpleDialog;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.app.TimePickerDialog;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.EditText;
@@ -41,10 +42,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
         Button bt_custom = (Button)v.findViewById(R.id.dialog_bt_custom);
         Button bt_choice = (Button)v.findViewById(R.id.dialog_bt_choice);
         Button bt_multi_choice = (Button)v.findViewById(R.id.dialog_bt_multi_choice);
-        Button bt_time_light = (Button)v.findViewById(R.id.dialog_bt_time_light);
-        Button bt_date_light = (Button)v.findViewById(R.id.dialog_bt_date_light);
-        Button bt_time_dark = (Button)v.findViewById(R.id.dialog_bt_time_dark);
-        Button bt_date_dark = (Button)v.findViewById(R.id.dialog_bt_date_dark);
+        Button bt_time = (Button)v.findViewById(R.id.dialog_bt_time);
+        Button bt_date = (Button)v.findViewById(R.id.dialog_bt_date);
 
         bt_title_only.setOnClickListener(this);
         bt_msg_only.setOnClickListener(this);
@@ -52,10 +51,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
         bt_custom.setOnClickListener(this);
         bt_choice.setOnClickListener(this);
         bt_multi_choice.setOnClickListener(this);
-        bt_time_light.setOnClickListener(this);
-        bt_date_light.setOnClickListener(this);
-        bt_time_dark.setOnClickListener(this);
-        bt_date_dark.setOnClickListener(this);
+        bt_time.setOnClickListener(this);
+        bt_date.setOnClickListener(this);
 
         mActivity = (MainActivity)getActivity();
 
@@ -76,9 +73,11 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Dialog.Builder builder = null;
 
+        boolean isLightTheme = ThemeManager.getInstance().getCurrentTheme() == 0;
+
         switch (v.getId()){
             case R.id.dialog_bt_title_only:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(mActivity, "Discarded", Toast.LENGTH_SHORT).show();
@@ -97,7 +96,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_msg_only:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialog){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(mActivity, "Deleted", Toast.LENGTH_SHORT).show();
@@ -116,7 +115,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_title_msg:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(mActivity, "Agreed", Toast.LENGTH_SHORT).show();
@@ -136,7 +135,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("DISAGREE");
                 break;
             case R.id.dialog_bt_custom:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialog){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
 
                     @Override
                     protected void onBuildDone(Dialog dialog) {
@@ -163,7 +162,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                     .contentView(R.layout.layout_dialog_custom);
                 break;
             case R.id.dialog_bt_choice:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         Toast.makeText(mActivity, "You have selected " + getSelectedValue() + " as phone ringtone.", Toast.LENGTH_SHORT).show();
@@ -183,7 +182,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .negativeAction("CANCEL");
                 break;
             case R.id.dialog_bt_multi_choice:
-                builder = new SimpleDialog.Builder(R.style.SimpleDialog){
+                builder = new SimpleDialog.Builder(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         CharSequence[] values =  getSelectedValues();
@@ -211,8 +210,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                         .positiveAction("OK")
                         .negativeAction("CANCEL");
                 break;
-            case R.id.dialog_bt_time_light:
-                builder = new TimePickerDialog.Builder(6, 00){
+            case R.id.dialog_bt_time:
+                builder = new TimePickerDialog.Builder(isLightTheme ? R.style.Material_App_Dialog_TimePicker_Light : R.style.Material_App_Dialog_TimePicker, 24, 00){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         TimePickerDialog dialog = (TimePickerDialog)fragment.getDialog();
@@ -230,47 +229,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
                 builder.positiveAction("OK")
                         .negativeAction("CANCEL");
                 break;
-            case R.id.dialog_bt_date_light:
-                builder = new DatePickerDialog.Builder(){
-                    @Override
-                    public void onPositiveActionClicked(DialogFragment fragment) {
-                        DatePickerDialog dialog = (DatePickerDialog)fragment.getDialog();
-                        String date = dialog.getFormattedDate(SimpleDateFormat.getDateInstance());
-                        Toast.makeText(mActivity, "Date is " + date, Toast.LENGTH_SHORT).show();
-                        super.onPositiveActionClicked(fragment);
-                    }
-
-                    @Override
-                    public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled" , Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
-                    }
-                };
-
-                builder.positiveAction("OK")
-                        .negativeAction("CANCEL");
-                break;
-            case R.id.dialog_bt_time_dark:
-                builder = new TimePickerDialog.Builder(R.style.Material_App_Dialog_TimePicker, 24, 00){
-                    @Override
-                    public void onPositiveActionClicked(DialogFragment fragment) {
-                        TimePickerDialog dialog = (TimePickerDialog)fragment.getDialog();
-                        Toast.makeText(mActivity, "Time is " + dialog.getFormattedTime(SimpleDateFormat.getTimeInstance()), Toast.LENGTH_SHORT).show();
-                        super.onPositiveActionClicked(fragment);
-                    }
-
-                    @Override
-                    public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled" , Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
-                    }
-                };
-
-                builder.positiveAction("OK")
-                        .negativeAction("CANCEL");
-                break;
-            case R.id.dialog_bt_date_dark:
-                builder = new DatePickerDialog.Builder(R.style.Material_App_Dialog_DatePicker){
+            case R.id.dialog_bt_date:
+                builder = new DatePickerDialog.Builder(isLightTheme ? R.style.Material_App_Dialog_DatePicker_Light :  R.style.Material_App_Dialog_DatePicker){
                     @Override
                     public void onPositiveActionClicked(DialogFragment fragment) {
                         DatePickerDialog dialog = (DatePickerDialog)fragment.getDialog();

@@ -101,6 +101,18 @@ public class ContactEditText extends EditText{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRecipientMap = new HashMap<>();
+
+        ContactSuggestionAdapter adapter = new ContactSuggestionAdapter();
+        setAdapter(adapter);
+        setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        addTextChangedListener(new ContactTextWatcher());
+    }
+
+    @Override
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ContactEditText, defStyleAttr, defStyleRes);
 
         mSpanHeight = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanHeight, ThemeUtil.dpToPx(context, 32));
@@ -119,13 +131,6 @@ public class ContactEditText extends EditText{
         mSpanTypeface = TypefaceUtil.load(context, familyName, style);
 
         a.recycle();
-
-        mRecipientMap = new HashMap<>();
-
-        ContactSuggestionAdapter adapter = new ContactSuggestionAdapter();
-        setAdapter(adapter);
-        setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        addTextChangedListener(new ContactTextWatcher());
 
         setLineSpacing(mSpanSpacing, 1);
     }

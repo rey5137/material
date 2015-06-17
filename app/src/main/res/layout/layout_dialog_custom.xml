@@ -6,53 +6,45 @@
     android:orientation="vertical">
 
     <com.rey.material.widget.EditText
-        style="@style/Material.Widget.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/abc_primary_text_material_dark"
-        app:et_dividerHeight="0dp"
         app:et_supportMode="none"
         android:hint="Signal strength"
         android:text="Excellent"
         android:textDirection="locale"
         android:enabled="false"
-        android:paddingTop="8dp"/>
+        android:paddingTop="8dp"
+        app:v_styleId="@array/edittext_no_divider"/>
 
     <com.rey.material.widget.EditText
-        style="@style/Material.Widget.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/abc_primary_text_material_dark"
-        app:et_dividerHeight="0dp"
         app:et_supportMode="none"
         android:hint="Security"
         android:text="802.1x EAP"
         android:textDirection="locale"
         android:enabled="false"
-        android:paddingTop="8dp"/>
+        android:paddingTop="8dp"
+        app:v_styleId="@array/edittext_no_divider"/>
 
     <com.rey.material.widget.EditText
-        style="@style/Material.Widget.EditText"
         android:id="@+id/custom_et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:et_supportMode="charCounter"
-        android:textColor="@color/abc_primary_text_material_dark"
-        android:textColorHint="@color/abc_secondary_text_material_dark"
         android:hint="Password"
         android:textDirection="locale"
         android:paddingTop="8dp"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        app:v_styleId="@array/edittext"/>
 
     <com.rey.material.widget.CheckBox
-        style="@style/Material.Drawable.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show password"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/abc_primary_text_material_dark"
         android:gravity="center_vertical"
         android:paddingLeft="24dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        app:v_styleId="@array/checkbox"/>
 
 </LinearLayout>

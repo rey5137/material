@@ -21,26 +21,28 @@ import android.view.animation.Interpolator;
 import android.widget.BaseAdapter;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
+import com.rey.material.util.ViewUtil;
 
 import java.util.Calendar;
 
 /**
  * Created by Rey on 12/26/2014.
  */
-public class YearPicker extends ListView{
+public class YearPicker extends ListView {
 
     private YearAdapter mAdapter;
 
-    private int mTextSize;
-    private int mItemHeight;
+    private int mTextSize = -1;
+    private int mItemHeight = -1;
     private int mSelectionColor;
-    private int mAnimDuration;
+    private int mAnimDuration = -1;
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
-    private Typeface mTypeface;
+    private Typeface mTypeface = Typeface.DEFAULT;
 
     private int mItemRealHeight = -1;
     private int mPadding;
@@ -70,7 +72,7 @@ public class YearPicker extends ListView{
             new int[]{android.R.attr.state_checked},
     };
 
-    private int[] mTextColors = new int[2];
+    private int[] mTextColors = new int[]{0xFF000000, 0xFFFFFFFF};
 
     private static final String YEAR_FORMAT = "%4d";
 
@@ -113,54 +115,99 @@ public class YearPicker extends ListView{
 
         mPadding = ThemeUtil.dpToPx(context, 4);
 
+        mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
+
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
-        applyStyle(getContext(), null, 0, resId);
-    }
+    @Override
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.YearPicker, defStyleAttr, defStyleRes);
-        mTextSize = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_title_material));
-        int year = a.getInteger(R.styleable.YearPicker_dp_year, mAdapter.getYear());
-        int yearMin = a.getInteger(R.styleable.YearPicker_dp_yearMin, mAdapter.getMinYear());
-        int yearMax = a.getInteger(R.styleable.YearPicker_dp_yearMax, mAdapter.getMaxYear());
-        mItemHeight = a.getDimensionPixelSize(R.styleable.YearPicker_dp_yearItemHeight, ThemeUtil.dpToPx(context, 48));
-        mTextColors[0] = a.getColor(R.styleable.YearPicker_dp_textColor, 0xFF000000);
-        mTextColors[1] = a.getColor(R.styleable.YearPicker_dp_textHighlightColor, 0xFFFFFFFF);
-        mSelectionColor = a.getColor(R.styleable.YearPicker_dp_selectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
-        mAnimDuration = a.getInteger(R.styleable.YearPicker_dp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        int resId = a.getResourceId(R.styleable.YearPicker_dp_inInterpolator, 0);
-        if(resId != 0)
-            mInInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else
-            mInInterpolator = new DecelerateInterpolator();
-        resId = a.getResourceId(R.styleable.YearPicker_dp_outInterpolator, 0);
-        if(resId != 0)
-            mOutInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else
-            mOutInterpolator = new DecelerateInterpolator();
-        String familyName = a.getString(R.styleable.YearPicker_dp_fontFamily);
-        int style = a.getInteger(R.styleable.YearPicker_dp_textStyle, Typeface.NORMAL);
 
-        mTypeface = TypefaceUtil.load(context, familyName, style);
+        int year = -1;
+        int yearMin = -1;
+        int yearMax = -1;
+        String familyName = null;
+        int style = -1;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.YearPicker_dp_yearTextSize)
+                mTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_year)
+                year = a.getInteger(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_yearMin)
+                yearMin = a.getInteger(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_yearMax)
+                yearMax = a.getInteger(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_yearItemHeight)
+                mItemHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_textColor)
+                mTextColors[0] = a.getColor(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_textHighlightColor)
+                mTextColors[1] = a.getColor(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_selectionColor)
+                mSelectionColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_animDuration)
+                mAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.YearPicker_dp_inInterpolator)
+                mInInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.YearPicker_dp_outInterpolator)
+                mOutInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.YearPicker_dp_fontFamily)
+                familyName = a.getString(attr);
+            else if(attr == R.styleable.YearPicker_dp_textStyle)
+                style = a.getInteger(attr, 0);
+        }
 
         a.recycle();
 
-        if(yearMax < yearMin)
-            yearMax = Integer.MAX_VALUE;
+        if(mTextSize < 0)
+            mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_title_material);
 
-        if(year < 0){
+        if(mItemHeight < 0)
+            mItemHeight = ThemeUtil.dpToPx(context, 48);
+
+        if(mAnimDuration < 0)
+            mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInInterpolator == null)
+            mInInterpolator = new DecelerateInterpolator();
+
+        if(mOutInterpolator == null)
+            mOutInterpolator = new DecelerateInterpolator();
+
+        if(familyName != null || style >= 0)
+            mTypeface = TypefaceUtil.load(context, familyName, style);
+
+        if(yearMin >= 0 || yearMax >= 0){
+            if(yearMin < 0)
+                yearMin = mAdapter.getMinYear();
+
+            if(yearMax < 0)
+                yearMax = mAdapter.getMaxYear();
+
+            if(yearMax < yearMin)
+                yearMax = Integer.MAX_VALUE;
+
+            setYearRange(yearMin, yearMax);
+        }
+
+        if(mAdapter.getYear() < 0 && year < 0){
             Calendar cal = Calendar.getInstance();
             year = cal.get(Calendar.YEAR);
         }
 
-        year = Math.max(yearMin, Math.min(yearMax, year));
+        if(year >= 0){
+            year = Math.max(yearMin, Math.min(yearMax, year));
+            setYear(year);
+        }
 
-        setYearRange(yearMin, yearMax);
-        setYear(year);
         mAdapter.notifyDataSetChanged();
+        requestLayout();
     }
 
     /**

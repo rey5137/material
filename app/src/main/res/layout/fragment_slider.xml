@@ -13,78 +13,68 @@
 	    android:gravity="center"
         android:padding="8dp">
 	                    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Continuous"/>
 	    
 	    <com.rey.material.widget.Slider
-            style="@style/Material.Widget.Slider"
             android:id="@+id/slider_sl_continuous"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            app:sl_value="50"/>
+            app:sl_value="50"
+            app:v_styleId="@array/slider"/>
 
-        <TextView
+        <com.rey.material.widget.TextView
             android:id="@+id/slider_tv_continuous"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            app:v_styleId="@array/text_body"
             android:gravity="center"/>
 
         <com.rey.material.widget.Slider
-            style="@style/Material.Widget.Slider"
             android:id="@+id/slider_sl_continuous_disable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:enabled="false"/>
+            android:enabled="false"
+            app:v_styleId="@array/slider"/>
 
-        <TextView
+        <com.rey.material.widget.TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/title_text"
-            android:padding="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
             android:text="Discrete"/>
 
         <com.rey.material.widget.Slider
-            style="@style/Material.Widget.Slider.Discrete"
             android:id="@+id/slider_sl_discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            app:sl_stepValue="10"
-            app:sl_value="50"/>
+            app:sl_value="50"
+            app:v_styleId="@array/slider_discrete"/>
 
-        <TextView
+        <com.rey.material.widget.TextView
             android:id="@+id/slider_tv_discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            app:v_styleId="@array/text_body"
             android:gravity="center"/>
 
         <com.rey.material.widget.Slider
-            style="@style/Material.Widget.Slider"
             android:id="@+id/slider_sl_discrete_disable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
             android:enabled="false"
-            app:sl_stepValue="10"
-            app:sl_value="50"/>
+            app:sl_value="50"
+            app:v_styleId="@array/slider_discrete"/>
 	    
 	</LinearLayout>
     

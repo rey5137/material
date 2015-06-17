@@ -22,6 +22,7 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.BlankDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
@@ -37,14 +38,17 @@ import java.util.Locale;
  */
 public class DatePicker extends ListView implements AbsListView.OnScrollListener{
 
-    private Typeface mTypeface;
-    private int mTextSize;
-    private int mTextColor;
-    private int mTextLabelColor;
-    private int mTextHighlightColor;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+
+    private Typeface mTypeface = Typeface.DEFAULT;
+    private int mTextSize = -1;
+    private int mTextColor = 0xFF000000;
+    private int mTextLabelColor = 0xFF767676;
+    private int mTextHighlightColor = 0xFFFFFFFF;
     private int mTextDisableColor;
     private int mSelectionColor;
-    private int mAnimDuration;
+    private int mAnimDuration = -1;
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
 
@@ -146,6 +150,8 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
         mDayPadding = ThemeUtil.dpToPx(context, 4);
 
+        mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
+
         mCalendar = Calendar.getInstance();
         mFirstDayOfWeek = mCalendar.getFirstDayOfWeek();
 
@@ -163,41 +169,105 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
-        applyStyle(getContext(), null, 0, resId);
-    }
+    @Override
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DatePicker, defStyleAttr, defStyleRes);
-        mTextSize = a.getDimensionPixelSize(R.styleable.DatePicker_dp_dayTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material));
-        mTextColor = a.getColor(R.styleable.DatePicker_dp_textColor, 0xFF000000);
-        mTextHighlightColor = a.getColor(R.styleable.DatePicker_dp_textHighlightColor, 0xFFFFFFFF);
-        mTextLabelColor = a.getColor(R.styleable.DatePicker_dp_textLabelColor, 0xFF767676);
-        mTextDisableColor = a.getColor(R.styleable.DatePicker_dp_textDisableColor, 0xFF767676);
-        mSelectionColor = a.getColor(R.styleable.DatePicker_dp_selectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
-        mAnimDuration = a.getInteger(R.styleable.DatePicker_dp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        int resId = a.getResourceId(R.styleable.DatePicker_dp_inInterpolator, 0);
-        if(resId != 0)
-            mInInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else
+
+        String familyName = null;
+        int style = -1;
+
+        int padding = -1;
+        int paddingLeft = -1;
+        int paddingRight = -1;
+        int paddingTop = -1;
+        int paddingBottom = -1;
+        boolean paddingDefined = false;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.DatePicker_dp_dayTextSize)
+                mTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_textColor)
+                mTextColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_textHighlightColor)
+                mTextHighlightColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_textLabelColor)
+                mTextLabelColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_textDisableColor)
+                mTextDisableColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_selectionColor)
+                mSelectionColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_animDuration)
+                mAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.DatePicker_dp_inInterpolator)
+                mInInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.DatePicker_dp_outInterpolator)
+                mOutInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.DatePicker_dp_fontFamily)
+                familyName = a.getString(attr);
+            else if(attr == R.styleable.DatePicker_dp_textStyle)
+                style = a.getInteger(attr, 0);
+            else if(attr == R.styleable.DatePicker_android_padding) {
+                padding = a.getDimensionPixelSize(attr, 0);
+                paddingDefined = true;
+            }
+            else if(attr == R.styleable.DatePicker_android_paddingLeft) {
+                paddingLeft = a.getDimensionPixelSize(attr, 0);
+                paddingDefined = true;
+            }
+            else if(attr == R.styleable.DatePicker_android_paddingTop) {
+                paddingTop = a.getDimensionPixelSize(attr, 0);
+                paddingDefined = true;
+            }
+            else if(attr == R.styleable.DatePicker_android_paddingRight) {
+                paddingRight = a.getDimensionPixelSize(attr, 0);
+                paddingDefined = true;
+            }
+            else if(attr == R.styleable.DatePicker_android_paddingBottom) {
+                paddingBottom = a.getDimensionPixelSize(attr, 0);
+                paddingDefined = true;
+            }
+        }
+
+        if(mTextSize < 0)
+            mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material);
+
+        if(mAnimDuration < 0)
+             mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInInterpolator == null)
             mInInterpolator = new DecelerateInterpolator();
-        resId = a.getResourceId(R.styleable.DatePicker_dp_outInterpolator, 0);
-        if(resId != 0)
-            mOutInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else
+
+        if(mOutInterpolator == null)
             mOutInterpolator = new DecelerateInterpolator();
-        String familyName = a.getString(R.styleable.DatePicker_dp_fontFamily);
-        int style = a.getInteger(R.styleable.DatePicker_dp_textStyle, Typeface.NORMAL);
-        mTypeface = TypefaceUtil.load(context, familyName, style);
-        int padding = a.getDimensionPixelSize(R.styleable.DatePicker_android_padding, -1);
-        if(padding >= 0)
-            setContentPadding(padding, padding, padding, padding);
-        mPaddingLeft = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingLeft, mPaddingLeft);
-        mPaddingTop = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingTop, mPaddingTop);
-        mPaddingRight = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingRight, mPaddingRight);
-        mPaddingBottom = a.getDimensionPixelSize(R.styleable.DatePicker_android_paddingBottom, mPaddingBottom);
+
+        if(familyName != null || style >= 0)
+            mTypeface = TypefaceUtil.load(context, familyName, style);
 
         a.recycle();
+
+        if(paddingDefined){
+            if(padding >= 0)
+                setContentPadding(padding, padding, padding, padding);
+
+            if(paddingLeft >= 0)
+                mPaddingLeft = paddingLeft;
+
+            if(paddingTop >= 0)
+                mPaddingTop = paddingTop;
+
+            if(paddingRight >= 0)
+                mPaddingRight = paddingRight;
+
+            if(paddingBottom >= 0)
+                mPaddingBottom = paddingBottom;
+        }
+
+        requestLayout();
+        mAdapter.notifyDataSetInvalidated();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

@@ -58,7 +58,26 @@ public class ArrowDrawable extends Drawable implements Animatable{
 		mColorStateList = colorStateList;
 		onStateChange(getState());
 	}
-	
+
+    public void setAnimationDuration(int duration){
+        mAnimDuration = duration;
+    }
+
+    public void setInterpolator(Interpolator interpolator){
+        mInterpolator = interpolator;
+    }
+
+    public void setClockwise(boolean clockwise){
+        mClockwise = clockwise;
+    }
+
+    public void setArrowSize(int size){
+        if(mSize != size){
+            mSize = size;
+            invalidateSelf();
+        }
+    }
+
 	public void setMode(int mode, boolean animation){
 		if(mMode != mode){
 			mMode = mode;			

@@ -128,6 +128,10 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
             mBackgroundDrawable.setBounds(getBounds());
     }
 
+    public Drawable getBackgroundDrawable(){
+        return mBackgroundDrawable;
+    }
+
     public int getDelayClickType(){
         return mDelayClickType;
     }

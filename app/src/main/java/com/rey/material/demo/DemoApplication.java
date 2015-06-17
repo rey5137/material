@@ -3,6 +3,7 @@ package com.rey.material.demo;
 import android.app.Application;
 import android.content.Context;
 
+import com.rey.material.app.ThemeManager;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -21,5 +22,6 @@ public class DemoApplication extends Application{
     @Override public void onCreate() {
         super.onCreate();
         refWatcher = LeakCanary.install(this);
+        ThemeManager.init(this, 2, 0, null);
     }
 }
