@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
                 if(mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
                     mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 else
-                    dl_navigator.openDrawer(Gravity.START);
+                    dl_navigator.openDrawer(GravityCompat.START);
             }
 
             @Override

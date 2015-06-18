@@ -13,7 +13,9 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,13 +32,14 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
-	private LinearLayout mTabContainer;	
+	private TabContainerLayout mTabContainer;
 	private ViewPager mViewPager;
 	
 	private int mMode;
 	private int mTabPadding = -1;
 	private int mTabRippleStyle = 0;
 	private int mTextAppearance = 0;
+    private boolean mTabSingleLine = true;
 		
 	private int mIndicatorOffset;
 	private int mIndicatorWidth;
@@ -99,9 +102,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(ThemeUtil.colorAccent(context, 0xFFFFFFFF));
 
-        mTabContainer = new LinearLayout(context);
-        mTabContainer.setOrientation(LinearLayout.HORIZONTAL);
-        mTabContainer.setGravity(Gravity.CENTER);
+        mTabContainer = new TabContainerLayout(context);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 		
@@ -133,6 +134,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                 mPaint.setColor(a.getColor(attr, 0));
             else if(attr == R.styleable.TabPageIndicator_tpi_indicatorHeight)
                 mIndicatorHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_tpi_tabSingleLine)
+                mTabSingleLine = a.getBoolean(attr, true);
             else if(attr == R.styleable.TabPageIndicator_android_textAppearance)
                 textAppearance = a.getResourceId(attr, 0);
             else if(attr == R.styleable.TabPageIndicator_tpi_mode)
@@ -176,6 +179,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                 ViewUtil.setBackground(mTabContainer.getChildAt(i), new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
         }
 
+        if(mViewPager != null)
+            notifyDataSetChanged();
         requestLayout();
     }
 
@@ -210,14 +215,57 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
-    
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        int ws = (mMode == MODE_SCROLL || widthMode == MeasureSpec.UNSPECIFIED) ? MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED) : MeasureSpec.makeMeasureSpec(widthSize - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY);
+        int hs = (heightMode == MeasureSpec.UNSPECIFIED) ? MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED) : MeasureSpec.makeMeasureSpec(heightSize - getPaddingTop() - getPaddingBottom(), MeasureSpec.EXACTLY);
+
+        mTabContainer.measure(ws, hs);
+
+        int width = 0;
+        switch (widthMode){
+            case MeasureSpec.UNSPECIFIED:
+                width = mTabContainer.getMeasuredWidth() + getPaddingLeft() + getPaddingRight();
+                break;
+            case MeasureSpec.AT_MOST:
+                width = Math.max(mTabContainer.getMeasuredWidth() + getPaddingLeft() + getPaddingRight(), widthSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                width = widthSize;
+                break;
+        }
+
+        int height = 0;
+        switch (heightMode){
+            case MeasureSpec.UNSPECIFIED:
+                height = mTabContainer.getMeasuredHeight() + getPaddingTop() + getPaddingBottom();
+                break;
+            case MeasureSpec.AT_MOST:
+                height = Math.max(mTabContainer.getMeasuredHeight() + getPaddingTop() + getPaddingBottom(), heightSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                height = heightSize;
+                break;
+        }
+
+        if((mMode == MODE_FIXED && mTabContainer.getMeasuredWidth() != width - getPaddingLeft() - getPaddingRight()) || mTabContainer.getMeasuredHeight() != height - getPaddingTop() - getPaddingBottom())
+            mTabContainer.measure(MeasureSpec.makeMeasureSpec(width - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - getPaddingTop() - getPaddingBottom(), MeasureSpec.EXACTLY));
+
+        setMeasuredDimension(width, height);
+    }
+
     private CheckedTextView getTabView(int position){
     	return (CheckedTextView)mTabContainer.getChildAt(position);
     }
     
     private void animateToTab(final int position) {
-    	final CheckedTextView tv = getTabView(position);
-    	if(tv == null)
+    	if(getTabView(position) == null)
     		return;
     	
         if (mTabAnimSelector != null) 
@@ -225,8 +273,10 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         
         mTabAnimSelector = new Runnable() {
             public void run() {
-            	if(!mScrolling)
-                	updateIndicator(tv.getLeft(), tv.getWidth());	
+                CheckedTextView tv = getTabView(position);
+            	if(!mScrolling) {
+                    updateIndicator(tv.getLeft(), tv.getMeasuredWidth());
+                }
             	          
                 smoothScrollTo(tv.getLeft() - (getWidth() - tv.getWidth()) / 2 + getPaddingLeft(), 0);
                 mTabAnimSelector = null;
@@ -303,8 +353,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		if(state == ViewPager.SCROLL_STATE_IDLE){
 			mScrolling = false;
 			TextView tv = getTabView(mSelectedPosition);
-			if(tv != null)
-				updateIndicator(tv.getLeft(), tv.getMeasuredWidth());			
+			if(tv != null) {
+                updateIndicator(tv.getLeft(), tv.getMeasuredWidth());
+            }
 		}
 		else
 			mScrolling = true;
@@ -322,8 +373,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		CheckedTextView tv_next = getTabView(position + 1);
 		
 		if(tv_scroll != null && tv_next != null){
-			int width_scroll = tv_scroll.getWidth();
-			int width_next = tv_next.getWidth();
+			int width_scroll = tv_scroll.getMeasuredWidth();
+			int width_next = tv_next.getMeasuredWidth();
 			float distance = (width_scroll + width_next) / 2f;
 					
 			int width =  (int)(width_scroll + (width_next - width_scroll) * positionOffset + 0.5f);
@@ -368,42 +419,39 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	}
 	
 	private void notifyDataSetChanged() {
-		mTabContainer.removeAllViews();
-				
-		PagerAdapter adapter = mViewPager.getAdapter();
-		final int count = adapter.getCount();
-		
-		if (mSelectedPosition > count) 
-        	mSelectedPosition = count - 1;
-		
+        mTabContainer.removeAllViews();
+
+        PagerAdapter adapter = mViewPager.getAdapter();
+        final int count = adapter.getCount();
+
+        if (mSelectedPosition > count)
+            mSelectedPosition = count - 1;
+
         for (int i = 0; i < count; i++) {
             CharSequence title = adapter.getPageTitle(i);
-            if (title == null) 
-                title = "NULL";            
-            
+            if (title == null)
+                title = "NULL";
+
             CheckedTextView tv = new CheckedTextView(getContext());
             tv.setCheckMarkDrawable(null);
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
             tv.setTextAppearance(getContext(), mTextAppearance);
-            tv.setSingleLine(true);
+            if(mTabSingleLine)
+                tv.setSingleLine(true);
+            else {
+                tv.setSingleLine(false);
+                tv.setMaxLines(2);
+            }
             tv.setEllipsize(TruncateAt.END);
             tv.setOnClickListener(this);
             tv.setTag(i);
             if(mTabRippleStyle > 0)
                 ViewUtil.setBackground(tv, new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
-            	
-            if(mMode == MODE_SCROLL){
-            	tv.setPadding(mTabPadding, 0, mTabPadding, 0);
-            	mTabContainer.addView(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
-            else if(mMode == MODE_FIXED){
-            	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-            	params.weight = 1f;
-            	mTabContainer.addView(tv, params);            	
-            }
-            	
-        } 	
+
+            tv.setPadding(mTabPadding, 0, mTabPadding, 0);
+            mTabContainer.addView(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
         
         setCurrentItem(mSelectedPosition);
         requestLayout();
@@ -455,4 +503,71 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             }            	
         } 	
 	}
+
+    private class TabContainerLayout extends FrameLayout{
+
+        public TabContainerLayout(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+
+            if(widthMode == MeasureSpec.UNSPECIFIED || mMode == MODE_SCROLL){
+                int width = 0;
+                int height = 0;
+                int ws = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                for (int i = 0; i < getChildCount(); i++) {
+                    View child = getChildAt(i);
+                    child.measure(ws, heightMeasureSpec);
+                    width += child.getMeasuredWidth();
+                    height = Math.max(height, child.getMeasuredHeight());
+                }
+                setMeasuredDimension(width, height);
+
+                int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+                for (int i = 0; i < getChildCount(); i++) {
+                    View child = getChildAt(i);
+                    if(child.getMeasuredHeight() != height)
+                    child.measure(ws, hs);
+                }
+            }
+            else {
+                int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+                int childWidth = widthSize / getChildCount();
+                int height = 0;
+                for (int i = 0, count = getChildCount(); i < count; i++) {
+                    View child = getChildAt(i);
+                    if(i != count - 1)
+                        child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
+                    else
+                        child.measure(MeasureSpec.makeMeasureSpec(widthSize - childWidth * (count - 1), MeasureSpec.EXACTLY), heightMeasureSpec);
+                    height = Math.max(height, child.getMeasuredHeight());
+                }
+
+                setMeasuredDimension(widthSize, height);
+
+                int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+                for (int i = 0; i < getChildCount(); i++) {
+                    View child = getChildAt(i);
+                    if(child.getMeasuredHeight() != height)
+                        child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY), hs);
+                }
+            }
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+            int childLeft = 0;
+            int childTop = 0;
+            int childBottom = bottom - top;
+
+            for(int i = 0, count = getChildCount(); i < count; i++){
+                View child = getChildAt(i);
+                child.layout(childLeft, childTop, childLeft + child.getMeasuredWidth(), childBottom);
+                childLeft += child.getMeasuredWidth();
+            }
+        }
+    }
 }
