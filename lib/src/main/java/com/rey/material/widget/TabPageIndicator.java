@@ -52,6 +52,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	
 	private int mSelectedPosition;
 	private boolean mScrolling = false;
+    private boolean mIsRtl = false;
 	
 	private Runnable mTabAnimSelector;
 	
@@ -214,6 +215,15 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
+    }
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
+        if(mIsRtl != rtl) {
+            mIsRtl = rtl;
+            invalidate();
+        }
     }
 
     @Override
@@ -561,13 +571,21 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
             int childLeft = 0;
             int childTop = 0;
+            int childRight = right - left;
             int childBottom = bottom - top;
 
-            for(int i = 0, count = getChildCount(); i < count; i++){
-                View child = getChildAt(i);
-                child.layout(childLeft, childTop, childLeft + child.getMeasuredWidth(), childBottom);
-                childLeft += child.getMeasuredWidth();
-            }
+            if(mIsRtl)
+                for(int i = 0, count = getChildCount(); i < count; i++){
+                    View child = getChildAt(i);
+                    child.layout(childRight - child.getMeasuredWidth(), childTop, childRight, childBottom);
+                    childRight -= child.getMeasuredWidth();
+                }
+            else
+                for(int i = 0, count = getChildCount(); i < count; i++){
+                    View child = getChildAt(i);
+                    child.layout(childLeft, childTop, childLeft + child.getMeasuredWidth(), childBottom);
+                    childLeft += child.getMeasuredWidth();
+                }
         }
     }
 }
