@@ -233,8 +233,13 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        int ws = (mMode == MODE_SCROLL || widthMode == MeasureSpec.UNSPECIFIED) ? MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED) : MeasureSpec.makeMeasureSpec(widthSize - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY);
-        int hs = (heightMode == MeasureSpec.UNSPECIFIED) ? MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED) : MeasureSpec.makeMeasureSpec(heightSize - getPaddingTop() - getPaddingBottom(), MeasureSpec.EXACTLY);
+        int ws = widthMeasureSpec;
+        if(ws != MeasureSpec.UNSPECIFIED)
+            ws = MeasureSpec.makeMeasureSpec(widthSize - getPaddingLeft() - getPaddingRight(), widthMode);
+
+        int hs = heightMeasureSpec;
+        if(heightMode != MeasureSpec.UNSPECIFIED)
+            hs = MeasureSpec.makeMeasureSpec(heightSize - getPaddingTop() - getPaddingBottom(), heightMode);
 
         mTabContainer.measure(ws, hs);
 
@@ -244,7 +249,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                 width = mTabContainer.getMeasuredWidth() + getPaddingLeft() + getPaddingRight();
                 break;
             case MeasureSpec.AT_MOST:
-                width = Math.max(mTabContainer.getMeasuredWidth() + getPaddingLeft() + getPaddingRight(), widthSize);
+                width = Math.min(mTabContainer.getMeasuredWidth() + getPaddingLeft() + getPaddingRight(), widthSize);
                 break;
             case MeasureSpec.EXACTLY:
                 width = widthSize;
@@ -257,17 +262,25 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                 height = mTabContainer.getMeasuredHeight() + getPaddingTop() + getPaddingBottom();
                 break;
             case MeasureSpec.AT_MOST:
-                height = Math.max(mTabContainer.getMeasuredHeight() + getPaddingTop() + getPaddingBottom(), heightSize);
+                height = Math.min(mTabContainer.getMeasuredHeight() + getPaddingTop() + getPaddingBottom(), heightSize);
                 break;
             case MeasureSpec.EXACTLY:
                 height = heightSize;
                 break;
         }
 
-        if((mMode == MODE_FIXED && mTabContainer.getMeasuredWidth() != width - getPaddingLeft() - getPaddingRight()) || mTabContainer.getMeasuredHeight() != height - getPaddingTop() - getPaddingBottom())
+        if(mTabContainer.getMeasuredWidth() != width - getPaddingLeft() - getPaddingRight() || mTabContainer.getMeasuredHeight() != height - getPaddingTop() - getPaddingBottom())
             mTabContainer.measure(MeasureSpec.makeMeasureSpec(width - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height - getPaddingTop() - getPaddingBottom(), MeasureSpec.EXACTLY));
 
         setMeasuredDimension(width, height);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        TextView tv = getTabView(mSelectedPosition);
+        if(tv != null)
+            updateIndicator(tv.getLeft(), tv.getMeasuredWidth());
     }
 
     private CheckedTextView getTabView(int position){
@@ -523,10 +536,12 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
 
-            if(widthMode == MeasureSpec.UNSPECIFIED || mMode == MODE_SCROLL){
-                int width = 0;
-                int height = 0;
+            int width = 0;
+            int height = 0;
+
+            if(mMode == MODE_SCROLL){
                 int ws = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
                 for (int i = 0; i < getChildCount(); i++) {
                     View child = getChildAt(i);
@@ -535,35 +550,50 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                     height = Math.max(height, child.getMeasuredHeight());
                 }
                 setMeasuredDimension(width, height);
+            }
+            else{
+                if(widthMode != MeasureSpec.EXACTLY){
+                    int ws = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                    for (int i = 0; i < getChildCount(); i++) {
+                        View child = getChildAt(i);
+                        child.measure(ws, heightMeasureSpec);
+                        width += child.getMeasuredWidth();
+                        height = Math.max(height, child.getMeasuredHeight());
+                    }
 
-                int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-                for (int i = 0; i < getChildCount(); i++) {
-                    View child = getChildAt(i);
-                    if(child.getMeasuredHeight() != height)
-                    child.measure(ws, hs);
+                    if(widthMode == MeasureSpec.UNSPECIFIED || width < widthSize)
+                        setMeasuredDimension(widthSize, height);
+                    else{
+                        int childWidth = widthSize / getChildCount();
+                        for (int i = 0, count = getChildCount(); i < count; i++) {
+                            View child = getChildAt(i);
+                            if(i != count - 1)
+                                child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
+                            else
+                                child.measure(MeasureSpec.makeMeasureSpec(widthSize - childWidth * (count - 1), MeasureSpec.EXACTLY), heightMeasureSpec);
+                        }
+                        setMeasuredDimension(widthSize, height);
+                    }
+                }
+                else {
+                    int childWidth = widthSize / getChildCount();
+                    for (int i = 0, count = getChildCount(); i < count; i++) {
+                        View child = getChildAt(i);
+                        if(i != count - 1)
+                            child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
+                        else
+                            child.measure(MeasureSpec.makeMeasureSpec(widthSize - childWidth * (count - 1), MeasureSpec.EXACTLY), heightMeasureSpec);
+                        height = Math.max(height, child.getMeasuredHeight());
+                    }
+                    setMeasuredDimension(widthSize, height);
                 }
             }
-            else {
-                int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-                int childWidth = widthSize / getChildCount();
-                int height = 0;
-                for (int i = 0, count = getChildCount(); i < count; i++) {
-                    View child = getChildAt(i);
-                    if(i != count - 1)
-                        child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
-                    else
-                        child.measure(MeasureSpec.makeMeasureSpec(widthSize - childWidth * (count - 1), MeasureSpec.EXACTLY), heightMeasureSpec);
-                    height = Math.max(height, child.getMeasuredHeight());
-                }
 
-                setMeasuredDimension(widthSize, height);
-
-                int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-                for (int i = 0; i < getChildCount(); i++) {
-                    View child = getChildAt(i);
-                    if(child.getMeasuredHeight() != height)
-                        child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY), hs);
-                }
+            int hs = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if(child.getMeasuredHeight() != height)
+                    child.measure(MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.EXACTLY), hs);
             }
         }
 
