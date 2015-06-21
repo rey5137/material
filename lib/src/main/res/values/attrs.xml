@@ -13,6 +13,7 @@
 
     <attr name="rd_style" format="reference"/>
     <attr name="rd_enable" format="boolean"/>
+    <attr name="tv_fontFamily" format="reference|string"/>
 
     <declare-styleable name="View">
         <attr name="android:background" />
@@ -51,6 +52,7 @@
         <attr name="android:drawableStart" />
         <attr name="android:drawableTop" />
         <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
         <attr name="android:elegantTextHeight" />
         <attr name="android:fontFeatureSettings" />
         <attr name="android:gravity" />
@@ -102,6 +104,7 @@
         <attr name="android:textStyle" />
         <attr name="android:typeface" />
         <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
         <attr name="android:textAllCaps" />
         <attr name="android:shadowColor" />
         <attr name="android:shadowDx" />

@@ -379,6 +379,9 @@ public class ViewUtil {
                 } else if (attr == R.styleable.TextAppearance_android_fontFamily) {
                     fontFamily = appearance.getString(attr);
 
+                } else if (attr == R.styleable.TextAppearance_tv_fontFamily) {
+                    fontFamily = appearance.getString(attr);
+
                 } else if (attr == R.styleable.TextAppearance_android_textStyle) {
                     styleIndex = appearance.getInt(attr, -1);
 
@@ -534,6 +537,9 @@ public class ViewUtil {
                 styleIndex = a.getInt(attr, -1);
 
             } else if (attr == R.styleable.TextView_android_fontFamily) {
+                fontFamily = a.getString(attr);
+
+            } else if (attr == R.styleable.TextView_tv_fontFamily) {
                 fontFamily = a.getString(attr);
 
             } else if (attr == R.styleable.TextView_android_textAllCaps) {
