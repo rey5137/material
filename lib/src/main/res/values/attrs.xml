@@ -323,6 +323,7 @@
         </attr>
         <attr name="sl_textSize" format="reference|dimension"/>
         <attr name="sl_textColor" format="reference|color"/>
+        <attr name="sl_alwaysFillThumb" format="reference|boolean"/>
         <attr name="android:gravity" />
         <attr name="android:enabled" />
     </declare-styleable>
