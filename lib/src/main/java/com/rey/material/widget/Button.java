@@ -1,6 +1,7 @@
 package com.rey.material.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -42,8 +43,8 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
     }
 
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 

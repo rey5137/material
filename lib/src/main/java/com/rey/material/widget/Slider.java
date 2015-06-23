@@ -417,11 +417,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             }
             else{
                 mThumbCurrentRadius = mThumbRadius;
-                if(mAlwaysFillThumb) {
-                    mThumbFillPercent = 1;
-                } else {
-                    mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
-                }
+                mThumbFillPercent = (mAlwaysFillThumb || mThumbPosition != 0) ? 1 : 0;
                 invalidate();
             }
         }
@@ -973,11 +969,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 return true;
             }
             else {
-                if(mAlwaysFillThumb) {
-                    mThumbFillPercent = 1;
-                } else {
-                    mThumbFillPercent = mFillPercent;
-                }
+                mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
                 invalidate();
                 return false;
             }
@@ -985,11 +977,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
         public void stopAnimation() {
             mRunning = false;
-            if(mAlwaysFillThumb) {
-                mThumbFillPercent = 1;
-            } else {
-                mThumbFillPercent = mFillPercent;
-            }
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
             if(getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
@@ -1001,11 +989,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             float progress = Math.min(1f, (float)(curTime - mStartTime) / mTransformAnimationDuration);
             float value = mInterpolator.getInterpolation(progress);
 
-            if(mAlwaysFillThumb) {
-                mThumbFillPercent = 1;
-            } else {
-                mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
-            }
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
             if(progress == 1f)
                 stopAnimation();
@@ -1073,11 +1057,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         public void stopAnimation() {
             mRunning = false;
             mThumbCurrentRadius = mDiscreteMode && mIsDragging ? 0 : mThumbRadius;
-            if(mAlwaysFillThumb) {
-                mThumbFillPercent = 1;
-            } else {
-                mThumbFillPercent = mFillPercent;
-            }
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
             mThumbPosition = mPosition;
             if(getHandler() != null)
                 getHandler().removeCallbacks(this);
@@ -1093,11 +1073,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             if(mDiscreteMode){
                 if(mIsDragging) {
                     mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                    if(mAlwaysFillThumb) {
-                        mThumbFillPercent = 1;
-                    } else {
-                        mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
-                    }
+                    mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
                 }
                 else{
                     float p1 = (float)mTravelAnimationDuration / mDuration;
@@ -1106,11 +1082,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                         value = mInterpolator.getInterpolation(progress / p1);
                         mThumbCurrentRadius = mStartRadius * (1f - value);
                         mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                        if(mAlwaysFillThumb) {
-                            mThumbFillPercent = 1;
-                        } else {
-                            mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
-                        }
+                        mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
                     }
                     else if(progress > p2){
                         mThumbCurrentRadius = mThumbRadius * (progress - p2) / (1 - p2);
@@ -1119,11 +1091,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             }
             else{
                 mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                if(mAlwaysFillThumb) {
-                    mThumbFillPercent = 1;
-                } else {
-                    mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
-                }
+                mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
                 if(progress < 0.2)
                     mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);

@@ -320,6 +320,18 @@ public class ViewUtil {
             applyStyle((TextView)v, attrs, defStyleAttr, defStyleRes);
     }
 
+    public static void applyFont(TextView v, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        TypedArray a = v.getContext().obtainStyledAttributes(attrs, new int[]{R.attr.tv_fontFamily}, defStyleAttr, defStyleRes);
+        String fontFamily = a.getString(0);
+
+        if(fontFamily != null){
+            Typeface typeface = TypefaceUtil.load(v.getContext(), fontFamily, 0);
+            v.setTypeface(typeface);
+        }
+
+        a.recycle();
+    }
+
     /**
      * Apply any TextView style attributes to a view.
      * @param v
@@ -594,23 +606,23 @@ public class ViewUtil {
         Typeface tf = null;
         if (fontFamily != null) {
             tf = TypefaceUtil.load(v.getContext(), fontFamily, styleIndex);
-            if (tf != null) {
+            if (tf != null)
                 v.setTypeface(tf);
-                return;
+        }
+        if(tf != null) {
+            switch (typefaceIndex) {
+                case 1:
+                    tf = Typeface.SANS_SERIF;
+                    break;
+                case 2:
+                    tf = Typeface.SERIF;
+                    break;
+                case 3:
+                    tf = Typeface.MONOSPACE;
+                    break;
             }
+            v.setTypeface(tf, styleIndex);
         }
-        switch (typefaceIndex) {
-            case 1:
-                tf = Typeface.SANS_SERIF;
-                break;
-            case 2:
-                tf = Typeface.SERIF;
-                break;
-            case 3:
-                tf = Typeface.MONOSPACE;
-                break;
-        }
-        v.setTypeface(tf, styleIndex);
 
         if(v instanceof AutoCompleteTextView)
             applyStyle((AutoCompleteTextView)v, attrs, defStyleAttr, defStyleRes);
@@ -649,4 +661,5 @@ public class ViewUtil {
         }
         a.recycle();
     }
+
 }

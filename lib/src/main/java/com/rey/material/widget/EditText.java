@@ -136,7 +136,6 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
@@ -214,6 +213,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
                     mInputView = new InternalEditText(context, attrs, defStyleAttr);
                     break;
             }
+            ViewUtil.applyFont(mInputView, attrs, defStyleAttr, defStyleRes);
             if(text != null)
                 mInputView.setText(text);
 

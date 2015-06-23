@@ -48,8 +48,8 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 

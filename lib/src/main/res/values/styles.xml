@@ -215,6 +215,7 @@
         <item name="sl_discreteMode">false</item>
         <item name="sl_textSize">@dimen/abc_text_size_small_material</item>
         <item name="sl_textColor">#FFFFFFFF</item>
+        <item name="sl_alwaysFillThumb">false</item>
     </style>
 
     <style name="Material.Widget.Slider.Discrete" parent="Material.Widget.Slider">
