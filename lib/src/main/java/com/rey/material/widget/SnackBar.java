@@ -50,11 +50,12 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	private int mHeight = WRAP_CONTENT;
     private int mMaxHeight;
     private int mMinHeight;
-	private int mInAnimationId;
-	private int mOutAnimationId;
 	private long mDuration = -1;
 	private int mActionId;
     private boolean mRemoveOnDismiss;
+
+    private Animation mInAnimation;
+    private Animation mOutAnimation;
 	
 	private Runnable mDismissRunnable = new Runnable() {
         @Override
@@ -275,9 +276,9 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
             else if(attr == R.styleable.SnackBar_sb_removeOnDismiss)
                 removeOnDismiss(a.getBoolean(attr, true));
             else if(attr == R.styleable.SnackBar_sb_inAnimation)
-                animationIn(a.getResourceId(attr, 0));
+                animationIn(AnimationUtils.loadAnimation(getContext(), a.getResourceId(attr, 0)));
             else if(attr == R.styleable.SnackBar_sb_outAnimation)
-                animationOut(a.getResourceId(attr, 0));
+                animationOut(AnimationUtils.loadAnimation(getContext(), a.getResourceId(attr, 0)));
         }
 
         a.recycle();
@@ -757,21 +758,21 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 
     /**
      * Set the animation will be shown when SnackBar enter screen.
-     * @param resId The resourceId of animation.
+     * @param anim The animation.
      * @return This SnackBar for chaining methods.
      */
-    public SnackBar animationIn(int resId){
-        mInAnimationId = resId;
+    public SnackBar animationIn(Animation anim){
+        mInAnimation = anim;
         return this;
     }
 
     /**
      * Set the animation will be shown when SnackBar exit screen.
-     * @param resId The resourceId of animation.
+     * @param anim The animation.
      * @return This SnackBar for chaining methods.
      */
-    public SnackBar animationOut(int resId){
-        mOutAnimationId = resId;
+    public SnackBar animationOut(Animation anim){
+        mOutAnimation = anim;
         return this;
     }
 
@@ -846,9 +847,10 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
             params.bottomMargin = mMarginBottom;
         }
 
-        if(mInAnimationId != 0 && mState != STATE_SHOWN){
-            Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
-            anim.setAnimationListener(new Animation.AnimationListener() {
+        if(mInAnimation != null && mState != STATE_SHOWN){
+            mInAnimation.cancel();
+            mInAnimation.reset();
+            mInAnimation.setAnimationListener(new Animation.AnimationListener() {
 
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -857,7 +859,8 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {}
+                public void onAnimationRepeat(Animation animation) {
+                }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -865,14 +868,16 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
                     startTimer();
                 }
             });
-            startAnimation(anim);
+            clearAnimation();
+            startAnimation(mInAnimation);
         }
-        else{
+        else {
             setVisibility(View.VISIBLE);
             setState(STATE_SHOWN);
             startTimer();
         }
     }
+
 	
 	private void startTimer(){
 		removeCallbacks(mDismissRunnable);
@@ -888,10 +893,11 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 			return;
 		
 		removeCallbacks(mDismissRunnable);
-		
-		if(mOutAnimationId != 0){
-			Animation anim = AnimationUtils.loadAnimation(getContext(), mOutAnimationId);
-			anim.setAnimationListener(new Animation.AnimationListener() {
+
+        if(mOutAnimation != null){
+            mOutAnimation.cancel();
+            mOutAnimation.reset();
+            mOutAnimation.setAnimationListener(new Animation.AnimationListener() {
 				
 				@Override
 				public void onAnimationStart(Animation animation) {
@@ -910,7 +916,8 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
                     setVisibility(View.GONE);
 				}
 			});
-			startAnimation(anim);
+            clearAnimation();
+			startAnimation(mOutAnimation);
 		}
 		else{
 			if(mRemoveOnDismiss && getParent() != null && getParent() instanceof ViewGroup)
