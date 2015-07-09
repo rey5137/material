@@ -19,6 +19,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -181,6 +182,8 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	
 	private void setRippleState(int state){
 		if(mState != state){
+//            Log.v(RippleDrawable.class.getSimpleName(), "state: " + mState + " " + state);
+
 			mState = state;
 									
 			if(mState != STATE_OUT){				
@@ -300,7 +303,9 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	}
 	
 	@Override
-	public boolean onTouch(View v, MotionEvent event) {		
+	public boolean onTouch(View v, MotionEvent event) {
+//        Log.v(RippleDrawable.class.getSimpleName(), "touch: " + event.getAction() + " " + mState);
+
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
@@ -406,7 +411,6 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 				mStartTime = SystemClock.uptimeMillis();
 				setRippleState(mState == STATE_PRESS ? STATE_HOVER : STATE_RELEASE);
 			}
-			
 		}
 		else{
 			float backgroundProgress = Math.min(1f, (float)(SystemClock.uptimeMillis() - mStartTime) / mBackgroundAnimDuration);
