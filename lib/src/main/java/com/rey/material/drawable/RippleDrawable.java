@@ -182,18 +182,18 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	
 	private void setRippleState(int state){
 		if(mState != state){
+            //fix bug incorrect state switch
+            if(mState == STATE_OUT && state != STATE_PRESS)
+                return;
+
 //            Log.v(RippleDrawable.class.getSimpleName(), "state: " + mState + " " + state);
 
 			mState = state;
-									
-			if(mState != STATE_OUT){				
-				if(mState != STATE_HOVER)
-					start();
-				else
-					stop();
-			}
-			else
-				stop();			
+
+            if(mState == STATE_OUT || mState == STATE_HOVER)
+                stop();
+            else
+                start();
 		}
 	}
 	
@@ -349,21 +349,17 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	}
 	
 	@Override
-	public void start() {		
+	public void start() {
 		if(isRunning())
 			return;
 		
 		resetAnimation();
-		
 		scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
 	    invalidateSelf();  
 	}
 
 	@Override
-	public void stop() {		
-		if(!isRunning())
-			return;
-				
+	public void stop() {
 		mRunning = false;
 		unscheduleSelf(mUpdater);
 		invalidateSelf();
@@ -371,7 +367,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 
 	@Override
 	public boolean isRunning() {
-		return mRunning;
+		return mState != STATE_OUT && mState != STATE_HOVER && mRunning;
 	}
 	
 	@Override

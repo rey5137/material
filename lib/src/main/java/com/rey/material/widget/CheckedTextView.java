@@ -76,6 +76,7 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
