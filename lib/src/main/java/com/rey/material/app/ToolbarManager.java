@@ -4,7 +4,7 @@ import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  */
 public class ToolbarManager {
 
-    private ActionBarActivity mActivity;
+    private AppCompatActivity mActivity;
     private Toolbar mToolbar;
     private int mRippleStyle;
     private Animator mAnimator;
@@ -86,11 +86,11 @@ public class ToolbarManager {
 
     private NavigationManager mNavigationManager;
 
-    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
+    public ToolbarManager(AppCompatActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
         this(activity, toolbar, defaultGroupId, rippleStyle, new SimpleAnimator(animIn, animOut));
     }
 
-    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
+    public ToolbarManager(AppCompatActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
         mActivity = activity;
         mToolbar = toolbar;
         mCurrentGroup = defaultGroupId;
@@ -425,7 +425,7 @@ public class ToolbarManager {
          * @param styledId the style res of navigation icon.
          * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
          */
-        public BaseNavigationManager(int styledId, ActionBarActivity activity, Toolbar toolbar, DrawerLayout drawerLayout){
+        public BaseNavigationManager(int styledId, AppCompatActivity activity, Toolbar toolbar, DrawerLayout drawerLayout){
             super(styledId, toolbar);
             mDrawerLayout = drawerLayout;
             mFragmentManager = activity.getSupportFragmentManager();
