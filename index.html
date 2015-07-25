@@ -22,7 +22,7 @@
       <h1>
 <a id="material" class="anchor" href="#material" aria-hidden="true"><span class="octicon octicon-link"></span></a>Material</h1>
 
-<p><a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar"><img src="https://img.shields.io/maven-central/v/com.github.rey5137/material.svg" alt="Maven Central"></a>  <a href="http://android-arsenal.com/details/1/1685"><img src="https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
+<p><a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.0/material-1.2.0.aar"><img src="https://img.shields.io/maven-central/v/com.github.rey5137/material.svg" alt="Maven Central"></a>  <a href="http://android-arsenal.com/details/1/1685"><img src="https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
 
 <p>MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is <a href="https://github.com/rey5137">Rey Pham</a>.</p>
 
@@ -105,6 +105,16 @@
 
 <p><img src="https://github.com/rey5137/Material/raw/master/image/dialog_3.png" alt=""> <img src="https://github.com/rey5137/Material/raw/master/image/dialog_4.png" alt=""></p>
 </li>
+<li>
+<p><a href="https://github.com/rey5137/Material/wiki/BottomSheet">BottomSheetDialog</a></p>
+
+<p><img src="https://github.com/rey5137/Material/raw/master/image/bottomsheet.gif" alt=""></p>
+</li>
+<li>
+<p><a href="https://github.com/rey5137/Material/wiki/Theme">Dynamic theme</a></p>
+
+<p><img src="https://github.com/rey5137/Material/raw/master/image/theme.gif" alt=""></p>
+</li>
 </ul>
 
 <h2>
@@ -122,19 +132,19 @@
 <p>Add Gradle dependency:</p>
 
 <div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.1.1<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.2.0<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <ul>
 <li>Or
-<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.1.0/material-1.1.0.aar">Download from Maven</a>
+<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.0/material-1.2.0.aar">Download from Maven</a>
 </li>
 </ul>
 
 <p>You can try the SNAPSHOT version:</p>
 
 <div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.1.1-SNAPSHOT<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.2.1-SNAPSHOT<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <p>Make sure to add the snapshot repository:</p>
@@ -148,8 +158,8 @@
 <p>AppCompat and CardView library is required by Material library.</p>
 
 <div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:appcompat-v7:21.0.2<span class="pl-pds">'</span></span>
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:21.0.3<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:appcompat-v7:22.2.1<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:22.2.1<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <p>Now you can use any widget in <strong>com.rey.material.widget</strong> package as you wish. For styling, please view <a href="https://github.com/rey5137/Material/wiki">Wiki</a>. Note that default style of widgets depend on theme of AppCompat. Here is an example:</p>
