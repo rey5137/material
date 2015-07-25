@@ -13,110 +13,95 @@
 	    android:gravity="center"
         android:padding="8dp">
 	                    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Checkbox"/>
 	    
 	    <com.rey.material.widget.CheckBox
-            style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 1"
-            android:textSize="14sp"
             android:checked="true"
-            android:gravity="center_vertical"/>  
+            android:gravity="center_vertical"
+            app:v_styleId="@array/checkbox"/>
             
 	    <com.rey.material.widget.CheckBox
-            style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 2"
-            android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            app:v_styleId="@array/checkbox"/>
 	    
 	    <com.rey.material.widget.CheckBox
-            style="@style/CheckBoxDrawable"
             android:id="@+id/switches_cb3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Checkbox 3"
-            android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>  
+            android:gravity="center_vertical"
+            app:v_styleId="@array/checkbox"/>
 	    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Radio Button"/>
 	    
 	    <com.rey.material.widget.RadioButton
-            style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 1"
-            android:textSize="14sp"
             android:checked="true"
-            android:gravity="center_vertical"/>   
+            android:gravity="center_vertical"
+            app:v_styleId="@array/radio_button"/>
             
 	    <com.rey.material.widget.RadioButton
-            style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 2"
-            android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>   
+            android:gravity="center_vertical"
+            app:v_styleId="@array/radio_button"/>
             
 	    <com.rey.material.widget.RadioButton
-            style="@style/RadioButtonDrawable"
             android:id="@+id/switches_rb3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Radio Button 3"
-            android:textSize="14sp"
             android:checked="false"
-            android:gravity="center_vertical"/>   
+            android:gravity="center_vertical"
+            app:v_styleId="@array/radio_button"/>
 	    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Switch"/>
 	    
 	    <com.rey.material.widget.Switch
-            style="@style/Material.Widget.Switch"
             android:id="@+id/switches_sw1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:checked="false"
-            android:padding="16dp"/>
+            android:padding="16dp"
+            app:v_styleId="@array/switches"/>
 	    
 	    <com.rey.material.widget.Switch
-            style="@style/Material.Widget.Switch"
             android:id="@+id/switches_sw2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:checked="true"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            app:v_styleId="@array/switches"/>
 	    
 	</LinearLayout>
     

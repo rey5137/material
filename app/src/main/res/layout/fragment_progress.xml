@@ -12,13 +12,10 @@
 	    android:orientation="vertical"
         android:padding="8dp">
 	            
-	    <TextView 
+	    <com.rey.material.widget.TextView
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="@dimen/title_text"
-	        android:padding="8dp"
-	        android:textColor="#FF000000"
-	        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 	        android:text="Circular"/>
 	    
 	    <LinearLayout 
@@ -39,10 +36,7 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/CircularProgressDrawableStyle"
-			        app:pv_progressMode="indeterminate"/>
+                    app:v_styleId="@array/pv_circular"/>
 	            
 	        </FrameLayout>
 	        
@@ -57,10 +51,7 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/ColorsCircularProgressDrawableStyle"
-			        app:pv_progressMode="indeterminate"/>
+                    app:v_styleId="@array/pv_circular_colors"/>
 	            
 	        </FrameLayout>
 	        
@@ -84,10 +75,7 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/InOutCircularProgressDrawableStyle"
-			        app:pv_progressMode="indeterminate"/>
+                    app:v_styleId="@array/pv_circular_in"/>
 	            
 	        </FrameLayout>
 	        
@@ -102,10 +90,7 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/InOutColorsCircularProgressDrawableStyle"
-			        app:pv_progressMode="indeterminate"/>
+                    app:v_styleId="@array/pv_circular_in_colors"/>
 	            
 	        </FrameLayout>
 	        
@@ -129,10 +114,7 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/DeterminateInOutCircularProgressDrawableStyle"
-			        app:pv_progressMode="determinate"/>
+                    app:v_styleId="@array/pv_circular_determinate"/>
 	            
 	        </FrameLayout>
 	        
@@ -146,22 +128,16 @@
 			        android:layout_width="32dp"
 			        android:layout_height="32dp"
 			        android:layout_gravity="center"
-			        app:pv_autostart = "false"
-			        app:pv_circular="true"
-			        app:pv_progressStyle="@style/DeterminateCircularProgressDrawableStyle"
-			        app:pv_progressMode="determinate"/>
+                    app:v_styleId="@array/pv_circular_determinate_in"/>
 	            
 	        </FrameLayout>
 	        	        
 	    </LinearLayout>
 	    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="@dimen/title_text"
-	        android:padding="8dp"
-	        android:textColor="#FF000000"
-	        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 	        android:text="Linear"/>	   
 	        
 	    <FrameLayout 
@@ -174,10 +150,7 @@
 			    android:layout_width="match_parent"
 			    android:layout_height="4dp"
 			    android:layout_gravity="center"
-			    app:pv_autostart = "false"
-			    app:pv_circular="false"
-			    app:pv_progressStyle="@style/LinearProgressDrawableStyle"
-			    app:pv_progressMode="indeterminate"/>
+			    app:v_styleId="@array/pv_linear"/>
 	            
 	    </FrameLayout>
 	    
@@ -191,10 +164,7 @@
 			    android:layout_width="match_parent"
 			    android:layout_height="4dp"
 			    android:layout_gravity="center"
-			    app:pv_autostart = "false"
-			    app:pv_circular="false"
-			    app:pv_progressStyle="@style/ColorsLinearProgressDrawableStyle"
-			    app:pv_progressMode="indeterminate"/>
+                app:v_styleId="@array/pv_linear_color"/>
 	            
 	    </FrameLayout>
 	    
@@ -208,10 +178,7 @@
 			    android:layout_width="match_parent"
 			    android:layout_height="4dp"
 			    android:layout_gravity="center"
-			    app:pv_autostart = "false"
-			    app:pv_circular="false"
-			    app:pv_progressStyle="@style/DeterminateLinearProgressDrawableStyle"
-			    app:pv_progressMode="determinate"/>
+                app:v_styleId="@array/pv_linear_determinate"/>
 	            
 	    </FrameLayout>
 	    
@@ -225,10 +192,7 @@
 			    android:layout_width="match_parent"
 			    android:layout_height="4dp"
 			    android:layout_gravity="center"
-			    app:pv_autostart = "false"
-			    app:pv_circular="false"
-			    app:pv_progressStyle="@style/QueryLinearProgressDrawableStyle"
-			    app:pv_progressMode="query"/>
+                app:v_styleId="@array/pv_linear_query"/>
 	            
 	    </FrameLayout>
 	    
@@ -242,10 +206,7 @@
 			    android:layout_width="match_parent"
 			    android:layout_height="4dp"
 			    android:layout_gravity="center"
-			    app:pv_autostart = "false"
-			    app:pv_circular="false"
-			    app:pv_progressStyle="@style/BufferLinearProgressDrawableStyle"
-			    app:pv_progressMode="buffer"/>
+                app:v_styleId="@array/pv_linear_buffer"/>
 	            
 	    </FrameLayout>
 	        

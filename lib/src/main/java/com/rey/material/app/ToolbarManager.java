@@ -1,10 +1,13 @@
 package com.rey.material.app;
 
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -30,7 +33,7 @@ import java.util.ArrayList;
  */
 public class ToolbarManager {
 
-    private ActionBarActivity mActivity;
+    private AppCompatDelegate mAppCompatDelegate;
     private Toolbar mToolbar;
     private int mRippleStyle;
     private Animator mAnimator;
@@ -73,8 +76,8 @@ public class ToolbarManager {
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            if(mActivity != null)
-                mActivity.supportInvalidateOptionsMenu();
+            if(mAppCompatDelegate != null)
+                mAppCompatDelegate.invalidateOptionsMenu();
             else
                 onPrepareMenu();
         }
@@ -86,17 +89,17 @@ public class ToolbarManager {
 
     private NavigationManager mNavigationManager;
 
-    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
-        this(activity, toolbar, defaultGroupId, rippleStyle, new SimpleAnimator(animIn, animOut));
+    public ToolbarManager(AppCompatDelegate delegate, Toolbar toolbar, int defaultGroupId, int rippleStyle, int animIn, int animOut){
+        this(delegate, toolbar, defaultGroupId, rippleStyle, new SimpleAnimator(animIn, animOut));
     }
 
-    public ToolbarManager(ActionBarActivity activity, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
-        mActivity = activity;
+    public ToolbarManager(AppCompatDelegate delegate, Toolbar toolbar, int defaultGroupId, int rippleStyle, Animator animator){
+        mAppCompatDelegate = delegate;
         mToolbar = toolbar;
         mCurrentGroup = defaultGroupId;
         mRippleStyle = rippleStyle;
         mAnimator = animator;
-        mActivity.setSupportActionBar(toolbar);
+        mAppCompatDelegate.setSupportActionBar(toolbar);
     }
 
     /**
@@ -164,7 +167,7 @@ public class ToolbarManager {
     public void createMenu(int menuId){
         mToolbar.inflateMenu(menuId);
         mMenuDataChanged = true;
-        if(mActivity == null)
+        if(mAppCompatDelegate == null)
             onPrepareMenu();
     }
 
@@ -179,7 +182,7 @@ public class ToolbarManager {
             Menu menu = mToolbar.getMenu();
             for(int i = 0, count = menu.size(); i < count; i++){
                 MenuItem item = menu.getItem(i);
-                item.setVisible(item.getGroupId() == mCurrentGroup);
+                item.setVisible(item.getGroupId() == mCurrentGroup || item.getGroupId() == 0);
             }
 
             mMenuDataChanged = false;
@@ -191,6 +194,7 @@ public class ToolbarManager {
      */
     public void setNavigationManager(NavigationManager navigationManager){
         mNavigationManager = navigationManager;
+        notifyNavigationStateInvalidated();
     }
 
     /**
@@ -363,9 +367,9 @@ public class ToolbarManager {
         /**
          * @param styleId the style res of navigation icon.
          */
-        public NavigationManager(int styleId, Toolbar toolbar){
+        public NavigationManager(NavigationDrawerDrawable navigationIcon, Toolbar toolbar){
             mToolbar = toolbar;
-            mNavigationIcon = new NavigationDrawerDrawable.Builder(mToolbar.getContext(), styleId).build();
+            mNavigationIcon = navigationIcon;
             mToolbar.setNavigationIcon(mNavigationIcon);
             mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
                 @Override
@@ -422,13 +426,13 @@ public class ToolbarManager {
 
         /**
          *
-         * @param styledId the style res of navigation icon.
+         * @param styleId the resourceId of navigation icon style.
          * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
          */
-        public BaseNavigationManager(int styledId, ActionBarActivity activity, Toolbar toolbar, DrawerLayout drawerLayout){
-            super(styledId, toolbar);
+        public BaseNavigationManager(int styleId, FragmentManager fragmentManager, Toolbar toolbar, DrawerLayout drawerLayout){
+            super(new NavigationDrawerDrawable.Builder(toolbar.getContext(), styleId).build(), toolbar);
             mDrawerLayout = drawerLayout;
-            mFragmentManager = activity.getSupportFragmentManager();
+            mFragmentManager = fragmentManager;
 
             if(mDrawerLayout != null)
                 mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
@@ -509,6 +513,40 @@ public class ToolbarManager {
          */
         protected void onDrawerStateChanged(int newState) {
             mSyncDrawerSlidingProgress = (newState == DrawerLayout.STATE_DRAGGING || newState == DrawerLayout.STATE_SETTLING) && shouldSyncDrawerSlidingProgress();
+        }
+
+    }
+
+    /**
+     * A Manager class extend from {@link BaseNavigationManager} class and add theme supporting.
+     */
+    public static class ThemableNavigationManager extends BaseNavigationManager implements ThemeManager.OnThemeChangedListener{
+
+        private int mStyleId;
+        private int mCurrentStyle;
+
+        /**
+         *
+         * @param styleId the styleId of navigation icon.
+         * @param drawerLayout can be null if you don't need to handle navigation state when open/close navigation drawer.
+         */
+        public ThemableNavigationManager(int styleId, FragmentManager fragmentManager, Toolbar toolbar, DrawerLayout drawerLayout){
+            super(ThemeManager.getInstance().getCurrentStyle(styleId), fragmentManager, toolbar, drawerLayout);
+            mStyleId = styleId;
+            mCurrentStyle = ThemeManager.getInstance().getCurrentStyle(styleId);
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+        }
+
+        @Override
+        public void onThemeChanged(@Nullable ThemeManager.OnThemeChangedEvent event) {
+            int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+            if(mCurrentStyle != style){
+                mCurrentStyle = style;
+                NavigationDrawerDrawable drawable = new NavigationDrawerDrawable.Builder(mToolbar.getContext(), mCurrentStyle).build();
+                drawable.switchIconState(mNavigationIcon.getIconState(), false);
+                mNavigationIcon = drawable;
+                mToolbar.setNavigationIcon(mNavigationIcon);
+            }
         }
 
     }

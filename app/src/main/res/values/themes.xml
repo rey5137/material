@@ -10,4 +10,219 @@
 		<item name="colorSwitchThumbNormal">@color/colorSwitchThumbNormal</item>
 	</style>
 
+    <array name="bg_window">
+        <item>@drawable/bg_window_light</item>
+        <item>@drawable/bg_window_dark</item>
+    </array>
+
+    <array name="bg_toolbar">
+        <item>@drawable/bg_toolbar_light</item>
+        <item>@drawable/bg_toolbar_dark</item>
+    </array>
+
+    <array name="text_title">
+        <item>@style/LightTitleText</item>
+        <item>@style/DarkTitleText</item>
+    </array>
+
+    <array name="text_body">
+        <item>@style/LightBodyText</item>
+        <item>@style/DarkBodyText</item>
+    </array>
+
+    <array name="button_flat">
+        <item>@style/LightFlatButtonRippleStyle</item>
+        <item>@style/DarkFlatButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_color">
+        <item>@style/LightFlatColorButtonRippleStyle</item>
+        <item>@style/DarkFlatColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_wave">
+        <item>@style/LightFlatWaveButtonRippleStyle</item>
+        <item>@style/DarkFlatWaveButtonRippleStyle</item>
+    </array>
+
+    <array name="button_flat_wave_color">
+        <item>@style/LightFlatWaveColorButtonRippleStyle</item>
+        <item>@style/DarkFlatWaveColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise">
+        <item>@style/LightRaiseButtonRippleStyle</item>
+        <item>@style/DarkRaiseButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_color">
+        <item>@style/LightRaiseColorButtonRippleStyle</item>
+        <item>@style/DarkRaiseColorButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_wave">
+        <item>@style/LightRaiseWaveButtonRippleStyle</item>
+        <item>@style/DarkRaiseWaveButtonRippleStyle</item>
+    </array>
+
+    <array name="button_raise_wave_color">
+        <item>@style/LightRaiseWaveColorButtonRippleStyle</item>
+        <item>@style/DarkRaiseWaveColorButtonRippleStyle</item>
+    </array>
+
+    <array name="checkbox">
+        <item>@style/LightCheckBoxDrawable</item>
+        <item>@style/DarkCheckBoxDrawable</item>
+    </array>
+
+    <array name="radio_button">
+        <item>@style/LightRadioButtonDrawable</item>
+        <item>@style/DarkRadioButtonDrawable</item>
+    </array>
+
+    <array name="switches">
+        <item>@style/LightSwitch</item>
+        <item>@style/DarkSwitch</item>
+    </array>
+
+    <array name="fab_icon">
+        <item>@style/LightFABIcon</item>
+        <item>@style/DarkFABIcon</item>
+    </array>
+
+    <array name="fab_line">
+        <item>@style/LightFABLine</item>
+        <item>@style/DarkFABLine</item>
+    </array>
+
+    <array name="fab">
+        <item>@style/LightFAB</item>
+        <item>@style/DarkFAB</item>
+    </array>
+
+    <array name="fab_color">
+        <item>@style/LightFABColor</item>
+        <item>@style/DarkFABColor</item>
+    </array>
+
+    <array name="fab_wave">
+        <item>@style/LightFABWave</item>
+        <item>@style/DarkFABWave</item>
+    </array>
+
+    <array name="fab_wave_color">
+        <item>@style/LightFABWaveColor</item>
+        <item>@style/DarkFABWaveColor</item>
+    </array>
+
+    <array name="slider">
+        <item>@style/LightSlider</item>
+        <item>@style/DarkSlider</item>
+    </array>
+
+    <array name="slider_discrete">
+        <item>@style/LightSliderDiscrete</item>
+        <item>@style/DarkSliderDiscrete</item>
+    </array>
+
+    <array name="spinner">
+        <item>@style/LightSpinner</item>
+        <item>@style/DarkSpinner</item>
+    </array>
+
+    <array name="spinner_no_arrow">
+        <item>@style/LightSpinnerNoArrow</item>
+        <item>@style/DarkSpinnerNoArrow</item>
+    </array>
+
+    <array name="spinner_item">
+        <item>@style/LightSpinnerItem</item>
+        <item>@style/DarkSpinnerItem</item>
+    </array>
+
+    <array name="tab_indicator">
+        <item>@style/LightTabPageIndicator</item>
+        <item>@style/DarkTabPageIndicator</item>
+    </array>
+
+    <array name="edittext">
+        <item>@style/LightEditText</item>
+        <item>@style/DarkEditText</item>
+    </array>
+
+    <array name="edittext_contact">
+        <item>@style/LightContactEditText</item>
+        <item>@style/DarkContactEditText</item>
+    </array>
+
+    <array name="edittext_no_divider">
+        <item>@style/LightNoDividerEditText</item>
+        <item>@style/DarkNoDividerEditText</item>
+    </array>
+
+    <array name="pv_circular">
+        <item>@style/LightCircularProgressView</item>
+        <item>@style/DarkCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_colors">
+        <item>@style/LightColorCircularProgressView</item>
+        <item>@style/DarkColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in">
+        <item>@style/LightInCircularProgressView</item>
+        <item>@style/DarkInCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in_colors">
+        <item>@style/LightInColorCircularProgressView</item>
+        <item>@style/DarkInColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate">
+        <item>@style/LightDeterminateCircularProgressView</item>
+        <item>@style/DarkDeterminateCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate_in">
+        <item>@style/LightDeterminateInCircularProgressView</item>
+        <item>@style/DarkDeterminateInCircularProgressView</item>
+    </array>
+
+    <array name="pv_linear">
+        <item>@style/LightLinearProgressView</item>
+        <item>@style/DarkLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_color">
+        <item>@style/LightColorLinearProgressView</item>
+        <item>@style/DarkColorLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_determinate">
+        <item>@style/LightDeterminateLinearProgressView</item>
+        <item>@style/DarkDeterminateLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_query">
+        <item>@style/LightQueryLinearProgressView</item>
+        <item>@style/DarkQueryLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_buffer">
+        <item>@style/LightBufferLinearProgressView</item>
+        <item>@style/DarkBufferLinearProgressView</item>
+    </array>
+
+    <array name="listview">
+        <item>@style/LightListView</item>
+        <item>@style/DarkListView</item>
+    </array>
+
+    <array name="navigation_drawer">
+        <item>@style/LightNavigationDrawerDrawable</item>
+        <item>@style/DarkNavigationDrawerDrawable</item>
+    </array>
+
 </resources>

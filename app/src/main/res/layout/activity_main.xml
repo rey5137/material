@@ -20,17 +20,15 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
                 app:theme="@style/AppBar"/>
 
             <com.rey.material.widget.TabPageIndicator
-                style="@style/TabPageIndicator"
                 android:id="@+id/main_tpi"
                 android:layout_height="48dp"
                 android:layout_width="match_parent"
                 android:paddingLeft="60dp"
                 android:clipToPadding="false"
-                android:background="?attr/colorPrimary"/>
+                app:v_styleId="@array/tab_indicator"/>
 
             <com.rey.material.demo.CustomViewPager
                 android:id="@+id/main_vp"
@@ -43,7 +41,7 @@
             android:id="@+id/main_sn"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_gravity="bottom"/>
 
     </FrameLayout>
@@ -62,8 +60,8 @@
 	        android:choiceMode="singleChoice"
 	        android:divider="@null"
 	        android:dividerHeight="0dp"
-	        android:background="?android:attr/windowBackground"
-	        android:listSelector="@android:color/transparent"/>
+	        android:listSelector="@android:color/transparent"
+            app:v_styleId="@array/listview"/>
         
     </FrameLayout>    
     

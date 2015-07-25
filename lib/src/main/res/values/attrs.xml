@@ -13,6 +13,122 @@
 
     <attr name="rd_style" format="reference"/>
     <attr name="rd_enable" format="boolean"/>
+    <attr name="tv_fontFamily" format="reference|string"/>
+
+    <declare-styleable name="View">
+        <attr name="android:background" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:backgroundTintMode" />
+        <attr name="android:elevation" />
+        <attr name="android:fadeScrollbars" />
+        <attr name="android:fadingEdgeLength" />
+        <attr name="android:minHeight" />
+        <attr name="android:minWidth" />
+        <attr name="android:padding" />
+        <attr name="android:paddingBottom" />
+        <attr name="android:paddingEnd" />
+        <attr name="android:paddingLeft" />
+        <attr name="android:paddingRight" />
+        <attr name="android:paddingStart" />
+        <attr name="android:paddingTop" />
+        <attr name="android:requiresFadingEdge" />
+        <attr name="android:scrollbarDefaultDelayBeforeFade" />
+        <attr name="android:scrollbarFadeDuration" />
+        <attr name="android:scrollbarSize" />
+        <attr name="android:scrollbarStyle" />
+        <attr name="android:soundEffectsEnabled" />
+        <attr name="android:textAlignment" />
+        <attr name="android:textDirection" />
+        <attr name="android:visibility" />
+        <attr name="android:layoutDirection" />
+    </declare-styleable>
+
+    <declare-styleable name="TextView">
+        <attr name="android:drawableBottom" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:drawableLeft" />
+        <attr name="android:drawablePadding" />
+        <attr name="android:drawableRight" />
+        <attr name="android:drawableStart" />
+        <attr name="android:drawableTop" />
+        <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:gravity" />
+        <attr name="android:lines" />
+        <attr name="android:letterSpacing" />
+        <attr name="android:lineSpacingExtra" />
+        <attr name="android:lineSpacingMultiplier" />
+        <attr name="android:height" />
+        <attr name="android:ems" />
+        <attr name="android:width" />
+        <attr name="android:includeFontPadding" />
+        <attr name="android:cursorVisible" />
+        <attr name="android:maxEms" />
+        <attr name="android:maxHeight" />
+        <attr name="android:maxLength" />
+        <attr name="android:maxLines" />
+        <attr name="android:maxWidth" />
+        <attr name="android:minEms" />
+        <attr name="android:minHeight" />
+        <attr name="android:minLines" />
+        <attr name="android:minWidth" />
+        <attr name="android:scrollHorizontally" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:singleLine" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textScaleX" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+    </declare-styleable>
+
+    <declare-styleable name="TextViewAppearance">
+        <attr name="android:textAppearance" />
+    </declare-styleable>
+
+    <declare-styleable name="TextAppearance">
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+        <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:letterSpacing" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoCompleteTextView">
+        <attr name="android:completionHint" />
+        <attr name="android:completionThreshold" />
+        <attr name="android:dropDownAnchor" />
+        <attr name="android:dropDownHeight" />
+        <attr name="android:dropDownHorizontalOffset" />
+        <attr name="android:dropDownVerticalOffset" />
+        <attr name="android:dropDownWidth" />
+        <attr name="android:popupBackground" />
+    </declare-styleable>
+
+    <declare-styleable name="ThemableView">
+        <attr name="v_styleId" format="reference"/>
+    </declare-styleable>
 
     <declare-styleable name="CircularProgressDrawable">        
         <attr name="cpd_padding" format="reference|dimension"/> 
@@ -207,6 +323,7 @@
         </attr>
         <attr name="sl_textSize" format="reference|dimension"/>
         <attr name="sl_textColor" format="reference|color"/>
+        <attr name="sl_alwaysFillThumb" format="reference|boolean"/>
         <attr name="android:gravity" />
         <attr name="android:enabled" />
     </declare-styleable>
@@ -221,6 +338,7 @@
         <attr name="tpi_tabRipple" format="reference"/>
         <attr name="tpi_indicatorColor" format="reference|color"/>
         <attr name="tpi_indicatorHeight" format="reference|dimension"/>
+        <attr name="tpi_tabSingleLine" format="reference|boolean"/>
         <attr name="android:textAppearance" />  
         <attr name="tpi_mode" format="integer">
             <enum name="scroll" value="0x00000000" />
@@ -324,6 +442,7 @@
     
     <declare-styleable name="FloatingActionButton">
         <attr name="fab_backgroundColor" format="reference|color"/>
+        <attr name="fab_backgroundAnimDuration" format="reference|integer"/>
         <attr name="fab_radius" format="reference|dimension"/>
         <attr name="fab_elevation" format="reference|dimension"/>
         <attr name="fab_iconSrc" format="reference"/>
@@ -378,6 +497,8 @@
             <enum name="rtl" value="1" />
             <enum name="locale" value="3" />
         </attr>
+        <attr name="di_maxWidth" format="dimension|reference" />
+        <attr name="di_maxHeight" format="dimension|reference" />
         <attr name="di_titleTextAppearance" format="reference" />
         <attr name="di_titleTextColor" format="color|reference" />
         <attr name="di_actionBackground" format="reference" />
@@ -525,4 +646,16 @@
         <attr name="dp_headerSecondaryTextSize" format="dimension|reference" />
         <attr name="dp_textHeaderColor" format="color|reference" />
     </declare-styleable>
+
+    <declare-styleable name="BottomSheetDialog">
+        <attr name="bsd_inDuration" format="reference|integer"/>
+        <attr name="bsd_inInterpolator" format="reference"/>
+        <attr name="bsd_outDuration" format="reference|integer"/>
+        <attr name="bsd_outInterpolator" format="reference"/>
+        <attr name="bsd_cancelable" format="reference|boolean"/>
+        <attr name="bsd_canceledOnTouchOutside" format="reference|boolean"/>
+        <attr name="bsd_dimAmount" format="reference|float"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
 </resources>

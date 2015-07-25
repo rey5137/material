@@ -14,7 +14,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -25,6 +24,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
@@ -34,9 +34,11 @@ import com.rey.material.util.ViewUtil;
 /**
  * Created by Ret on 3/18/2015.
  */
-public class Slider extends View{
+public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     private RippleManager mRippleManager;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     private Paint mPaint;
     private RectF mDrawRect;
@@ -53,18 +55,18 @@ public class Slider extends View{
 
     private int mPrimaryColor;
     private int mSecondaryColor;
-    private int mTrackSize;
-    private Paint.Cap mTrackCap;
-    private int mThumbBorderSize;
-    private int mThumbRadius;
-    private int mThumbFocusRadius;
-    private float mThumbPosition;
-    private Typeface mTypeface;
-    private int mTextSize;
-    private int mTextColor;
+    private int mTrackSize = -1;
+    private Paint.Cap mTrackCap = Paint.Cap.BUTT;
+    private int mThumbBorderSize = -1;
+    private int mThumbRadius = -1;
+    private int mThumbFocusRadius = -1;
+    private float mThumbPosition = -1;
+    private Typeface mTypeface = Typeface.DEFAULT;
+    private int mTextSize = -1;
+    private int mTextColor = 0xFFFFFFFF;
     private int mGravity = Gravity.CENTER;
-    private int mTravelAnimationDuration;
-    private int mTransformAnimationDuration;
+    private int mTravelAnimationDuration = -1;
+    private int mTransformAnimationDuration = -1;
     private Interpolator mInterpolator;
 
     private int mTouchSlop;
@@ -72,6 +74,7 @@ public class Slider extends View{
     private boolean mIsDragging;
     private float mThumbCurrentRadius;
     private float mThumbFillPercent;
+    private boolean mAlwaysFillThumb = false;
     private int mTextHeight;
     private int mMemoValue;
     private String mValueText;
@@ -128,6 +131,10 @@ public class Slider extends View{
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+        //default color
+        mPrimaryColor = ThemeUtil.colorControlActivated(context, 0xFF000000);
+        mSecondaryColor = ThemeUtil.colorControlNormal(context, 0xFF000000);
+
         mDrawRect = new RectF();
         mTempRect = new RectF();
         mLeftTrackPath = new Path();
@@ -141,55 +148,163 @@ public class Slider extends View{
         mMemoPoint = new PointF();
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
-        mDiscreteMode = a.getBoolean(R.styleable.Slider_sl_discreteMode, mDiscreteMode);
-        mPrimaryColor = a.getColor(R.styleable.Slider_sl_primaryColor, ThemeUtil.colorControlActivated(context, 0xFF000000));
-        mSecondaryColor = a.getColor(R.styleable.Slider_sl_secondaryColor, ThemeUtil.colorControlNormal(context, 0xFF000000));
-        mTrackSize = a.getDimensionPixelSize(R.styleable.Slider_sl_trackSize, ThemeUtil.dpToPx(context, 2));
-        int cap = a.getInteger(R.styleable.Slider_sl_trackCap, 0);
-        if(cap == 0)
-            mTrackCap = Paint.Cap.BUTT;
-        else if(cap == 1)
-            mTrackCap = Paint.Cap.ROUND;
-        else
-            mTrackCap = Paint.Cap.SQUARE;
-        mThumbBorderSize = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbBorderSize, ThemeUtil.dpToPx(context, 2));
-        mThumbRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbRadius, ThemeUtil.dpToPx(context, 10));
-        mThumbFocusRadius = a.getDimensionPixelSize(R.styleable.Slider_sl_thumbFocusRadius, ThemeUtil.dpToPx(context, 14));
-        mTravelAnimationDuration = a.getInteger(R.styleable.Slider_sl_travelAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        mTransformAnimationDuration = a.getInteger(R.styleable.Slider_sl_travelAnimDuration, context.getResources().getInteger(android.R.integer.config_shortAnimTime));
-        int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
-        mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
-        mGravity = a.getInt(R.styleable.Slider_android_gravity, Gravity.CENTER_VERTICAL);
-        mMinValue = a.getInteger(R.styleable.Slider_sl_minValue, mMinValue);
-        mMaxValue = a.getInteger(R.styleable.Slider_sl_maxValue, mMaxValue);
-        mStepValue = a.getInteger(R.styleable.Slider_sl_stepValue, mStepValue);
-        setValue(a.getInteger(R.styleable.Slider_sl_value, getValue()), false);
-
-        String familyName = a.getString(R.styleable.Slider_sl_fontFamily);
-        int style = a.getInteger(R.styleable.Slider_sl_textStyle, Typeface.NORMAL);
-
-        mTypeface = TypefaceUtil.load(context, familyName, style);
-        mTextColor = a.getColor(R.styleable.Slider_sl_textColor, 0xFFFFFFFF);
-        mTextSize = a.getDimensionPixelSize(R.styleable.Slider_sl_textSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_small_material));
-        setEnabled(a.getBoolean(R.styleable.Slider_android_enabled, true));
+        int minValue = getMinValue();
+        int maxValue = getMaxValue();
+        boolean valueRangeDefined = false;
+        int value = -1;
+        boolean valueDefined = false;
+        String familyName = null;
+        int style = Typeface.NORMAL;
+        boolean textStyleDefined = false;
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+            if(attr == R.styleable.Slider_sl_discreteMode)
+                mDiscreteMode = a.getBoolean(attr, false);
+            else if(attr == R.styleable.Slider_sl_primaryColor)
+                mPrimaryColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.Slider_sl_secondaryColor)
+                mSecondaryColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.Slider_sl_trackSize)
+                mTrackSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_sl_trackCap) {
+                int cap = a.getInteger(attr, 0);
+                if(cap == 0)
+                    mTrackCap = Paint.Cap.BUTT;
+                else if(cap == 1)
+                    mTrackCap = Paint.Cap.ROUND;
+                else
+                    mTrackCap = Paint.Cap.SQUARE;
+            }
+            else if(attr == R.styleable.Slider_sl_thumbBorderSize)
+                mThumbBorderSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_sl_thumbRadius)
+                mThumbRadius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_sl_thumbFocusRadius)
+                mThumbFocusRadius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_sl_travelAnimDuration) {
+                mTravelAnimationDuration = a.getInteger(attr, 0);
+                mTransformAnimationDuration = mTravelAnimationDuration;
+            }
+            else if(attr == R.styleable.Slider_sl_alwaysFillThumb) {
+                mAlwaysFillThumb = a.getBoolean(R.styleable.Slider_sl_alwaysFillThumb, false);
+            }
+            else if(attr == R.styleable.Slider_sl_interpolator){
+                int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
+                mInterpolator = AnimationUtils.loadInterpolator(context, resId);
+            }
+            else if(attr == R.styleable.Slider_android_gravity)
+                mGravity = a.getInteger(attr, 0);
+            else if(attr == R.styleable.Slider_sl_minValue) {
+                minValue = a.getInteger(attr, 0);
+                valueRangeDefined = true;
+            }
+            else if(attr == R.styleable.Slider_sl_maxValue) {
+                maxValue = a.getInteger(attr, 0);
+                valueRangeDefined = true;
+            }
+            else if(attr == R.styleable.Slider_sl_stepValue)
+                mStepValue = a.getInteger(attr, 0);
+            else if(attr == R.styleable.Slider_sl_value) {
+                value = a.getInteger(attr, 0);
+                valueDefined = true;
+            }
+            else if(attr == R.styleable.Slider_sl_fontFamily) {
+                familyName = a.getString(attr);
+                textStyleDefined = true;
+            }
+            else if(attr == R.styleable.Slider_sl_textStyle) {
+                style = a.getInteger(attr, 0);
+                textStyleDefined = true;
+            }
+            else if(attr == R.styleable.Slider_sl_textColor)
+                mTextColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.Slider_sl_textSize)
+                mTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_android_enabled)
+                setEnabled(a.getBoolean(attr, true));
+        }
 
         a.recycle();
+
+        if(mTrackSize < 0)
+            mTrackSize = ThemeUtil.dpToPx(context, 2);
+
+        if(mThumbBorderSize < 0)
+            mThumbBorderSize = ThemeUtil.dpToPx(context, 2);
+
+        if(mThumbRadius < 0)
+            mThumbRadius = ThemeUtil.dpToPx(context, 10);
+
+        if(mThumbFocusRadius < 0)
+            mThumbFocusRadius = ThemeUtil.dpToPx(context, 14);
+
+        if(mTravelAnimationDuration < 0){
+            mTravelAnimationDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+            mTransformAnimationDuration = mTravelAnimationDuration;
+        }
+
+        if(mInterpolator == null)
+            mInterpolator = new DecelerateInterpolator();
+
+        if(valueRangeDefined)
+            setValueRange(minValue, maxValue, false);
+
+        if(valueDefined)
+            setValue(value, false);
+        else if(mThumbPosition < 0)
+            setValue(mMinValue, false);
+
+        if(textStyleDefined)
+            mTypeface = TypefaceUtil.load(context, familyName, style);
+
+        if(mTextSize < 0)
+            mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_small_material);
 
         mPaint.setTextSize(mTextSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTypeface(mTypeface);
 
         measureText();
+        invalidate();
+    }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     private void measureText(){
@@ -303,7 +418,7 @@ public class Slider extends View{
             }
             else{
                 mThumbCurrentRadius = mThumbRadius;
-                mThumbFillPercent = mThumbPosition == 0 ? 0 : 1;
+                mThumbFillPercent = (mAlwaysFillThumb || mThumbPosition != 0) ? 1 : 0;
                 invalidate();
             }
         }
@@ -313,6 +428,32 @@ public class Slider extends View{
 
         if(change && mOnPositionChangeListener != null)
             mOnPositionChangeListener.onPositionChanged(this, fromUser, oldPos, newPos, oldValue, newValue);
+    }
+
+    /**
+     * Changes the primary color and invalidates the view to force a redraw.
+     * @param color New color to assign to mPrimaryColor.
+     */
+    public void setPrimaryColor(int color) {
+        mPrimaryColor = color;
+        invalidate();
+    }
+
+    /**
+     * Changes the secondary color and invalidates the view to force a redraw.
+     * @param color New color to assign to mSecondaryColor.
+     */
+    public void setSecondaryColor(int color) {
+        mSecondaryColor = color;
+        invalidate();
+    }
+
+    /**
+     * Set if we want the thumb to always be filled.
+     * @param alwaysFillThumb Do we want it to always be filled.
+     */
+    public void setAlwaysFillThumb(boolean alwaysFillThumb) {
+        mAlwaysFillThumb = alwaysFillThumb;
     }
 
     /**
@@ -829,7 +970,7 @@ public class Slider extends View{
                 return true;
             }
             else {
-                mThumbFillPercent = mFillPercent;
+                mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
                 invalidate();
                 return false;
             }
@@ -837,7 +978,7 @@ public class Slider extends View{
 
         public void stopAnimation() {
             mRunning = false;
-            mThumbFillPercent = mFillPercent;
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
             if(getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
@@ -849,7 +990,7 @@ public class Slider extends View{
             float progress = Math.min(1f, (float)(curTime - mStartTime) / mTransformAnimationDuration);
             float value = mInterpolator.getInterpolation(progress);
 
-            mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
             if(progress == 1f)
                 stopAnimation();
@@ -917,7 +1058,7 @@ public class Slider extends View{
         public void stopAnimation() {
             mRunning = false;
             mThumbCurrentRadius = mDiscreteMode && mIsDragging ? 0 : mThumbRadius;
-            mThumbFillPercent = mFillPercent;
+            mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
             mThumbPosition = mPosition;
             if(getHandler() != null)
                 getHandler().removeCallbacks(this);
@@ -933,7 +1074,7 @@ public class Slider extends View{
             if(mDiscreteMode){
                 if(mIsDragging) {
                     mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                    mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+                    mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
                 }
                 else{
                     float p1 = (float)mTravelAnimationDuration / mDuration;
@@ -942,7 +1083,7 @@ public class Slider extends View{
                         value = mInterpolator.getInterpolation(progress / p1);
                         mThumbCurrentRadius = mStartRadius * (1f - value);
                         mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                        mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+                        mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
                     }
                     else if(progress > p2){
                         mThumbCurrentRadius = mThumbRadius * (progress - p2) / (1 - p2);
@@ -951,7 +1092,7 @@ public class Slider extends View{
             }
             else{
                 mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
-                mThumbFillPercent = (mFillPercent - mStartFillPercent) * value + mStartFillPercent;
+                mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
                 if(progress < 0.2)
                     mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);

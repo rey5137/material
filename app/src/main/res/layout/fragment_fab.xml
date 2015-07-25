@@ -13,37 +13,30 @@
 	    android:gravity="center"
         android:padding="8dp">
 	                    
-	    <TextView 
+	    <com.rey.material.widget.TextView
 			android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:textSize="@dimen/title_text"
-		    android:padding="8dp"
-		    android:textColor="#FF000000"
-		    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
 		    android:text="Image"/>
 
 	    <com.rey.material.widget.FloatingActionButton
-            style="@style/Material.Widget.FloatingActionButton.Light"
             android:id="@+id/fab_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_iconSrc="@drawable/ic_done_white_24dp"/>
+            app:fab_iconSrc="@drawable/ic_done_white_24dp"
+            app:v_styleId="@array/fab_icon"/>
 
-        <TextView
+        <com.rey.material.widget.TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/title_text"
-            android:padding="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+            app:v_styleId="@array/text_title"
             android:text="Line Morphing"/>
 
         <com.rey.material.widget.FloatingActionButton
-            style="@style/Material.Widget.FloatingActionButton.Light"
             android:id="@+id/fab_line"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_iconLineMorphing="@style/FloatingActionButtonIcon"/>
+            app:v_styleId="@array/fab_line"/>
 
 	    
 	</LinearLayout>

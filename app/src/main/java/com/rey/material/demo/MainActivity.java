@@ -1,12 +1,15 @@
 package com.rey.material.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,25 +17,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.rey.material.app.ThemeManager;
 import com.rey.material.app.ToolbarManager;
+import com.rey.material.drawable.ThemeDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.SnackBar;
 import com.rey.material.widget.TabPageIndicator;
 
 import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
-public class MainActivity extends ActionBarActivity implements ToolbarManager.OnToolbarGroupChangedListener {
+public class MainActivity extends AppCompatActivity implements ToolbarManager.OnToolbarGroupChangedListener {
 
 	private DrawerLayout dl_navigator;
 	private FrameLayout fl_drawer;
@@ -63,54 +65,59 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
-        mToolbarManager = new ToolbarManager(this, mToolbar, 0, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
-        mToolbarManager.setNavigationManager(new ToolbarManager.BaseNavigationManager(R.style.NavigationDrawerDrawable, this, mToolbar, dl_navigator) {
+        mToolbarManager = new ToolbarManager(getDelegate(), mToolbar, R.id.tb_group_main, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
+        mToolbarManager.setNavigationManager(new ToolbarManager.ThemableNavigationManager(R.array.navigation_drawer, getSupportFragmentManager(), mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
-                if(mToolbarManager.getCurrentGroup() != 0)
-                    mToolbarManager.setCurrentGroup(0);
+                if(mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
+                    mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 else
-                    dl_navigator.openDrawer(Gravity.START);
+                    dl_navigator.openDrawer(GravityCompat.START);
             }
 
             @Override
             public boolean isBackState() {
-                return super.isBackState() || mToolbarManager.getCurrentGroup() != 0;
+                return super.isBackState() || mToolbarManager.getCurrentGroup() != R.id.tb_group_main;
             }
 
             @Override
             protected boolean shouldSyncDrawerSlidingProgress() {
-                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == 0;
+                return super.shouldSyncDrawerSlidingProgress() && mToolbarManager.getCurrentGroup() == R.id.tb_group_main;
             }
 
         });
         mToolbarManager.registerOnToolbarGroupChangedListener(this);
 		
-		mDrawerAdapter = new DrawerAdapter();
+		mDrawerAdapter = new DrawerAdapter(this);
 		lv_drawer.setAdapter(mDrawerAdapter);
 		
 		mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
 		vp.setAdapter(mPagerAdapter);
 		tpi.setViewPager(vp);
 		tpi.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			
-			@Override
-			public void onPageSelected(int position) {
-				mDrawerAdapter.setSelected(mItems[position]);
+
+            @Override
+            public void onPageSelected(int position) {
+                mDrawerAdapter.setSelected(mItems[position]);
                 mSnackBar.dismiss();
-			}
-			
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {}
-			
-			@Override
-			public void onPageScrollStateChanged(int state) {}
-			
-		});
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+
+        });
 
         mDrawerAdapter.setSelected(Tab.PROGRESS);
 		vp.setCurrentItem(0);
-	}
+
+        ViewUtil.setBackground(getWindow().getDecorView(), new ThemeDrawable(R.array.bg_window));
+        ViewUtil.setBackground(mToolbar, new ThemeDrawable(R.array.bg_toolbar));
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,12 +134,17 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.tb_contextual:
+            case R.id.tb_switch:
                 mToolbarManager.setCurrentGroup(R.id.tb_group_contextual);
                 break;
             case R.id.tb_done:
             case R.id.tb_done_all:
-                mToolbarManager.setCurrentGroup(0);
+                mToolbarManager.setCurrentGroup(R.id.tb_group_main);
+                break;
+            case R.id.tb_theme:
+                int theme = (ThemeManager.getInstance().getCurrentTheme() + 1) % ThemeManager.getInstance().getThemeCount();
+                ThemeManager.getInstance().setCurrentTheme(theme);
+                Toast.makeText(this, "Current theme: " + theme, Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
@@ -173,11 +185,29 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 
 	}
 	
-	class DrawerAdapter extends BaseAdapter implements View.OnClickListener {
+	class DrawerAdapter extends BaseAdapter implements View.OnClickListener, ThemeManager.OnThemeChangedListener {
 
 		private Tab mSelectedTab;
-		
-		public void setSelected(Tab tab){
+		private int mTextColorLight;
+        private int mTextColorDark;
+        private int mBackgroundColorLight;
+        private int mBackgroundColorDark;
+
+        public DrawerAdapter(Context context){
+            mTextColorLight = context.getResources().getColor(R.color.abc_primary_text_material_light);
+            mTextColorDark = context.getResources().getColor(R.color.abc_primary_text_material_dark);
+            mBackgroundColorLight = ThemeUtil.colorPrimary(context, 0);
+            mBackgroundColorDark = ThemeUtil.colorAccent(context, 0);
+
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+        }
+
+        @Override
+        public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+            notifyDataSetInvalidated();
+        }
+
+        public void setSelected(Tab tab){
 			if(tab != mSelectedTab){
 				mSelectedTab = tab;
 				notifyDataSetInvalidated();
@@ -216,12 +246,12 @@ public class MainActivity extends ActionBarActivity implements ToolbarManager.On
 			((TextView)v).setText(tab.toString());
 			
 			if(tab == mSelectedTab) {
-                v.setBackgroundColor(ThemeUtil.colorPrimary(MainActivity.this, 0));
+                v.setBackgroundColor(ThemeManager.getInstance().getCurrentTheme() == 0 ? mBackgroundColorLight : mBackgroundColorDark);
                 ((TextView)v).setTextColor(0xFFFFFFFF);
             }
 			else {
                 v.setBackgroundResource(0);
-                ((TextView)v).setTextColor(0xFF000000);
+                ((TextView)v).setTextColor(ThemeManager.getInstance().getCurrentTheme() == 0 ? mTextColorLight : mTextColorDark);
             }
 			
 			return v;

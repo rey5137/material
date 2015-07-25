@@ -6,25 +6,41 @@
 	<color name="colorAccent">#FF00E5FF</color>	 
 	<color name="colorControlNormal">#FF78909C</color>  
 	<color name="colorControlActivated">#FF03A9F4</color>
-	<color name="colorSwitchThumbNormal">#FF78909C</color>  		
-    
-    <array name="progress_colors">
-        <item>#FF3F8AF8</item>
+	<color name="colorSwitchThumbNormal">#FF78909C</color>
+
+    <color name="colorPrimaryQuarter">#3303A9F4</color>
+    <color name="colorPrimaryHalf">#9003A9F4</color>
+    <color name="colorControlNormalHalf">#9078909C</color>
+    <color name="colorControlActivatedHalf">#9003A9F4</color>
+    <color name="colorAccentQuarter">#3300E5FF</color>
+    <color name="colorAccentHalf">#9000E5FF</color>
+
+    <array name="progress_colors_light">
+        <item>#FF03A9F4</item>
         <item>#FFD8433C</item>
         <item>#FFF2AF3A</item>
         <item>#FF279B5E</item>
     </array>
-    
-    <array name="in_colors">
-        <item>#FFB5D4FF</item>
-        <item>#FFDEEAFC</item>
-        <item>#FFFAFFFE</item>
+
+    <array name="progress_colors_dark">
+        <item>#FF00E5FF</item>
+        <item>#ffd81d5a</item>
+        <item>#fff27512</item>
+        <item>#ff63bc34</item>
     </array>
     
-    <color name="rb_checked">#FF4CAF50</color>
-    <color name="rb_unchecked">#FF6D6D6D</color>
-    <color name="rb_disable">#FFB0B0B0</color>
-    
+    <array name="in_colors_light">
+        <item>#4B03A9F4</item>
+        <item>#3303A9F4</item>
+        <item>#1903A9F4</item>
+    </array>
+
+    <array name="in_colors_dark">
+        <item>#4B00E5FF</item>
+        <item>#3300E5FF</item>
+        <item>#1900E5FF</item>
+    </array>
+
     <color name="tpi_checked">#FFFFFFFF</color>
     <color name="tpi_unchecked">#99FFFFFF</color>
     

@@ -37,6 +37,10 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
 	public boolean setIconState(int state, float progress){
 		return mLineDrawable.setLineState(state, progress);
 	}
+
+    public float getIconAnimProgress(){
+        return mLineDrawable.getAnimProgress();
+    }
 	
 	@Override
 	public void draw(Canvas canvas) {
@@ -120,9 +124,6 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
 				
 				if(lineId > 0){
 					LineMorphingDrawable.Builder builder = new LineMorphingDrawable.Builder(context, lineId);
-					
-					builder.states(new LineMorphingDrawable.State(new float[]{0f, 0.1f, 1f, 0.1f, 0f, 0.5f, 1f, 0.5f, 0f, 0.9f, 1f, 0.9f}, null), new LineMorphingDrawable.State(new float[]{0.5f, 0f, 1f, 0.5f, 0f, 0.5f, 1f, 0.5f, 0.5f, 1f, 1f, 0.5f}, new int[]{0, 2}));
-					
 					line(builder.build());
 				}
 						

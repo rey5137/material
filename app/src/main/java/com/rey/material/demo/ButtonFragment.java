@@ -55,7 +55,7 @@ public class ButtonFragment extends Fragment{
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
                 }
 
-                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
+//                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
 			}
 		};
 		
@@ -68,7 +68,7 @@ public class ButtonFragment extends Fragment{
                     bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
                 }
 
-                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
+//                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
 			}
 		};
 		

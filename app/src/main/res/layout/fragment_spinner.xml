@@ -14,34 +14,22 @@
         android:padding="8dp">
 
 	    <com.rey.material.widget.Spinner
-            style="@style/Material.Widget.Spinner.Light"
             android:id="@+id/spinner_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="128dp"
-            app:rd_style="@style/Material.Drawable.Ripple.Wave.Light"
-            app:rd_enable="true"
-            app:rd_delayClick="none"
-            app:spn_labelEnable="true"
+            android:padding="8dp"
             app:spn_label="Spinner with arrow"
-            app:spn_arrowSwitchMode="true"
-            app:spn_arrowAnimDuration="@android:integer/config_shortAnimTime"
-            app:spn_arrowInterpolator="@android:anim/decelerate_interpolator"/>
+            app:v_styleId="@array/spinner"/>
 
         <com.rey.material.widget.Spinner
-            style="@style/Material.Widget.Spinner.Light"
             android:id="@+id/spinner_no_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="128dp"
-            android:layout_marginTop="16dp"
-            app:rd_style="@style/Material.Drawable.Ripple.Wave.Light"
-            app:rd_enable="true"
-            app:rd_delayClick="none"
-            app:spn_labelEnable="true"
+            android:padding="8dp"
             app:spn_label="Spinner without arrow"
-            app:spn_arrowSize="0dp"
-            app:spn_popupItemAnimation="@anim/abc_fade_in"/>
+            app:v_styleId="@array/spinner_no_arrow"/>
 
 	    
 	</LinearLayout>

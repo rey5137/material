@@ -27,11 +27,15 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
-public class SnackBar extends FrameLayout {
+public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChangedListener{
+
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
 	private TextView mText;
 	private Button mAction;
@@ -40,17 +44,18 @@ public class SnackBar extends FrameLayout {
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	
 	private BackgroundDrawable mBackground;
-	private int mMarginStart;
-	private int mMarginBottom;
-	private int mWidth;
-	private int mHeight;
+	private int mMarginStart = 0;
+	private int mMarginBottom = 0;
+	private int mWidth = MATCH_PARENT;
+	private int mHeight = WRAP_CONTENT;
     private int mMaxHeight;
     private int mMinHeight;
-	private int mInAnimationId;
-	private int mOutAnimationId;
 	private long mDuration = -1;
 	private int mActionId;
     private boolean mRemoveOnDismiss;
+
+    private Animation mInAnimation;
+    private Animation mOutAnimation;
 	
 	private Runnable mDismissRunnable = new Runnable() {
         @Override
@@ -135,9 +140,9 @@ public class SnackBar extends FrameLayout {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mText = new TextView(context);
+        mText.setSingleLine(true);
         mText.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
         addView(mText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
@@ -148,7 +153,7 @@ public class SnackBar extends FrameLayout {
 
             @Override
             public void onClick(View v) {
-                if(mActionClickListener != null)
+                if (mActionClickListener != null)
                     mActionClickListener.onActionClick(SnackBar.this, mActionId);
 
                 dismiss();
@@ -157,12 +162,169 @@ public class SnackBar extends FrameLayout {
         });
         addView(mAction, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-
         mBackground = new BackgroundDrawable();
+        mBackground.setColor(0xFF323232);
         ViewUtil.setBackground(this, mBackground);
         setClickable(true);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public SnackBar applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
+        applyStyle(getContext(), null, 0, resId);
+        return this;
+    }
+
+	protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
+
+        int horizontalPadding = -1;
+        int verticalPadding = -1;
+        int textSize = -1;
+        int textColor = 0;
+        boolean textColorDefined = false;
+        int textAppearance = 0;
+        int actionTextSize = -1;
+        ColorStateList actionTextColor = null;
+        int actionTextAppearance = 0;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+            if(attr == R.styleable.SnackBar_sb_backgroundColor)
+                backgroundColor(a.getColor(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_backgroundCornerRadius)
+                backgroundRadius(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_horizontalPadding)
+                horizontalPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_verticalPadding)
+                verticalPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_width){
+                if(ThemeUtil.getType(a, attr) == TypedValue.TYPE_INT_DEC)
+                    width(a.getInteger(attr, 0));
+                else
+                    width(a.getDimensionPixelSize(attr, 0));
+            }
+            else if(attr == R.styleable.SnackBar_sb_height){
+                if(ThemeUtil.getType(a, attr) == TypedValue.TYPE_INT_DEC)
+                    height(a.getInteger(attr, 0));
+                else
+                    height(a.getDimensionPixelSize(attr, 0));
+            }
+            else if(attr == R.styleable.SnackBar_sb_minWidth)
+                minWidth(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_maxWidth)
+                maxWidth(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_minHeight)
+                minHeight(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_maxHeight)
+                maxHeight(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_marginStart)
+                marginStart(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_marginBottom)
+                marginBottom(a.getDimensionPixelSize(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_textSize)
+                textSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_textColor) {
+                textColor = a.getColor(attr, 0);
+                textColorDefined = true;
+            }
+            else if(attr == R.styleable.SnackBar_sb_textAppearance)
+                textAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_text)
+                text(a.getString(attr));
+            else if(attr == R.styleable.SnackBar_sb_singleLine)
+                singleLine(a.getBoolean(attr, true));
+            else if(attr == R.styleable.SnackBar_sb_maxLines)
+                maxLines(a.getInteger(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_lines)
+                lines(a.getInteger(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_ellipsize){
+                int ellipsize = a.getInteger(attr, 0);
+                switch (ellipsize) {
+                    case 1:
+                        ellipsize(TruncateAt.START);
+                        break;
+                    case 2:
+                        ellipsize(TruncateAt.MIDDLE);
+                        break;
+                    case 3:
+                        ellipsize(TruncateAt.END);
+                        break;
+                    case 4:
+                        ellipsize(TruncateAt.MARQUEE);
+                        break;
+                    default:
+                        ellipsize(TruncateAt.END);
+                        break;
+                }
+            }
+            else if(attr == R.styleable.SnackBar_sb_actionTextSize)
+                actionTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_actionTextColor)
+                actionTextColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.SnackBar_sb_actionTextAppearance)
+                actionTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.SnackBar_sb_actionText)
+                actionText(a.getString(attr));
+            else if(attr == R.styleable.SnackBar_sb_actionRipple)
+                actionRipple(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_duration)
+                duration(a.getInteger(attr, 0));
+            else if(attr == R.styleable.SnackBar_sb_removeOnDismiss)
+                removeOnDismiss(a.getBoolean(attr, true));
+            else if(attr == R.styleable.SnackBar_sb_inAnimation)
+                animationIn(AnimationUtils.loadAnimation(getContext(), a.getResourceId(attr, 0)));
+            else if(attr == R.styleable.SnackBar_sb_outAnimation)
+                animationOut(AnimationUtils.loadAnimation(getContext(), a.getResourceId(attr, 0)));
+        }
+
+        a.recycle();
+
+        if(horizontalPadding >= 0 || verticalPadding >= 0)
+            padding(horizontalPadding >= 0 ? horizontalPadding : mText.getPaddingLeft(), verticalPadding >= 0 ? verticalPadding : mText.getPaddingTop());
+
+        if(textAppearance != 0)
+            textAppearance(textAppearance);
+        if(textSize >= 0)
+            textSize(textSize);
+        if(textColorDefined)
+            textColor(textColor);
+
+        if(textAppearance != 0)
+            actionTextAppearance(actionTextAppearance);
+        if(actionTextSize >= 0)
+            actionTextSize(actionTextSize);
+        if(actionTextColor != null)
+            actionTextColor(actionTextColor);
+
+	}
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -182,62 +344,62 @@ public class SnackBar extends FrameLayout {
     }
 
     @Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		int width;
-		int height;
-		
-		if(mAction.getVisibility() == View.VISIBLE){
-			mAction.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int width;
+        int height;
+
+        if(mAction.getVisibility() == View.VISIBLE){
+            mAction.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec);
             int padding = mIsRtl ? mText.getPaddingLeft() : mText.getPaddingRight();
             mText.measure(MeasureSpec.makeMeasureSpec(widthSize - (mAction.getMeasuredWidth() - padding), widthMode), heightMeasureSpec);
             width = mText.getMeasuredWidth() + mAction.getMeasuredWidth() - padding;
-		}
-		else{
-			mText.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), heightMeasureSpec);
-			width = mText.getMeasuredWidth();
-		}
-				
-		height = Math.max(mText.getMeasuredHeight(), mAction.getMeasuredHeight());
-		
-		switch (widthMode) {
-			case MeasureSpec.AT_MOST:
-				width = Math.min(widthSize, width);
-				break;
-			case MeasureSpec.EXACTLY:
-				width = widthSize;
-				break;
-		}
-		
-		switch (heightMode) {
-			case MeasureSpec.AT_MOST:
-				height = Math.min(heightSize, height);
-				break;
-			case MeasureSpec.EXACTLY:
-				height = heightSize;
-				break;
-		}
+        }
+        else{
+            mText.measure(MeasureSpec.makeMeasureSpec(widthSize, widthMode), heightMeasureSpec);
+            width = mText.getMeasuredWidth();
+        }
+
+        height = Math.max(mText.getMeasuredHeight(), mAction.getMeasuredHeight());
+
+        switch (widthMode) {
+            case MeasureSpec.AT_MOST:
+                width = Math.min(widthSize, width);
+                break;
+            case MeasureSpec.EXACTLY:
+                width = widthSize;
+                break;
+        }
+
+        switch (heightMode) {
+            case MeasureSpec.AT_MOST:
+                height = Math.min(heightSize, height);
+                break;
+            case MeasureSpec.EXACTLY:
+                height = heightSize;
+                break;
+        }
 
         if(mMaxHeight > 0)
             height = Math.min(mMaxHeight, height);
 
         if(mMinHeight > 0)
             height = Math.max(mMinHeight, height);
-				
-		setMeasuredDimension(width, height);
-	}
-	
-	@Override
-	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		int childLeft = getPaddingLeft();
-		int childRight = r - l - getPaddingRight();
-		int childTop = getPaddingTop();
-		int childBottom = b - t - getPaddingBottom();
-				
-		if(mAction.getVisibility() == View.VISIBLE){
+
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int childLeft = getPaddingLeft();
+        int childRight = r - l - getPaddingRight();
+        int childTop = getPaddingTop();
+        int childBottom = b - t - getPaddingBottom();
+
+        if(mAction.getVisibility() == View.VISIBLE){
             if(mIsRtl) {
                 mAction.layout(childLeft, childTop, childLeft + mAction.getMeasuredWidth(), childBottom);
                 childLeft += mAction.getMeasuredWidth() - mText.getPaddingLeft();
@@ -246,122 +408,9 @@ public class SnackBar extends FrameLayout {
                 mAction.layout(childRight - mAction.getMeasuredWidth(), childTop, childRight, childBottom);
                 childRight -= mAction.getMeasuredWidth() - mText.getPaddingRight();
             }
-		}
+        }
 
         mText.layout(childLeft, childTop, childRight, childBottom);
-	}		
-
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
-		
-		int backgroundColor = a.getColor(R.styleable.SnackBar_sb_backgroundColor, 0xFF323232);
-		int backgroundRadius = a.getDimensionPixelSize(R.styleable.SnackBar_sb_backgroundCornerRadius, 0);			
-		int horizontalPadding = a.getDimensionPixelSize(R.styleable.SnackBar_sb_horizontalPadding, ThemeUtil.dpToPx(context, 24));
-		int verticalPadding = a.getDimensionPixelSize(R.styleable.SnackBar_sb_verticalPadding, 0);
-		TypedValue value = a.peekValue(R.styleable.SnackBar_sb_width);
-		if(value != null && value.type == TypedValue.TYPE_INT_DEC)
-			mWidth = a.getInteger(R.styleable.SnackBar_sb_width, MATCH_PARENT);
-		else
-			mWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_width, MATCH_PARENT);		
-		int minWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_minWidth, 0);
-		int maxWidth = a.getDimensionPixelSize(R.styleable.SnackBar_sb_maxWidth, 0);
-		value = a.peekValue(R.styleable.SnackBar_sb_height);
-		if(value != null && value.type == TypedValue.TYPE_INT_DEC)
-			mHeight = a.getInteger(R.styleable.SnackBar_sb_height, WRAP_CONTENT);
-		else
-			mHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_height, WRAP_CONTENT);
-        int minHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_minHeight, 0);
-        int maxHeight = a.getDimensionPixelSize(R.styleable.SnackBar_sb_maxHeight, 0);
-		mMarginStart = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginStart, 0);
-		mMarginBottom = a.getDimensionPixelSize(R.styleable.SnackBar_sb_marginBottom, 0);
-		int textSize = a.getDimensionPixelSize(R.styleable.SnackBar_sb_textSize, 0);
-		boolean hasTextColor = a.hasValue(R.styleable.SnackBar_sb_textColor);		
-		int textColor = hasTextColor ? a.getColor(R.styleable.SnackBar_sb_textColor, 0xFFFFFFFF) : 0;
-		int textAppearance = a.getResourceId(R.styleable.SnackBar_sb_textAppearance, 0);
-        String text = a.getString(R.styleable.SnackBar_sb_text);
-		boolean singleLine = a.getBoolean(R.styleable.SnackBar_sb_singleLine, true);
-		int maxLines = a.getInteger(R.styleable.SnackBar_sb_maxLines, 0);
-		int lines = a.getInteger(R.styleable.SnackBar_sb_lines, 0);
-		int ellipsize = a.getInteger(R.styleable.SnackBar_sb_ellipsize, 0);
-		int actionTextSize = a.getDimensionPixelSize(R.styleable.SnackBar_sb_actionTextSize, 0);
-		ColorStateList actionTextColor;
-		value = a.peekValue(R.styleable.SnackBar_sb_actionTextColor);
-		if(value != null && value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT)
-			actionTextColor = ColorStateList.valueOf(a.getColor(R.styleable.SnackBar_sb_actionTextColor, 0xFF000000));
-		else
-			actionTextColor = a.getColorStateList(R.styleable.SnackBar_sb_actionTextColor);
-		int actionTextAppearance = a.getResourceId(R.styleable.SnackBar_sb_actionTextAppearance, 0);
-        String actionText = a.getString(R.styleable.SnackBar_sb_actionText);
-		int actionRipple = a.getResourceId(R.styleable.SnackBar_sb_actionRipple, 0);
-        int duration = a.getInteger(R.styleable.SnackBar_sb_duration, -1);
-		mInAnimationId = a.getResourceId(R.styleable.SnackBar_sb_inAnimation, 0);
-		mOutAnimationId = a.getResourceId(R.styleable.SnackBar_sb_outAnimation, 0);
-        mRemoveOnDismiss = a.getBoolean(R.styleable.SnackBar_sb_removeOnDismiss, true);
-
-		
-		a.recycle();
-				
-		backgroundColor(backgroundColor)
-				.backgroundRadius(backgroundRadius);
-		
-		padding(horizontalPadding, verticalPadding);
-		
-		textAppearance(textAppearance);
-		if(textSize > 0)
-			textSize(textSize);
-		if(hasTextColor)
-			textColor(textColor);
-        if(text != null)
-            text(text);
-		singleLine(singleLine);
-		if(maxLines > 0)
-			maxLines(maxLines);
-		if(lines > 0)
-			lines(lines);
-		if(minWidth > 0)
-			minWidth(minWidth);
-		if(maxWidth > 0)
-			maxWidth(maxWidth);
-        if(minHeight > 0)
-            minHeight(minHeight);
-        if(maxHeight > 0)
-            maxHeight(maxHeight);
-		switch (ellipsize) {
-			case 1:
-				ellipsize(TruncateAt.START);
-				break;
-			case 2:
-				ellipsize(TruncateAt.MIDDLE);
-				break;
-			case 3:
-				ellipsize(TruncateAt.END);
-				break;
-			case 4:
-				ellipsize(TruncateAt.MARQUEE);
-				break;
-			default:
-				ellipsize(TruncateAt.END);
-				break;					
-		}
-		
-		if(textAppearance != 0)
-			actionTextAppearance(actionTextAppearance);
-        if(actionTextSize > 0)
-		    actionTextSize(actionTextSize);
-        if(actionTextColor != null)
-		    actionTextColor(actionTextColor);
-        if(actionText != null)
-            actionText(actionText);
-        if(actionRipple != 0)
-		    actionRipple(actionRipple);
-        if(duration >= 0)
-            duration(duration);
-	}
-
-    public SnackBar applyStyle(int resId){
-        applyStyle(getContext(), null, 0, resId);
-        return this;
     }
 
 	/**
@@ -707,6 +756,26 @@ public class SnackBar extends FrameLayout {
 		return this;
 	}
 
+    /**
+     * Set the animation will be shown when SnackBar enter screen.
+     * @param anim The animation.
+     * @return This SnackBar for chaining methods.
+     */
+    public SnackBar animationIn(Animation anim){
+        mInAnimation = anim;
+        return this;
+    }
+
+    /**
+     * Set the animation will be shown when SnackBar exit screen.
+     * @param anim The animation.
+     * @return This SnackBar for chaining methods.
+     */
+    public SnackBar animationOut(Animation anim){
+        mOutAnimation = anim;
+        return this;
+    }
+
 	/**
 	 * Indicate that this SnackBar should remove itself from parent view after being dismissed.
 	 * @param b
@@ -778,9 +847,10 @@ public class SnackBar extends FrameLayout {
             params.bottomMargin = mMarginBottom;
         }
 
-        if(mInAnimationId != 0 && mState != STATE_SHOWN){
-            Animation anim = AnimationUtils.loadAnimation(getContext(), mInAnimationId);
-            anim.setAnimationListener(new Animation.AnimationListener() {
+        if(mInAnimation != null && mState != STATE_SHOWN){
+            mInAnimation.cancel();
+            mInAnimation.reset();
+            mInAnimation.setAnimationListener(new Animation.AnimationListener() {
 
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -789,7 +859,8 @@ public class SnackBar extends FrameLayout {
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {}
+                public void onAnimationRepeat(Animation animation) {
+                }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -797,14 +868,16 @@ public class SnackBar extends FrameLayout {
                     startTimer();
                 }
             });
-            startAnimation(anim);
+            clearAnimation();
+            startAnimation(mInAnimation);
         }
-        else{
+        else {
             setVisibility(View.VISIBLE);
             setState(STATE_SHOWN);
             startTimer();
         }
     }
+
 	
 	private void startTimer(){
 		removeCallbacks(mDismissRunnable);
@@ -820,10 +893,11 @@ public class SnackBar extends FrameLayout {
 			return;
 		
 		removeCallbacks(mDismissRunnable);
-		
-		if(mOutAnimationId != 0){
-			Animation anim = AnimationUtils.loadAnimation(getContext(), mOutAnimationId);
-			anim.setAnimationListener(new Animation.AnimationListener() {
+
+        if(mOutAnimation != null){
+            mOutAnimation.cancel();
+            mOutAnimation.reset();
+            mOutAnimation.setAnimationListener(new Animation.AnimationListener() {
 				
 				@Override
 				public void onAnimationStart(Animation animation) {
@@ -842,7 +916,8 @@ public class SnackBar extends FrameLayout {
                     setVisibility(View.GONE);
 				}
 			});
-			startAnimation(anim);
+            clearAnimation();
+			startAnimation(mOutAnimation);
 		}
 		else{
 			if(mRemoveOnDismiss && getParent() != null && getParent() instanceof ViewGroup)

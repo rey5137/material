@@ -210,7 +210,7 @@ public class DatePickerDialog extends Dialog {
         private int mHeaderSecondaryColor;
         private int mHeaderPrimaryTextSize;
         private int mHeaderSecondaryTextSize;
-        private int mTextHeaderColor;
+        private int mTextHeaderColor = 0xFF000000;
 
         private Paint mPaint;
         private int mHeaderPrimaryRealHeight;
@@ -269,6 +269,11 @@ public class DatePickerDialog extends Dialog {
             mMonthFirst = isMonthFirst();
 
             setWillNotDraw(false);
+
+            mHeaderPrimaryHeight = ThemeUtil.dpToPx(context, 144);
+            mHeaderSecondaryHeight = ThemeUtil.dpToPx(context, 32);
+            mHeaderPrimaryTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_display_2_material);
+            mHeaderSecondaryTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material);
         }
 
         private boolean isMonthFirst(){
@@ -325,10 +330,12 @@ public class DatePickerDialog extends Dialog {
                 }
 
                 @Override
-                public void onAnimationEnd(Animation animation) {}
+                public void onAnimationEnd(Animation animation) {
+                }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {}
+                public void onAnimationRepeat(Animation animation) {
+                }
             });
             v.startAnimation(anim);
         }
@@ -337,16 +344,30 @@ public class DatePickerDialog extends Dialog {
             mYearPicker.applyStyle(resId);
             mDatePicker.applyStyle(resId);
 
-            Context context = getContext();
+            mHeaderPrimaryColor = mDatePicker.getSelectionColor();
+            mHeaderSecondaryColor = mHeaderPrimaryColor;
 
+            Context context = getContext();
             TypedArray a = context.obtainStyledAttributes(resId, R.styleable.DatePickerDialog);
-            mHeaderPrimaryHeight = a.getDimensionPixelOffset(R.styleable.DatePickerDialog_dp_headerPrimaryHeight, ThemeUtil.dpToPx(context, 144));
-            mHeaderSecondaryHeight = a.getDimensionPixelSize(R.styleable.DatePickerDialog_dp_headerSecondaryHeight, ThemeUtil.dpToPx(context, 32));
-            mHeaderPrimaryColor = a.getColor(R.styleable.DatePickerDialog_dp_headerPrimaryColor, mDatePicker.getSelectionColor());
-            mHeaderSecondaryColor = a.getColor(R.styleable.DatePickerDialog_dp_headerSecondaryColor, mHeaderPrimaryColor);
-            mHeaderPrimaryTextSize = a.getDimensionPixelSize(R.styleable.DatePickerDialog_dp_headerPrimaryTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_display_2_material));
-            mHeaderSecondaryTextSize = a.getDimensionPixelSize(R.styleable.DatePickerDialog_dp_headerSecondaryTextSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material));
-            mTextHeaderColor = a.getColor(R.styleable.DatePickerDialog_dp_textHeaderColor, 0xFF000000);
+
+            for(int i = 0, count = a.getIndexCount(); i < count; i++){
+                int attr = a.getIndex(i);
+
+                if(attr == R.styleable.DatePickerDialog_dp_headerPrimaryHeight)
+                    mHeaderPrimaryHeight = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_headerSecondaryHeight)
+                    mHeaderSecondaryHeight = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_headerPrimaryColor)
+                    mHeaderPrimaryColor = a.getColor(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_headerSecondaryColor)
+                    mHeaderSecondaryColor = a.getColor(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_headerPrimaryTextSize)
+                    mHeaderPrimaryTextSize = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_headerSecondaryTextSize)
+                    mHeaderSecondaryTextSize = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.DatePickerDialog_dp_textHeaderColor)
+                    mTextHeaderColor = a.getColor(attr, 0);
+            }
 
             a.recycle();
 

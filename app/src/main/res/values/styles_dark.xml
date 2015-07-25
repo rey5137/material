@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TextView Style -->
+
+    <style name="DarkTitleText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Title</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="DarkBodyText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+
+    <!-- Button Style -->
+
+    <style name="DarkFlatButtonRippleStyle" parent="Material.Drawable.Ripple.Touch">
+        <item name="android:background">@null</item>
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="DarkFlatColorButtonRippleStyle" parent="Material.Drawable.Ripple.Touch">
+        <item name="android:background">@null</item>
+        <item name="rd_backgroundColor">@color/colorAccentQuarter</item>
+        <item name="rd_rippleColor">@color/colorAccentQuarter</item>
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkFlatWaveButtonRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@null</item>
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="DarkFlatWaveColorButtonRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@null</item>
+        <item name="rd_rippleColor">@color/colorAccentHalf</item>
+        <item name="rd_cornerRadius">4dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkRaiseButtonRippleStyle" parent="Material.Drawable.Ripple.Touch">
+        <item name="android:background">@drawable/bg_bt_raise_dark</item>
+        <item name="rd_leftPadding">1dp</item>
+        <item name="rd_topPadding">1dp</item>
+        <item name="rd_rightPadding">1dp</item>
+        <item name="rd_bottomPadding">2dp</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="DarkRaiseColorButtonRippleStyle" parent="Material.Drawable.Ripple.Touch">
+        <item name="android:background">@drawable/bg_bt_raise_color</item>
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="rd_leftPadding">1dp</item>
+        <item name="rd_topPadding">1dp</item>
+        <item name="rd_rightPadding">1dp</item>
+        <item name="rd_bottomPadding">2dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="DarkRaiseWaveButtonRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@drawable/bg_bt_raise_dark</item>
+        <item name="rd_leftPadding">1dp</item>
+        <item name="rd_topPadding">1dp</item>
+        <item name="rd_rightPadding">1dp</item>
+        <item name="rd_bottomPadding">2dp</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="DarkRaiseWaveColorButtonRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@drawable/bg_bt_raise_color</item>
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="rd_leftPadding">1dp</item>
+        <item name="rd_topPadding">1dp</item>
+        <item name="rd_rightPadding">1dp</item>
+        <item name="rd_bottomPadding">2dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Button</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <!-- Switch Style -->
+
+    <style name="DarkRadioButtonDrawable" parent="Material.Drawable.RadioButton">
+        <item name="rbd_strokeColor">@drawable/color_switch_dark</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+
+    <style name="DarkCheckBoxDrawable" parent="Material.Drawable.CheckBox">
+        <item name="cbd_strokeColor">@drawable/color_switch_dark</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+
+    <style name="DarkSwitch" parent="Material.Widget.Switch">
+        <item name="sw_trackColor">@drawable/color_track_dark</item>
+        <item name="sw_thumbColor">@drawable/color_thumb_dark</item>
+    </style>
+
+    <!-- FAB Style -->
+
+    <style name="DarkFloatingActionButtonIcon" >
+        <item name="lmd_state">@xml/fab_icon_states</item>
+        <item name="lmd_curState">0</item>
+        <item name="lmd_padding">2dp</item>
+        <item name="lmd_animDuration">400</item>
+        <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
+        <item name="lmd_strokeSize">4dp</item>
+        <item name="lmd_strokeColor">#FF000000</item>
+        <item name="lmd_strokeCap">round</item>
+        <item name="lmd_strokeJoin">round</item>
+        <item name="lmd_clockwise">true</item>
+    </style>
+
+    <style name="DarkFABIcon" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkFABLine" parent="Material.Widget.FloatingActionButton.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_iconLineMorphing">@style/DarkFloatingActionButtonIcon</item>
+    </style>
+
+    <style name="DarkFAB" parent="Material.Drawable.Ripple.Touch">
+        <item name="fab_backgroundColor">#FF494949</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="DarkFABColor" parent="Material.Drawable.Ripple.Touch.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">untilRelease</item>
+    </style>
+
+    <style name="DarkFABWave" parent="Material.Drawable.Ripple.Wave">
+        <item name="fab_backgroundColor">#FF494949</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">none</item>
+    </style>
+
+    <style name="DarkFABWaveColor" parent="Material.Drawable.Ripple.Wave.Light">
+        <item name="rd_rippleColor">#33000000</item>
+        <item name="fab_backgroundColor">@color/colorAccent</item>
+        <item name="fab_elevation">4dp</item>
+        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
+        <item name="rd_delayClick">afterRelease</item>
+    </style>
+
+    <!-- Slider Style -->
+
+    <style name="DarkSlider" parent="Material.Widget.Slider">
+        <item name="sl_primaryColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DarkSliderDiscrete" parent="Material.Widget.Slider.Discrete">
+        <item name="sl_primaryColor">@color/colorAccent</item>
+        <item name="sl_stepValue">10</item>
+    </style>
+
+    <!-- Spinner Style -->
+
+    <style name="DarkSpinner" parent="Material.Widget.Spinner">
+        <item name="rd_style">@style/Material.Drawable.Ripple.Wave</item>
+        <item name="spn_labelEnable">true</item>
+        <item name="spn_arrowSwitchMode">true</item>
+        <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
+        <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="spn_arrowColor">@color/colorAccent</item>
+        <item name="android:popupBackground">@drawable/popup_background_dark</item>
+    </style>
+
+    <style name="DarkSpinnerNoArrow" parent="DarkSpinner">
+        <item name="spn_arrowSize">0dp</item>
+        <item name="spn_popupItemAnimation">@anim/abc_fade_in</item>
+    </style>
+
+    <style name="DarkSpinnerItem" parent="Material.Drawable.Ripple.Wave">
+        <item name="rd_rippleColor">@color/colorAccentHalf</item>
+        <item name="rd_rippleAnimDuration">300</item>
+        <item name="rd_maskType">rectangle</item>
+        <item name="rd_cornerRadius">0dp</item>
+        <item name="rd_delayClick">afterRelease</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <!-- TabPageIndicator Style -->
+
+    <style  name="DarkTabPageIndicator"  parent="Material.Widget.TabPageIndicator">
+        <item name="tpi_tabPadding">12dp</item>
+        <item name="tpi_tabRipple">@style/DarkTabRippleStyle</item>
+        <item name="tpi_indicatorHeight">3dp</item>
+        <item name="tpi_indicatorColor">@color/colorPrimary</item>
+        <item name="android:textAppearance">@style/DarkTabTextAppearance</item>
+        <item name="android:background">@color/colorAccent</item>
+        <item name="tpi_mode">scroll</item>
+    </style>
+
+    <style name="DarkTabTextAppearance" parent="@style/Base.TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">@drawable/color_tpi_dark</item>
+    </style>
+
+    <style name="DarkTabRippleStyle" parent="Material.Drawable.Ripple.Wave">
+        <item name="android:background">@null</item>
+        <item name="rd_rippleColor">@color/colorPrimary</item>
+        <item name="rd_rippleAnimDuration">300</item>
+        <item name="rd_maskType">rectangle</item>
+        <item name="rd_cornerRadius">0dp</item>
+        <item name="rd_padding">0dp</item>
+    </style>
+
+    <!-- EditText Style-->
+
+    <style name="DarkEditText"  parent="Material.Widget.EditText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorHint">@color/abc_secondary_text_material_dark</item>
+        <item name="et_dividerColor">@drawable/color_divider_dark</item>
+        <item name="et_labelTextColor">@drawable/color_label_dark</item>
+        <item name="et_supportTextErrorColor">#FFFF0000</item>
+        <item name="et_dividerErrorColor">#FFFF0000</item>
+    </style>
+
+    <style name="DarkContactEditText"  parent="DarkEditText">
+        <item name="et_dividerPadding">4dp</item>
+        <item name="et_autoCompleteMode">multi</item>
+        <item name="cet_spanHeight">32dp</item>
+        <item name="cet_spanMaxWidth">150dp</item>
+        <item name="cet_spanPaddingLeft">8dp</item>
+        <item name="cet_spanPaddingRight">12dp</item>
+        <item name="cet_spanTextSize">14sp</item>
+        <item name="cet_spanTextColor">@color/abc_primary_text_material_dark</item>
+        <item name="cet_spanBackgroundColor">#ff424242</item>
+        <item name="cet_spanSpacing">4dp</item>
+    </style>
+
+    <style name="DarkNoDividerEditText"  parent="DarkEditText">
+        <item name="et_dividerHeight">0dp</item>
+    </style>
+
+    <!-- Circular Progress Style -->
+
+    <style name="DarkCircularProgressDrawable" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColor">@color/colorAccent</item>
+        <item name="cpd_reverse">true</item>
+    </style>
+
+    <style name="DarkColorCircularProgressDrawable" parent="DarkCircularProgressDrawable">
+        <item name="cpd_strokeColors">@array/progress_colors_dark</item>
+    </style>
+
+    <style name="DarkInCircularProgressDrawable" parent="DarkCircularProgressDrawable">
+        <item name="cpd_inAnimDuration">800</item>
+        <item name="cpd_inStepPercent">0.5</item>
+        <item name="cpd_inStepColors">@array/in_colors_dark</item>
+        <item name="cpd_outAnimDuration">400</item>
+    </style>
+
+    <style name="DarkInColorCircularProgressDrawable" parent="DarkInCircularProgressDrawable">
+        <item name="cpd_strokeColors">@array/progress_colors_dark</item>
+    </style>
+
+    <style name="DarkDeterminateCircularProgressDrawable" parent="Material.Drawable.CircularProgress.Determinate">
+        <item name="cpd_strokeColor">@color/colorAccent</item>
+        <item name="cpd_inAnimDuration">0</item>
+        <item name="cpd_outAnimDuration">0</item>
+        <item name="cpd_initialAngle">-90</item>
+        <item name="cpd_reverse">true</item>
+    </style>
+
+    <style name="DarkDeterminateInCircularProgressDrawable" parent="DarkDeterminateCircularProgressDrawable">
+        <item name="cpd_inAnimDuration">400</item>
+        <item name="cpd_outAnimDuration">400</item>
+    </style>
+
+    <style name="DarkCircularProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">true</item>
+        <item name="pv_progressStyle">@style/DarkCircularProgressDrawable</item>
+        <item name="pv_progressMode">indeterminate</item>
+    </style>
+
+    <style name="DarkColorCircularProgressView" parent="DarkCircularProgressView">
+        <item name="pv_progressStyle">@style/DarkColorCircularProgressDrawable</item>
+    </style>
+
+    <style name="DarkInCircularProgressView" parent="DarkCircularProgressView">
+        <item name="pv_progressStyle">@style/DarkInCircularProgressDrawable</item>
+    </style>
+
+    <style name="DarkInColorCircularProgressView" parent="DarkCircularProgressView">
+        <item name="pv_progressStyle">@style/DarkInColorCircularProgressDrawable</item>
+    </style>
+
+    <style name="DarkDeterminateCircularProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">true</item>
+        <item name="pv_progressStyle">@style/DarkDeterminateCircularProgressDrawable</item>
+        <item name="pv_progressMode">determinate</item>
+    </style>
+
+    <style name="DarkDeterminateInCircularProgressView" parent="DarkDeterminateCircularProgressView">
+        <item name="pv_progressStyle">@style/DarkDeterminateInCircularProgressDrawable</item>
+    </style>
+
+    <!-- Linear Progress Style -->
+
+    <style name="DarkLinearProgressDrawable" parent="Material.Drawable.LinearProgress">
+        <item name="lpd_strokeColor">@color/colorAccent</item>
+        <item name="lpd_strokeSecondaryColor">@android:color/transparent</item>
+        <item name="lpd_reverse">true</item>
+    </style>
+
+    <style name="DarkColorLinearProgressDrawable" parent="DarkLinearProgressDrawable">
+        <item name="lpd_strokeColors">@array/progress_colors_dark</item>
+    </style>
+
+    <style name="DarkDeterminateLinearProgressDrawable" parent="Material.Drawable.LinearProgress.Determinate">
+        <item name="lpd_strokeColor">@color/colorAccent</item>
+        <item name="lpd_strokeSecondaryColor">@color/colorAccentQuarter</item>
+        <item name="lpd_reverse">true</item>
+    </style>
+
+    <style name="DarkBufferLinearProgressDrawable" parent="DarkDeterminateLinearProgressDrawable">
+        <item name="lpd_travelDuration">400</item>
+        <item name="lpd_transformDuration">400</item>
+        <item name="lpd_keepDuration">100</item>
+    </style>
+
+    <style name="DarkLinearProgressView">
+        <item name="pv_autostart">false</item>
+        <item name="pv_circular">false</item>
+        <item name="pv_progressStyle">@style/DarkLinearProgressDrawable</item>
+        <item name="pv_progressMode">indeterminate</item>
+    </style>
+
+    <style name="DarkColorLinearProgressView" parent="DarkLinearProgressView">
+        <item name="pv_progressStyle">@style/DarkColorLinearProgressDrawable</item>
+    </style>
+
+    <style name="DarkDeterminateLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/DarkDeterminateLinearProgressDrawable</item>
+        <item name="pv_progressMode">determinate</item>
+    </style>
+
+    <style name="DarkQueryLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/DarkDeterminateLinearProgressDrawable</item>
+        <item name="pv_progressMode">query</item>
+    </style>
+
+    <style name="DarkBufferLinearProgressView" parent="LightLinearProgressView">
+        <item name="pv_progressStyle">@style/DarkBufferLinearProgressDrawable</item>
+        <item name="pv_progressMode">buffer</item>
+    </style>
+
+    <!-- ListView Style -->
+
+    <style name="DarkListView" >
+        <item name="android:background">@color/background_floating_material_dark</item>
+    </style>
+
+    <!-- Navigator Drawable Style-->
+
+    <style name="DarkNavigatorDrawableIcon" parent="Material.Drawable.NavigationDrawerIcon">
+        <item name="lmd_strokeSize">3dp</item>
+        <item name="lmd_padding">18dp</item>
+        <item name="lmd_strokeColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="DarkNavigationDrawerDrawable">
+        <item name="nd_ripple">@style/ToolbarRippleStyle</item>
+        <item name="nd_icon">@style/DarkNavigatorDrawableIcon</item>
+    </style>
+
+</resources>

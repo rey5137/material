@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>    
     <com.rey.material.widget.TextView xmlns:android="http://schemas.android.com/apk/res/android"
     	xmlns:app="http://schemas.android.com/apk/res-auto"
-        style="@style/MenuItemRippleStyle"
 	    android:id="@+id/row_spn_tv"
 	    android:layout_width="match_parent"
 	    android:layout_height="48dp"
-	    android:textSize="16sp"
 	    android:gravity="center_vertical"
-	    android:textColor="#FF000000"
 	    android:paddingLeft="16dp"
 	    android:paddingRight="16dp"
-		app:rd_delayClick="afterRelease"/>
+		android:textDirection="locale"
+		app:v_styleId="@array/spinner_item"/>
 

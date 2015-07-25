@@ -5,20 +5,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewGroupCompat;
 import android.support.v7.internal.widget.TintManager;
 import android.support.v7.internal.widget.TintTypedArray;
 import android.support.v7.internal.widget.ViewUtils;
@@ -35,20 +27,18 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.SpinnerAdapter;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.ArrowDrawable;
 import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
+import com.rey.material.util.ViewUtil;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-public class Spinner extends FrameLayout {
+public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 		
 	private static final int MAX_ITEMS_MEASURED = 15;
 	
@@ -83,8 +73,8 @@ public class Spinner extends FrameLayout {
 		void onItemSelected(Spinner parent, View view, int position, long id);
 	}
 
-    private boolean mLabelEnable;
-    private LabelView mLabelView;
+    private boolean mLabelEnable = false;
+    private android.widget.TextView mLabelView;
 
 	private SpinnerAdapter mAdapter;
 	private OnItemClickListener mOnItemClickListener;
@@ -94,19 +84,19 @@ public class Spinner extends FrameLayout {
     private int mMinHeight;
 
 	private DropdownPopup mPopup;
-	private int mDropDownWidth;
+	private int mDropDownWidth = LayoutParams.WRAP_CONTENT;
 	
 	private ArrowDrawable mArrowDrawable;
-	private int mArrowSize;
-	private int mArrowPadding;
-	private boolean mArrowAnimSwitchMode;
+	private int mArrowSize = 0;
+	private int mArrowPadding = 0;
+	private boolean mArrowAnimSwitchMode = false;
 	
 	private DividerDrawable mDividerDrawable;
 	private int mDividerHeight;
 	private int mDividerPadding;
 	
-	private int mGravity;
-	private boolean mDisableChildrenWhenDisabled;
+	private int mGravity = Gravity.CENTER;
+	private boolean mDisableChildrenWhenDisabled = false;
 	
 	private int mSelectedPosition = INVALID_POSITION;
 	
@@ -117,10 +107,12 @@ public class Spinner extends FrameLayout {
 	private DropDownAdapter mTempAdapter;
 	
 	private SpinnerDataSetObserver mDataSetObserver = new SpinnerDataSetObserver();
-	
+
 	private TintManager mTintManager;
-	
+
 	private RippleManager mRippleManager;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     private boolean mIsRtl = false;
 		
@@ -148,8 +140,11 @@ public class Spinner extends FrameLayout {
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setWillNotDraw(false);
+
+        mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
+        mPopup.setModal(true);
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 		
@@ -165,118 +160,199 @@ public class Spinner extends FrameLayout {
                 showPopup();
             }
         });
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        CharSequence memoLabel = mLabelView == null ? null : mLabelView.getText();
+    private android.widget.TextView getLabelView(){
+        if(mLabelView == null){
+            mLabelView = new android.widget.TextView(getContext());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
+            mLabelView.setSingleLine(true);
+            mLabelView.setDuplicateParentStateEnabled(true);
+        }
 
+        return mLabelView;
+    }
+
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         removeAllViews();
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
-        mLabelEnable = a.getBoolean(R.styleable.Spinner_spn_labelEnable, false);
+        int arrowAnimDuration = -1;
+        ColorStateList arrowColor = null;
+        Interpolator arrowInterpolator = null;
+        boolean arrowClockwise = true;
+        int dividerAnimDuration = -1;
+        ColorStateList dividerColor = null;
+        ColorStateList labelTextColor = null;
+        int labelTextSize = -1;
 
-        if(mLabelEnable){
-            mLabelView = new LabelView(context);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
-            mLabelView.setSingleLine(true);
-            int labelPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_labelPadding, 0);
-            int labelTextSize = a.getDimensionPixelSize(R.styleable.Spinner_spn_labelTextSize, 0);
-            ColorStateList labelTextColor = a.getColorStateList(R.styleable.Spinner_spn_labelTextColor);
-            int labelTextAppearance = a.getResourceId(R.styleable.Spinner_spn_labelTextAppearance, 0);
-            int labelEllipsize = a.getInteger(R.styleable.Spinner_spn_labelEllipsize, 0);
-            CharSequence label = ThemeUtil.getString(a, R.styleable.Spinner_spn_label, memoLabel);
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
 
-            mLabelView.setText(label);
-            mLabelView.setPadding(0, 0, 0, labelPadding);
-            if(labelTextAppearance > 0)
-                mLabelView.setTextAppearance(context, labelTextAppearance);
-            if(labelTextSize > 0)
-                mLabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
-            if(labelTextColor != null)
-                mLabelView.setTextColor(labelTextColor);
-
-            switch (labelEllipsize) {
-                case 1:
-                    mLabelView.setEllipsize(TextUtils.TruncateAt.START);
-                    break;
-                case 2:
-                    mLabelView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-                    break;
-                case 3:
-                    mLabelView.setEllipsize(TextUtils.TruncateAt.END);
-                    break;
-                case 4:
-                    mLabelView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                    break;
-                default:
-                    mLabelView.setEllipsize(TextUtils.TruncateAt.END);
-                    break;
+            if(attr == R.styleable.Spinner_spn_labelEnable)
+                mLabelEnable = a.getBoolean(attr, false);
+            else if(attr == R.styleable.Spinner_spn_labelPadding)
+                getLabelView().setPadding(0, 0, 0, a.getDimensionPixelSize(attr, 0));
+            else if (attr == R.styleable.Spinner_spn_labelTextSize)
+                labelTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_labelTextColor)
+                labelTextColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.Spinner_spn_labelTextAppearance)
+                getLabelView().setTextAppearance(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.Spinner_spn_labelEllipsize){
+                int labelEllipsize = a.getInteger(attr, 0);
+                switch (labelEllipsize) {
+                    case 1:
+                        getLabelView().setEllipsize(TextUtils.TruncateAt.START);
+                        break;
+                    case 2:
+                        getLabelView().setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                        break;
+                    case 3:
+                        getLabelView().setEllipsize(TextUtils.TruncateAt.END);
+                        break;
+                    case 4:
+                        getLabelView().setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                        break;
+                    default:
+                        getLabelView().setEllipsize(TextUtils.TruncateAt.END);
+                        break;
+                }
             }
-            addView(mLabelView, 0, new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            else if(attr == R.styleable.Spinner_spn_label)
+                getLabelView().setText(a.getString(attr));
+            else if(attr == R.styleable.Spinner_android_gravity)
+                mGravity = a.getInt(attr, 0);
+            else if(attr == R.styleable.Spinner_android_minWidth)
+                setMinimumWidth(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Spinner_android_minHeight)
+                setMinimumHeight(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Spinner_android_dropDownWidth)
+                mDropDownWidth = a.getLayoutDimension(attr, LayoutParams.WRAP_CONTENT);
+            else if(attr == R.styleable.Spinner_android_popupBackground)
+                mPopup.setBackgroundDrawable(a.getDrawable(attr));
+            else if(attr == R.styleable.Spinner_prompt)
+                mPopup.setPromptText(a.getString(attr));
+            else if(attr == R.styleable.Spinner_spn_popupItemAnimation)
+                mPopup.setItemAnimation(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.Spinner_spn_popupItemAnimOffset)
+                mPopup.setItemAnimationOffset(a.getInteger(attr, 0));
+            else if(attr == R.styleable.Spinner_disableChildrenWhenDisabled)
+                mDisableChildrenWhenDisabled = a.getBoolean(attr, false);
+            else if(attr == R.styleable.Spinner_spn_arrowSwitchMode)
+                mArrowAnimSwitchMode = a.getBoolean(attr, false);
+            else if(attr == R.styleable.Spinner_spn_arrowAnimDuration)
+                arrowAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_arrowSize)
+                mArrowSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_arrowPadding)
+                mArrowPadding = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_arrowColor)
+                arrowColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.Spinner_spn_arrowInterpolator){
+                int resId = a.getResourceId(attr, 0);
+                arrowInterpolator = AnimationUtils.loadInterpolator(context, resId);
+            }
+            else if(attr == R.styleable.Spinner_spn_arrowAnimClockwise)
+                arrowClockwise = a.getBoolean(attr, true);
+            else if(attr == R.styleable.Spinner_spn_dividerHeight)
+                mDividerHeight = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_dividerPadding)
+                mDividerPadding = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_dividerAnimDuration)
+                dividerAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.Spinner_spn_dividerColor)
+                dividerColor = a.getColorStateList(attr);
         }
 
-        mGravity = a.getInt(R.styleable.Spinner_android_gravity, Gravity.CENTER);
+        a.recycle();
 
-        setMinimumWidth(a.getDimensionPixelOffset(R.styleable.Spinner_android_minWidth, 0));
-        setMinimumHeight(a.getDimensionPixelOffset(R.styleable.Spinner_android_minHeight, 0));
+        if(labelTextColor != null)
+            getLabelView().setTextColor(labelTextColor);
 
-        mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
-        mPopup.setModal(true);
-        mDropDownWidth = a.getLayoutDimension(R.styleable.Spinner_android_dropDownWidth, LayoutParams.WRAP_CONTENT);
-        mPopup.setBackgroundDrawable(a.getDrawable(R.styleable.Spinner_android_popupBackground));
-        mPopup.setPromptText(a.getString(R.styleable.Spinner_prompt));
-        mPopup.setItemAnimation(a.getResourceId(R.styleable.Spinner_spn_popupItemAnimation, 0));
-        mPopup.setItemAnimationOffset(a.getInteger(R.styleable.Spinner_spn_popupItemAnimOffset, 50));
-        mDisableChildrenWhenDisabled = a.getBoolean(R.styleable.Spinner_disableChildrenWhenDisabled, false);
+        if(labelTextSize >= 0)
+            getLabelView().setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSize);
 
-        mArrowAnimSwitchMode = a.getBoolean(R.styleable.Spinner_spn_arrowSwitchMode, false);
-        int arrowAnimDuration = a.getInteger(R.styleable.Spinner_spn_arrowAnimDuration, 0);
-        mArrowSize = a.getDimensionPixelSize(R.styleable.Spinner_spn_arrowSize, ThemeUtil.dpToPx(getContext(), 4));
-        mArrowPadding = a.getDimensionPixelSize(R.styleable.Spinner_spn_arrowPadding, ThemeUtil.dpToPx(getContext(), 4));
-        ColorStateList arrowColor = a.getColorStateList(R.styleable.Spinner_spn_arrowColor);
-        if(arrowColor == null)
-            arrowColor = ColorStateList.valueOf(ThemeUtil.colorControlNormal(context, 0xFF000000));
-        int resId = a.getResourceId(R.styleable.Spinner_spn_arrowInterpolator, 0);
-        Interpolator arrowInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : null;
-        boolean arrowClockwise = a.getBoolean(R.styleable.Spinner_spn_arrowAnimClockwise, true);
+        if(mLabelEnable)
+            addView(getLabelView(), 0, new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        if(mArrowSize > 0) {
-            mArrowDrawable = new ArrowDrawable(ArrowDrawable.MODE_DOWN, mArrowSize, arrowColor, arrowAnimDuration, arrowInterpolator, arrowClockwise);
-            mArrowDrawable.setCallback(this);
+        if(mArrowSize > 0){
+            if(mArrowDrawable == null){
+                if(arrowColor == null)
+                    arrowColor = ColorStateList.valueOf(ThemeUtil.colorControlNormal(context, 0xFF000000));
+
+                if(arrowAnimDuration < 0)
+                    arrowAnimDuration = 0;
+
+                mArrowDrawable = new ArrowDrawable(ArrowDrawable.MODE_DOWN, mArrowSize, arrowColor, arrowAnimDuration, arrowInterpolator, arrowClockwise);
+                mArrowDrawable.setCallback(this);
+            }
+            else{
+                mArrowDrawable.setArrowSize(mArrowSize);
+                mArrowDrawable.setClockwise(arrowClockwise);
+
+                if(arrowColor != null)
+                    mArrowDrawable.setColor(arrowColor);
+
+                if(arrowAnimDuration >= 0)
+                    mArrowDrawable.setAnimationDuration(arrowAnimDuration);
+
+                if(arrowInterpolator != null)
+                    mArrowDrawable.setInterpolator(arrowInterpolator);
+            }
         }
-
-        mDividerHeight = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerHeight, 0);
-        mDividerPadding = a.getDimensionPixelOffset(R.styleable.Spinner_spn_dividerPadding, 0);
-        int dividerAnimDuration = a.getInteger(R.styleable.Spinner_spn_dividerAnimDuration, 0);
-        ColorStateList dividerColor = a.getColorStateList(R.styleable.Spinner_spn_dividerColor);
-        if(dividerColor == null){
-            int[][] states = new int[][]{
-                    new int[]{-android.R.attr.state_pressed},
-                    new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled},
-            };
-            int[] colors = new int[]{
-                    ThemeUtil.colorControlNormal(context, 0xFF000000),
-                    ThemeUtil.colorControlActivated(context, 0xFF000000),
-            };
-
-            dividerColor = new ColorStateList(states, colors);
+        else if(mArrowDrawable != null){
+            mArrowDrawable.setCallback(null);
+            mArrowDrawable = null;
         }
 
         if(mDividerHeight > 0){
-            mDividerDrawable = new DividerDrawable(mDividerHeight, dividerColor, dividerAnimDuration);
-            mDividerDrawable.setCallback(this);
+            if(mDividerDrawable == null){
+                if(dividerAnimDuration < 0)
+                    dividerAnimDuration = 0;
+
+                if(dividerColor == null){
+                    int[][] states = new int[][]{
+                            new int[]{-android.R.attr.state_pressed},
+                            new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled},
+                    };
+                    int[] colors = new int[]{
+                            ThemeUtil.colorControlNormal(context, 0xFF000000),
+                            ThemeUtil.colorControlActivated(context, 0xFF000000),
+                    };
+
+                    dividerColor = new ColorStateList(states, colors);
+                }
+
+                mDividerDrawable = new DividerDrawable(mDividerHeight, dividerColor, dividerAnimDuration);
+                mDividerDrawable.setCallback(this);
+            }
+            else{
+                mDividerDrawable.setDividerHeight(mDividerHeight);
+
+                if(dividerColor != null)
+                    mDividerDrawable.setColor(dividerColor);
+
+                if(dividerAnimDuration >= 0)
+                    mDividerDrawable.setAnimationDuration(dividerAnimDuration);
+            }
+        }
+        else if(mDividerDrawable != null){
+            mDividerDrawable.setCallback(null);
+            mDividerDrawable = null;
         }
 
         mTintManager = a.getTintManager();
-
-        a.recycle();
 
         if (mTempAdapter != null) {
             mPopup.setAdapter(mTempAdapter);
@@ -285,6 +361,26 @@ public class Spinner extends FrameLayout {
 
         if(mAdapter != null)
             setAdapter(mAdapter);
+
+        requestLayout();
+    }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -528,9 +624,13 @@ public class Spinner extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
 
         if (mPopup != null && mPopup.isShowing())
-            mPopup.dismiss();        
+            mPopup.dismiss();
+
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @Override
@@ -1116,19 +1216,6 @@ public class Spinner extends FrameLayout {
 			if (mAdapter != null)
                 mAdapter.unregisterDataSetObserver(observer);            
 		}
-    }
-
-    private class LabelView extends android.widget.TextView{
-
-        public LabelView(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected int[] onCreateDrawableState(int extraSpace) {
-            return Spinner.this.getDrawableState();
-        }
-
     }
 
 	private class DropdownPopup extends ListPopupWindow {

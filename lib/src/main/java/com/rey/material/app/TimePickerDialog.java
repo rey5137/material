@@ -143,9 +143,9 @@ public class TimePickerDialog extends Dialog{
     private class TimePickerLayout extends android.widget.FrameLayout implements View.OnClickListener, TimePicker.OnTimeChangedListener{
 
         private int mHeaderHeight;
-        private int mTextTimeColor;
+        private int mTextTimeColor = 0xFF000000;
         private int mTextTimeSize;
-        private boolean mIsLeadingZero;
+        private boolean mIsLeadingZero = false;
 
         private boolean mIsAm = true;
         private int mCheckBoxSize;
@@ -212,21 +212,38 @@ public class TimePickerDialog extends Dialog{
             addView(mPmView);
 
             setWillNotDraw(false);
+
+            mCheckBoxSize = ThemeUtil.dpToPx(context, 48);
+            mHeaderHeight = ThemeUtil.dpToPx(context, 120);
+            mTextTimeSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material);
         }
 
         public void applyStyle(int resId){
             mTimePicker.applyStyle(resId);
 
             Context context = getContext();
-            mCheckBoxSize = ThemeUtil.dpToPx(context, 48);
-
             TypedArray a = context.obtainStyledAttributes(resId, R.styleable.TimePickerDialog);
-            mHeaderHeight = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_headerHeight, ThemeUtil.dpToPx(context, 120));
-            mTextTimeColor = a.getColor(R.styleable.TimePickerDialog_tp_textTimeColor, 0xFF000000);
-            mTextTimeSize = a.getDimensionPixelSize(R.styleable.TimePickerDialog_tp_textTimeSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_headline_material));
-            mIsLeadingZero = a.getBoolean(R.styleable.TimePickerDialog_tp_leadingZero, false);
-            String am = a.getString(R.styleable.TimePickerDialog_tp_am);
-            String pm = a.getString(R.styleable.TimePickerDialog_tp_pm);
+
+            String am = null;
+            String pm = null;
+
+            for(int i = 0, count = a.getIndexCount(); i < count; i++){
+                int attr = a.getIndex(i);
+
+                if(attr == R.styleable.TimePickerDialog_tp_headerHeight)
+                    mHeaderHeight = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.TimePickerDialog_tp_textTimeColor)
+                    mTextTimeColor = a.getColor(attr, 0);
+                else if(attr == R.styleable.TimePickerDialog_tp_textTimeSize)
+                    mTextTimeSize = a.getDimensionPixelSize(attr, 0);
+                else if(attr == R.styleable.TimePickerDialog_tp_leadingZero)
+                    mIsLeadingZero = a.getBoolean(attr, false);
+                else if(attr == R.styleable.TimePickerDialog_tp_am)
+                    am = a.getString(attr);
+                else if(attr == R.styleable.TimePickerDialog_tp_pm)
+                    pm = a.getString(attr);
+            }
+
             a.recycle();
 
             if(am == null)
@@ -243,6 +260,7 @@ public class TimePickerDialog extends Dialog{
                     mTimePicker.getTextColor(),
                     mTimePicker.getTextHighlightColor(),
             };
+
             mAmView.setBackgroundColor(mTimePicker.getSelectionColor());
             mAmView.setAnimDuration(mTimePicker.getAnimDuration());
             mAmView.setInterpolator(mTimePicker.getInInterpolator(), mTimePicker.getOutInterpolator());

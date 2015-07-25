@@ -88,4 +88,14 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
             outState.putParcelable(ARG_BUILDER, (Parcelable)mBuilder);
     }
 
+    @Override
+    public void onDestroyView() {
+        android.app.Dialog dialog = getDialog();
+
+        if(dialog != null && dialog instanceof Dialog)
+            ((Dialog)dialog).dismissImmediately();
+
+        super.onDestroyView();
+    }
+
 }

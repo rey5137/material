@@ -10,7 +10,6 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -26,15 +25,18 @@ import android.view.animation.Interpolator;
 import android.widget.Checkable;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
-public class Switch extends View implements Checkable {
+public class Switch extends View implements Checkable, ThemeManager.OnThemeChangedListener {
 		
 	private RippleManager mRippleManager;
-	
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+
 	private boolean mRunning = false;
 	
 	private Paint mPaint;
@@ -42,16 +44,16 @@ public class Switch extends View implements Checkable {
 	private RectF mTempRect;
 	private Path mTrackPath;
 	
-	private int mTrackSize;
+	private int mTrackSize = -1;
 	private ColorStateList mTrackColors;
-	private Paint.Cap mTrackCap;
-	private int mThumbRadius;
+	private Paint.Cap mTrackCap = Paint.Cap.ROUND;
+	private int mThumbRadius = -1;
 	private ColorStateList mThumbColors;
 	private float mThumbPosition;
-	private int mMaxAnimDuration;
+	private int mMaxAnimDuration = -1;
 	private Interpolator mInterpolator;	
 	private int mGravity = Gravity.CENTER_VERTICAL;
-	
+
 	private boolean mChecked = false;
 	private float mMemoX;
 	
@@ -64,8 +66,8 @@ public class Switch extends View implements Checkable {
 	
 	private int[] mTempStates = new int[2];
 
-    private int mShadowSize;
-    private int mShadowOffset;
+    private int mShadowSize = -1;
+    private int mShadowOffset = -1;
     private Path mShadowPath;
     private Paint mShadowPaint;
 
@@ -122,38 +124,74 @@ public class Switch extends View implements Checkable {
         mFlingVelocity = ViewConfiguration.get(context).getScaledMinimumFlingVelocity();
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Switch, defStyleAttr, defStyleRes);
 
-        mTrackSize = a.getDimensionPixelSize(R.styleable.Switch_sw_trackSize, ThemeUtil.dpToPx(context, 2));
-        mTrackColors = a.getColorStateList(R.styleable.Switch_sw_trackColor);
-        int cap = a.getInteger(R.styleable.Switch_sw_trackCap, 0);
-        if(cap == 0)
-            mTrackCap = Paint.Cap.BUTT;
-        else if(cap == 1)
-            mTrackCap = Paint.Cap.ROUND;
-        else
-            mTrackCap = Paint.Cap.SQUARE;
-        mThumbColors = a.getColorStateList(R.styleable.Switch_sw_thumbColor);
-        mThumbRadius = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbRadius, ThemeUtil.dpToPx(context, 8));
-        mShadowSize = a.getDimensionPixelSize(R.styleable.Switch_sw_thumbElevation, ThemeUtil.dpToPx(context, 2));
-        mShadowOffset = mShadowSize / 2;
-        mMaxAnimDuration = a.getInt(R.styleable.Switch_sw_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        mGravity = a.getInt(R.styleable.Switch_android_gravity, Gravity.CENTER_VERTICAL);
-        mChecked = a.getBoolean(R.styleable.Switch_android_checked, false);
-        mThumbPosition = mChecked ? 1f : 0f;
-        int resId = a.getResourceId(R.styleable.Switch_sw_interpolator, 0);
-        mInterpolator = resId != 0 ? AnimationUtils.loadInterpolator(context, resId) : new DecelerateInterpolator();
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+            if(attr == R.styleable.Switch_sw_trackSize)
+                mTrackSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Switch_sw_trackColor)
+                mTrackColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Switch_sw_trackCap){
+                int cap = a.getInteger(attr, 0);
+                if(cap == 0)
+                    mTrackCap = Paint.Cap.BUTT;
+                else if(cap == 1)
+                    mTrackCap = Paint.Cap.ROUND;
+                else
+                    mTrackCap = Paint.Cap.SQUARE;
+            }
+            else if(attr == R.styleable.Switch_sw_thumbColor)
+                mThumbColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Switch_sw_thumbRadius)
+                mThumbRadius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Switch_sw_thumbElevation) {
+                mShadowSize = a.getDimensionPixelSize(attr, 0);
+                mShadowOffset = mShadowSize / 2;
+            }
+            else if(attr == R.styleable.Switch_sw_animDuration)
+                mMaxAnimDuration = a.getInt(attr, 0);
+            else if(attr == R.styleable.Switch_android_gravity)
+                mGravity = a.getInt(attr, 0);
+            else if(attr == R.styleable.Switch_android_checked)
+                setCheckedImmediately(a.getBoolean(attr, mChecked));
+            else if(attr == R.styleable.Switch_sw_interpolator){
+                int resId = a.getResourceId(R.styleable.Switch_sw_interpolator, 0);
+                if(resId != 0)
+                    mInterpolator = AnimationUtils.loadInterpolator(context, resId);
+            }
+        }
 
         a.recycle();
+
+        if(mTrackSize < 0)
+            mTrackSize = ThemeUtil.dpToPx(context, 2);
+
+        if(mThumbRadius < 0)
+            mThumbRadius = ThemeUtil.dpToPx(context, 8);
+
+        if(mShadowSize < 0) {
+            mShadowSize = ThemeUtil.dpToPx(context, 2);
+            mShadowOffset = mShadowSize / 2;
+        }
+
+        if(mMaxAnimDuration < 0)
+            mMaxAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInterpolator == null)
+            mInterpolator = new DecelerateInterpolator();
 
         if(mTrackColors == null){
             int[][] states = new int[][]{
@@ -182,8 +220,34 @@ public class Switch extends View implements Checkable {
         }
 
         mPaint.setStrokeCap(mTrackCap);
-
         buildShadow();
+        invalidate();
+    }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @Override
@@ -374,7 +438,7 @@ public class Switch extends View implements Checkable {
 		}		
 	}
 
-	private int getTrackColor(boolean checked){
+    private int getTrackColor(boolean checked){
 		mTempStates[0] = isEnabled() ? android.R.attr.state_enabled : -android.R.attr.state_enabled;
 		mTempStates[1] = checked ? android.R.attr.state_checked : -android.R.attr.state_checked;
 		

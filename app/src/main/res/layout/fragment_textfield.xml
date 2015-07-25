@@ -13,101 +13,77 @@
 	    android:padding="8dp">
 
         <com.rey.material.app.ContactEditText
-            style="@style/ContactEditText"
             android:id="@+id/textfield_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="textEmailSubject|textMultiLine"
             android:hint="Contact"
             android:imeOptions="actionNext|flagNoEnterAction|flagNoExtractUi"
             android:dropDownSelector="@drawable/abc_list_selector_background_transition_holo_light"
             app:et_inputId="@+id/textfield_et_contact_input"
             app:et_supportMode="none"
-            app:et_autoCompleteMode="multi"
-            app:et_dividerPadding="4dp"
             app:cet_spanFontFamily="asset:FreeSans.ttf"
-            android:completionThreshold="2"/>
+            android:completionThreshold="2"
+            app:v_styleId="@array/edittext_contact"/>
 
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="text"
             android:hint="Input with label"
             app:et_inputId="@+id/textfield_et_label_input"
-            app:et_supportMode="none" />
-	    
+            app:et_supportMode="none"
+            app:v_styleId="@array/edittext"/>
+
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_char_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="textMultiLine"
             android:hint="Input with char counter"
             app:et_inputId="@+id/textfield_et_char_counter_input"
-            app:et_labelTextColor="@drawable/color_label"
             app:et_supportMode="charCounter"
             app:et_supportMaxChars="20"
-            app:et_supportTextErrorColor="#FFFF0000"
-            app:et_dividerErrorColor="#FFFF0000"/>
-        
+            app:v_styleId="@array/edittext"/>
+
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_helper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="textPassword"
             android:hint="Input with helper"
             app:et_inputId="@+id/textfield_et_helper_input"
-            app:et_labelTextColor="@drawable/color_label"
             app:et_supportMode="helper"
-            app:et_supportTextErrorColor="#FFFF0000"
             app:et_helper="Enter password"
-            app:et_dividerErrorColor="#FFFF0000"/>
-            
+            app:v_styleId="@array/edittext"/>
+
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_helper_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="textPassword"
             android:hint="Input with helper + error"
             app:et_inputId="@+id/textfield_et_label_error_input"
-            app:et_labelTextColor="@drawable/color_label"
             app:et_supportMode="helperWithError"
-            app:et_supportTextErrorColor="#FFFF0000"
             app:et_helper="Enter password"
-            app:et_dividerErrorColor="#FFFF0000"/>
-            
+            app:v_styleId="@array/edittext"/>
+
         <com.rey.material.widget.EditText
-            style="@style/Material.Widget.EditText.Light"
             android:id="@+id/textfield_et_disable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="#FF000000"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
             android:inputType="text"
             android:hint="Disabled"
             android:text="Input text"
             android:enabled="false"
             app:et_inputId="@+id/textfield_et_disable_input"
-            app:et_labelTextColor="@drawable/color_label"
-            app:et_supportMode="none"/>
+            app:et_supportMode="none"
+            app:v_styleId="@array/edittext"/>
         	        
 	</LinearLayout>
 	    

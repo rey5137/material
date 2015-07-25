@@ -1,5 +1,10 @@
 <resources>
 
+    <style name="DialogNoAnimation">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+
     <style name="Material"></style>
 
     <style name="Material.Drawable"></style>
@@ -212,10 +217,10 @@
         <item name="sl_minValue">0</item>
         <item name="sl_maxValue">100</item>
         <item name="sl_stepValue">1</item>
-        <item name="sl_value">0</item>
         <item name="sl_discreteMode">false</item>
         <item name="sl_textSize">@dimen/abc_text_size_small_material</item>
         <item name="sl_textColor">#FFFFFFFF</item>
+        <item name="sl_alwaysFillThumb">false</item>
     </style>
 
     <style name="Material.Widget.Slider.Discrete" parent="Material.Widget.Slider">
@@ -226,6 +231,7 @@
         <item name="tpi_tabPadding">12dp</item>
         <item name="tpi_tabRipple">@style/Material.Drawable.Ripple.Wave</item>
         <item name="tpi_indicatorHeight">2dp</item>
+        <item name="tpi_tabSingleLine">true</item>
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
         <item name="tpi_mode">scroll</item>
     </style>
@@ -533,7 +539,6 @@
         <item name="et_supportTextColor">@color/abc_secondary_text_material_dark</item>
         <item name="et_supportTextErrorColor">?attr/colorAccent</item>
         <item name="et_supportEllipsize">end</item>
-        <item name="et_autoCompleteMode">none</item>
     </style>
 
     <style name="Material.Widget.EditText.Light" parent="Material.Widget.EditText">
@@ -559,6 +564,18 @@
 
     <style name="Material.Widget.Spinner.Light" parent="Material.Widget.Spinner">
         <item name="spn_labelTextColor">@color/abc_secondary_text_material_light</item>
+    </style>
+
+    <style name="Material.App.BottomSheetDialog">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="bsd_inDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="bsd_inInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="bsd_outDuration">@android:integer/config_mediumAnimTime</item>
+        <item name="bsd_outInterpolator">@android:anim/accelerate_interpolator</item>
+        <item name="bsd_cancelable">true</item>
+        <item name="bsd_canceledOnTouchOutside">true</item>
+        <item name="bsd_dimAmount">0.5</item>
     </style>
 
 </resources>

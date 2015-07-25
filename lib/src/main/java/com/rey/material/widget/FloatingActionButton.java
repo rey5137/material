@@ -3,15 +3,9 @@ package com.rey.material.widget;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PixelFormat;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -31,22 +25,26 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.LineMorphingDrawable;
+import com.rey.material.drawable.OvalShadowDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 
-public class FloatingActionButton extends View {
+public class FloatingActionButton extends View implements ThemeManager.OnThemeChangedListener {
 
 	private OvalShadowDrawable mBackground;
 	private Drawable mIcon;
     private Drawable mPrevIcon;
-    private int mAnimDuration;
+    private int mAnimDuration = -1;
     private Interpolator mInterpolator;
     private SwitchIconAnimator mSwitchIconAnimator;
-	private int mIconSize;
+	private int mIconSize = -1;
 		
 	private RippleManager mRippleManager;
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 			
 	public static FloatingActionButton make(Context context, int resId){
 		return new FloatingActionButton(context, null, resId);
@@ -80,32 +78,93 @@ public class FloatingActionButton extends View {
 		setClickable(true);
         mSwitchIconAnimator = new SwitchIconAnimator();
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){
+        ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, defStyleRes);
 
-        int radius = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_radius, ThemeUtil.dpToPx(context, 28));
-        int elevation = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_elevation, ThemeUtil.dpToPx(context, 4));
-        int bgColor = a.getColor(R.styleable.FloatingActionButton_fab_backgroundColor, ThemeUtil.colorAccent(context, 0xFFFAFAFA));
-        int iconSrc = a.getResourceId(R.styleable.FloatingActionButton_fab_iconSrc, 0);
-        int iconLineMorphing = a.getResourceId(R.styleable.FloatingActionButton_fab_iconLineMorphing, 0);
-        mIconSize = a.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_iconSize, ThemeUtil.dpToPx(context, 24));
-        mAnimDuration = a.getInteger(R.styleable.FloatingActionButton_fab_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
-        if(resId != 0)
-            mInterpolator = AnimationUtils.loadInterpolator(context, resId);
-        else if(mInterpolator == null)
-            mInterpolator = new DecelerateInterpolator();
+        int radius = -1;
+        int elevation = -1;
+        ColorStateList bgColor = null;
+        int bgAnimDuration = -1;
+        int iconSrc = 0;
+        int iconLineMorphing = 0;
+
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.FloatingActionButton_fab_radius)
+                radius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_elevation)
+                elevation = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_backgroundColor)
+                bgColor = a.getColorStateList(attr);
+            else if(attr == R.styleable.FloatingActionButton_fab_backgroundAnimDuration)
+                bgAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconSrc)
+                iconSrc = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconLineMorphing)
+                iconLineMorphing = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_iconSize)
+                mIconSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_animDuration)
+                mAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.FloatingActionButton_fab_interpolator){
+                int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
+                if(resId != 0)
+                    mInterpolator = AnimationUtils.loadInterpolator(context, resId);
+            }
+        }
 
         a.recycle();
 
-        mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation);
-        mBackground.setBounds(0, 0, getWidth(), getHeight());
+        if(mIconSize < 0)
+            mIconSize = ThemeUtil.dpToPx(context, 24);
+
+        if(mAnimDuration < 0)
+            mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInterpolator == null)
+            mInterpolator = new DecelerateInterpolator();
+
+        if(mBackground == null){
+            if(radius < 0)
+                radius = ThemeUtil.dpToPx(context, 28);
+
+            if(elevation < 0)
+                elevation = ThemeUtil.dpToPx(context, 4);
+
+            if(bgColor == null)
+                bgColor = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0));
+
+            if(bgAnimDuration < 0)
+                bgAnimDuration = 0;
+
+            mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation, bgAnimDuration);
+            mBackground.setInEditMode(isInEditMode());
+            mBackground.setBounds(0, 0, getWidth(), getHeight());
+            mBackground.setCallback(this);
+        }
+        else{
+            if(radius >= 0)
+                mBackground.setRadius(radius);
+
+            if(bgColor != null)
+                mBackground.setColor(bgColor);
+
+            if(elevation >= 0)
+                mBackground.setShadow(elevation, elevation);
+
+            if(bgAnimDuration >= 0)
+                mBackground.setAnimationDuration(bgAnimDuration);
+        }
 
         if(iconLineMorphing != 0)
             setIcon(new LineMorphingDrawable.Builder(context, iconLineMorphing).build(), false);
@@ -119,9 +178,34 @@ public class FloatingActionButton extends View {
             drawable.setBackgroundDrawable(null);
             drawable.setMask(RippleDrawable.Mask.TYPE_OVAL, 0, 0, 0, 0, (int)mBackground.getPaddingLeft(), (int)mBackground.getPaddingTop(), (int)mBackground.getPaddingRight(), (int)mBackground.getPaddingBottom());
         }
-
-        setClickable(true);
     }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
+    }
+
 
     /**
      * @return The radius of the button.
@@ -180,7 +264,7 @@ public class FloatingActionButton extends View {
     /**
      * @return The background color of this button.
      */
-	public int getBackgroundColor(){
+	public ColorStateList getBackgroundColor(){
 		return mBackground.getColor();
 	}
 
@@ -217,7 +301,12 @@ public class FloatingActionButton extends View {
             invalidate();
         }
 	}
-	
+
+	public void setBackgroundColor(ColorStateList color){
+		mBackground.setColor(color);
+		invalidate();
+	}
+
 	@Override
 	public void setBackgroundColor(int color){
 		mBackground.setColor(color);
@@ -351,7 +440,18 @@ public class FloatingActionButton extends View {
 	protected boolean verifyDrawable(Drawable who) {
         return super.verifyDrawable(who) || mBackground == who || mIcon == who || mPrevIcon == who;
     }
-	
+
+	@Override
+	protected void drawableStateChanged() {
+		super.drawableStateChanged();
+		if(mBackground != null)
+			mBackground.setState(getDrawableState());
+		if(mIcon != null)
+			mIcon.setState(getDrawableState());
+		if(mPrevIcon != null)
+			mPrevIcon.setState(getDrawableState());
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		setMeasuredDimension(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
@@ -413,223 +513,6 @@ public class FloatingActionButton extends View {
 		
 		boolean result = super.onTouchEvent(event);		
 		return  getRippleManager().onTouchEvent(event) || result;
-	}
-	
-	private class OvalShadowDrawable extends Drawable{
-
-		private Paint mShadowPaint;
-		private Paint mGlowPaint;
-		private Paint mPaint;
-		
-		private int mRadius;
-		private float mShadowSize;
-		private float mShadowOffset;
-		
-		private Path mShadowPath;
-		private Path mGlowPath;
-		
-		private RectF mTempRect = new RectF();
-		
-		private int mColor;
-		
-		private boolean mNeedBuildShadow = true;
-		
-		private static final int COLOR_SHADOW_START = 0x4C000000;
-		private static final int COLOR_SHADOW_END = 0x00000000;
-		
-		public OvalShadowDrawable(int radius, int color, float shadowSize, float shadowOffset){
-			mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-			mPaint.setStyle(Paint.Style.FILL);
-			
-			setColor(color);
-			setRadius(radius);
-			setShadow(shadowSize, shadowOffset);
-		}
-		
-		public boolean setRadius(int radius){
-			if(mRadius != radius){
-				mRadius = radius;
-				mNeedBuildShadow = true;
-				invalidateSelf();
-				
-				return true;
-			}
-			
-			return false;
-		}
-		
-		public boolean setShadow(float size, float offset){
-			if(mShadowSize != size || mShadowOffset != offset){
-				mShadowSize = size;
-				mShadowOffset = offset;
-				mNeedBuildShadow = true;
-				invalidateSelf();
-				
-				return true;
-			}
-			
-			return false;
-		}
-		
-		public void setColor(int color){
-			if(mColor != color){
-				mColor = color;
-				mPaint.setColor(mColor);
-				invalidateSelf();
-			}
-		}
-		
-		public int getColor(){
-			return mColor;
-		}
-		
-		public int getRadius(){
-			return mRadius;
-		}
-		
-		public float getShadowSize(){
-			return mShadowSize;
-		}
-		
-		public float getShadowOffset(){
-			return mShadowOffset;
-		}
-		
-		public float getPaddingLeft(){
-			return mShadowSize;
-		}
-		
-		public float getPaddingTop(){
-			return mShadowSize;
-		}
-		
-		public float getPaddingRight(){
-			return mShadowSize;
-		}
-		
-		public float getPaddingBottom(){
-			return mShadowSize + mShadowOffset;
-		}
-		
-		public float getCenterX(){
-			return mRadius + mShadowSize; 
-		}
-		
-		public float getCenterY(){
-			return mRadius + mShadowSize;
-		}
-		
-		public boolean isPointerOver(float x, float y){
-			float distance = (float)Math.sqrt(Math.pow(x - getCenterX(), 2) + Math.pow(y - getCenterY(), 2));
-			
-			return distance < mRadius;
-		}
-		
-		@Override
-		public int getIntrinsicWidth() {
-			return (int)((mRadius + mShadowSize) * 2 + 0.5f);
-		}
-
-		@Override
-		public int getIntrinsicHeight() {			
-			return (int)((mRadius + mShadowSize) * 2 + mShadowOffset + 0.5f);
-		}
-
-		private void buildShadow(){
-			if(mShadowSize <= 0)
-				return;
-			
-			if(mShadowPaint == null){
-				mShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-				mShadowPaint.setStyle(Paint.Style.FILL);
-				mShadowPaint.setDither(true);
-			}
-			float startRatio = (float)mRadius / (mRadius + mShadowSize + mShadowOffset);
-			mShadowPaint.setShader(new RadialGradient(0, 0, mRadius + mShadowSize,
-	                new int[]{COLOR_SHADOW_START, COLOR_SHADOW_START, COLOR_SHADOW_END},
-	                new float[]{0f, startRatio, 1f}
-	                , Shader.TileMode.CLAMP));
-			
-			if(mShadowPath == null){
-				mShadowPath = new Path();
-				mShadowPath.setFillType(Path.FillType.EVEN_ODD);
-			}
-			else
-				mShadowPath.reset();
-			float radius = mRadius + mShadowSize;
-			mTempRect.set(-radius, -radius, radius, radius);
-			mShadowPath.addOval(mTempRect, Path.Direction.CW);
-			radius = mRadius - 1;
-			mTempRect.set(-radius, -radius - mShadowOffset, radius, radius - mShadowOffset);
-			mShadowPath.addOval(mTempRect, Path.Direction.CW);
-			
-			if(mGlowPaint == null){
-				mGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-				mGlowPaint.setStyle(Paint.Style.FILL);
-				mGlowPaint.setDither(true);
-			}
-			startRatio = (mRadius - mShadowSize / 2f) / (mRadius + mShadowSize / 2f);
-			mGlowPaint.setShader(new RadialGradient(0, 0, mRadius + mShadowSize / 2f,
-	                new int[]{COLOR_SHADOW_START, COLOR_SHADOW_START, COLOR_SHADOW_END},
-	                new float[]{0f, startRatio, 1f}
-	                , Shader.TileMode.CLAMP));
-			
-			if(mGlowPath == null){
-				mGlowPath = new Path();
-				mGlowPath.setFillType(Path.FillType.EVEN_ODD);
-			}
-			else
-				mGlowPath.reset();
-			
-			radius = mRadius + mShadowSize / 2f;
-			mTempRect.set(-radius, -radius, radius, radius);
-			mGlowPath.addOval(mTempRect, Path.Direction.CW);
-			radius = mRadius - 1;
-			mTempRect.set(-radius, -radius, radius, radius);
-			mGlowPath.addOval(mTempRect, Path.Direction.CW);
-		}
-		
-		@Override
-		public void draw(Canvas canvas) {
-			if(mNeedBuildShadow){
-				buildShadow();
-				mNeedBuildShadow = false;
-			}
-			int saveCount;
-			
-			if(mShadowSize > 0){
-				saveCount = canvas.save();			
-				canvas.translate(mShadowSize + mRadius,  mShadowSize + mRadius + mShadowOffset);
-				canvas.drawPath(mShadowPath, mShadowPaint);
-				canvas.restoreToCount(saveCount);
-			}
-			
-			saveCount = canvas.save();
-			canvas.translate(mShadowSize + mRadius, mShadowSize + mRadius);
-			if(mShadowSize > 0)
-				canvas.drawPath(mGlowPath, mGlowPaint);			
-			mTempRect.set(-mRadius, -mRadius, mRadius, mRadius);
-			canvas.drawOval(mTempRect, mPaint);
-			canvas.restoreToCount(saveCount);			
-		}
-
-		@Override
-		public void setAlpha(int alpha) {
-			mShadowPaint.setAlpha(alpha);
-			mPaint.setAlpha(alpha);
-		}
-
-		@Override
-		public void setColorFilter(ColorFilter cf) {
-			mShadowPaint.setColorFilter(cf);
-			mPaint.setColorFilter(cf);
-		}
-
-		@Override
-		public int getOpacity() {
-			return PixelFormat.TRANSLUCENT;
-		}
-		
 	}
 
     @Override

@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-        
-    <item
-        android:id="@+id/tb_contextual"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_visibility_white_24dp"
-        android:title="Contextual mode"/>
+
+    <group
+        android:id="@+id/tb_group_main">
+
 
     <item
-        android:id="@+id/tb_refresh"
+        android:id="@+id/tb_switch"
         app:showAsAction="always"
         android:icon="@drawable/ic_autorenew_white_24dp"
-        android:title="Refresh"/>
+        android:title="Switch group"/>
 
+    <item
+        android:id="@+id/tb_theme"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_visibility_white_24dp"
+        android:title="Change Theme"/>
+
+    </group>
+    
     <group
         android:id="@+id/tb_group_contextual">
 

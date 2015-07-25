@@ -20,6 +20,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.rey.material.R;
+import com.rey.material.app.ThemeManager;
 import com.rey.material.util.ColorUtil;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.TypefaceUtil;
@@ -28,19 +29,22 @@ import com.rey.material.util.ViewUtil;
 /**
  * Created by Rey on 12/19/2014.
  */
-public class TimePicker extends View{
+public class TimePicker extends View implements ThemeManager.OnThemeChangedListener{
+
+    protected int mStyleId;
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     private int mBackgroundColor;
     private int mSelectionColor;
-    private int mSelectionRadius;
-    private int mTickSize;
-    private Typeface mTypeface;
-    private int mTextSize;
-    private int mTextColor;
-    private int mTextHighlightColor;
+    private int mSelectionRadius = -1;
+    private int mTickSize = -1;
+    private Typeface mTypeface = Typeface.DEFAULT;
+    private int mTextSize = -1;
+    private int mTextColor = 0xFF000000;
+    private int mTextHighlightColor = 0xFFFFFFFF;
     private boolean m24Hour = true;
 
-    private int mAnimDuration;
+    private int mAnimDuration = -1;
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
     private long mStartTime;
@@ -124,10 +128,16 @@ public class TimePicker extends View{
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRect = new Rect();
 
+        mBackgroundColor = ColorUtil.getColor(ThemeUtil.colorPrimary(context, 0xFF000000), 0.25f);
+        mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
+
+
         initTickLabels();
 
         setWillNotDraw(false);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
+        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
     /**
@@ -148,37 +158,106 @@ public class TimePicker extends View{
     }
 
     public void applyStyle(int styleId){
+        ViewUtil.applyStyle(this, styleId);
         applyStyle(getContext(), null, 0, styleId);
     }
 
-    private void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TimePicker, defStyleAttr, defStyleRes);
-        mBackgroundColor = a.getColor(R.styleable.TimePicker_tp_backgroundColor, ColorUtil.getColor(ThemeUtil.colorPrimary(context, 0xFF000000), 0.25f));
-        mSelectionColor = a.getColor(R.styleable.TimePicker_tp_selectionColor, ThemeUtil.colorPrimary(context, 0xFF000000));
-        mSelectionRadius = a.getDimensionPixelOffset(R.styleable.TimePicker_tp_selectionRadius, ThemeUtil.dpToPx(context, 8));
-        mTickSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_tickSize, ThemeUtil.dpToPx(context, 1));
-        mTextSize = a.getDimensionPixelSize(R.styleable.TimePicker_tp_textSize, context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material));
-        mTextColor = a.getColor(R.styleable.TimePicker_tp_textColor, 0xFF000000);
-        mTextHighlightColor = a.getColor(R.styleable.TimePicker_tp_textHighlightColor, 0xFFFFFFFF);
-        mAnimDuration = a.getInteger(R.styleable.TimePicker_tp_animDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        int resId = a.getResourceId(R.styleable.TimePicker_tp_inInterpolator, 0);
-        mInInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
-        resId = a.getResourceId(R.styleable.TimePicker_tp_outInterpolator, 0);
-        mOutInterpolator = resId == 0 ? new DecelerateInterpolator() : AnimationUtils.loadInterpolator(context, resId);
-        setMode(a.getInteger(R.styleable.TimePicker_tp_mode, mMode), false);
-        if(a.hasValue(R.styleable.TimePicker_tp_24Hour))
-            set24Hour(a.getBoolean(R.styleable.TimePicker_tp_24Hour, m24Hour));
-        else
-            set24Hour(DateFormat.is24HourFormat(context));
-        setHour(a.getInteger(R.styleable.TimePicker_tp_hour, mHour));
-        setMinute(a.getInteger(R.styleable.TimePicker_tp_minute, mMinute));
 
-        String familyName = a.getString(R.styleable.TimePicker_tp_fontFamily);
-        int style = a.getInteger(R.styleable.TimePicker_tp_textStyle, Typeface.NORMAL);
+        boolean hourDefined = false;
+        String familyName = null;
+        int style = -1;
 
-        mTypeface = TypefaceUtil.load(context, familyName, style);
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+
+            if(attr == R.styleable.TimePicker_tp_backgroundColor)
+                mBackgroundColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_selectionColor)
+                mSelectionColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_selectionRadius)
+                mSelectionRadius = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_tickSize)
+                mTickSize = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_textSize)
+                mTextSize = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_textColor)
+                mTextColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_textHighlightColor)
+                mTextHighlightColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_animDuration)
+                mAnimDuration = a.getInteger(attr, 0);
+            else if(attr == R.styleable.TimePicker_tp_inInterpolator)
+                mInInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.TimePicker_tp_outInterpolator)
+                mOutInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
+            else if(attr == R.styleable.TimePicker_tp_mode)
+                setMode(a.getInteger(attr, 0), false);
+            else if(attr == R.styleable.TimePicker_tp_24Hour) {
+                set24Hour(a.getBoolean(attr, false));
+                hourDefined = true;
+            }
+            else if(attr == R.styleable.TimePicker_tp_hour)
+                setHour(a.getInteger(attr, 0));
+            else if(attr == R.styleable.TimePicker_tp_minute)
+                setMinute(a.getInteger(attr, 0));
+            else if(attr == R.styleable.TimePicker_tp_fontFamily)
+                familyName = a.getString(attr);
+            else if(attr == R.styleable.TimePicker_tp_textStyle)
+                style = a.getInteger(attr, 0);
+        }
 
         a.recycle();
+
+        if(mSelectionRadius < 0)
+            mSecondInnerRadius = ThemeUtil.dpToPx(context, 8);
+
+        if(mTickSize < 0)
+            mTickSize = ThemeUtil.dpToPx(context, 1);
+
+        if(mTextSize < 0)
+            mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material);
+
+        if(mAnimDuration < 0)
+            mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        if(mInInterpolator == null)
+            mInInterpolator = new DecelerateInterpolator();
+
+        if(mOutInterpolator == null)
+            mOutInterpolator = new DecelerateInterpolator();
+
+        if(!hourDefined)
+            set24Hour(DateFormat.is24HourFormat(context));
+
+        if(familyName != null || style >= 0)
+            mTypeface = TypefaceUtil.load(context, familyName, style);
+    }
+
+    @Override
+    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
+        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
+        if(mCurrentStyle != style){
+            mCurrentStyle = style;
+            applyStyle(mCurrentStyle);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mStyleId != 0) {
+            ThemeManager.getInstance().registerOnThemeChangedListener(this);
+            onThemeChanged(null);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(mStyleId != 0)
+            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     public int getBackgroundColor(){

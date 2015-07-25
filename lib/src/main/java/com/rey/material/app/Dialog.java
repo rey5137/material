@@ -41,8 +41,10 @@ import com.rey.material.widget.TextView;
 public class Dialog extends android.app.Dialog{
 
     private ContainerFrameLayout mContainer;
-    private int mLayoutWidth;
-    private int mLayoutHeight;
+    private int mLayoutWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+    private int mLayoutHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+    private int mMaxWidth;
+    private int mMaxHeight;
 
     protected TextView mTitle;
     protected Button mPositiveAction;
@@ -109,7 +111,11 @@ public class Dialog extends android.app.Dialog{
         //TODO: find a way to ensure windowIsFloating attribute is false.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(BlankDrawable.getInstance());
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        WindowManager.LayoutParams layout = getWindow().getAttributes();
+        layout.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        layout.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layout.windowAnimations = R.style.DialogNoAnimation;
+        getWindow().setAttributes(layout);
 
         init(context, style);
     }
@@ -153,6 +159,16 @@ public class Dialog extends android.app.Dialog{
         mCardView.addView(mNegativeAction);
         mCardView.addView(mNeutralAction);
 
+        backgroundColor(ThemeUtil.windowBackground(context, 0xFFFFFFFF));
+        elevation(ThemeUtil.dpToPx(context, 4));
+        cornerRadius(ThemeUtil.dpToPx(context, 2));
+        dimAmount(0.5f);
+        layoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+        titleTextAppearance(R.style.TextAppearance_AppCompat_Title);
+        actionTextAppearance(R.style.TextAppearance_AppCompat_Button);
+        dividerColor(0x1E000000);
+        dividerHeight(ThemeUtil.dpToPx(context, 1));
+
         cancelable(true);
         canceledOnTouchOutside(true);
         clearContent();
@@ -169,87 +185,167 @@ public class Dialog extends android.app.Dialog{
         Context context = getContext();
         TypedArray a = context.obtainStyledAttributes(resId, R.styleable.Dialog);
 
-        int layout_width;
-        int layout_height;
+        int layout_width = mLayoutWidth;
+        int layout_height = mLayoutHeight;
+        boolean layoutParamsDefined = false;
+        int titleTextAppearance = 0;
+        int titleTextColor = 0;
+        boolean titleTextColorDefined = false;
+        int actionBackground = 0;
+        int actionRipple = 0;
+        int actionTextAppearance = 0;
+        ColorStateList actionTextColors = null;
+        int positiveActionBackground = 0;
+        int positiveActionRipple = 0;
+        int positiveActionTextAppearance = 0;
+        ColorStateList positiveActionTextColors = null;
+        int negativeActionBackground = 0;
+        int negativeActionRipple = 0;
+        int negativeActionTextAppearance = 0;
+        ColorStateList negativeActionTextColors = null;
+        int neutralActionBackground = 0;
+        int neutralActionRipple = 0;
+        int neutralActionTextAppearance = 0;
+        ColorStateList neutralActionTextColors = null;
 
-        if(ThemeUtil.getType(a, R.styleable.Dialog_android_layout_width) == TypedValue.TYPE_DIMENSION)
-            layout_width = a.getDimensionPixelSize(R.styleable.Dialog_android_layout_width, 0);
-        else
-            layout_width = a.getInteger(R.styleable.Dialog_android_layout_width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
 
-        if(ThemeUtil.getType(a, R.styleable.Dialog_android_layout_height) == TypedValue.TYPE_DIMENSION)
-            layout_height = a.getDimensionPixelSize(R.styleable.Dialog_android_layout_height, 0);
-        else
-            layout_height = a.getInteger(R.styleable.Dialog_android_layout_height, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        layoutParams(layout_width, layout_height);
-
-        dimAmount(a.getFloat(R.styleable.Dialog_di_dimAmount, 0.5f));
-        backgroundColor(a.getColor(R.styleable.Dialog_di_backgroundColor, ThemeUtil.windowBackground(context, 0xFFFFFFFF)));
-        maxElevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_maxElevation, 0));
-        elevation(a.getDimensionPixelOffset(R.styleable.Dialog_di_elevation, ThemeUtil.dpToPx(context, 4)));
-        cornerRadius(a.getDimensionPixelOffset(R.styleable.Dialog_di_cornerRadius, ThemeUtil.dpToPx(context, 2)));
-        layoutDirection(a.getInteger(R.styleable.Dialog_di_layoutDirection, View.LAYOUT_DIRECTION_LOCALE));
-
-        titleTextAppearance(a.getResourceId(R.styleable.Dialog_di_titleTextAppearance, R.style.TextAppearance_AppCompat_Title));
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_titleTextColor) != TypedValue.TYPE_NULL)
-            titleColor(a.getColor(R.styleable.Dialog_di_titleTextColor, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionBackground) != TypedValue.TYPE_NULL)
-            actionBackground(a.getResourceId(R.styleable.Dialog_di_actionBackground, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionRipple) != TypedValue.TYPE_NULL)
-            actionRipple(a.getResourceId(R.styleable.Dialog_di_actionRipple, 0));
-
-        actionTextAppearance(a.getResourceId(R.styleable.Dialog_di_actionTextAppearance, R.style.TextAppearance_AppCompat_Button));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_actionTextColor) != TypedValue.TYPE_NULL)
-            actionTextColor(a.getColorStateList(R.styleable.Dialog_di_actionTextColor));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionBackground) != TypedValue.TYPE_NULL)
-            positiveActionBackground(a.getResourceId(R.styleable.Dialog_di_positiveActionBackground, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionRipple) != TypedValue.TYPE_NULL)
-            positiveActionRipple(a.getResourceId(R.styleable.Dialog_di_positiveActionRipple, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextAppearance) != TypedValue.TYPE_NULL)
-            positiveActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_positiveActionTextAppearance, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_positiveActionTextColor) != TypedValue.TYPE_NULL)
-            positiveActionTextColor(a.getColorStateList(R.styleable.Dialog_di_positiveActionTextColor));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionBackground) != TypedValue.TYPE_NULL)
-            negativeActionBackground(a.getResourceId(R.styleable.Dialog_di_negativeActionBackground, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionRipple) != TypedValue.TYPE_NULL)
-            negativeActionRipple(a.getResourceId(R.styleable.Dialog_di_negativeActionRipple, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextAppearance) != TypedValue.TYPE_NULL)
-            negativeActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_negativeActionTextAppearance, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_negativeActionTextColor) != TypedValue.TYPE_NULL)
-            negativeActionTextColor(a.getColorStateList(R.styleable.Dialog_di_negativeActionTextColor));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionBackground) != TypedValue.TYPE_NULL)
-            neutralActionBackground(a.getResourceId(R.styleable.Dialog_di_neutralActionBackground, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionRipple) != TypedValue.TYPE_NULL)
-            neutralActionRipple(a.getResourceId(R.styleable.Dialog_di_neutralActionRipple, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionTextAppearance) != TypedValue.TYPE_NULL)
-            neutralActionTextAppearance(a.getResourceId(R.styleable.Dialog_di_neutralActionTextAppearance, 0));
-
-        if(ThemeUtil.getType(a, R.styleable.Dialog_di_neutralActionTextColor) != TypedValue.TYPE_NULL)
-            neutralActionTextColor(a.getColorStateList(R.styleable.Dialog_di_neutralActionTextColor));
-
-        inAnimation(a.getResourceId(R.styleable.Dialog_di_inAnimation, 0));
-        outAnimation(a.getResourceId(R.styleable.Dialog_di_outAnimation, 0));
-        dividerColor(a.getColor(R.styleable.Dialog_di_dividerColor, 0x1E000000));
-        dividerHeight(a.getDimensionPixelOffset(R.styleable.Dialog_di_dividerHeight, ThemeUtil.dpToPx(context, 1)));
-        setCancelable(a.getBoolean(R.styleable.Dialog_di_cancelable, true));
-        setCanceledOnTouchOutside(a.getBoolean(R.styleable.Dialog_di_canceledOnTouchOutside, true));
+            if(attr == R.styleable.Dialog_android_layout_width) {
+                layout_width = a.getLayoutDimension(attr, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParamsDefined = true;
+            }
+            else if(attr == R.styleable.Dialog_android_layout_height) {
+                layout_height = a.getLayoutDimension(attr, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParamsDefined = true;
+            }
+            else if(attr == R.styleable.Dialog_di_maxWidth)
+                maxWidth(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_maxHeight)
+                maxHeight(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_dimAmount)
+                dimAmount(a.getFloat(attr, 0));
+            else if(attr == R.styleable.Dialog_di_backgroundColor)
+                backgroundColor(a.getColor(attr, 0));
+            else if(attr == R.styleable.Dialog_di_maxElevation)
+                maxElevation(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_elevation)
+                elevation(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_cornerRadius)
+                cornerRadius(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_layoutDirection)
+                layoutDirection(a.getInteger(attr, 0));
+            else if(attr == R.styleable.Dialog_di_titleTextAppearance)
+                titleTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_titleTextColor) {
+                titleTextColor = a.getColor(attr, 0);
+                titleTextColorDefined = true;
+            }
+            else if(attr == R.styleable.Dialog_di_actionBackground)
+                actionBackground = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_actionRipple)
+                actionRipple = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_actionTextAppearance)
+                actionTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_actionTextColor)
+                actionTextColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Dialog_di_positiveActionBackground)
+                positiveActionBackground = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_positiveActionRipple)
+                positiveActionRipple = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_positiveActionTextAppearance)
+                positiveActionTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_positiveActionTextColor)
+                positiveActionTextColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Dialog_di_negativeActionBackground)
+                negativeActionBackground = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_negativeActionRipple)
+                negativeActionRipple = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_negativeActionTextAppearance)
+                negativeActionTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_negativeActionTextColor)
+                negativeActionTextColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Dialog_di_neutralActionBackground)
+                neutralActionBackground = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_neutralActionRipple)
+                neutralActionRipple = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_neutralActionTextAppearance)
+                neutralActionTextAppearance = a.getResourceId(attr, 0);
+            else if(attr == R.styleable.Dialog_di_neutralActionTextColor)
+                neutralActionTextColors = a.getColorStateList(attr);
+            else if(attr == R.styleable.Dialog_di_inAnimation)
+                inAnimation(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.Dialog_di_outAnimation)
+                outAnimation(a.getResourceId(attr, 0));
+            else if(attr == R.styleable.Dialog_di_dividerColor)
+                dividerColor(a.getColor(attr, 0));
+            else if(attr == R.styleable.Dialog_di_dividerHeight)
+                dividerHeight(a.getDimensionPixelOffset(attr, 0));
+            else if(attr == R.styleable.Dialog_di_cancelable)
+                cancelable(a.getBoolean(attr, true));
+            else if(attr == R.styleable.Dialog_di_canceledOnTouchOutside)
+                canceledOnTouchOutside(a.getBoolean(attr, true));
+        }
 
         a.recycle();
+
+        if(layoutParamsDefined)
+            layoutParams(layout_width, layout_height);
+
+        if(titleTextAppearance != 0)
+            titleTextAppearance(titleTextAppearance);
+
+        if(titleTextColorDefined)
+            titleColor(titleTextColor);
+
+        if(actionBackground != 0)
+            actionBackground(actionBackground);
+
+        if(actionRipple != 0)
+            actionRipple(actionRipple);
+
+        if(actionTextAppearance != 0)
+            actionTextAppearance(actionTextAppearance);
+
+        if(actionTextColors != null)
+            actionTextColor(actionTextColors);
+
+        if(positiveActionBackground != 0)
+            positiveActionBackground(positiveActionBackground);
+
+        if(positiveActionRipple != 0)
+            positiveActionRipple(positiveActionRipple);
+
+        if(positiveActionTextAppearance!= 0)
+            positiveActionTextAppearance(positiveActionTextAppearance);
+
+        if(positiveActionTextColors != null)
+            positiveActionTextColor(positiveActionTextColors);
+
+        if(negativeActionBackground != 0)
+            negativeActionBackground(negativeActionBackground);
+
+        if(negativeActionRipple != 0)
+            negativeActionRipple(negativeActionRipple);
+
+        if(negativeActionTextAppearance!= 0)
+            negativeActionTextAppearance(negativeActionTextAppearance);
+
+        if(negativeActionTextColors != null)
+            negativeActionTextColor(negativeActionTextColors);
+
+        if(neutralActionBackground != 0)
+            neutralActionBackground(neutralActionBackground);
+
+        if(neutralActionRipple != 0)
+            neutralActionRipple(neutralActionRipple);
+
+        if(neutralActionTextAppearance!= 0)
+            neutralActionTextAppearance(neutralActionTextAppearance);
+
+        if(neutralActionTextColors != null)
+            neutralActionTextColor(neutralActionTextColors);
+
         return this;
     }
 
@@ -278,6 +374,26 @@ public class Dialog extends android.app.Dialog{
     public Dialog layoutParams(int width, int height){
         mLayoutWidth = width;
         mLayoutHeight = height;
+        return this;
+    }
+
+    /**
+     * Set the maximum width of this Dialog layout.
+     * @param width The maximum width in pixels.
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog maxWidth(int width){
+        mMaxWidth = width;
+        return this;
+    }
+
+    /**
+     * Set the maximum height of this Dialog layout.
+     * @param height The maximum height in pixels.
+     * @return The Dialog for chaining methods.
+     */
+    public Dialog maxHeight(int height){
+        mMaxHeight = height;
         return this;
     }
 
@@ -902,7 +1018,8 @@ public class Dialog extends android.app.Dialog{
     }
 
     @Override
-    public void show() {
+    protected void onStart() {
+        super.onStart();
         if(mInAnimationId != 0)
             mCardView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -913,11 +1030,23 @@ public class Dialog extends android.app.Dialog{
                     return false;
                 }
             });
-        super.show();
+    }
+
+    /**
+     * Dismiss Dialog immediately without showing out animation.
+     */
+    public void dismissImmediately(){
+        super.dismiss();
+
+        if(mHandler != null)
+            mHandler.removeCallbacks(mDismissAction);
     }
 
     @Override
     public void dismiss() {
+        if(!isShowing())
+            return;
+
         if(mOutAnimationId != 0){
             Animation anim = AnimationUtils.loadAnimation(mContainer.getContext(), mOutAnimationId);
             anim.setAnimationListener(new Animation.AnimationListener() {
@@ -1083,7 +1212,11 @@ public class Dialog extends android.app.Dialog{
             int paddingBottom = Math.max(mDialogVerticalPadding, mCardView.getPaddingBottom());
 
             int maxWidth = widthSize - paddingLeft - paddingRight;
+            if(mMaxWidth > 0)
+                maxWidth = Math.min(maxWidth, mMaxWidth);
             int maxHeight = heightSize - paddingTop - paddingBottom;
+            if(mMaxHeight > 0)
+                maxHeight = Math.min(maxHeight, mMaxHeight);
 
             int width = mLayoutWidth == ViewGroup.LayoutParams.MATCH_PARENT ? maxWidth : mLayoutWidth;
             int height = mLayoutHeight == ViewGroup.LayoutParams.MATCH_PARENT ? maxHeight : mLayoutHeight;

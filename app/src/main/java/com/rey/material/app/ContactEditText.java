@@ -24,6 +24,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -70,64 +71,109 @@ public class ContactEditText extends EditText{
     private int mSpanBackgroundColor;
     private int mSpanSpacing;
 
+    private ContactSuggestionAdapter mSuggestionAdapter;
     private ContactReplaceAdapter mReplacementAdapter;
     private ListPopupWindow mReplacementPopup;
     private RecipientSpan mSelectedSpan;
 
     private RecipientSpan mTouchedSpan;
 
+    private ContactTextWatcher mTextWatcher;
+
     public ContactEditText(Context context) {
         super(context);
-
-        init(context, null, 0, 0);
     }
 
     public ContactEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init(context, attrs, 0, 0);
     }
 
     public ContactEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, 0);
     }
 
     public ContactEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    @Override
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mRecipientMap = new HashMap<>();
+        mAutoCompleteMode = AUTOCOMPLETE_MODE_MULTI;
+
+        mSpanHeight = ThemeUtil.dpToPx(context, 32);
+        mSpanMaxWidth = ThemeUtil.dpToPx(context, 150);
+        mSpanPaddingLeft = ThemeUtil.dpToPx(context, 8);
+        mSpanPaddingRight = ThemeUtil.dpToPx(context, 12);
+        mSpanTextSize = ThemeUtil.spToPx(context, 14);
+        mSpanTextColor = 0xFF000000;
+        mSpanTypeface = Typeface.DEFAULT;
+        mSpanBackgroundColor = 0xFFE0E0E0;
+        mSpanSpacing = ThemeUtil.dpToPx(context, 4);
+
+        super.init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ContactEditText, defStyleAttr, defStyleRes);
 
-        mSpanHeight = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanHeight, ThemeUtil.dpToPx(context, 32));
-        mSpanMaxWidth = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanMaxWidth, ThemeUtil.dpToPx(context, 150));
-        mSpanPaddingLeft = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanPaddingLeft, ThemeUtil.dpToPx(context, 8));
-        mSpanPaddingRight = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanPaddingRight, ThemeUtil.dpToPx(context, 12));
-        mSpanTypeface = Typeface.DEFAULT;
-        mSpanTextSize = a.getDimensionPixelSize(R.styleable.ContactEditText_cet_spanTextSize, ThemeUtil.spToPx(context, 14));
-        mSpanTextColor = a.getColor(R.styleable.ContactEditText_cet_spanTextColor, 0xFF000000);
-        mSpanBackgroundColor = a.getColor(R.styleable.ContactEditText_cet_spanBackgroundColor, 0xFFE0E0E0);
-        mSpanSpacing = a.getDimensionPixelOffset(R.styleable.ContactEditText_cet_spanSpacing, ThemeUtil.dpToPx(context, 4));
+        String familyName = null;
+        int textStyle = 0;
+        boolean typefaceDefined = false;
 
-        String familyName = a.getString(R.styleable.ContactEditText_cet_spanFontFamily);
-        int style = a.getInteger(R.styleable.ContactEditText_cet_spanTextStyle, Typeface.NORMAL);
+        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+            int attr = a.getIndex(i);
+            if(attr == R.styleable.ContactEditText_cet_spanHeight)
+                mSpanHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanMaxWidth)
+                mSpanMaxWidth = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanPaddingLeft)
+                mSpanPaddingLeft = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanPaddingRight)
+                mSpanPaddingRight = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanTextSize)
+                mSpanTextSize = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanTextColor)
+                mSpanTextColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanBackgroundColor)
+                mSpanBackgroundColor = a.getColor(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanSpacing)
+                mSpanSpacing = a.getDimensionPixelOffset(attr, 0);
+            else if(attr == R.styleable.ContactEditText_cet_spanFontFamily) {
+                familyName = a.getString(attr);
+                typefaceDefined = true;
+            }
+            else if(attr == R.styleable.ContactEditText_cet_spanTextStyle) {
+                textStyle = a.getInteger(attr, 0);
+                typefaceDefined = true;
+            }
 
-        mSpanTypeface = TypefaceUtil.load(context, familyName, style);
+        }
+
+        if(typefaceDefined)
+            mSpanTypeface = TypefaceUtil.load(context, familyName, textStyle);
 
         a.recycle();
 
-        mRecipientMap = new HashMap<>();
-
-        ContactSuggestionAdapter adapter = new ContactSuggestionAdapter();
-        setAdapter(adapter);
-        setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        addTextChangedListener(new ContactTextWatcher());
-
         setLineSpacing(mSpanSpacing, 1);
+
+        if(mSuggestionAdapter == null){
+            mSuggestionAdapter = new ContactSuggestionAdapter();
+            setAdapter(mSuggestionAdapter);
+        }
+
+        if(mTokenizer == null)
+            setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
+        if(mTextWatcher == null){
+            mTextWatcher = new ContactTextWatcher();
+            addTextChangedListener(mTextWatcher);
+        }
+
+        updateSpanStyle();
     }
 
     public Recipient[] getRecipients(){
@@ -296,6 +342,14 @@ public class ContactEditText extends EditText{
                 }
             });
         }
+    }
+
+    private void updateSpanStyle(){
+        Recipient[] recipients = getRecipients();
+        if(recipients == null || recipients.length == 0)
+            return;
+
+        setRecipients(recipients);
     }
 
     private void removeSpan(RecipientSpan span){

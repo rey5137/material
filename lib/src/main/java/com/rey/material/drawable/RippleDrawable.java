@@ -19,6 +19,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -128,6 +129,10 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
             mBackgroundDrawable.setBounds(getBounds());
     }
 
+    public Drawable getBackgroundDrawable(){
+        return mBackgroundDrawable;
+    }
+
     public int getDelayClickType(){
         return mDelayClickType;
     }
@@ -177,16 +182,18 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	
 	private void setRippleState(int state){
 		if(mState != state){
+            //fix bug incorrect state switch
+            if(mState == STATE_OUT && state != STATE_PRESS)
+                return;
+
+//            Log.v(RippleDrawable.class.getSimpleName(), "state: " + mState + " " + state);
+
 			mState = state;
-									
-			if(mState != STATE_OUT){				
-				if(mState != STATE_HOVER)
-					start();
-				else
-					stop();
-			}
-			else
-				stop();			
+
+            if(mState == STATE_OUT || mState == STATE_HOVER)
+                stop();
+            else
+                start();
 		}
 	}
 	
@@ -296,7 +303,9 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	}
 	
 	@Override
-	public boolean onTouch(View v, MotionEvent event) {		
+	public boolean onTouch(View v, MotionEvent event) {
+//        Log.v(RippleDrawable.class.getSimpleName(), "touch: " + event.getAction() + " " + mState);
+
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
@@ -340,21 +349,17 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	}
 	
 	@Override
-	public void start() {		
+	public void start() {
 		if(isRunning())
 			return;
 		
 		resetAnimation();
-		
 		scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
 	    invalidateSelf();  
 	}
 
 	@Override
-	public void stop() {		
-		if(!isRunning())
-			return;
-				
+	public void stop() {
 		mRunning = false;
 		unscheduleSelf(mUpdater);
 		invalidateSelf();
@@ -362,7 +367,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 
 	@Override
 	public boolean isRunning() {
-		return mRunning;
+		return mState != STATE_OUT && mState != STATE_HOVER && mRunning;
 	}
 	
 	@Override
@@ -402,7 +407,6 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 				mStartTime = SystemClock.uptimeMillis();
 				setRippleState(mState == STATE_PRESS ? STATE_HOVER : STATE_RELEASE);
 			}
-			
 		}
 		else{
 			float backgroundProgress = Math.min(1f, (float)(SystemClock.uptimeMillis() - mStartTime) / mBackgroundAnimDuration);
