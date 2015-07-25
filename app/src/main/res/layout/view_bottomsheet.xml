@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.rey.material.widget.TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:v_styleId="@array/text_title"
+        android:text="Bottom Sheet"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1.0"
+        android:gravity="center"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <com.rey.material.widget.Button
+            android:id="@+id/sheet_bt_match"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/bt_height"
+            android:layout_weight="0.4"
+            android:text="MATCH_PARENT"
+            android:background="@null"
+            app:v_styleId="@array/button_raise"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.1"/>
+
+        <com.rey.material.widget.Button
+            android:id="@+id/sheet_bt_wrap"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/bt_height"
+            android:layout_weight="0.4"
+            android:text="WRAP_CONTENT"
+            android:background="@null"
+            app:v_styleId="@array/button_raise"/>
+
+    </LinearLayout>
+
+</LinearLayout>

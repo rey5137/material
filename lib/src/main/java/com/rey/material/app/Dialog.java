@@ -111,7 +111,11 @@ public class Dialog extends android.app.Dialog{
         //TODO: find a way to ensure windowIsFloating attribute is false.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(BlankDrawable.getInstance());
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        WindowManager.LayoutParams layout = getWindow().getAttributes();
+        layout.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        layout.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layout.windowAnimations = R.style.DialogNoAnimation;
+        getWindow().setAttributes(layout);
 
         init(context, style);
     }
@@ -1028,6 +1032,9 @@ public class Dialog extends android.app.Dialog{
             });
     }
 
+    /**
+     * Dismiss Dialog immediately without showing out animation.
+     */
     public void dismissImmediately(){
         super.dismiss();
 

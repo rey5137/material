@@ -10,12 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.rey.material.app.BottomSheetDialog;
 import com.rey.material.app.DatePickerDialog;
 import com.rey.material.app.Dialog;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.app.ThemeManager;
 import com.rey.material.app.TimePickerDialog;
+import com.rey.material.drawable.ThemeDrawable;
+import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.Button;
 import com.rey.material.widget.EditText;
 
@@ -31,6 +34,8 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
     private MainActivity mActivity;
 
+    private BottomSheetDialog mBottomSheetDialog;
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +49,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
         Button bt_multi_choice = (Button)v.findViewById(R.id.dialog_bt_multi_choice);
         Button bt_time = (Button)v.findViewById(R.id.dialog_bt_time);
         Button bt_date = (Button)v.findViewById(R.id.dialog_bt_date);
+        Button bt_bottomsheet = (Button)v.findViewById(R.id.dialog_bt_bottomsheet);
 
         bt_title_only.setOnClickListener(this);
         bt_msg_only.setOnClickListener(this);
@@ -53,21 +59,49 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
         bt_multi_choice.setOnClickListener(this);
         bt_time.setOnClickListener(this);
         bt_date.setOnClickListener(this);
+        bt_bottomsheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBottomSheet();
+            }
+        });
 
         mActivity = (MainActivity)getActivity();
 
 		return v;
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
+	private void showBottomSheet(){
+        mBottomSheetDialog = new BottomSheetDialog(mActivity, R.style.Material_App_BottomSheetDialog);
+        View v = LayoutInflater.from(mActivity).inflate(R.layout.view_bottomsheet, null);
+        ViewUtil.setBackground(v, new ThemeDrawable(R.array.bg_window));
+        Button bt_match = (Button)v.findViewById(R.id.sheet_bt_match);
+        bt_match.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBottomSheetDialog.heightParam(ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        });
+        Button bt_wrap = (Button)v.findViewById(R.id.sheet_bt_wrap);
+        bt_wrap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBottomSheetDialog.heightParam(ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+        });
 
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
+        mBottomSheetDialog.contentView(v)
+                .show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mBottomSheetDialog != null){
+            mBottomSheetDialog.dismissImmediately();
+            mBottomSheetDialog = null;
+        }
+    }
 
     @Override
     public void onClick(View v) {

@@ -646,4 +646,16 @@
         <attr name="dp_headerSecondaryTextSize" format="dimension|reference" />
         <attr name="dp_textHeaderColor" format="color|reference" />
     </declare-styleable>
+
+    <declare-styleable name="BottomSheetDialog">
+        <attr name="bsd_inDuration" format="reference|integer"/>
+        <attr name="bsd_inInterpolator" format="reference"/>
+        <attr name="bsd_outDuration" format="reference|integer"/>
+        <attr name="bsd_outInterpolator" format="reference"/>
+        <attr name="bsd_cancelable" format="reference|boolean"/>
+        <attr name="bsd_canceledOnTouchOutside" format="reference|boolean"/>
+        <attr name="bsd_dimAmount" format="reference|float"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
 </resources>
