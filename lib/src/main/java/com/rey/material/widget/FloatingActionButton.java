@@ -201,6 +201,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

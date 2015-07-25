@@ -326,7 +326,7 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             return;
         
         if (mViewPager != null){
-            mViewPager.setOnPageChangeListener(null);
+            mViewPager.removeOnPageChangeListener(this);
             PagerAdapter adapter = view.getAdapter();
             if(adapter != null)
             	adapter.unregisterDataSetObserver(mObserver);
@@ -339,9 +339,10 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         adapter.registerDataSetObserver(mObserver);
         
         mViewPager = view;        
-        view.setOnPageChangeListener(this);
+        view.addOnPageChangeListener(this);
         
         notifyDataSetChanged();
+        onPageSelected(mViewPager.getCurrentItem());
     }
 
     /**

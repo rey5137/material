@@ -76,6 +76,7 @@ public class ImageButton extends android.widget.ImageButton implements ThemeMana
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

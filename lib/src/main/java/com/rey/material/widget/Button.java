@@ -78,6 +78,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

@@ -624,6 +624,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
 
         if (mPopup != null && mPopup.isShowing())
             mPopup.dismiss();

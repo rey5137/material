@@ -302,6 +302,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

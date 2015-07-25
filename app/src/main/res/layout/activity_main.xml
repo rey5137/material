@@ -41,7 +41,7 @@
             android:id="@+id/main_sn"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_gravity="bottom"/>
 
     </FrameLayout>

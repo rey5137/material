@@ -245,6 +245,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mRippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
