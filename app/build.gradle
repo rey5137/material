@@ -8,8 +8,8 @@ android {
         applicationId "com.rey.material.demo"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 5
+        versionName "0.0.5"
     }
 
     signingConfigs {
