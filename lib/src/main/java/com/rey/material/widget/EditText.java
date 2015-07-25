@@ -61,8 +61,8 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
 	private boolean mLabelEnable = false;
     private boolean mLabelVisible = false;
-	private int mSupportMode = SUPPORT_MODE_NONE;
-    private int mAutoCompleteMode = AUTOCOMPLETE_MODE_NONE;
+    protected int mSupportMode = SUPPORT_MODE_NONE;
+    protected int mAutoCompleteMode = AUTOCOMPLETE_MODE_NONE;
 
     /**
      * Indicate this EditText should not show a support text.  
@@ -134,7 +134,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 	
 	@SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		applyStyle(context, attrs, defStyleAttr, defStyleRes);
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
@@ -2621,9 +2621,9 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         if(mInputView == null)
             return;
 
-        if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE)
+        if(mInputView instanceof InternalEditText)
             ((InternalEditText)mInputView).superOnSelectionChanged(selStart, selEnd);
-        else if(mAutoCompleteMode == AUTOCOMPLETE_MODE_SINGLE)
+        else if(mInputView instanceof InternalAutoCompleteTextView)
             ((InternalAutoCompleteTextView)mInputView).superOnSelectionChanged(selStart, selEnd);
         else
             ((InternalMultiAutoCompleteTextView)mInputView).superOnSelectionChanged(selStart, selEnd);

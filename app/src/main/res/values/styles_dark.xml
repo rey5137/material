@@ -252,7 +252,7 @@
         <item name="cet_spanPaddingRight">12dp</item>
         <item name="cet_spanTextSize">14sp</item>
         <item name="cet_spanTextColor">@color/abc_primary_text_material_dark</item>
-        <item name="cet_spanBackgroundColor">@color/background_floating_material_dark</item>
+        <item name="cet_spanBackgroundColor">#ff424242</item>
         <item name="cet_spanSpacing">4dp</item>
     </style>
 

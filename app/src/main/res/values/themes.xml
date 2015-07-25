@@ -151,8 +151,8 @@
     </array>
 
     <array name="edittext_contact">
-        <item>@style/LightEditText</item>
-        <item>@style/DarkEditText</item>
+        <item>@style/LightContactEditText</item>
+        <item>@style/DarkContactEditText</item>
     </array>
 
     <array name="edittext_no_divider">
