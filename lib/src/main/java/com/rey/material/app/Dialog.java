@@ -1014,7 +1014,8 @@ public class Dialog extends android.app.Dialog{
     }
 
     @Override
-    public void show() {
+    protected void onStart() {
+        super.onStart();
         if(mInAnimationId != 0)
             mCardView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -1025,11 +1026,20 @@ public class Dialog extends android.app.Dialog{
                     return false;
                 }
             });
-        super.show();
+    }
+
+    public void dismissImmediately(){
+        super.dismiss();
+
+        if(mHandler != null)
+            mHandler.removeCallbacks(mDismissAction);
     }
 
     @Override
     public void dismiss() {
+        if(!isShowing())
+            return;
+
         if(mOutAnimationId != 0){
             Animation anim = AnimationUtils.loadAnimation(mContainer.getContext(), mOutAnimationId);
             anim.setAnimationListener(new Animation.AnimationListener() {
