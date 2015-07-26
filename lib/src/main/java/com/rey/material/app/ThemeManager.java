@@ -86,6 +86,9 @@ public class ThemeManager {
     }
 
     private int[] loadStyleList(Context context, int resId){
+        if(context == null)
+            return null;
+
         TypedArray array = context.getResources().obtainTypedArray(resId);
         int[] result = new int[array.length()];
         for(int i = 0; i < result.length; i++)
@@ -170,7 +173,7 @@ public class ThemeManager {
      */
     public int getStyle(int styleId, int theme){
         int[] styles = getStyleList(styleId);
-        return styles[theme];
+        return styles == null ? 0 : styles[theme];
     }
 
     /**
@@ -178,7 +181,8 @@ public class ThemeManager {
      * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be registered.
      */
     public void registerOnThemeChangedListener(@NonNull OnThemeChangedListener listener){
-        mDispatcher.registerListener(listener);
+        if(mDispatcher != null)
+            mDispatcher.registerListener(listener);
     }
 
     /**
@@ -186,7 +190,8 @@ public class ThemeManager {
      * @param listener A {@link com.rey.material.app.ThemeManager.OnThemeChangedListener} will be unregistered.
      */
     public void unregisterOnThemeChangedListener(@NonNull OnThemeChangedListener listener){
-        mDispatcher.unregisterListener(listener);
+        if(mDispatcher != null)
+            mDispatcher.unregisterListener(listener);
     }
 
     public interface EventDispatcher{

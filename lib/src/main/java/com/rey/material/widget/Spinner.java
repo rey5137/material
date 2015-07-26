@@ -148,11 +148,8 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 		
-		if(isInEditMode()){
-			TextView tv = new TextView(context, attrs, defStyleAttr);
-			tv.setText("Item 1");
-			super.addView(tv);
-		}
+		if(isInEditMode())
+            applyStyle(R.style.Material_Widget_Spinner);
 		
 		setOnClickListener(new View.OnClickListener() {
             @Override
@@ -361,6 +358,12 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
         if(mAdapter != null)
             setAdapter(mAdapter);
+
+        if(isInEditMode()){
+            TextView tv = new TextView(context, attrs, defStyleAttr);
+            tv.setText("Item 1");
+            super.addView(tv);
+        }
 
         requestLayout();
     }
@@ -716,7 +719,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
         int labelWidth = 0;
         int labelHeight = 0;
-        if(mLabelView != null){
+        if(mLabelView != null && mLabelView.getLayoutParams() != null){
             mLabelView.measure(MeasureSpec.makeMeasureSpec(widthSize - paddingHorizontal, widthMode), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             labelWidth = mLabelView.getMeasuredWidth();
             labelHeight = mLabelView.getMeasuredHeight();
