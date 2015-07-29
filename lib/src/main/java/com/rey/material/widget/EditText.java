@@ -409,8 +409,8 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
         if(mLabelEnable){
             mLabelVisible = true;
-            mLabelView.setText(mInputView.getHint());
-            addView(mLabelView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            getLabelView().setText(mInputView.getHint());
+            addView(getLabelView(), 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             setLabelVisible(!TextUtils.isEmpty(mInputView.getText().toString()), false);
         }
 
@@ -448,7 +448,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
                     getSupportView().setGravity(GravityCompat.START);
                     break;
             }
-            addView(mSupportView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            addView(getSupportView(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
         addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -516,8 +516,10 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 		int inputHeight = 0;
 		int supportWidth = 0;
 		int supportHeight = 0;
+        boolean measureLabelView = mLabelView != null && mLabelView.getLayoutParams() != null;
+        boolean measureSupportView = mSupportView != null && mSupportView.getLayoutParams() != null;
 		
-		if(mLabelView != null && mLabelView.getLayoutParams() != null){
+		if(measureLabelView){
 			mLabelView.measure(tempWidthSpec, tempHeightSpec);
 			labelWidth = mLabelView.getMeasuredWidth();
 			labelHeight = mLabelView.getMeasuredHeight();
@@ -527,7 +529,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 		inputWidth = mInputView.getMeasuredWidth();
 		inputHeight = mInputView.getMeasuredHeight();
 		
-		if(mSupportView != null && mSupportView.getLayoutParams() != null){
+		if(measureSupportView){
 			mSupportView.measure(tempWidthSpec, tempHeightSpec);
 			supportWidth = mSupportView.getMeasuredWidth();
 			supportHeight = mSupportView.getMeasuredHeight();
@@ -547,7 +549,19 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 				width = widthSize;
 				break;
 		}
-		
+
+        inputWidth = width - getPaddingLeft() - getPaddingRight();
+        tempWidthSpec = MeasureSpec.makeMeasureSpec(inputWidth, MeasureSpec.EXACTLY);
+        if(measureLabelView && mLabelView.getWidth() != inputWidth) {
+            mLabelView.measure(tempWidthSpec, tempHeightSpec);
+            labelHeight = mLabelView.getMeasuredHeight();
+        }
+
+        if(measureSupportView && mSupportView.getWidth() != inputWidth) {
+            mSupportView.measure(tempWidthSpec, tempHeightSpec);
+            supportHeight = mSupportView.getMeasuredHeight();
+        }
+
 		switch (heightMode) {
 			case MeasureSpec.UNSPECIFIED:
 				height = labelHeight + inputHeight + supportHeight + getPaddingTop() + getPaddingBottom();
@@ -560,16 +574,11 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 				break;
 		}
 		
-		setMeasuredDimension(width, height);		
-		
-		tempWidthSpec = MeasureSpec.makeMeasureSpec(width - getPaddingLeft() - getPaddingRight(),  MeasureSpec.EXACTLY);
-		if(mLabelView != null && mLabelView.getLayoutParams() != null)
-			mLabelView.measure(tempWidthSpec, tempHeightSpec);
-		
-		mInputView.measure(tempWidthSpec, tempHeightSpec);
-		
-		if(mSupportView != null && mSupportView.getLayoutParams() != null)
-			mSupportView.measure(tempWidthSpec, tempHeightSpec);				
+		setMeasuredDimension(width, height);
+
+        inputHeight = height - labelHeight - supportHeight - getPaddingTop() - getPaddingBottom();
+        if(mInputView.getMeasuredWidth() != inputWidth || mInputView.getMeasuredHeight() != inputHeight)
+            mInputView.measure(tempWidthSpec, MeasureSpec.makeMeasureSpec(inputHeight, MeasureSpec.EXACTLY));
 	}	
 
 	@Override
