@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -643,8 +644,12 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             case MotionEvent.ACTION_DOWN:
                 mIsDragging = isThumbHit(x, y, mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(x, y);
-                if(mIsDragging)
+                if(mIsDragging) {
                     mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
+
+                    if(getParent() != null)
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mIsDragging) {
@@ -665,6 +670,9 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 if(mIsDragging) {
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
+
+                    if(getParent() != null)
+                        getParent().requestDisallowInterceptTouchEvent(false);
                 }
                 else if(distance(mMemoPoint.x, mMemoPoint.y, x, y) <= mTouchSlop){
                     float position = correctPosition(Math.min(1f, Math.max(0f, (x - mDrawRect.left) / mDrawRect.width())));
@@ -675,6 +683,9 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 if(mIsDragging) {
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
+
+                    if(getParent() != null)
+                        getParent().requestDisallowInterceptTouchEvent(false);
                 }
                 break;
         }

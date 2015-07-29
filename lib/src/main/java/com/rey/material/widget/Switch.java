@@ -348,6 +348,8 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 
 		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+                if(getParent() != null)
+                    getParent().requestDisallowInterceptTouchEvent(true);
 				mMemoX = x;
 				mStartX = mMemoX;
 				mStartTime = SystemClock.uptimeMillis();
@@ -358,7 +360,10 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 				mMemoX = x;
 				invalidate();
 				break;
-			case MotionEvent.ACTION_UP:	
+			case MotionEvent.ACTION_UP:
+                if(getParent() != null)
+                    getParent().requestDisallowInterceptTouchEvent(false);
+
 				float velocity = (x - mStartX) / (SystemClock.uptimeMillis() - mStartTime) * 1000;
 				if(Math.abs(velocity) >= mFlingVelocity)
 					setChecked(velocity > 0);
@@ -368,6 +373,9 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 					setChecked(mThumbPosition > 0.5f);				
 				break;
 			case MotionEvent.ACTION_CANCEL:
+                if(getParent() != null)
+                    getParent().requestDisallowInterceptTouchEvent(false);
+
 				setChecked(mThumbPosition > 0.5f);
 				break;
 		}
