@@ -1,8 +1,10 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -36,13 +38,14 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 		init(context, attrs, defStyleAttr, 0);
 	}
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Button(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
@@ -78,7 +81,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

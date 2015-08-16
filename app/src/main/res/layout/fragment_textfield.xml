@@ -21,6 +21,7 @@
             android:imeOptions="actionNext|flagNoEnterAction|flagNoExtractUi"
             android:dropDownSelector="@drawable/abc_list_selector_background_transition_holo_light"
             app:et_inputId="@+id/textfield_et_contact_input"
+            app:et_autoCompleteMode="multi"
             app:et_supportMode="none"
             app:cet_spanFontFamily="asset:FreeSans.ttf"
             android:completionThreshold="2"

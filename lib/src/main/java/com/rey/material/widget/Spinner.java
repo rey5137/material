@@ -26,7 +26,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -36,7 +35,6 @@ import com.rey.material.drawable.ArrowDrawable;
 import com.rey.material.drawable.DividerDrawable;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.util.ViewUtil;
 
 public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 		
@@ -73,7 +71,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 		void onItemSelected(Spinner parent, View view, int position, long id);
 	}
 
-    private boolean mLabelEnable = false;
+    private boolean mLabelEnable;
     private android.widget.TextView mLabelView;
 
 	private SpinnerAdapter mAdapter;
@@ -84,21 +82,21 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     private int mMinHeight;
 
 	private DropdownPopup mPopup;
-	private int mDropDownWidth = LayoutParams.WRAP_CONTENT;
+	private int mDropDownWidth;
 	
 	private ArrowDrawable mArrowDrawable;
-	private int mArrowSize = 0;
-	private int mArrowPadding = 0;
-	private boolean mArrowAnimSwitchMode = false;
+	private int mArrowSize;
+	private int mArrowPadding;
+	private boolean mArrowAnimSwitchMode;
 	
 	private DividerDrawable mDividerDrawable;
 	private int mDividerHeight;
 	private int mDividerPadding;
 	
-	private int mGravity = Gravity.CENTER;
-	private boolean mDisableChildrenWhenDisabled = false;
+	private int mGravity;
+	private boolean mDisableChildrenWhenDisabled;
 	
-	private int mSelectedPosition = INVALID_POSITION;
+	private int mSelectedPosition;
 	
 	private RecycleBin mRecycler = new RecycleBin();
 	
@@ -110,44 +108,39 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
 	private TintManager mTintManager;
 
-	private RippleManager mRippleManager;
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
-
-    private boolean mIsRtl = false;
+    private boolean mIsRtl;
 		
 	public Spinner(Context context) {
-		super(context);
-		
-		init(context, null, R.attr.listPopupWindowStyle, 0);
+		super(context, null, R.attr.listPopupWindowStyle);
 	}
 	
 	public Spinner(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, R.attr.listPopupWindowStyle, 0);
+		super(context, attrs, R.attr.listPopupWindowStyle);
 	}
 	
 	public Spinner(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		
-		init(context, attrs, defStyleAttr, 0);
 	}
 
     public Spinner(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    @Override
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        mLabelEnable = false;
+        mDropDownWidth = LayoutParams.WRAP_CONTENT;
+        mArrowAnimSwitchMode = false;
+        mGravity = Gravity.CENTER;
+        mDisableChildrenWhenDisabled = false;
+        mSelectedPosition = INVALID_POSITION;
+        mIsRtl = false;
+
         setWillNotDraw(false);
 
         mPopup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes);
         mPopup.setModal(true);
 
-        applyStyle(context, attrs, defStyleAttr, defStyleRes);
-		
 		if(isInEditMode())
             applyStyle(R.style.Material_Widget_Spinner);
 		
@@ -158,13 +151,8 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             }
         });
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        super.init(context, attrs, defStyleAttr, defStyleRes);
 	}
-
-    public void applyStyle(int resId){
-        ViewUtil.applyStyle(this, resId);
-        applyStyle(getContext(), null, 0, resId);
-    }
 
     private android.widget.TextView getLabelView(){
         if(mLabelView == null){
@@ -178,9 +166,11 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         return mLabelView;
     }
 
+    @Override
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         removeAllViews();
-        getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
@@ -366,24 +356,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         }
 
         requestLayout();
-    }
-
-    @Override
-    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
-        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
-            mCurrentStyle = style;
-            applyStyle(mCurrentStyle);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if(mStyleId != 0) {
-            ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onThemeChanged(null);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -627,51 +599,10 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
-
         if (mPopup != null && mPopup.isShowing())
             mPopup.dismiss();
-
-        if(mStyleId != 0)
-            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
-    @Override
-    public void setBackgroundDrawable(Drawable drawable) {
-        Drawable background = getBackground();
-        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
-            ((RippleDrawable) background).setBackgroundDrawable(drawable);
-        else
-            super.setBackgroundDrawable(drawable);
-    }
-
-    protected RippleManager getRippleManager(){
-        if(mRippleManager == null){
-            synchronized (RippleManager.class){
-                if(mRippleManager == null)
-                    mRippleManager = new RippleManager();
-            }
-        }
-
-        return mRippleManager;
-    }
-
-    @Override
-    public void setOnClickListener(OnClickListener l) {
-        RippleManager rippleManager = getRippleManager();
-        if (l == rippleManager)
-            super.setOnClickListener(l);
-        else {
-            rippleManager.setOnClickListener(l);
-            setOnClickListener(rippleManager);
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
-        boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(event) || result;
-    }
 
     /**
      * Set a listener that will be called when a item's view is clicked.

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.rey.material.R;
@@ -34,9 +34,6 @@ import com.rey.material.util.ViewUtil;
 
 public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
-
 	private TextView mText;
 	private Button mAction;
 	
@@ -44,13 +41,13 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	
 	private BackgroundDrawable mBackground;
-	private int mMarginStart = 0;
-	private int mMarginBottom = 0;
-	private int mWidth = MATCH_PARENT;
-	private int mHeight = WRAP_CONTENT;
+	private int mMarginStart;
+	private int mMarginBottom;
+	private int mWidth;
+	private int mHeight;
     private int mMaxHeight;
     private int mMinHeight;
-	private long mDuration = -1;
+	private long mDuration;
 	private int mActionId;
     private boolean mRemoveOnDismiss;
 
@@ -83,7 +80,7 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	 */
 	public static final int STATE_DISMISSING = 3;
 
-    private boolean mIsRtl = false;
+    private boolean mIsRtl;
 
 	/**
 	 * Interface definition for a callback to be invoked when action button is clicked.
@@ -122,28 +119,30 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 
 	public SnackBar(Context context){
 		super(context);
-		init(context, null, 0, 0);
 	}
 
     public SnackBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs, 0, 0);
     }
 
     public SnackBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr, 0);
     }
 
     public SnackBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    @Override
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mWidth = MATCH_PARENT;
+        mHeight = WRAP_CONTENT;
+        mDuration = -1;
+        mIsRtl = false;
+
         mText = new TextView(context);
         mText.setSingleLine(true);
-        mText.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);
+        mText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         addView(mText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         mAction = new Button(context);
@@ -167,18 +166,13 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
         ViewUtil.setBackground(this, mBackground);
         setClickable(true);
 
-        applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        super.init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public SnackBar applyStyle(int resId){
-        ViewUtil.applyStyle(this, resId);
-        applyStyle(getContext(), null, 0, resId);
-        return this;
-    }
-
+    @Override
 	protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SnackBar, defStyleAttr, defStyleRes);
 
         int horizontalPadding = -1;
@@ -299,33 +293,7 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
             actionTextSize(actionTextSize);
         if(actionTextColor != null)
             actionTextColor(actionTextColor);
-
 	}
-
-    @Override
-    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
-        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
-            mCurrentStyle = style;
-            applyStyle(mCurrentStyle);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if(mStyleId != 0) {
-            ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onThemeChanged(null);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if(mStyleId != 0)
-            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
-    }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -693,6 +661,7 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	 */
 	public SnackBar height(int height){
 		mHeight = height;
+        Log.v("asd", "height: " + mHeight);
 		return this;
 	}
 
@@ -821,6 +790,8 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
         if(parent == null || mState == STATE_SHOWING || mState == STATE_DISMISSING)
             return;
 
+        Log.v("asd", "show: " + parent + " " + mHeight);
+
         if(parent instanceof FrameLayout){
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)getLayoutParams();
 
@@ -832,6 +803,8 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 			else
             	params.leftMargin = mMarginStart;
             params.bottomMargin = mMarginBottom;
+
+            setLayoutParams(params);
         }
         else if(parent instanceof RelativeLayout){
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
@@ -839,12 +812,14 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
             params.width = mWidth;
             params.height = mHeight;
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-			params.addRule(RelativeLayout.ALIGN_PARENT_START);
+			params.addRule(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT);
 			if(mIsRtl)
 				params.rightMargin = mMarginStart;
 			else
             	params.leftMargin = mMarginStart;
             params.bottomMargin = mMarginBottom;
+
+            setLayoutParams(params);
         }
 
         if(mInAnimation != null && mState != STATE_SHOWN){
@@ -877,7 +852,6 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
             startTimer();
         }
     }
-
 	
 	private void startTimer(){
 		removeCallbacks(mDismissRunnable);

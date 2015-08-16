@@ -32,6 +32,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -56,13 +57,10 @@ import com.rey.material.util.ViewUtil;
 
 public class EditText extends FrameLayout implements ThemeManager.OnThemeChangedListener{
 
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
-
-	private boolean mLabelEnable = false;
-    private boolean mLabelVisible = false;
-    protected int mSupportMode = SUPPORT_MODE_NONE;
-    protected int mAutoCompleteMode = AUTOCOMPLETE_MODE_NONE;
+	private boolean mLabelEnable;
+    private boolean mLabelVisible;
+    protected int mSupportMode;
+    protected int mAutoCompleteMode;
 
     /**
      * Indicate this EditText should not show a support text.  
@@ -87,8 +85,8 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 	
 	private ColorStateList mDividerColors;
 	private ColorStateList mDividerErrorColors;
-    private boolean mDividerCompoundPadding = true;
-    private int mDividerPadding = -1;
+    private boolean mDividerCompoundPadding;
+    private int mDividerPadding;
 	
 	private ColorStateList mSupportColors;
 	private ColorStateList mSupportErrorColors;
@@ -96,8 +94,8 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 	private CharSequence mSupportHelper;
 	private CharSequence mSupportError;
 	
-	private int mLabelInAnimId = 0;
-	private int mLabelOutAnimId = 0;
+	private int mLabelInAnimId;
+	private int mLabelOutAnimId;
 	
 	protected LabelView mLabelView;
     protected android.widget.EditText mInputView;
@@ -106,46 +104,41 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
     private TextView.OnSelectionChangedListener mOnSelectionChangedListener;
 
-    private boolean mIsRtl = false;
+    private boolean mIsRtl;
 
     public EditText(Context context) {
         super(context);
-
-        init(context, null, 0, 0);
     }
 
     public EditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init(context, attrs, 0, 0);
     }
 
 	public EditText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		
-		init(context, attrs, defStyleAttr, 0);
 	}
 
     public EditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 	
 	@SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-		applyStyle(context, attrs, defStyleAttr, defStyleRes);
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        mLabelEnable = false;
+        mLabelVisible = false;
+        mSupportMode = SUPPORT_MODE_NONE;
+        mAutoCompleteMode = AUTOCOMPLETE_MODE_NONE;
+        mDividerCompoundPadding = true;
+        mDividerPadding = -1;
+        mIsRtl = false;
+
+        super.init(context, attrs, defStyleAttr, defStyleRes);
 
         if(isInEditMode())
             applyStyle(R.style.Material_Widget_EditText);
 	}
-
-    public void applyStyle(int resId){
-        ViewUtil.applyStyle(this, resId);
-        applyStyle(getContext(), null, 0, resId);
-    }
 
     private LabelView getLabelView(){
         if(mLabelView == null){
@@ -182,7 +175,10 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         }
     }
 
+    @Override
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
+
         CharSequence text = mInputView == null ? null : mInputView.getText();
         removeAllViews();
 
@@ -454,31 +450,6 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         addView(mInputView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         requestLayout();
-    }
-
-    @Override
-    public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
-        int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
-            mCurrentStyle = style;
-            applyStyle(mCurrentStyle);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if(mStyleId != 0) {
-            ThemeManager.getInstance().registerOnThemeChangedListener(this);
-            onThemeChanged(null);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if(mStyleId != 0)
-            ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -846,6 +817,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
      *
      * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public CharSequence getCompletionHint() {
         if(mAutoCompleteMode == AUTOCOMPLETE_MODE_NONE || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             return null;

@@ -39,14 +39,15 @@ public class CompoundButton extends android.widget.CompoundButton implements The
 		init(context, attrs, defStyleAttr, 0);
 	}
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public CompoundButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		//a fix to reset paddingLeft attribute
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1){
 			TypedArray a = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.padding, android.R.attr.paddingLeft}, defStyleAttr, defStyleRes);
@@ -94,7 +95,7 @@ public class CompoundButton extends android.widget.CompoundButton implements The
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

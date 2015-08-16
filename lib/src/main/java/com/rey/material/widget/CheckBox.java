@@ -20,7 +20,7 @@ public class CheckBox extends CompoundButton {
 	}
 
     public CheckBox(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

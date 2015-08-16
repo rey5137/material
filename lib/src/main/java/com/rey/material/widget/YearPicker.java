@@ -36,15 +36,15 @@ public class YearPicker extends ListView {
 
     private YearAdapter mAdapter;
 
-    private int mTextSize = -1;
-    private int mItemHeight = -1;
+    private int mTextSize;
+    private int mItemHeight;
     private int mSelectionColor;
-    private int mAnimDuration = -1;
+    private int mAnimDuration;
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
-    private Typeface mTypeface = Typeface.DEFAULT;
+    private Typeface mTypeface;
 
-    private int mItemRealHeight = -1;
+    private int mItemRealHeight;
     private int mPadding;
     private int mPositionShift;
     private int mDistanceShift;
@@ -78,29 +78,28 @@ public class YearPicker extends ListView {
 
     public YearPicker(Context context) {
         super(context);
-
-        init(context, null, 0, 0);
     }
 
     public YearPicker(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init(context, attrs, 0, 0);
     }
 
     public YearPicker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        init(context, attrs, defStyleAttr, 0);
     }
 
     public YearPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    @Override
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mTextSize = -1;
+        mItemHeight = -1;
+        mAnimDuration = -1;
+        mTypeface = Typeface.DEFAULT;
+        mItemRealHeight = -1;
+
         setWillNotDraw(false);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
@@ -117,7 +116,7 @@ public class YearPicker extends ListView {
 
         mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
 
-        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+        super.init(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

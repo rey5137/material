@@ -1,5 +1,6 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -10,6 +11,7 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -108,13 +110,14 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 		init(context, attrs, defStyleAttr, 0);
 	}
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Switch(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 	
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
 		mDrawRect = new RectF();
@@ -245,7 +248,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

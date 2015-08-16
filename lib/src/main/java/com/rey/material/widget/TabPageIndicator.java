@@ -90,13 +90,14 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		init(context, attrs, defStyleAttr, 0);
 	}
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TabPageIndicator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		setHorizontalScrollBarEnabled(false);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

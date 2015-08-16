@@ -60,7 +60,7 @@ public class ContactEditText extends EditText{
 
     private HashMap<String, Recipient> mRecipientMap;
 
-    private int mDefaultAvatarId = R.drawable.ic_user;
+    private int mDefaultAvatarId;
     private int mSpanHeight;
     private int mSpanMaxWidth;
     private int mSpanPaddingLeft;
@@ -93,7 +93,7 @@ public class ContactEditText extends EditText{
     }
 
     public ContactEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -101,6 +101,7 @@ public class ContactEditText extends EditText{
         mRecipientMap = new HashMap<>();
         mAutoCompleteMode = AUTOCOMPLETE_MODE_MULTI;
 
+        mDefaultAvatarId = R.drawable.ic_user;
         mSpanHeight = ThemeUtil.dpToPx(context, 32);
         mSpanMaxWidth = ThemeUtil.dpToPx(context, 150);
         mSpanPaddingLeft = ThemeUtil.dpToPx(context, 8);

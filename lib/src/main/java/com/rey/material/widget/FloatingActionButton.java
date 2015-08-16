@@ -68,13 +68,14 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 		init(context, attrs, defStyleAttr, 0);
 	}
 
-    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		setClickable(true);
         mSwitchIconAnimator = new SwitchIconAnimator();
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
@@ -201,7 +202,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

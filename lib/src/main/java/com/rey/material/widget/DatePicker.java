@@ -38,17 +38,14 @@ import java.util.Locale;
  */
 public class DatePicker extends ListView implements AbsListView.OnScrollListener{
 
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
-
-    private Typeface mTypeface = Typeface.DEFAULT;
-    private int mTextSize = -1;
-    private int mTextColor = 0xFF000000;
-    private int mTextLabelColor = 0xFF767676;
-    private int mTextHighlightColor = 0xFFFFFFFF;
+    private Typeface mTypeface;
+    private int mTextSize;
+    private int mTextColor;
+    private int mTextLabelColor;
+    private int mTextHighlightColor;
     private int mTextDisableColor;
     private int mSelectionColor;
-    private int mAnimDuration = -1;
+    private int mAnimDuration;
     private Interpolator mInInterpolator;
     private Interpolator mOutInterpolator;
 
@@ -64,7 +61,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
 
     private Calendar mCalendar;
     private int mFirstDayOfWeek;
-    private String[] mLabels = new String[7];
+    private String[] mLabels;
     private static String[] mDayTexts;
 
     private MonthAdapter mAdapter;
@@ -121,18 +118,28 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
     }
 
     public DatePicker(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs);
+        super(context, attrs, defStyleAttr);
 
         init(context, attrs, defStyleAttr, 0);
     }
 
     public DatePicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    @Override
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        mTypeface = Typeface.DEFAULT;
+        mTextSize = -1;
+        mTextColor = 0xFF000000;
+        mTextLabelColor = 0xFF767676;
+        mTextHighlightColor = 0xFFFFFFFF;
+        mAnimDuration = -1;
+        mLabels = new String[7];
+        mFriction = 1.0F;
+
         setWillNotDraw(false);
         setSelector(BlankDrawable.getInstance());
         setCacheColorHint(0);
@@ -166,7 +173,7 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         mAdapter = new MonthAdapter();
         setAdapter(mAdapter);
 
-        applyStyle(context, attrs, defStyleAttr, defStyleRes);
+        super.init(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

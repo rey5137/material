@@ -40,23 +40,23 @@ public class SnackbarFragment extends Fragment{
 				else{
 					switch (v.getId()) {
 						case R.id.snackbar_bt_mobile_single:
-							mSnackBar.applyStyle(R.style.SnackBarSingleLine)
-									.show();
+							mSnackBar.applyStyle(R.style.SnackBarSingleLine);
+							mSnackBar.show();
 							break;
 						case R.id.snackbar_bt_mobile_multi:
-							mSnackBar.applyStyle(R.style.SnackBarMultiLine)
-									.show();
+							mSnackBar.applyStyle(R.style.SnackBarMultiLine);
+							mSnackBar.show();
 							break;
 						case R.id.snackbar_bt_tablet_single:
-							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet)
-                                    .text("This is single-line snackbar.")
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet);
+							mSnackBar.text("This is single-line snackbar.")
 									.actionText("CLOSE")
                                     .duration(0)
 									.show();
 							break;
 						case R.id.snackbar_bt_tablet_multi:
-							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet_MultiLine)
-                                    .text("This is multi-line snackbar.\nIt will auto-close after 5s.")
+							mSnackBar.applyStyle(R.style.Material_Widget_SnackBar_Tablet_MultiLine);
+							mSnackBar.text("This is multi-line snackbar.\nIt will auto-close after 5s.")
                                     .actionText(null)
 									.duration(5000)
 									.show();

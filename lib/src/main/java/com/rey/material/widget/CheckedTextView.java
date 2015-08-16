@@ -1,7 +1,9 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -34,13 +36,14 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
 		init(context, attrs, defStyleAttr, 0);
 	}
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public CheckedTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 	
-	private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
@@ -76,7 +79,7 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

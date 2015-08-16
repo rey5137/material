@@ -21,7 +21,7 @@ public class RadioButton extends CompoundButton {
 	}
 
     public RadioButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override

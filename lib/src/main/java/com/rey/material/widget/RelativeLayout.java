@@ -7,54 +7,47 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public class TextView extends android.widget.TextView implements ThemeManager.OnThemeChangedListener{
+public class RelativeLayout extends android.widget.RelativeLayout implements ThemeManager.OnThemeChangedListener{
 
 	private RippleManager mRippleManager;
+
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
-    public interface OnSelectionChangedListener{
-        void onSelectionChanged(View v, int selStart, int selEnd);
-    }
-
-    private OnSelectionChangedListener mOnSelectionChangedListener;
-
-    public TextView(Context context) {
+    public RelativeLayout(Context context) {
         super(context);
 
         init(context, null, 0, 0);
     }
 
-    public TextView(Context context, AttributeSet attrs) {
+    public RelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         init(context, attrs, 0, 0);
     }
 
-	public TextView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public RelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		
+
 		init(context, attrs, defStyleAttr, 0);
 	}
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public RelativeLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
+	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
-    }
+	}
 
     public void applyStyle(int resId){
         ViewUtil.applyStyle(this, resId);
@@ -112,7 +105,7 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
     }
 
     @Override
-    public void setOnClickListener(OnClickListener l) {
+	public void setOnClickListener(OnClickListener l) {
         RippleManager rippleManager = getRippleManager();
         if (l == rippleManager)
             super.setOnClickListener(l);
@@ -120,23 +113,12 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
             rippleManager.setOnClickListener(l);
             setOnClickListener(rippleManager);
         }
-    }
-
-    @Override
+	}
+	
+	@Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(event) || result;
-    }
+		boolean result = super.onTouchEvent(event);
+		return  getRippleManager().onTouchEvent(event) || result;
+	}
 
-    public void setOnSelectionChangedListener(OnSelectionChangedListener listener){
-        mOnSelectionChangedListener = listener;
-    }
-
-    @Override
-    protected void onSelectionChanged(int selStart, int selEnd) {
-        super.onSelectionChanged(selStart, selEnd);
-
-        if(mOnSelectionChangedListener != null)
-            mOnSelectionChangedListener.onSelectionChanged(this, selStart, selEnd);
-    }
 }

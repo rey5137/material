@@ -1,5 +1,6 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -123,13 +125,14 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         init(context, attrs, defStyleAttr, 0);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Slider(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         //default color
@@ -303,7 +306,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mRippleManager.cancelRipple(this);
+        RippleManager.cancelRipple(this);
         if(mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }

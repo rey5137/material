@@ -39,7 +39,7 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
         init(context, attrs, defStyleAttr, defStyleRes);
     }
     
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
     	
     	super.setRecyclerListener(new RecyclerListener() {
 			

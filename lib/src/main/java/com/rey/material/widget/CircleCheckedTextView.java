@@ -1,5 +1,6 @@
 package com.rey.material.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -40,13 +41,14 @@ public class CircleCheckedTextView extends android.widget.CheckedTextView {
         init(context, attrs, defStyleAttr, 0);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public CircleCheckedTextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         setGravity(Gravity.CENTER);
         setPadding(0, 0, 0, 0);
 
