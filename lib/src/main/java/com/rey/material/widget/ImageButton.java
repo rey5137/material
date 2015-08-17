@@ -118,7 +118,7 @@ public class ImageButton extends android.widget.ImageButton implements ThemeMana
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(event) || result;
+        return  getRippleManager().onTouchEvent(this, event) || result;
     }
 
 }

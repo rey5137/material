@@ -118,6 +118,6 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(event) || result;
+        return  getRippleManager().onTouchEvent(this, event) || result;
     }
 }

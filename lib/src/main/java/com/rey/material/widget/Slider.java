@@ -633,7 +633,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         super.onTouchEvent(event);
-        getRippleManager().onTouchEvent(event);
+        getRippleManager().onTouchEvent(this, event);
 
         if(!isEnabled())
             return false;

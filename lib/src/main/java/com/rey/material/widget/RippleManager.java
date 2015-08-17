@@ -1,10 +1,8 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,10 +13,9 @@ import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public final class RippleManager implements View.OnClickListener, Runnable{
+public final class RippleManager implements View.OnClickListener{
 
 	private View.OnClickListener mClickListener;
-	private View mView;
     private boolean mClickScheduled = false;
 		
 	public RippleManager(){}
@@ -35,24 +32,22 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		if(v.isInEditMode())
 			return;
 
-		mView = v;
-		
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RippleView, defStyleAttr, defStyleRes);
         int rippleStyle = a.getResourceId(R.styleable.RippleView_rd_style, 0);
 		RippleDrawable drawable = null;
 
 		if(rippleStyle != 0)
-			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(getBackground(mView)).build();
+			drawable = new RippleDrawable.Builder(context, rippleStyle).backgroundDrawable(getBackground(v)).build();
 		else{
 			boolean rippleEnable = a.getBoolean(R.styleable.RippleView_rd_enable, false);
 			if(rippleEnable)
-				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(getBackground(mView)).build();
+				drawable = new RippleDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).backgroundDrawable(getBackground(v)).build();
 		}
 
 		a.recycle();
 
 		if(drawable != null)
-            ViewUtil.setBackground(mView, drawable);
+            ViewUtil.setBackground(v, drawable);
 	}
 
     private Drawable getBackground(View v){
@@ -70,35 +65,35 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 		mClickListener = l;
 	}
 
-	public boolean onTouchEvent(MotionEvent event){
-		Drawable background = mView.getBackground();
-        return background instanceof RippleDrawable && ((RippleDrawable) background).onTouch(mView, event);
+	public boolean onTouchEvent(View v, MotionEvent event){
+		Drawable background = v.getBackground();
+        return background != null && background instanceof RippleDrawable && ((RippleDrawable) background).onTouch(v, event);
     }
 	
 	@Override
 	public void onClick(View v) {
-		Drawable background = mView.getBackground();
+		Drawable background = v.getBackground();
 		long delay = 0;
-						
-		if(background instanceof RippleDrawable)
-			delay = ((RippleDrawable)background).getClickDelayTime();
-		else if(background instanceof ToolbarRippleDrawable)
-			delay = ((ToolbarRippleDrawable)background).getClickDelayTime();
+
+		if(background != null) {
+			if (background instanceof RippleDrawable)
+				delay = ((RippleDrawable) background).getClickDelayTime();
+			else if (background instanceof ToolbarRippleDrawable)
+				delay = ((ToolbarRippleDrawable) background).getClickDelayTime();
+		}
 			
-		if(delay > 0 && mView.getHandler() != null && !mClickScheduled) {
+		if(delay > 0 && v.getHandler() != null && !mClickScheduled) {
             mClickScheduled = true;
-            mView.getHandler().postDelayed(this, delay);
+            v.getHandler().postDelayed(new ClickRunnable(v), delay);
         }
 		else
-			run();
+			dispatchClickEvent(v);
 	}
-		
-	@Override
-    public void run() {
-        mClickScheduled = false;
-    	if(mClickListener != null)
-    		mClickListener.onClick(mView);
-    }
+
+	private void dispatchClickEvent(View v){
+		if(mClickListener != null)
+			mClickListener.onClick(v);
+	}
 
     /**
      * Cancel the ripple effect of this view and all of it's children.
@@ -115,6 +110,20 @@ public final class RippleManager implements View.OnClickListener, Runnable{
 			ViewGroup vg = (ViewGroup)v;
 			for(int i = 0, count = vg.getChildCount(); i < count; i++)
 				RippleManager.cancelRipple(vg.getChildAt(i));
+		}
+	}
+
+	class ClickRunnable implements Runnable{
+		View mView;
+
+		public ClickRunnable(View v){
+			mView = v;
+		}
+
+		@Override
+		public void run() {
+			mClickScheduled = false;
+			dispatchClickEvent(mView);
 		}
 	}
 	

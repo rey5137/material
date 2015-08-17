@@ -513,7 +513,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 			return false;
 		
 		boolean result = super.onTouchEvent(event);		
-		return  getRippleManager().onTouchEvent(event) || result;
+		return  getRippleManager().onTouchEvent(this, event) || result;
 	}
 
     @Override

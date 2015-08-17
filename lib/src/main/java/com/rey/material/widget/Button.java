@@ -120,7 +120,7 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 	@Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		return  getRippleManager().onTouchEvent(event) || result;
+		return  getRippleManager().onTouchEvent(this, event) || result;
 	}
 
 }

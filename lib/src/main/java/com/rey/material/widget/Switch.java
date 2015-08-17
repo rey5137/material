@@ -343,7 +343,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		super.onTouchEvent(event);
-		getRippleManager().onTouchEvent(event);
+		getRippleManager().onTouchEvent(this, event);
 
         float x = event.getX();
         if(mIsRtl)
