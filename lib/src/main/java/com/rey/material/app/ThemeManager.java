@@ -80,7 +80,11 @@ public class ThemeManager {
         mContext = context;
         mDispatcher = dispatcher != null ? dispatcher : new SimpleDispatcher();
         mThemeCount = totalTheme;
-        mCurrentTheme = getSharedPreferences().getInt(KEY_THEME, defaultTheme);
+        SharedPreferences pref = getSharedPreferences(mContext);
+        if(pref != null)
+            mCurrentTheme = pref.getInt(KEY_THEME, defaultTheme);
+        else
+            mCurrentTheme = defaultTheme;
         if(mCurrentTheme >= mThemeCount)
             setCurrentTheme(defaultTheme);
     }
@@ -99,6 +103,9 @@ public class ThemeManager {
     }
 
     private int[] getStyleList(int styleId){
+        if(mStyles == null)
+            return null;
+
         int[] list = mStyles.get(styleId);
         if(list == null){
             list = loadStyleList(mContext, styleId);
@@ -108,12 +115,13 @@ public class ThemeManager {
         return list;
     }
 
-    private SharedPreferences getSharedPreferences(){
-        return mContext.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+    private SharedPreferences getSharedPreferences(Context context){
+        return context == null ? null : context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
     }
 
     private void dispatchThemeChanged(int theme){
-        mDispatcher.dispatchThemeChanged(theme);
+        if(mDispatcher != null)
+            mDispatcher.dispatchThemeChanged(theme);
     }
 
     public Context getContext(){
@@ -140,7 +148,9 @@ public class ThemeManager {
 
         if(mCurrentTheme != theme){
             mCurrentTheme = theme;
-            getSharedPreferences().edit().putInt(KEY_THEME, mCurrentTheme).commit();
+            SharedPreferences pref = getSharedPreferences(mContext);
+            if(pref != null)
+                pref.edit().putInt(KEY_THEME, mCurrentTheme).apply();
             dispatchThemeChanged(mCurrentTheme);
             return true;
         }
@@ -196,11 +206,11 @@ public class ThemeManager {
 
     public interface EventDispatcher{
 
-        public void registerListener(OnThemeChangedListener listener);
+        void registerListener(OnThemeChangedListener listener);
 
-        public void unregisterListener(OnThemeChangedListener listener);
+        void unregisterListener(OnThemeChangedListener listener);
 
-        public void dispatchThemeChanged(int theme);
+        void dispatchThemeChanged(int theme);
     }
 
     public static class SimpleDispatcher implements EventDispatcher{
