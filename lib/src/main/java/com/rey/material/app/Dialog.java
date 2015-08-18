@@ -1020,6 +1020,7 @@ public class Dialog extends android.app.Dialog{
     @Override
     protected void onStart() {
         super.onStart();
+        mCardView.setVisibility(View.VISIBLE);
         if(mInAnimationId != 0)
             mCardView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -1058,6 +1059,7 @@ public class Dialog extends android.app.Dialog{
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    mCardView.setVisibility(View.GONE);
                     mHandler.post(mDismissAction);
                 }
             });

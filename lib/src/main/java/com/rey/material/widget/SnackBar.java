@@ -661,7 +661,6 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	 */
 	public SnackBar height(int height){
 		mHeight = height;
-        Log.v("asd", "height: " + mHeight);
 		return this;
 	}
 
@@ -785,15 +784,14 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 	 * Show this SnackBar.
 	 * Make sure it already attached to a parent view or this method will do nothing.
 	 */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void show(){
         ViewGroup parent = (ViewGroup)getParent();
         if(parent == null || mState == STATE_SHOWING || mState == STATE_DISMISSING)
             return;
 
-        Log.v("asd", "show: " + parent + " " + mHeight);
-
-        if(parent instanceof FrameLayout){
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)getLayoutParams();
+        if(parent instanceof android.widget.FrameLayout){
+            android.widget.FrameLayout.LayoutParams params = (android.widget.FrameLayout.LayoutParams)getLayoutParams();
 
             params.width = mWidth;
             params.height = mHeight;
@@ -806,13 +804,13 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
 
             setLayoutParams(params);
         }
-        else if(parent instanceof RelativeLayout){
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)getLayoutParams();
+        else if(parent instanceof android.widget.RelativeLayout){
+            android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams)getLayoutParams();
 
             params.width = mWidth;
             params.height = mHeight;
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-			params.addRule(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? RelativeLayout.ALIGN_PARENT_START : RelativeLayout.ALIGN_PARENT_LEFT);
+            params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
+			params.addRule(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? android.widget.RelativeLayout.ALIGN_PARENT_START : android.widget.RelativeLayout.ALIGN_PARENT_LEFT);
 			if(mIsRtl)
 				params.rightMargin = mMarginStart;
 			else

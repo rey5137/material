@@ -294,7 +294,7 @@ public class SimpleDialog extends Dialog {
         mListView.setPadding(0, 0, 0, mContentPadding - mActionPadding);
         mListView.setVerticalFadingEdgeEnabled(false);
         mListView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
-        ViewCompat.setLayoutDirection(mListView, View.LAYOUT_DIRECTION_INHERIT);
+        ViewCompat.setLayoutDirection(mListView, ViewCompat.LAYOUT_DIRECTION_INHERIT);
 
         mAdapter = new InternalAdapter();
         mListView.setAdapter(mAdapter);
@@ -542,7 +542,14 @@ public class SimpleDialog extends Dialog {
         public View getView(int position, View convertView, ViewGroup parent) {
             CompoundButton v = (CompoundButton)convertView;
             if(v == null) {
-                v = (mMode == MODE_MULTI_ITEMS) ? new CheckBox(parent.getContext(), null, 0, mCheckBoxStyle) : new RadioButton(parent.getContext(), null, 0, mRadioButtonStyle);
+                if(mMode == MODE_MULTI_ITEMS){
+                    v = new CheckBox(parent.getContext());
+                    v.applyStyle(mCheckBoxStyle);
+                }
+                else{
+                    v = new RadioButton(parent.getContext());
+                    v.applyStyle(mRadioButtonStyle);
+                }
                 if(mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
                     v.setMinHeight(mItemHeight);
                 v.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
