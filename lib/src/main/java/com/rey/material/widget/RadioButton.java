@@ -49,8 +49,8 @@ public class RadioButton extends CompoundButton {
      * @param checked The checked state.
      */
     public void setCheckedImmediately(boolean checked){
-        if(mButtonDrawable instanceof RadioButtonDrawable){
-            RadioButtonDrawable drawable = (RadioButtonDrawable)mButtonDrawable;
+        if(getButtonDrawable() instanceof RadioButtonDrawable){
+            RadioButtonDrawable drawable = (RadioButtonDrawable)getButtonDrawable();
             drawable.setAnimEnable(false);
             setChecked(checked);
             drawable.setAnimEnable(true);

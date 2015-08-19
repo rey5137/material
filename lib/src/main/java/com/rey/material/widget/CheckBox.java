@@ -3,6 +3,7 @@ package com.rey.material.widget;
 import com.rey.material.drawable.CheckBoxDrawable;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 public class CheckBox extends CompoundButton {
@@ -39,8 +40,8 @@ public class CheckBox extends CompoundButton {
      * @param checked The checked state.
      */
     public void setCheckedImmediately(boolean checked){
-        if(mButtonDrawable instanceof CheckBoxDrawable){
-            CheckBoxDrawable drawable = (CheckBoxDrawable)mButtonDrawable;
+        if(getButtonDrawable() instanceof CheckBoxDrawable){
+            CheckBoxDrawable drawable = (CheckBoxDrawable)getButtonDrawable();
             drawable.setAnimEnable(false);
             setChecked(checked);
             drawable.setAnimEnable(true);
