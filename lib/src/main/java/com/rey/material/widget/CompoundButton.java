@@ -54,7 +54,7 @@ public class CompoundButton extends android.widget.CompoundButton implements The
     }
 
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        if(Build.VERSION.SDK_INT >- Build.VERSION_CODES.JELLY_BEAN_MR1)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             applyPadding(context, attrs, defStyleAttr, defStyleRes);
 
 		setClickable(true);
