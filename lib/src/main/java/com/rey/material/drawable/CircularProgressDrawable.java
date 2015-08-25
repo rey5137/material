@@ -228,10 +228,10 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 				
 				mRect.set(x - radius, y - radius, x + radius, y + radius);				
 				mPaint.setColor(mStrokeSecondaryColor);			
-				canvas.drawArc(mRect, mInitialAngle + sweepAngle, (mReverse ? -360 : 360) - sweepAngle, false, mPaint);
+				canvas.drawArc(mRect, mStartAngle + sweepAngle, (mReverse ? -360 : 360) - sweepAngle, false, mPaint);
 							
 				mPaint.setColor(mStrokeColors[0]);
-				canvas.drawArc(mRect, mInitialAngle, sweepAngle, false, mPaint);			
+				canvas.drawArc(mRect, mStartAngle, sweepAngle, false, mPaint);
 			}
 		}		
 	}
@@ -287,8 +287,10 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 			}
 			
 			if(mProgressState == PROGRESS_STATE_HIDE){
-				if(steps >= 1 / mInStepPercent || time >= 1)
+				if(steps >= 1 / mInStepPercent || time >= 1) {
 					resetAnimation();
+					mProgressState = PROGRESS_STATE_STRETCH;
+				}
 			}					
 			else{
 				float radius = maxRadius - mStrokeSize / 2f;
@@ -397,7 +399,6 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 		mStartAngle = mInitialAngle;
 		mStrokeColorIndex = 0;
 		mSweepAngle = mReverse ? -mMinSweepAngle : mMinSweepAngle;
-		mProgressState = PROGRESS_STATE_STRETCH;
 	}
 	
 	@Override
@@ -413,15 +414,15 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 	private void start(boolean withAnimation){
 		if(isRunning()) 
 			return;
-						
+
+		resetAnimation();
+
 		if(withAnimation){
 			mRunState = RUN_STATE_STARTING;
 			mLastRunStateTime = SystemClock.uptimeMillis();
 			mProgressState = PROGRESS_STATE_HIDE;
 		}
-		else   
-		    resetAnimation();
-		
+
 		scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
 	    invalidateSelf();  
 	}
@@ -479,11 +480,16 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
 	
 	private void updateDeterminate(){
 		long curTime = SystemClock.uptimeMillis();
-		
+		float rotateOffset = (curTime - mLastUpdateTime) * 360f / mRotateDuration;
+		if(mReverse)
+			rotateOffset = -rotateOffset;
+		mLastUpdateTime = curTime;
+
+		mStartAngle += rotateOffset;
+
 		if(mRunState == RUN_STATE_STARTING){
     		if(curTime - mLastRunStateTime > mInAnimationDuration){
-    			mRunState = RUN_STATE_STARTED;
-    			return;
+				mRunState = RUN_STATE_RUNNING;
     		}
     	}
     	else if(mRunState == RUN_STATE_STOPPING){
@@ -576,8 +582,10 @@ public class CircularProgressDrawable extends Drawable implements Animatable {
     	if(mRunState == RUN_STATE_STARTING){
     		if(curTime - mLastRunStateTime > mInAnimationDuration){
     			mRunState = RUN_STATE_RUNNING;	    		
-    			if(mProgressState == PROGRESS_STATE_HIDE)
-    				resetAnimation();
+    			if(mProgressState == PROGRESS_STATE_HIDE) {
+					resetAnimation();
+					mProgressState = PROGRESS_STATE_STRETCH;
+				}
     		}
     	}
     	else if(mRunState == RUN_STATE_STOPPING){
