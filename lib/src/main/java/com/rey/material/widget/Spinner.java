@@ -16,6 +16,7 @@ import android.support.v7.internal.widget.TintTypedArray;
 import android.support.v7.internal.widget.ViewUtils;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -228,13 +229,13 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 mDropDownWidth = a.getLayoutDimension(attr, LayoutParams.WRAP_CONTENT);
             else if(attr == R.styleable.Spinner_android_popupBackground)
                 mPopup.setBackgroundDrawable(a.getDrawable(attr));
-            else if(attr == R.styleable.Spinner_prompt)
+            else if(attr == R.styleable.Spinner_android_prompt)
                 mPopup.setPromptText(a.getString(attr));
             else if(attr == R.styleable.Spinner_spn_popupItemAnimation)
                 mPopup.setItemAnimation(a.getResourceId(attr, 0));
             else if(attr == R.styleable.Spinner_spn_popupItemAnimOffset)
                 mPopup.setItemAnimationOffset(a.getInteger(attr, 0));
-            else if(attr == R.styleable.Spinner_disableChildrenWhenDisabled)
+            else if(attr == R.styleable.Spinner_spn_disableChildrenWhenDisabled)
                 mDisableChildrenWhenDisabled = a.getBoolean(attr, false);
             else if(attr == R.styleable.Spinner_spn_arrowSwitchMode)
                 mArrowAnimSwitchMode = a.getBoolean(attr, false);
@@ -603,7 +604,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             mPopup.dismiss();
     }
 
-
     /**
      * Set a listener that will be called when a item's view is clicked.
      * @param l The {@link Spinner.OnItemClickListener} will be called.
@@ -715,11 +715,36 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
     	setMeasuredDimension(width, height);
 
-        width -= paddingHorizontal;
-        height -= labelHeight + paddingVertical;
+        if(v != null){
+            ViewGroup.LayoutParams params = v.getLayoutParams();
+            int viewWidth;
+            int viewHeight;
+            switch (params.width){
+                case ViewGroup.LayoutParams.WRAP_CONTENT:
+                    viewWidth = v.getMeasuredWidth();
+                    break;
+                case ViewGroup.LayoutParams.MATCH_PARENT:
+                    viewWidth = width - paddingHorizontal;
+                    break;
+                default:
+                    viewWidth = params.width;
+                    break;
+            }
+            switch (params.height){
+                case ViewGroup.LayoutParams.WRAP_CONTENT:
+                    viewHeight = v.getMeasuredHeight();
+                    break;
+                case ViewGroup.LayoutParams.MATCH_PARENT:
+                    viewHeight = height - labelHeight - paddingVertical;
+                    break;
+                default:
+                    viewHeight = params.height;
+                    break;
+            }
 
-        if(v != null && (v.getMeasuredWidth() != width || v.getMeasuredHeight() != height))
-            v.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+            if(v.getMeasuredWidth() != viewWidth || v.getMeasuredHeight() != viewHeight)
+                v.measure(MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY));
+        }
     }
 
     @Override
@@ -857,6 +882,9 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         View v = mAdapter.getView(mSelectedPosition, mRecycler.get(type), this);
 		v.setFocusable(false);
 		v.setClickable(false);
+
+        if(v.getParent() != null)
+            ((ViewGroup)v.getParent()).removeView(v);
 
 		super.addView(v);
 

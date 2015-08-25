@@ -452,11 +452,14 @@
         <attr name="fab_animDuration" format="reference|integer"/>
     </declare-styleable>
     
-    <declare-styleable name="Spinner">  
+    <declare-styleable name="Spinner">
+        <attr name="android:gravity" />
+        <attr name="android:prompt" />
         <attr name="android:dropDownWidth" /> 
         <attr name="android:popupBackground" />
         <attr name="android:minWidth"/>
         <attr name="android:minHeight"/>
+        <attr name="spn_disableChildrenWhenDisabled" format="boolean"/>
         <attr name="spn_labelEnable" format="boolean"/>
         <attr name="spn_labelPadding" format="reference|dimension"/>
         <attr name="spn_labelTextSize" format="reference|dimension"/>

@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:minWidth="128dp"
             android:padding="8dp"
+            android:gravity="center"
             app:spn_label="Spinner with arrow"
             app:v_styleId="@array/spinner"/>
 
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content"
             android:minWidth="128dp"
             android:padding="8dp"
+            android:gravity="left"
             app:spn_label="Spinner without arrow"
             app:v_styleId="@array/spinner_no_arrow"/>
 

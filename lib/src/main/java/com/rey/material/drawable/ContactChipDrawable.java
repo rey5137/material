@@ -89,7 +89,7 @@ public class ContactChipDrawable extends Drawable{
             return;
 
         int outerWidth = Math.max(0, bounds.width() - bounds.height() - mPaddingLeft - mPaddingRight);
-        mMetrics.width = (int) FloatMath.ceil(mTextPaint.measureText(mContactName, 0, mContactName.length()));
+        mMetrics.width = Math.round(mTextPaint.measureText(mContactName, 0, mContactName.length()) + 0.5f);
 
         if(mBoringLayout == null)
             mBoringLayout = BoringLayout.make(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);

@@ -3,17 +3,12 @@ package com.rey.material.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v7.graphics.drawable.DrawableWrapper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.PaddingDrawable;
 import com.rey.material.drawable.RippleDrawable;
@@ -239,7 +234,8 @@ public class CompoundButton extends android.widget.CompoundButton implements The
 		super.setButtonDrawable(getPaddingDrawable());
 	}
 
-    protected Drawable getButtonDrawable(){
+    @Override
+    public Drawable getButtonDrawable(){
         return mPaddingDrawable.getWrappedDrawable();
     }
 
