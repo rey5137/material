@@ -14,10 +14,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(MATERIAL_KEYSTORE_FILE)
-            storePassword MATERIAL_KEYSTORE_PASSWORD
-            keyAlias MATERIAL_KEYSTORE_ALIAS
-            keyPassword MATERIAL_KEYSTORE_PASSWORD
+//            storeFile file(MATERIAL_KEYSTORE_FILE)
+//            storePassword MATERIAL_KEYSTORE_PASSWORD
+//            keyAlias MATERIAL_KEYSTORE_ALIAS
+//            keyPassword MATERIAL_KEYSTORE_PASSWORD
         }
     }
 
@@ -32,8 +32,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:cardview-v7:22.2.1'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
     compile project(':lib')

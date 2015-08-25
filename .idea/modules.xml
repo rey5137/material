@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Material.iml" filepath="$PROJECT_DIR$/Material.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/material.iml" filepath="$PROJECT_DIR$/material.iml" />
+      <module fileurl="file://$PROJECT_DIR$/material.iml" filepath="$PROJECT_DIR$/material.iml" />
     </modules>
   </component>
 </project>
