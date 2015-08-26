@@ -17,6 +17,7 @@ import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -71,6 +72,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     private int mTravelAnimationDuration = -1;
     private int mTransformAnimationDuration = -1;
     private Interpolator mInterpolator;
+    private int mBaselineOffset;
 
     private int mTouchSlop;
     private PointF mMemoPoint;
@@ -106,6 +108,14 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     }
 
     private OnPositionChangeListener mOnPositionChangeListener;
+
+    public interface ValueDescriptionProvider{
+
+        public String getDescription(int value);
+
+    }
+
+    private ValueDescriptionProvider mValueDescriptionProvider;
 
     public Slider(Context context) {
         super(context);
@@ -239,6 +249,8 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 mTextSize = a.getDimensionPixelSize(attr, 0);
             else if(attr == R.styleable.Slider_android_enabled)
                 setEnabled(a.getBoolean(attr, true));
+            else if(attr == R.styleable.Slider_sl_baselineOffset)
+                mBaselineOffset = a.getDimensionPixelOffset(attr, 0);
         }
 
         a.recycle();
@@ -312,17 +324,19 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     }
 
     private void measureText(){
+        if(mValueText == null)
+            return;
+
         Rect temp = new Rect();
-        String text = String.valueOf(mMaxValue);
         mPaint.setTextSize(mTextSize);
-        float width = mPaint.measureText(text);
+        float width = mPaint.measureText(mValueText);
         float maxWidth = (float)(mThumbRadius * Math.sqrt(2) * 2 - ThemeUtil.dpToPx(getContext(), 8));
         if(width > maxWidth){
             float textSize = mTextSize * maxWidth / width;
             mPaint.setTextSize(textSize);
         }
 
-        mPaint.getTextBounds(text, 0, text.length(), temp);
+        mPaint.getTextBounds(mValueText, 0, mValueText.length(), temp);
         mTextHeight = temp.height();
     }
 
@@ -330,7 +344,8 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         int value = getValue();
         if(mValueText == null || mMemoValue != value){
             mMemoValue = value;
-            mValueText = String.valueOf(mMemoValue);
+            mValueText = mValueDescriptionProvider == null ? String.valueOf(mMemoValue) : mValueDescriptionProvider.getDescription(mMemoValue);
+            measureText();
         }
 
         return mValueText;
@@ -478,6 +493,10 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         mOnPositionChangeListener = listener;
     }
 
+    public void setValueDescriptionProvider(ValueDescriptionProvider provider){
+        mValueDescriptionProvider = provider;
+    }
+
     @Override
     public void setBackgroundDrawable(Drawable drawable) {
         Drawable background = getBackground();
@@ -555,6 +574,44 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             mIsRtl = rtl;
             invalidate();
         }
+    }
+
+    @Override
+    public int getBaseline() {
+        int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
+        int baseline;
+
+        if(mDiscreteMode){
+            int fullHeight = (int)(mThumbRadius * (4 + Math.sqrt(2)));
+            int height = mThumbRadius * 2;
+            switch (align) {
+                case Gravity.TOP:
+                    baseline = Math.max(getPaddingTop(), fullHeight - height) + mThumbRadius;
+                    break;
+                case Gravity.BOTTOM:
+                    baseline = getMeasuredHeight() - getPaddingBottom();
+                    break;
+                default:
+                    baseline = Math.round(Math.max((getMeasuredHeight() - height) / 2f, fullHeight - height) + mThumbRadius);
+                    break;
+            }
+        }
+        else{
+            int height = mThumbFocusRadius * 2;
+            switch (align) {
+                case Gravity.TOP:
+                    baseline = getPaddingTop() + mThumbFocusRadius;
+                    break;
+                case Gravity.BOTTOM:
+                    baseline = getMeasuredHeight() - getPaddingBottom();
+                    break;
+                default:
+                    baseline = Math.round((getMeasuredHeight() - height) / 2f + mThumbFocusRadius);
+                    break;
+            }
+        }
+
+        return baseline + mBaselineOffset;
     }
 
     @Override
