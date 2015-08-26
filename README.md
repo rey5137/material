@@ -97,7 +97,7 @@ You can try the SNAPSHOT version:
 
 ```gradle
 dependencies {
-   compile 'com.github.rey5137:material:1.2.2-SNAPSHOT'
+   compile 'com.github.rey5137:material:1.2.1.6-SNAPSHOT'
 }
 ```
 Make sure to add the snapshot repository:
