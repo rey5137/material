@@ -26,7 +26,7 @@
             android:gravity="center"
             android:padding="16dp"
             app:sl_value="50"
-            app:v_styleId="@array/slider"/>
+            app:v_styleId="@array/slider" />
 
         <com.rey.material.widget.TextView
             android:id="@+id/slider_tv_continuous"

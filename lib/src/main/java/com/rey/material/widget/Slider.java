@@ -34,7 +34,7 @@ import com.rey.material.util.ViewUtil;
 /**
  * Created by Ret on 3/18/2015.
  */
-public class Slider extends View implements ThemeManager.OnThemeChangedListener{
+public class Slider extends View implements ThemeManager.OnThemeChangedListener {
 
     private RippleManager mRippleManager;
     protected int mStyleId;
@@ -75,6 +75,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     private float mThumbCurrentRadius;
     private float mThumbFillPercent;
     private boolean mAlwaysFillThumb = false;
+    private boolean mAlwaysShowValue;
     private int mTextHeight;
     private int mMemoValue;
     private String mValueText;
@@ -88,14 +89,14 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     /**
      * Interface definition for a callback to be invoked when thumb's position changed.
      */
-    public interface OnPositionChangeListener{
+    public interface OnPositionChangeListener {
         /**
          * Called when thumb's position changed.
          *
-         * @param view The view fire this event.
+         * @param view     The view fire this event.
          * @param fromUser Indicate the change is from user touch event or not.
-         * @param oldPos The old position of thumb.
-         * @param newPos The new position of thumb.
+         * @param oldPos   The old position of thumb.
+         * @param newPos   The new position of thumb.
          * @param oldValue The old value.
          * @param newValue The new value.
          */
@@ -128,7 +129,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         //default color
@@ -152,12 +153,12 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
+    public void applyStyle(int resId) {
         ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Slider, defStyleAttr, defStyleRes);
@@ -169,108 +170,101 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         String familyName = null;
         int style = Typeface.NORMAL;
         boolean textStyleDefined = false;
-        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+        for (int i = 0, count = a.getIndexCount(); i < count; i++) {
             int attr = a.getIndex(i);
-            if(attr == R.styleable.Slider_sl_discreteMode)
+            if (attr == R.styleable.Slider_sl_discreteMode)
                 mDiscreteMode = a.getBoolean(attr, false);
-            else if(attr == R.styleable.Slider_sl_primaryColor)
+            else if (attr == R.styleable.Slider_sl_alwaysShowValue)
+                mAlwaysShowValue = a.getBoolean(attr, false);
+            else if (attr == R.styleable.Slider_sl_primaryColor)
                 mPrimaryColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.Slider_sl_secondaryColor)
+            else if (attr == R.styleable.Slider_sl_secondaryColor)
                 mSecondaryColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.Slider_sl_trackSize)
+            else if (attr == R.styleable.Slider_sl_trackSize)
                 mTrackSize = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.Slider_sl_trackCap) {
+            else if (attr == R.styleable.Slider_sl_trackCap) {
                 int cap = a.getInteger(attr, 0);
-                if(cap == 0)
+                if (cap == 0)
                     mTrackCap = Paint.Cap.BUTT;
-                else if(cap == 1)
+                else if (cap == 1)
                     mTrackCap = Paint.Cap.ROUND;
                 else
                     mTrackCap = Paint.Cap.SQUARE;
-            }
-            else if(attr == R.styleable.Slider_sl_thumbBorderSize)
+            } else if (attr == R.styleable.Slider_sl_thumbBorderSize)
                 mThumbBorderSize = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.Slider_sl_thumbRadius)
+            else if (attr == R.styleable.Slider_sl_thumbRadius)
                 mThumbRadius = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.Slider_sl_thumbFocusRadius)
+            else if (attr == R.styleable.Slider_sl_thumbFocusRadius)
                 mThumbFocusRadius = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.Slider_sl_travelAnimDuration) {
+            else if (attr == R.styleable.Slider_sl_travelAnimDuration) {
                 mTravelAnimationDuration = a.getInteger(attr, 0);
                 mTransformAnimationDuration = mTravelAnimationDuration;
-            }
-            else if(attr == R.styleable.Slider_sl_alwaysFillThumb) {
+            } else if (attr == R.styleable.Slider_sl_alwaysFillThumb) {
                 mAlwaysFillThumb = a.getBoolean(R.styleable.Slider_sl_alwaysFillThumb, false);
-            }
-            else if(attr == R.styleable.Slider_sl_interpolator){
+            } else if (attr == R.styleable.Slider_sl_interpolator) {
                 int resId = a.getResourceId(R.styleable.Slider_sl_interpolator, 0);
                 mInterpolator = AnimationUtils.loadInterpolator(context, resId);
-            }
-            else if(attr == R.styleable.Slider_android_gravity)
+            } else if (attr == R.styleable.Slider_android_gravity)
                 mGravity = a.getInteger(attr, 0);
-            else if(attr == R.styleable.Slider_sl_minValue) {
+            else if (attr == R.styleable.Slider_sl_minValue) {
                 minValue = a.getInteger(attr, 0);
                 valueRangeDefined = true;
-            }
-            else if(attr == R.styleable.Slider_sl_maxValue) {
+            } else if (attr == R.styleable.Slider_sl_maxValue) {
                 maxValue = a.getInteger(attr, 0);
                 valueRangeDefined = true;
-            }
-            else if(attr == R.styleable.Slider_sl_stepValue)
+            } else if (attr == R.styleable.Slider_sl_stepValue)
                 mStepValue = a.getInteger(attr, 0);
-            else if(attr == R.styleable.Slider_sl_value) {
+            else if (attr == R.styleable.Slider_sl_value) {
                 value = a.getInteger(attr, 0);
                 valueDefined = true;
-            }
-            else if(attr == R.styleable.Slider_sl_fontFamily) {
+            } else if (attr == R.styleable.Slider_sl_fontFamily) {
                 familyName = a.getString(attr);
                 textStyleDefined = true;
-            }
-            else if(attr == R.styleable.Slider_sl_textStyle) {
+            } else if (attr == R.styleable.Slider_sl_textStyle) {
                 style = a.getInteger(attr, 0);
                 textStyleDefined = true;
-            }
-            else if(attr == R.styleable.Slider_sl_textColor)
+            } else if (attr == R.styleable.Slider_sl_textColor)
                 mTextColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.Slider_sl_textSize)
+            else if (attr == R.styleable.Slider_sl_textSize)
                 mTextSize = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.Slider_android_enabled)
+            else if (attr == R.styleable.Slider_android_enabled)
                 setEnabled(a.getBoolean(attr, true));
         }
 
         a.recycle();
 
-        if(mTrackSize < 0)
+        if (mTrackSize < 0)
             mTrackSize = ThemeUtil.dpToPx(context, 2);
 
-        if(mThumbBorderSize < 0)
+        if (mThumbBorderSize < 0)
             mThumbBorderSize = ThemeUtil.dpToPx(context, 2);
 
-        if(mThumbRadius < 0)
+        if (mThumbRadius < 0)
             mThumbRadius = ThemeUtil.dpToPx(context, 10);
 
-        if(mThumbFocusRadius < 0)
+        if (mThumbFocusRadius < 0)
             mThumbFocusRadius = ThemeUtil.dpToPx(context, 14);
 
-        if(mTravelAnimationDuration < 0){
+        if (mTravelAnimationDuration < 0) {
             mTravelAnimationDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
             mTransformAnimationDuration = mTravelAnimationDuration;
         }
 
-        if(mInterpolator == null)
+        if (mInterpolator == null)
             mInterpolator = new DecelerateInterpolator();
 
-        if(valueRangeDefined)
+        if (valueRangeDefined)
             setValueRange(minValue, maxValue, false);
 
-        if(valueDefined)
+        if (valueDefined)
             setValue(value, false);
-        else if(mThumbPosition < 0)
+        else if (mThumbPosition < 0)
             setValue(mMinValue, false);
 
-        if(textStyleDefined)
+        if (textStyleDefined)
             mTypeface = TypefaceUtil.load(context, familyName, style);
 
-        if(mTextSize < 0)
+        if (mTextSize < 0)
             mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_small_material);
 
         mPaint.setTextSize(mTextSize);
@@ -284,7 +278,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
+        if (mCurrentStyle != style) {
             mCurrentStyle = style;
             applyStyle(mCurrentStyle);
         }
@@ -293,7 +287,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(mStyleId != 0) {
+        if (mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
             onThemeChanged(null);
         }
@@ -303,17 +297,17 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mRippleManager.cancelRipple(this);
-        if(mStyleId != 0)
+        if (mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
-    private void measureText(){
+    private void measureText() {
         Rect temp = new Rect();
         String text = String.valueOf(mMaxValue);
         mPaint.setTextSize(mTextSize);
         float width = mPaint.measureText(text);
-        float maxWidth = (float)(mThumbRadius * Math.sqrt(2) * 2 - ThemeUtil.dpToPx(getContext(), 8));
-        if(width > maxWidth){
+        float maxWidth = (float) (mThumbRadius * Math.sqrt(2) * 2 - ThemeUtil.dpToPx(getContext(), 8));
+        if (width > maxWidth) {
             float textSize = mTextSize * maxWidth / width;
             mPaint.setTextSize(textSize);
         }
@@ -322,9 +316,9 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         mTextHeight = temp.height();
     }
 
-    private String getValueText(){
+    private String getValueText() {
         int value = getValue();
-        if(mValueText == null || mMemoValue != value){
+        if (mValueText == null || mMemoValue != value) {
             mMemoValue = value;
             mValueText = String.valueOf(mMemoValue);
         }
@@ -335,32 +329,33 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     /**
      * @return The minimum selectable value.
      */
-    public int getMinValue(){
+    public int getMinValue() {
         return mMinValue;
     }
 
     /**
      * @return The maximum selectable value.
      */
-    public int getMaxValue(){
+    public int getMaxValue() {
         return mMaxValue;
     }
 
     /**
      * @return The step value.
      */
-    public int getStepValue(){
+    public int getStepValue() {
         return mStepValue;
     }
 
     /**
      * Set the randge of selectable value.
-     * @param min The minimum selectable value.
-     * @param max The maximum selectable value.
+     *
+     * @param min       The minimum selectable value.
+     * @param max       The maximum selectable value.
      * @param animation Indicate that should show animation when thumb's current position changed.
      */
-    public void setValueRange(int min, int max, boolean animation){
-        if(max < min || (min == mMinValue && max == mMaxValue))
+    public void setValueRange(int min, int max, boolean animation) {
+        if (max < min || (min == mMinValue && max == mMaxValue))
             return;
 
         float oldValue = getExactValue();
@@ -369,54 +364,54 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         mMaxValue = max;
 
         setValue(oldValue, animation);
-        if(mOnPositionChangeListener != null && oldPosition == getPosition() && oldValue != getExactValue())
+        if (mOnPositionChangeListener != null && oldPosition == getPosition() && oldValue != getExactValue())
             mOnPositionChangeListener.onPositionChanged(this, false, oldPosition, oldPosition, Math.round(oldValue), getValue());
     }
 
     /**
      * @return The selected value.
      */
-    public int getValue(){
+    public int getValue() {
         return Math.round(getExactValue());
     }
 
     /**
      * @return The exact selected value.
      */
-    public float getExactValue(){
+    public float getExactValue() {
         return (mMaxValue - mMinValue) * getPosition() + mMinValue;
     }
 
     /**
      * @return The current position of thumb in [0..1] range.
      */
-    public float getPosition(){
+    public float getPosition() {
         return mThumbMoveAnimator.isRunning() ? mThumbMoveAnimator.getPosition() : mThumbPosition;
     }
 
     /**
      * Set current position of thumb.
-     * @param pos The position in [0..1] range.
+     *
+     * @param pos       The position in [0..1] range.
      * @param animation Indicate that should show animation when change thumb's position.
      */
-    public void setPosition(float pos, boolean animation){
+    public void setPosition(float pos, boolean animation) {
         setPosition(pos, animation, animation, false);
     }
 
-    private void setPosition(float pos, boolean moveAnimation, boolean transformAnimation, boolean fromUser){
+    private void setPosition(float pos, boolean moveAnimation, boolean transformAnimation, boolean fromUser) {
         boolean change = getPosition() != pos;
         int oldValue = getValue();
         float oldPos = getPosition();
 
-        if(!moveAnimation || !mThumbMoveAnimator.startAnimation(pos)){
+        if (!moveAnimation || !mThumbMoveAnimator.startAnimation(pos)) {
             mThumbPosition = pos;
 
-            if(transformAnimation) {
-                if(!mIsDragging)
+            if (transformAnimation) {
+                if (!mIsDragging)
                     mThumbRadiusAnimator.startAnimation(mThumbRadius);
                 mThumbStrokeAnimator.startAnimation(pos == 0 ? 0 : 1);
-            }
-            else{
+            } else {
                 mThumbCurrentRadius = mThumbRadius;
                 mThumbFillPercent = (mAlwaysFillThumb || mThumbPosition != 0) ? 1 : 0;
                 invalidate();
@@ -426,12 +421,13 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         int newValue = getValue();
         float newPos = getPosition();
 
-        if(change && mOnPositionChangeListener != null)
+        if (change && mOnPositionChangeListener != null)
             mOnPositionChangeListener.onPositionChanged(this, fromUser, oldPos, newPos, oldValue, newValue);
     }
 
     /**
      * Changes the primary color and invalidates the view to force a redraw.
+     *
      * @param color New color to assign to mPrimaryColor.
      */
     public void setPrimaryColor(int color) {
@@ -441,6 +437,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     /**
      * Changes the secondary color and invalidates the view to force a redraw.
+     *
      * @param color New color to assign to mSecondaryColor.
      */
     public void setSecondaryColor(int color) {
@@ -450,6 +447,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     /**
      * Set if we want the thumb to always be filled.
+     *
      * @param alwaysFillThumb Do we want it to always be filled.
      */
     public void setAlwaysFillThumb(boolean alwaysFillThumb) {
@@ -458,35 +456,37 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     /**
      * Set the selected value of this Slider.
-     * @param value The selected value.
+     *
+     * @param value     The selected value.
      * @param animation Indicate that should show animation when change thumb's position.
      */
-    public void setValue(float value, boolean animation){
+    public void setValue(float value, boolean animation) {
         value = Math.min(mMaxValue, Math.max(value, mMinValue));
         setPosition((value - mMinValue) / (mMaxValue - mMinValue), animation);
     }
 
     /**
      * Set a listener will be called when thumb's position changed.
+     *
      * @param listener The {@link Slider.OnPositionChangeListener} will be called.
      */
-    public void setOnPositionChangeListener(OnPositionChangeListener listener){
+    public void setOnPositionChangeListener(OnPositionChangeListener listener) {
         mOnPositionChangeListener = listener;
     }
 
     @Override
     public void setBackgroundDrawable(Drawable drawable) {
         Drawable background = getBackground();
-        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
+        if (background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
             ((RippleDrawable) background).setBackgroundDrawable(drawable);
         else
             super.setBackgroundDrawable(drawable);
     }
 
-    protected RippleManager getRippleManager(){
-        if(mRippleManager == null){
-            synchronized (RippleManager.class){
-                if(mRippleManager == null)
+    protected RippleManager getRippleManager() {
+        if (mRippleManager == null) {
+            synchronized (RippleManager.class) {
+                if (mRippleManager == null)
                     mRippleManager = new RippleManager();
             }
         }
@@ -536,18 +536,18 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     @Override
     public int getSuggestedMinimumWidth() {
-        return (mDiscreteMode ? (int)(mThumbRadius * Math.sqrt(2)) : mThumbFocusRadius) * 4 + getPaddingLeft() + getPaddingRight();
+        return (mDiscreteMode ? (int) (mThumbRadius * Math.sqrt(2)) : mThumbFocusRadius) * 4 + getPaddingLeft() + getPaddingRight();
     }
 
     @Override
     public int getSuggestedMinimumHeight() {
-        return (mDiscreteMode ? (int)(mThumbRadius * (4 + Math.sqrt(2))) : mThumbFocusRadius * 2) + getPaddingTop() + getPaddingBottom();
+        return (mDiscreteMode ? (int) (mThumbRadius * (4 + Math.sqrt(2))) : mThumbFocusRadius * 2) + getPaddingTop() + getPaddingBottom();
     }
 
     @Override
     public void onRtlPropertiesChanged(int layoutDirection) {
         boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
-        if(mIsRtl != rtl) {
+        if (mIsRtl != rtl) {
             mIsRtl = rtl;
             invalidate();
         }
@@ -560,8 +560,8 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
         int align = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-        if(mDiscreteMode){
-            int fullHeight = (int)(mThumbRadius * (4 + Math.sqrt(2)));
+        if (mDiscreteMode) {
+            int fullHeight = (int) (mThumbRadius * (4 + Math.sqrt(2)));
             int height = mThumbRadius * 2;
             switch (align) {
                 case Gravity.TOP:
@@ -577,8 +577,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                     mDrawRect.bottom = mDrawRect.top + height;
                     break;
             }
-        }
-        else{
+        } else {
             int height = mThumbFocusRadius * 2;
             switch (align) {
                 case Gravity.TOP:
@@ -597,19 +596,19 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         }
     }
 
-    private boolean isThumbHit(float x, float y, float radius){
+    private boolean isThumbHit(float x, float y, float radius) {
         float cx = mDrawRect.width() * mThumbPosition + mDrawRect.left;
         float cy = mDrawRect.centerY();
 
         return x >= cx - radius && x <= cx + radius && y >= cy - radius && y < cy + radius;
     }
 
-    private double distance(float x1, float y1, float x2, float y2){
+    private double distance(float x1, float y1, float x2, float y2) {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
-    private float correctPosition(float position){
-        if(!mDiscreteMode)
+    private float correctPosition(float position) {
+        if (!mDiscreteMode)
             return position;
 
         int totalOffset = mMaxValue - mMinValue;
@@ -618,10 +617,10 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         int lowerValue = stepOffset * mStepValue;
         int higherValue = Math.min(totalOffset, (stepOffset + 1) * mStepValue);
 
-        if(valueOffset - lowerValue < higherValue - valueOffset)
-            position = lowerValue / (float)totalOffset;
+        if (valueOffset - lowerValue < higherValue - valueOffset)
+            position = lowerValue / (float) totalOffset;
         else
-            position = higherValue / (float)totalOffset;
+            position = higherValue / (float) totalOffset;
 
         return position;
     }
@@ -631,28 +630,27 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         super.onTouchEvent(event);
         getRippleManager().onTouchEvent(event);
 
-        if(!isEnabled())
+        if (!isEnabled())
             return false;
 
         float x = event.getX();
         float y = event.getY();
-        if(mIsRtl)
+        if (mIsRtl)
             x = 2 * mDrawRect.centerX() - x;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mIsDragging = isThumbHit(x, y, mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(x, y);
-                if(mIsDragging)
+                if (mIsDragging)
                     mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(mIsDragging) {
-                    if(mDiscreteMode) {
+                if (mIsDragging) {
+                    if (mDiscreteMode) {
                         float position = correctPosition(Math.min(1f, Math.max(0f, (x - mDrawRect.left) / mDrawRect.width())));
                         setPosition(position, true, true, true);
-                    }
-                    else{
+                    } else {
                         float offset = (x - mMemoPoint.x) / mDrawRect.width();
                         float position = Math.min(1f, Math.max(0f, mThumbPosition + offset));
                         setPosition(position, false, true, true);
@@ -662,17 +660,16 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if(mIsDragging) {
+                if (mIsDragging) {
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
-                }
-                else if(distance(mMemoPoint.x, mMemoPoint.y, x, y) <= mTouchSlop){
+                } else if (distance(mMemoPoint.x, mMemoPoint.y, x, y) <= mTouchSlop) {
                     float position = correctPosition(Math.min(1f, Math.max(0f, (x - mDrawRect.left) / mDrawRect.width())));
                     setPosition(position, true, true, true);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                if(mIsDragging) {
+                if (mIsDragging) {
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
                 }
@@ -682,15 +679,15 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         return true;
     }
 
-    private void getTrackPath(float x, float y, float radius){
+    private void getTrackPath(float x, float y, float radius) {
         float halfStroke = mTrackSize / 2f;
 
         mLeftTrackPath.reset();
         mRightTrackPath.reset();
 
-        if(radius - 1f < halfStroke){
-            if(mTrackCap != Paint.Cap.ROUND){
-                if(x > mDrawRect.left){
+        if (radius - 1f < halfStroke) {
+            if (mTrackCap != Paint.Cap.ROUND) {
+                if (x > mDrawRect.left) {
                     mLeftTrackPath.moveTo(mDrawRect.left, y - halfStroke);
                     mLeftTrackPath.lineTo(x, y - halfStroke);
                     mLeftTrackPath.lineTo(x, y + halfStroke);
@@ -698,16 +695,15 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                     mLeftTrackPath.close();
                 }
 
-                if(x < mDrawRect.right){
+                if (x < mDrawRect.right) {
                     mRightTrackPath.moveTo(mDrawRect.right, y + halfStroke);
                     mRightTrackPath.lineTo(x, y + halfStroke);
                     mRightTrackPath.lineTo(x, y - halfStroke);
                     mRightTrackPath.lineTo(mDrawRect.right, y - halfStroke);
                     mRightTrackPath.close();
                 }
-            }
-            else{
-                if(x > mDrawRect.left){
+            } else {
+                if (x > mDrawRect.left) {
                     mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mTrackSize, y + halfStroke);
                     mLeftTrackPath.arcTo(mTempRect, 90, 180);
                     mLeftTrackPath.lineTo(x, y - halfStroke);
@@ -715,7 +711,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                     mLeftTrackPath.close();
                 }
 
-                if(x < mDrawRect.right){
+                if (x < mDrawRect.right) {
                     mTempRect.set(mDrawRect.right - mTrackSize, y - halfStroke, mDrawRect.right, y + halfStroke);
                     mRightTrackPath.arcTo(mTempRect, 270, 180);
                     mRightTrackPath.lineTo(x, y + halfStroke);
@@ -723,31 +719,29 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                     mRightTrackPath.close();
                 }
             }
-        }
-        else{
-            if(mTrackCap != Paint.Cap.ROUND){
+        } else {
+            if (mTrackCap != Paint.Cap.ROUND) {
                 mTempRect.set(x - radius + 1f, y - radius + 1f, x + radius - 1f, y + radius - 1f);
-                float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
+                float angle = (float) (Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
 
-                if(x - radius > mDrawRect.left){
+                if (x - radius > mDrawRect.left) {
                     mLeftTrackPath.moveTo(mDrawRect.left, y - halfStroke);
                     mLeftTrackPath.arcTo(mTempRect, 180 + angle, -angle * 2);
                     mLeftTrackPath.lineTo(mDrawRect.left, y + halfStroke);
                     mLeftTrackPath.close();
                 }
 
-                if(x + radius < mDrawRect.right){
+                if (x + radius < mDrawRect.right) {
                     mRightTrackPath.moveTo(mDrawRect.right, y - halfStroke);
                     mRightTrackPath.arcTo(mTempRect, -angle, angle * 2);
                     mRightTrackPath.lineTo(mDrawRect.right, y + halfStroke);
                     mRightTrackPath.close();
                 }
-            }
-            else{
-                float angle = (float)(Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
+            } else {
+                float angle = (float) (Math.asin(halfStroke / (radius - 1f)) / Math.PI * 180);
 
-                if(x - radius > mDrawRect.left){
-                    float angle2 = (float)(Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
+                if (x - radius > mDrawRect.left) {
+                    float angle2 = (float) (Math.acos(Math.max(0f, (mDrawRect.left + halfStroke - x + radius) / halfStroke)) / Math.PI * 180);
 
                     mTempRect.set(mDrawRect.left, y - halfStroke, mDrawRect.left + mTrackSize, y + halfStroke);
                     mLeftTrackPath.arcTo(mTempRect, 180 - angle2, angle2 * 2);
@@ -757,11 +751,11 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                     mLeftTrackPath.close();
                 }
 
-                if(x + radius < mDrawRect.right){
-                    float angle2 = (float)Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
+                if (x + radius < mDrawRect.right) {
+                    float angle2 = (float) Math.acos(Math.max(0f, (x + radius - mDrawRect.right + halfStroke) / halfStroke));
                     mRightTrackPath.moveTo((float) (mDrawRect.right - halfStroke + Math.cos(angle2) * halfStroke), (float) (y + Math.sin(angle2) * halfStroke));
 
-                    angle2 = (float)(angle2 / Math.PI * 180);
+                    angle2 = (float) (angle2 / Math.PI * 180);
                     mTempRect.set(mDrawRect.right - mTrackSize, y - halfStroke, mDrawRect.right, y + halfStroke);
                     mRightTrackPath.arcTo(mTempRect, angle2, -angle2 * 2);
 
@@ -773,8 +767,8 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         }
     }
 
-    private Path getMarkPath(Path path, float cx, float cy, float radius, float factor){
-        if(path == null)
+    private Path getMarkPath(Path path, float cx, float cy, float radius, float factor) {
+        if (path == null)
             path = new Path();
         else
             path.reset();
@@ -790,15 +784,15 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         float nCy = cy - radius * factor;
 
         // calculate first arc
-        float angle = (float)(Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
-        float nRadius = (float)distance(nCx, nCy, x1, y1);
+        float angle = (float) (Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
+        float nRadius = (float) distance(nCx, nCy, x1, y1);
         mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
         path.moveTo(x1, y1);
         path.arcTo(mTempRect, 180 - angle, 180 + angle * 2);
 
-        if(factor > 0.9f)
+        if (factor > 0.9f)
             path.lineTo(x3, y3);
-        else{
+        else {
             // find center point for second arc
             float x4 = (x2 + x3) / 2;
             float y4 = (y2 + y3) / 2;
@@ -806,22 +800,22 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             double d1 = distance(x2, y2, x4, y4);
             double d2 = d1 / Math.tan(Math.PI * (1f - factor) / 4);
 
-            nCx = (float)(x4 - Math.cos(Math.PI / 4) * d2);
-            nCy = (float)(y4 - Math.sin(Math.PI / 4) * d2);
+            nCx = (float) (x4 - Math.cos(Math.PI / 4) * d2);
+            nCy = (float) (y4 - Math.sin(Math.PI / 4) * d2);
 
             // calculate second arc
-            angle = (float)(Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
-            float angle2 = (float)(Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
-            nRadius = (float)distance(nCx, nCy, x2, y2);
+            angle = (float) (Math.atan2(y2 - nCy, x2 - nCx) * 180 / Math.PI);
+            float angle2 = (float) (Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
+            nRadius = (float) distance(nCx, nCy, x2, y2);
             mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
             path.arcTo(mTempRect, angle, angle2 - angle);
 
             // calculate third arc
             nCx = cx * 2 - nCx;
-            angle = (float)(Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
-            angle2 = (float)(Math.atan2(y1 - nCy, x1 - nCx) * 180 / Math.PI);
+            angle = (float) (Math.atan2(y3 - nCy, x3 - nCx) * 180 / Math.PI);
+            angle2 = (float) (Math.atan2(y1 - nCy, x1 - nCx) * 180 / Math.PI);
             mTempRect.set(nCx - nRadius, nCy - nRadius, nCx + nRadius, nCy + nRadius);
-            path.arcTo(mTempRect, angle + (float)Math.PI / 4, angle2 - angle);
+            path.arcTo(mTempRect, angle + (float) Math.PI / 4, angle2 - angle);
         }
 
         path.close();
@@ -834,7 +828,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         super.draw(canvas);
 
         float x = mDrawRect.width() * mThumbPosition + mDrawRect.left;
-        if(mIsRtl)
+        if (mIsRtl)
             x = 2 * mDrawRect.centerX() - x;
         float y = mDrawRect.centerY();
         int filledPrimaryColor = ColorUtil.getMiddleColor(mSecondaryColor, isEnabled() ? mPrimaryColor : mSecondaryColor, mThumbFillPercent);
@@ -847,66 +841,82 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         canvas.drawPath(mLeftTrackPath, mPaint);
 
         mPaint.setColor(filledPrimaryColor);
-        if(mDiscreteMode){
+        if (mDiscreteMode) {
             float factor = 1f - mThumbCurrentRadius / mThumbRadius;
 
-            if(factor > 0){
-                mMarkPath = getMarkPath(mMarkPath, x, y, mThumbRadius, factor);
-                mPaint.setStyle(Paint.Style.FILL);
-                int saveCount = canvas.save();
-                canvas.translate(0, -mThumbRadius * 2 * factor);
-                canvas.drawPath(mMarkPath, mPaint);
-                mPaint.setColor(ColorUtil.getColor(mTextColor, factor));
-                canvas.drawText(getValueText(), x, y + mTextHeight / 2f - mThumbRadius * factor, mPaint);
-                canvas.restoreToCount(saveCount);
-            }
+            if (factor > 0 && !mAlwaysShowValue)
+                drawValue(canvas, factor, x, y, filledPrimaryColor);
 
             float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
-            if(radius > 0) {
+            if (radius > 0) {
                 mPaint.setColor(filledPrimaryColor);
                 canvas.drawCircle(x, y, radius, mPaint);
             }
-        }
-        else{
+
+            if(mAlwaysShowValue)
+                drawValue(canvas, factor, x, y, filledPrimaryColor);
+
+        } else {
             float radius = isEnabled() ? mThumbCurrentRadius : mThumbCurrentRadius - mThumbBorderSize;
-            if(mThumbFillPercent == 1)
+            if (mThumbFillPercent == 1)
                 mPaint.setStyle(Paint.Style.FILL);
-            else{
+            else {
                 float strokeWidth = (radius - mThumbBorderSize) * mThumbFillPercent + mThumbBorderSize;
                 radius = radius - strokeWidth / 2f;
                 mPaint.setStyle(Paint.Style.STROKE);
                 mPaint.setStrokeWidth(strokeWidth);
             }
             canvas.drawCircle(x, y, radius, mPaint);
+
         }
     }
 
-    class ThumbRadiusAnimator implements Runnable{
+    private void drawValue(@NonNull Canvas canvas, float factor, float x, float y, int filledPrimaryColor){
+        mPaint.setColor(filledPrimaryColor);
+        mMarkPath = getMarkPath(mMarkPath, x, y, mThumbRadius, factor);
+        mPaint.setStyle(Paint.Style.FILL);
+        int saveCount = canvas.save();
+        canvas.translate(0, -mThumbRadius * 2 * factor);
+        canvas.drawPath(mMarkPath, mPaint);
+        mPaint.setColor(mTextColor);
+
+        float sizeMod = 1;
+        if(mAlwaysShowValue){
+            sizeMod = (factor / 4) + 0.75f;
+            mPaint.setColor(mTextColor);
+        } else
+            mPaint.setColor(ColorUtil.getColor(mTextColor, factor));
+
+        mPaint.setTextSize(mTextSize * sizeMod);
+        canvas.drawText(getValueText(), x, y + (mTextHeight * sizeMod) / 2f - mThumbRadius * factor, mPaint);
+        canvas.restoreToCount(saveCount);
+    }
+
+    class ThumbRadiusAnimator implements Runnable {
 
         boolean mRunning = false;
         long mStartTime;
         float mStartRadius;
         int mRadius;
 
-        public void resetAnimation(){
+        public void resetAnimation() {
             mStartTime = SystemClock.uptimeMillis();
             mStartRadius = mThumbCurrentRadius;
         }
 
         public boolean startAnimation(int radius) {
-            if(mThumbCurrentRadius == radius)
+            if (mThumbCurrentRadius == radius)
                 return false;
 
             mRadius = radius;
 
-            if(getHandler() != null){
+            if (getHandler() != null) {
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 invalidate();
                 return true;
-            }
-            else {
+            } else {
                 mThumbCurrentRadius = mRadius;
                 invalidate();
                 return false;
@@ -916,7 +926,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         public void stopAnimation() {
             mRunning = false;
             mThumbCurrentRadius = mRadius;
-            if(getHandler() != null)
+            if (getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -924,16 +934,16 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         @Override
         public void run() {
             long curTime = SystemClock.uptimeMillis();
-            float progress = Math.min(1f, (float)(curTime - mStartTime) / mTransformAnimationDuration);
+            float progress = Math.min(1f, (float) (curTime - mStartTime) / mTransformAnimationDuration);
             float value = mInterpolator.getInterpolation(progress);
 
             mThumbCurrentRadius = (mRadius - mStartRadius) * value + mStartRadius;
 
-            if(progress == 1f)
+            if (progress == 1f)
                 stopAnimation();
 
-            if(mRunning) {
-                if(getHandler() != null)
+            if (mRunning) {
+                if (getHandler() != null)
                     getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 else
                     stopAnimation();
@@ -944,32 +954,31 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     }
 
-    class ThumbStrokeAnimator implements Runnable{
+    class ThumbStrokeAnimator implements Runnable {
 
         boolean mRunning = false;
         long mStartTime;
         float mStartFillPercent;
         int mFillPercent;
 
-        public void resetAnimation(){
+        public void resetAnimation() {
             mStartTime = SystemClock.uptimeMillis();
             mStartFillPercent = mThumbFillPercent;
         }
 
         public boolean startAnimation(int fillPercent) {
-            if(mThumbFillPercent == fillPercent)
+            if (mThumbFillPercent == fillPercent)
                 return false;
 
             mFillPercent = fillPercent;
 
-            if(getHandler() != null){
+            if (getHandler() != null) {
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 invalidate();
                 return true;
-            }
-            else {
+            } else {
                 mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
                 invalidate();
                 return false;
@@ -979,7 +988,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         public void stopAnimation() {
             mRunning = false;
             mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
-            if(getHandler() != null)
+            if (getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -987,16 +996,16 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         @Override
         public void run() {
             long curTime = SystemClock.uptimeMillis();
-            float progress = Math.min(1f, (float)(curTime - mStartTime) / mTransformAnimationDuration);
+            float progress = Math.min(1f, (float) (curTime - mStartTime) / mTransformAnimationDuration);
             float value = mInterpolator.getInterpolation(progress);
 
             mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
-            if(progress == 1f)
+            if (progress == 1f)
                 stopAnimation();
 
-            if(mRunning) {
-                if(getHandler() != null)
+            if (mRunning) {
+                if (getHandler() != null)
                     getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 else
                     stopAnimation();
@@ -1007,7 +1016,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
     }
 
-    class ThumbMoveAnimator implements Runnable{
+    class ThumbMoveAnimator implements Runnable {
 
         boolean mRunning = false;
         long mStartTime;
@@ -1018,15 +1027,15 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         float mFillPercent;
         int mDuration;
 
-        public boolean isRunning(){
+        public boolean isRunning() {
             return mRunning;
         }
 
-        public float getPosition(){
+        public float getPosition() {
             return mPosition;
         }
 
-        public void resetAnimation(){
+        public void resetAnimation() {
             mStartTime = SystemClock.uptimeMillis();
             mStartPosition = mThumbPosition;
             mStartFillPercent = mThumbFillPercent;
@@ -1036,19 +1045,18 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         }
 
         public boolean startAnimation(float position) {
-            if(mThumbPosition == position)
+            if (mThumbPosition == position)
                 return false;
 
             mPosition = position;
 
-            if(getHandler() != null){
+            if (getHandler() != null) {
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 invalidate();
                 return true;
-            }
-            else {
+            } else {
                 mThumbPosition = position;
                 invalidate();
                 return false;
@@ -1060,7 +1068,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
             mThumbCurrentRadius = mDiscreteMode && mIsDragging ? 0 : mThumbRadius;
             mThumbFillPercent = mAlwaysFillThumb ? 1 : mFillPercent;
             mThumbPosition = mPosition;
-            if(getHandler() != null)
+            if (getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -1068,44 +1076,41 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
         @Override
         public void run() {
             long curTime = SystemClock.uptimeMillis();
-            float progress = Math.min(1f, (float)(curTime - mStartTime) / mDuration);
+            float progress = Math.min(1f, (float) (curTime - mStartTime) / mDuration);
             float value = mInterpolator.getInterpolation(progress);
 
-            if(mDiscreteMode){
-                if(mIsDragging) {
+            if (mDiscreteMode) {
+                if (mIsDragging) {
                     mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
                     mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
-                }
-                else{
-                    float p1 = (float)mTravelAnimationDuration / mDuration;
-                    float p2 = (float)(mTravelAnimationDuration + mTransformAnimationDuration)/ mDuration;
-                    if(progress < p1) {
+                } else {
+                    float p1 = (float) mTravelAnimationDuration / mDuration;
+                    float p2 = (float) (mTravelAnimationDuration + mTransformAnimationDuration) / mDuration;
+                    if (progress < p1) {
                         value = mInterpolator.getInterpolation(progress / p1);
                         mThumbCurrentRadius = mStartRadius * (1f - value);
                         mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
                         mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
-                    }
-                    else if(progress > p2){
+                    } else if (progress > p2) {
                         mThumbCurrentRadius = mThumbRadius * (progress - p2) / (1 - p2);
                     }
                 }
-            }
-            else{
+            } else {
                 mThumbPosition = (mPosition - mStartPosition) * value + mStartPosition;
                 mThumbFillPercent = mAlwaysFillThumb ? 1 : ((mFillPercent - mStartFillPercent) * value + mStartFillPercent);
 
-                if(progress < 0.2)
+                if (progress < 0.2)
                     mThumbCurrentRadius = Math.max(mThumbRadius + mThumbBorderSize * progress * 5, mThumbCurrentRadius);
-                else if(progress >= 0.8)
+                else if (progress >= 0.8)
                     mThumbCurrentRadius = mThumbRadius + mThumbBorderSize * (5f - progress * 5);
             }
 
 
-            if(progress == 1f)
+            if (progress == 1f)
                 stopAnimation();
 
-            if(mRunning) {
-                if(getHandler() != null)
+            if (mRunning) {
+                if (getHandler() != null)
                     getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 else
                     stopAnimation();
