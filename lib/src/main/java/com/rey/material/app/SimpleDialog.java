@@ -556,7 +556,7 @@ public class SimpleDialog extends Dialog {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
                     v.setTextDirection(((InternalListView)parent).isLayoutRtl() ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
                 v.setTextAppearance(v.getContext(), mItemTextAppearance);
-                ViewCompat.setPaddingRelative(v, mContentPadding, 0, 0, 0);
+                v.setCompoundDrawablePadding(mContentPadding);
             }
 
             v.setTag(position);
