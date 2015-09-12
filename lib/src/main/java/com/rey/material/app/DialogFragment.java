@@ -1,9 +1,11 @@
 package com.rey.material.app;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -36,6 +38,18 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
          * Handle click event on Neutral Action.
          */
         public void onNeutralActionClicked(DialogFragment fragment);
+
+        /**
+         * Handle OnCancel event of dialog.
+         * @param dialog
+         */
+        public void onCancel(DialogInterface dialog);
+
+        /**
+         * Handle OnDismiss event of dialog.
+         * @param dialog
+         */
+        public void onDismiss(DialogInterface dialog);
     }
 
     protected static final String ARG_BUILDER = "arg_builder";
@@ -77,7 +91,7 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null && mBuilder == null)
-            mBuilder = (Builder)savedInstanceState.getParcelable(ARG_BUILDER);
+            mBuilder = savedInstanceState.getParcelable(ARG_BUILDER);
     }
 
     @Override
@@ -98,4 +112,15 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
         super.onDestroyView();
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        mBuilder.onCancel(dialog);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        mBuilder.onDismiss(dialog);
+    }
 }

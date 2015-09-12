@@ -2,6 +2,7 @@ package com.rey.material.app;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -14,7 +15,6 @@ import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -1492,6 +1492,12 @@ public class Dialog extends android.app.Dialog{
         public void onNeutralActionClicked(DialogFragment fragment) {
             fragment.dismiss();
         }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {}
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {}
 
         @Override
         public Dialog build(Context context) {
