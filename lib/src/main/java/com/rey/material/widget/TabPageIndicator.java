@@ -566,8 +566,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                     if(widthMode == MeasureSpec.UNSPECIFIED || width < widthSize)
                         setMeasuredDimension(widthSize, height);
                     else{
-                        int childWidth = widthSize / getChildCount();
-                        for (int i = 0, count = getChildCount(); i < count; i++) {
+                        int count = getChildCount();
+                        int childWidth = count == 0 ? 0 : widthSize / count;
+                        for (int i = 0; i < count; i++) {
                             View child = getChildAt(i);
                             if(i != count - 1)
                                 child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
@@ -578,8 +579,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                     }
                 }
                 else {
-                    int childWidth = widthSize / getChildCount();
-                    for (int i = 0, count = getChildCount(); i < count; i++) {
+                    int count = getChildCount();
+                    int childWidth = count == 0 ? 0 : widthSize / count;
+                    for (int i = 0; i < count; i++) {
                         View child = getChildAt(i);
                         if(i != count - 1)
                             child.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
