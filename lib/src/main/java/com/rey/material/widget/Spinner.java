@@ -387,7 +387,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      */
 	public void setSelection(int position) {
 		if(mAdapter != null)
-			position = Math.min(position, mAdapter.getCount() - 1);
+			position = Math.max(0, Math.min(position, mAdapter.getCount() - 1));
 		
 		if(mSelectedPosition != position){
 			mSelectedPosition = position;
