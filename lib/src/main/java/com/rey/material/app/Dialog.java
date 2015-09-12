@@ -1307,7 +1307,7 @@ public class Dialog extends android.app.Dialog{
 
             mLayoutActionVertical = actionBarWidth > width;
 
-            int nonContentHeight = titleHeight + mActionPadding + mContentMarginTop + mContentMarginBottom;
+            int nonContentHeight = titleHeight + (visibleActions > 0 ? mActionPadding : 0) + mContentMarginTop + mContentMarginBottom;
             if(mLayoutActionVertical)
                 nonContentHeight += mActionOuterHeight * visibleActions;
             else
@@ -1342,71 +1342,64 @@ public class Dialog extends android.app.Dialog{
                 childTop += mTitle.getMeasuredHeight();
             }
 
-            childBottom -= mActionPadding;
+            boolean hasAction = mNeutralAction.getVisibility() == View.VISIBLE || mNegativeAction.getVisibility() == View.VISIBLE || mPositiveAction.getVisibility() == View.VISIBLE;
+            if(hasAction)
+                childBottom -= mActionPadding;
 
             int temp = (mActionOuterHeight - mActionHeight) / 2;
 
-            if(mLayoutActionVertical){
-                if(mNeutralAction.getVisibility() == View.VISIBLE){
-                    mNeutralAction.layout(childRight - mActionOuterPadding - mNeutralAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
+            if(hasAction){
+                if(mLayoutActionVertical){
+                    if(mNeutralAction.getVisibility() == View.VISIBLE){
+                        mNeutralAction.layout(childRight - mActionOuterPadding - mNeutralAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
+                        childBottom -= mActionOuterHeight;
+                    }
+
+                    if(mNegativeAction.getVisibility() == View.VISIBLE){
+                        mNegativeAction.layout(childRight - mActionOuterPadding - mNegativeAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
+                        childBottom -= mActionOuterHeight;
+                    }
+
+                    if(mPositiveAction.getVisibility() == View.VISIBLE){
+                        mPositiveAction.layout(childRight - mActionOuterPadding - mPositiveAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
+                        childBottom -= mActionOuterHeight;
+                    }
+                }
+                else{
+                    int actionLeft = childLeft + mActionOuterPadding;
+                    int actionRight = childRight - mActionOuterPadding;
+                    int actionTop = childBottom - mActionOuterHeight + temp;
+                    int actionBottom = childBottom - temp;
+
+                    if(mIsRtl){
+                        if (mPositiveAction.getVisibility() == View.VISIBLE) {
+                            mPositiveAction.layout(actionLeft , actionTop, actionLeft + mPositiveAction.getMeasuredWidth(), actionBottom);
+                            actionLeft += mPositiveAction.getMeasuredWidth() + mActionPadding;
+                        }
+
+                        if (mNegativeAction.getVisibility() == View.VISIBLE)
+                            mNegativeAction.layout(actionLeft, actionTop, actionLeft + mNegativeAction.getMeasuredWidth(), actionBottom);
+
+
+                        if (mNeutralAction.getVisibility() == View.VISIBLE)
+                            mNeutralAction.layout(actionRight - mNeutralAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                    }
+                    else {
+
+                        if (mPositiveAction.getVisibility() == View.VISIBLE) {
+                            mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+                            actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
+                        }
+
+                        if (mNegativeAction.getVisibility() == View.VISIBLE)
+                            mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
+
+                        if (mNeutralAction.getVisibility() == View.VISIBLE)
+                            mNeutralAction.layout(actionLeft, actionTop, actionLeft + mNeutralAction.getMeasuredWidth(), actionBottom);
+                    }
+
                     childBottom -= mActionOuterHeight;
                 }
-
-                if(mNegativeAction.getVisibility() == View.VISIBLE){
-                    mNegativeAction.layout(childRight - mActionOuterPadding - mNegativeAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
-                    childBottom -= mActionOuterHeight;
-                }
-
-                if(mPositiveAction.getVisibility() == View.VISIBLE){
-                    mPositiveAction.layout(childRight - mActionOuterPadding - mPositiveAction.getMeasuredWidth(), childBottom - mActionOuterHeight + temp, childRight - mActionOuterPadding, childBottom - temp);
-                    childBottom -= mActionOuterHeight;
-                }
-            }
-            else{
-                int actionLeft = childLeft + mActionOuterPadding;
-                int actionRight = childRight - mActionOuterPadding;
-                int actionTop = childBottom - mActionOuterHeight + temp;
-                int actionBottom = childBottom - temp;
-                boolean hasAction = false;
-
-                if(mIsRtl){
-                    if (mPositiveAction.getVisibility() == View.VISIBLE) {
-                        mPositiveAction.layout(actionLeft , actionTop, actionLeft + mPositiveAction.getMeasuredWidth(), actionBottom);
-                        actionLeft += mPositiveAction.getMeasuredWidth() + mActionPadding;
-                        hasAction = true;
-                    }
-
-                    if (mNegativeAction.getVisibility() == View.VISIBLE) {
-                        mNegativeAction.layout(actionLeft, actionTop, actionLeft + mNegativeAction.getMeasuredWidth(), actionBottom);
-                        hasAction = true;
-                    }
-
-                    if (mNeutralAction.getVisibility() == View.VISIBLE) {
-                        mNeutralAction.layout(actionRight - mNeutralAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
-                        hasAction = true;
-                    }
-                }
-                else {
-
-                    if (mPositiveAction.getVisibility() == View.VISIBLE) {
-                        mPositiveAction.layout(actionRight - mPositiveAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
-                        actionRight -= mPositiveAction.getMeasuredWidth() + mActionPadding;
-                        hasAction = true;
-                    }
-
-                    if (mNegativeAction.getVisibility() == View.VISIBLE) {
-                        mNegativeAction.layout(actionRight - mNegativeAction.getMeasuredWidth(), actionTop, actionRight, actionBottom);
-                        hasAction = true;
-                    }
-
-                    if (mNeutralAction.getVisibility() == View.VISIBLE) {
-                        mNeutralAction.layout(actionLeft, actionTop, actionLeft + mNeutralAction.getMeasuredWidth(), actionBottom);
-                        hasAction = true;
-                    }
-                }
-
-                if(hasAction)
-                    childBottom -= mActionOuterHeight;
             }
 
             mDividerPos = childBottom - mDividerPaint.getStrokeWidth() / 2f;
