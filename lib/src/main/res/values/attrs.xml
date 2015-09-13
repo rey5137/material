@@ -339,6 +339,7 @@
         <attr name="tpi_tabRipple" format="reference"/>
         <attr name="tpi_indicatorColor" format="reference|color"/>
         <attr name="tpi_indicatorHeight" format="reference|dimension"/>
+        <attr name="tpi_indicatorAtTop" format="reference|boolean"/>
         <attr name="tpi_tabSingleLine" format="reference|boolean"/>
         <attr name="android:textAppearance" />  
         <attr name="tpi_mode" format="integer">

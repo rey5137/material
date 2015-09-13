@@ -36,14 +36,15 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	private ViewPager mViewPager;
 	
 	private int mMode;
-	private int mTabPadding = -1;
-	private int mTabRippleStyle = 0;
-	private int mTextAppearance = 0;
-    private boolean mTabSingleLine = true;
+	private int mTabPadding;
+	private int mTabRippleStyle;
+	private int mTextAppearance;
+    private boolean mTabSingleLine;
 		
 	private int mIndicatorOffset;
 	private int mIndicatorWidth;
-	private int mIndicatorHeight = -1;
+	private int mIndicatorHeight;
+    private boolean mIndicatorAtTop;
 	
 	private Paint mPaint;
 	
@@ -51,8 +52,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	public static final int MODE_FIXED = 1;
 	
 	private int mSelectedPosition;
-	private boolean mScrolling = false;
-    private boolean mIsRtl = false;
+	private boolean mScrolling;
+    private boolean mIsRtl;
 	
 	private Runnable mTabAnimSelector;
 	
@@ -100,6 +101,13 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
 		setHorizontalScrollBarEnabled(false);
 
+        mTabPadding = -1;
+        mTabSingleLine = true;
+        mIndicatorHeight = -1;
+        mIndicatorAtTop = false;
+        mScrolling = false;
+        mIsRtl = false;
+
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(ThemeUtil.colorAccent(context, 0xFFFFFFFF));
@@ -136,6 +144,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
                 mPaint.setColor(a.getColor(attr, 0));
             else if(attr == R.styleable.TabPageIndicator_tpi_indicatorHeight)
                 mIndicatorHeight = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.TabPageIndicator_tpi_indicatorAtTop)
+                mIndicatorAtTop = a.getBoolean(attr, true);
             else if(attr == R.styleable.TabPageIndicator_tpi_tabSingleLine)
                 mTabSingleLine = a.getBoolean(attr, true);
             else if(attr == R.styleable.TabPageIndicator_android_textAppearance)
@@ -366,11 +376,12 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 	public void draw(@NonNull Canvas canvas) {
 		super.draw(canvas);
 		
-		int x = mIndicatorOffset + getPaddingLeft();		
-		canvas.drawRect(x, getHeight() - mIndicatorHeight, x + mIndicatorWidth, getHeight(), mPaint);
+		int x = mIndicatorOffset + getPaddingLeft();
+        int y = mIndicatorAtTop ? 0 : getHeight() - mIndicatorHeight;
+		canvas.drawRect(x, y, x + mIndicatorWidth, y + mIndicatorHeight, mPaint);
 		
 		if(isInEditMode())
-			canvas.drawRect(getPaddingLeft(), getHeight() - mIndicatorHeight, getPaddingLeft() + mTabContainer.getChildAt(0).getWidth(), getHeight(), mPaint);		
+			canvas.drawRect(getPaddingLeft(), y, getPaddingLeft() + mTabContainer.getChildAt(0).getWidth(), y + mIndicatorHeight, mPaint);
 	}
 
 	@Override
