@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -473,6 +475,8 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
             switch (viewType){
                 case TYPE_TEXT:
                     holder.textView.setCheckMarkDrawable(null);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                        holder.textView.setTextAlignment(TEXT_ALIGNMENT_GRAVITY);
                     holder.textView.setGravity(Gravity.CENTER);
                     holder.textView.setEllipsize(TextUtils.TruncateAt.END);
                     holder.textView.setOnClickListener(this);
