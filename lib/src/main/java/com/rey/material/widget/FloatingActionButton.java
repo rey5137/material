@@ -80,7 +80,8 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
         mSwitchIconAnimator = new SwitchIconAnimator();
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+		if(!isInEditMode())
+			mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

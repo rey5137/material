@@ -119,7 +119,8 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		if(isInEditMode())
 			addTemporaryTab();
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

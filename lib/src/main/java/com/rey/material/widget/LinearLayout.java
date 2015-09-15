@@ -47,7 +47,8 @@ public class LinearLayout extends android.widget.LinearLayout implements ThemeMa
 
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

@@ -56,7 +56,8 @@ public class CompoundButton extends android.widget.CompoundButton implements The
         ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

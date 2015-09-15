@@ -128,7 +128,8 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

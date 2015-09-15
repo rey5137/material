@@ -139,7 +139,8 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         setWillNotDraw(false);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
     /**

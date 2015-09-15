@@ -48,7 +48,8 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
 	}
 
     public void applyStyle(int resId){

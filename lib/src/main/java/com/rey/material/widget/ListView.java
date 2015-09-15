@@ -53,7 +53,8 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
 			
 		});
 
-        mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+        if(!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public void applyStyle(int resId){
