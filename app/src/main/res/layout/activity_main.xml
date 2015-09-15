@@ -22,8 +22,8 @@
                 android:minHeight="?attr/actionBarSize"
                 app:theme="@style/AppBar"/>
 
-            <com.rey.material.widget.TabPageIndicator
-                android:id="@+id/main_tpi"
+            <com.rey.material.widget.TabIndicatorView
+                android:id="@+id/main_tiv"
                 android:layout_height="48dp"
                 android:layout_width="match_parent"
                 android:paddingLeft="60dp"

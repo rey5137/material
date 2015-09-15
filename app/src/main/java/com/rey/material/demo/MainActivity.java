@@ -8,10 +8,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +27,7 @@ import com.rey.material.drawable.ThemeDrawable;
 import com.rey.material.util.ThemeUtil;
 import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.SnackBar;
-import com.rey.material.widget.TabPageIndicator;
+import com.rey.material.widget.TabIndicatorView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 	private FrameLayout fl_drawer;
 	private ListView lv_drawer;
 	private CustomViewPager vp;
-	private TabPageIndicator tpi;
+	private TabIndicatorView tiv;
 	
 	private DrawerAdapter mDrawerAdapter;
 	private PagerAdapter mPagerAdapter;
@@ -62,14 +60,14 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 		lv_drawer = (ListView)findViewById(R.id.main_lv_drawer);
 		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
 		vp = (CustomViewPager)findViewById(R.id.main_vp);
-		tpi = (TabPageIndicator)findViewById(R.id.main_tpi);
+		tiv = (TabIndicatorView)findViewById(R.id.main_tiv);
         mSnackBar = (SnackBar)findViewById(R.id.main_sn);
 
         mToolbarManager = new ToolbarManager(getDelegate(), mToolbar, R.id.tb_group_main, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
         mToolbarManager.setNavigationManager(new ToolbarManager.ThemableNavigationManager(R.array.navigation_drawer, getSupportFragmentManager(), mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
-                if(mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
+                if (mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
                     mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 else
                     dl_navigator.openDrawer(GravityCompat.START);
@@ -93,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 		
 		mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
 		vp.setAdapter(mPagerAdapter);
-		tpi.setViewPager(vp);
-		tpi.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        tiv.setTabFactory(new TabIndicatorView.ViewPagerFactory(vp));
+		vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
