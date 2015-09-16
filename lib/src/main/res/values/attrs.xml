@@ -341,6 +341,7 @@
         <attr name="tpi_indicatorHeight" format="reference|dimension"/>
         <attr name="tpi_indicatorAtTop" format="reference|boolean"/>
         <attr name="tpi_tabSingleLine" format="reference|boolean"/>
+        <attr name="tpi_centerCurrentTab" format="reference|boolean"/>
         <attr name="android:textAppearance" />  
         <attr name="tpi_mode" format="integer">
             <enum name="scroll" value="0x00000000" />

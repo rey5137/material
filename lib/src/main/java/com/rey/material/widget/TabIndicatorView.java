@@ -18,7 +18,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import android.widget.TextView;
 
 import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
@@ -39,6 +38,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
     private int mTabRippleStyle;
     private int mTextAppearance;
     private boolean mTabSingleLine;
+    private boolean mCenterCurrentTab;
 
     private int mIndicatorOffset;
     private int mIndicatorWidth;
@@ -60,8 +60,11 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
     private LayoutManager mLayoutManager;
     private Adapter mAdapter;
+    private TabIndicatorFactory mFactory;
 
     private Runnable mTabAnimSelector;
+
+    private boolean mScrollingToCenter = false;
 
     public TabIndicatorView(Context context) {
         super(context);
@@ -86,6 +89,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
         mTabPadding = -1;
         mTabSingleLine = true;
+        mCenterCurrentTab = false;
         mIndicatorHeight = -1;
         mIndicatorAtTop = false;
         mScrolling = false;
@@ -97,13 +101,14 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
         mAdapter = new Adapter();
         setAdapter(mAdapter);
-        mLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        mLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, mIsRtl);
         setLayoutManager(mLayoutManager);
         setItemAnimator(new DefaultItemAnimator());
         addOnScrollListener(new OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     updateIndicator(mLayoutManager.findViewByPosition(mSelectedPosition));
                 }
             }
@@ -112,6 +117,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 updateIndicator(mLayoutManager.findViewByPosition(mSelectedPosition));
             }
+
         });
 
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
@@ -128,14 +134,17 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPageIndicator, defStyleAttr, defStyleRes);
 
+        int tabPadding = -1;
         int textAppearance = 0;
         int mode = -1;
         int rippleStyle = 0;
+        boolean tabSingleLine = false;
+        boolean singleLineDefined = false;
 
         for(int i = 0, count = a.getIndexCount(); i < count; i++){
             int attr = a.getIndex(i);
             if(attr == R.styleable.TabPageIndicator_tpi_tabPadding)
-                mTabPadding = a.getDimensionPixelSize(attr, 0);
+                tabPadding = a.getDimensionPixelSize(attr, 0);
             else if(attr == R.styleable.TabPageIndicator_tpi_tabRipple)
                 rippleStyle = a.getResourceId(attr, 0);
             else if(attr == R.styleable.TabPageIndicator_tpi_indicatorColor)
@@ -144,8 +153,12 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
                 mIndicatorHeight = a.getDimensionPixelSize(attr, 0);
             else if(attr == R.styleable.TabPageIndicator_tpi_indicatorAtTop)
                 mIndicatorAtTop = a.getBoolean(attr, true);
-            else if(attr == R.styleable.TabPageIndicator_tpi_tabSingleLine)
-                mTabSingleLine = a.getBoolean(attr, true);
+            else if(attr == R.styleable.TabPageIndicator_tpi_tabSingleLine) {
+                tabSingleLine = a.getBoolean(attr, true);
+                singleLineDefined = true;
+            }
+            else if(attr == R.styleable.TabPageIndicator_tpi_centerCurrentTab)
+                mCenterCurrentTab = a.getBoolean(attr, true);
             else if(attr == R.styleable.TabPageIndicator_android_textAppearance)
                 textAppearance = a.getResourceId(attr, 0);
             else if(attr == R.styleable.TabPageIndicator_tpi_mode)
@@ -154,13 +167,20 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
         a.recycle();
 
-        if(mTabPadding < 0)
-            mTabPadding = ThemeUtil.dpToPx(context, 12);
-
         if(mIndicatorHeight < 0)
             mIndicatorHeight = ThemeUtil.dpToPx(context, 2);
 
         boolean shouldNotify = false;
+
+        if(tabPadding >= 0 && mTabPadding != tabPadding){
+            mTabPadding = tabPadding;
+            shouldNotify = true;
+        }
+
+        if(singleLineDefined && mTabSingleLine != tabSingleLine){
+            mTabSingleLine = tabSingleLine;
+            shouldNotify = true;
+        }
 
         if(mode >= 0 && mMode != mode){
             mMode = mode;
@@ -179,12 +199,13 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         }
 
         if(shouldNotify)
-            mAdapter.notifyDataSetChanged();
+            mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
 
-        requestLayout();
+        invalidate();
     }
 
-    public void setTabFactory(TabFactory factory){
+    public void setTabIndicatorFactory(TabIndicatorFactory factory){
+        mFactory = factory;
         mAdapter.setFactory(factory);
     }
 
@@ -281,7 +302,9 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         boolean rtl = layoutDirection == LAYOUT_DIRECTION_RTL;
         if(mIsRtl != rtl) {
             mIsRtl = rtl;
-            invalidate();
+            mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, mIsRtl);
+            setLayoutManager(mLayoutManager);
+            requestLayout();
         }
     }
 
@@ -323,6 +346,26 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
     }
 
     protected void onTabScrollStateChanged(int state){
+        if(mCenterCurrentTab) {
+            if (state == SCROLL_STATE_IDLE) {
+                if (!mScrollingToCenter) {
+                    View v = mLayoutManager.findViewByPosition(mSelectedPosition);
+                    if (v != null) {
+                        int viewCenter = (v.getLeft() + v.getRight()) / 2;
+                        int parentCenter = (getLeft() + getPaddingLeft() + getRight() - getPaddingRight()) / 2;
+                        int scrollNeeded = viewCenter - parentCenter;
+                        if (scrollNeeded != 0) {
+                            smoothScrollBy(scrollNeeded, 0);
+                            mScrollingToCenter = true;
+                        }
+                    }
+                }
+            }
+
+            if (state == SCROLL_STATE_DRAGGING || state == SCROLL_STATE_SETTLING)
+                mScrollingToCenter = false;
+        }
+
         if(state == ViewPager.SCROLL_STATE_IDLE){
             mScrolling = false;
             View v = mLayoutManager.findViewByPosition(mSelectedPosition);
@@ -351,66 +394,147 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         setCurrentTab(position);
     }
 
-    public static abstract class TabFactory {
+    public static abstract class TabIndicatorFactory {
 
         private TabIndicatorView mView;
 
-        public abstract int getTabCount();
+        /**
+         * Get the number of tab indicators.
+         * @return
+         */
+        public abstract int getTabIndicatorCount();
 
-        public abstract boolean isIconTab(int position);
+        /**
+         * Check if the tab indicator at specific position is icon or text.
+         * @param position The position of tab indicator.
+         * @return
+         */
+        public abstract boolean isIconTabIndicator(int position);
 
+        /**
+         * Get the icon for tab indicator at specific position.
+         * @param position The position of tab indicator.
+         * @return
+         */
         public abstract Drawable getIcon(int position);
 
+        /**
+         * Get the text for tab indicator at specific position.
+         * @param position The position of tab indicator.
+         * @return
+         */
         public abstract CharSequence getText(int position);
 
-        public abstract void setCurrentTab(int position);
+        /**
+         * Get the current selected tab.
+         * @return
+         */
+        public abstract int getCurrentTabIndicator();
 
-        public abstract int getCurrentTab();
+        /**
+         * Notify the selected tab indicator has changed. Your layout should be updated to reflect the changes of TabIndicatorView.
+         * @param position The position of selected tab indicator.
+         */
+        public abstract void onTabIndicatorSelected(int position);
 
         protected void setTabIndicatorView(TabIndicatorView view){
             mView = view;
         }
 
+        /**
+         * Notify the scroll state of your tab layout has changed, and the TabIndicatorView should update to reflect the changes.
+         * @param state The new scroll state.
+         * @see TabIndicatorView#SCROLL_STATE_IDLE
+         * @see TabIndicatorView#SCROLL_STATE_DRAGGING
+         * @see TabIndicatorView#SCROLL_STATE_SETTLING
+         */
         public final void notifyTabScrollStateChanged(int state){
             mView.onTabScrollStateChanged(state);
         }
 
+        /**
+         * Notify the current tab is scrolled, and the TabIndicatorView should update to reflect the changes.
+         *
+         * @param position Position of the first left tab .
+         * @param positionOffset Value from [0, 1) indicating the offset from the page at position.
+         */
         public final void notifyTabScrolled(int position, float positionOffset) {
             mView.onTabScrolled(position, positionOffset);
         }
 
+        /**
+         * Notify a new tab becomes selected, and the TabIndicatorView should update to reflect the changes.
+         * Animation is not necessarily complete.
+         *
+         * @param position Position of the new selected tab.
+         */
         public final void notifyTabSelected(int position){
             mView.onTabSelected(position);
         }
 
+        /**
+         * Notify tab's data set has changed, and the TabIndicatorView should update to reflect the changes.
+         */
         public final void notifyDataSetChanged(){
             mView.getAdapter().notifyDataSetChanged();
         }
 
+        /**
+         * Notify the tab at specific position has beenchanged, and the TabIndicatorView should update to reflect the changes.
+         * @param position Position of the tab.
+         */
         public final void notifyTabChanged(int position) {
             mView.getAdapter().notifyItemRangeChanged(position, 1);
         }
 
+        /**
+         * Notify the range of tab has been changed, and the TabIndicatorView should update to reflect the changes.
+         * @param positionStart The start position of range.
+         * @param itemCount The number of tabs.
+         */
         public final void notifyTabRangeChanged(int positionStart, int itemCount) {
             mView.getAdapter().notifyItemRangeChanged(positionStart, itemCount);
         }
 
+        /**
+         * Notify the tab at specific position has been inserted, and the TabIndicatorView should update to reflect the changes.
+         * @param position Position of the tab.
+         */
         public final void notifyTabInserted(int position) {
             mView.getAdapter().notifyItemRangeInserted(position, 1);
         }
 
+        /**
+         * Notify the tab at specific position has been moved, and the TabIndicatorView should update to reflect the changes.
+         * @param fromPosition The old position of the tab.
+         * @param toPosition The new position of the tab.
+         */
         public final void notifyTabMoved(int fromPosition, int toPosition) {
             mView.getAdapter().notifyItemMoved(fromPosition, toPosition);
         }
 
+        /**
+         * Notify the range of tab has been inserted, and the TabIndicatorView should update to reflect the changes.
+         * @param positionStart The start position of range.
+         * @param itemCount The number of tabs.
+         */
         public final void notifyTabRangeInserted(int positionStart, int itemCount) {
             mView.getAdapter().notifyItemRangeInserted(positionStart, itemCount);
         }
 
+        /**
+         * Notify the tab at specific position has been removed, and the TabIndicatorView should update to reflect the changes.
+         * @param position Position of the tab.
+         */
         public final void notifyTabRemoved(int position) {
             mView.getAdapter().notifyItemRangeRemoved(position, 1);
         }
 
+        /**
+         * Notify the range of tab has been removed, and the TabIndicatorView should update to reflect the changes.
+         * @param positionStart The start position of range.
+         * @param itemCount The number of tabs.
+         */
         public final void notifyTabRangeRemoved(int positionStart, int itemCount) {
             mView.getAdapter().notifyItemRangeRemoved(positionStart, itemCount);
         }
@@ -418,7 +542,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
     class Adapter extends RecyclerView.Adapter<ViewHolder> implements OnClickListener {
 
-        TabFactory mFactory;
+        TabIndicatorFactory mFactory;
 
         static final int TYPE_TEXT = 0;
         static final int TYPE_ICON = 1;
@@ -426,7 +550,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         int mFixedWidth;
         int mLastFixedWidth;
 
-        public void setFactory(TabFactory factory){
+        public void setFactory(TabIndicatorFactory factory){
             if(mFactory != null)
                 mFactory.setTabIndicatorView(null);
 
@@ -442,7 +566,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
                 notifyItemRangeInserted(0, count);
 
             if(mFactory != null)
-                onTabSelected(mFactory.getCurrentTab());
+                onTabSelected(mFactory.getCurrentTabIndicator());
         }
 
         public void setFixedWidth(int width, int lastWidth){
@@ -471,6 +595,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
             ViewHolder holder = new ViewHolder(v);
             v.setTag(holder);
             v.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            v.setOnClickListener(this);
 
             switch (viewType){
                 case TYPE_TEXT:
@@ -479,23 +604,10 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
                         holder.textView.setTextAlignment(TEXT_ALIGNMENT_GRAVITY);
                     holder.textView.setGravity(Gravity.CENTER);
                     holder.textView.setEllipsize(TextUtils.TruncateAt.END);
-                    holder.textView.setOnClickListener(this);
-                    holder.textView.setTextAppearance(getContext(), mTextAppearance);
-                    if(mTabSingleLine)
-                        holder.textView.setSingleLine(true);
-                    else {
-                        holder.textView.setSingleLine(false);
-                        holder.textView.setMaxLines(2);
-                    }
-                    if(mTabRippleStyle > 0)
-                        ViewUtil.setBackground(holder.textView, new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
-                    holder.textView.setPadding(mTabPadding, 0, mTabPadding, 0);
+                    holder.textView.setSingleLine(true);
                     break;
                 case TYPE_ICON:
                     holder.iconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                    if(mTabRippleStyle > 0)
-                        ViewUtil.setBackground(holder.iconView, new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
-                    holder.iconView.setPadding(mTabPadding, 0, mTabPadding, 0);
                     break;
             }
 
@@ -513,8 +625,33 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
                 params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
             holder.itemView.setLayoutParams(params);
 
+            if(holder.padding != mTabPadding){
+                holder.padding = mTabPadding;
+                holder.itemView.setPadding(mTabPadding, 0, mTabPadding, 0);
+            }
+
+            if(holder.rippleStyle != mTabRippleStyle){
+                holder.rippleStyle = mTabRippleStyle;
+                if(mTabRippleStyle > 0)
+                    ViewUtil.setBackground(holder.itemView, new RippleDrawable.Builder(getContext(), mTabRippleStyle).build());
+            }
+
             switch (viewType){
                 case TYPE_TEXT:
+                    if(holder.textAppearance != mTextAppearance) {
+                        holder.textAppearance = mTextAppearance;
+                        holder.textView.setTextAppearance(getContext(), mTextAppearance);
+                    }
+                    if(holder.singleLine != mTabSingleLine) {
+                        holder.singleLine = mTabSingleLine;
+                        if (mTabSingleLine)
+                            holder.textView.setSingleLine(true);
+                        else {
+                            holder.textView.setSingleLine(false);
+                            holder.textView.setMaxLines(2);
+                        }
+                    }
+
                     holder.textView.setText(mFactory.getText(position));
                     holder.textView.setChecked(position == mSelectedPosition);
                     break;
@@ -527,18 +664,18 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
         @Override
         public int getItemViewType(int position) {
-            return mFactory.isIconTab(position) ? TYPE_ICON : TYPE_TEXT;
+            return mFactory.isIconTabIndicator(position) ? TYPE_ICON : TYPE_TEXT;
         }
 
         @Override
         public int getItemCount() {
-            return mFactory == null ? 0 : mFactory.getTabCount();
+            return mFactory == null ? 0 : mFactory.getTabIndicatorCount();
         }
 
         @Override
         public void onClick(View view) {
-            ViewHolder holder = (ViewHolder)view.getTag();
-            mFactory.setCurrentTab(holder.getAdapterPosition());
+            ViewHolder holder = (ViewHolder) view.getTag();
+            mFactory.onTabIndicatorSelected(holder.getAdapterPosition());
         }
     }
 
@@ -547,6 +684,11 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         CheckedTextView textView;
 
         CheckedImageView iconView;
+
+        int rippleStyle = 0;
+        boolean singleLine = true;
+        int textAppearance = 0;
+        int padding = 0;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -558,22 +700,22 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
     }
 
-    public static class ViewPagerFactory extends TabFactory implements ViewPager.OnPageChangeListener {
+    public static class ViewPagerIndicatorFactory extends TabIndicatorFactory implements ViewPager.OnPageChangeListener {
 
         ViewPager mViewPager;
 
-        public ViewPagerFactory(ViewPager vp){
+        public ViewPagerIndicatorFactory(ViewPager vp){
             mViewPager = vp;
             mViewPager.addOnPageChangeListener(this);
         }
 
         @Override
-        public int getTabCount() {
+        public int getTabIndicatorCount() {
             return mViewPager.getAdapter().getCount();
         }
 
         @Override
-        public boolean isIconTab(int position) {
+        public boolean isIconTabIndicator(int position) {
             return false;
         }
 
@@ -588,12 +730,12 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
         }
 
         @Override
-        public void setCurrentTab(int position) {
+        public void onTabIndicatorSelected(int position) {
             mViewPager.setCurrentItem(position, true);
         }
 
         @Override
-        public int getCurrentTab() {
+        public int getCurrentTabIndicator() {
             return mViewPager.getCurrentItem();
         }
 
@@ -622,4 +764,5 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
             }
         }
     }
+
 }

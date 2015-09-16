@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 		
 		mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
 		vp.setAdapter(mPagerAdapter);
-        tiv.setTabFactory(new TabIndicatorView.ViewPagerFactory(vp));
+        tiv.setTabIndicatorFactory(new TabIndicatorView.ViewPagerIndicatorFactory(vp));
 		vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override

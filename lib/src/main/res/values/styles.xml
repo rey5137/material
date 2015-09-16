@@ -234,6 +234,7 @@
         <item name="tpi_indicatorHeight">2dp</item>
         <item name="tpi_indicatorAtTop">false</item>
         <item name="tpi_tabSingleLine">true</item>
+        <item name="tpi_centerCurrentTab">false</item>
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
         <item name="tpi_mode">scroll</item>
     </style>
