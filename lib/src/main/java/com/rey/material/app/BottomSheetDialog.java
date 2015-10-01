@@ -469,7 +469,7 @@ public class BottomSheetDialog extends android.app.Dialog{
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent ev) {
-            if(!super.dispatchTouchEvent(ev))
+            if(!super.dispatchTouchEvent(ev) && mGestureDetector != null)
                 mGestureDetector.onTouchEvent(ev);
             return true;
         }
