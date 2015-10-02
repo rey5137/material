@@ -60,6 +60,16 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
     }
 
     @Override
+    public void setTextAppearance(int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
+    public void setTextAppearance(Context context, int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){

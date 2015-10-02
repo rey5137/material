@@ -64,6 +64,16 @@ public class CircleCheckedTextView extends android.widget.CheckedTextView {
     }
 
     @Override
+    public void setTextAppearance(int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
+    public void setTextAppearance(Context context, int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
     public void setBackgroundColor(int color) {
         mBackground.setColor(color);
     }

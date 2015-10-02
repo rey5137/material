@@ -73,7 +73,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 	}
 
     private boolean mLabelEnable;
-    private android.widget.TextView mLabelView;
+    private TextView mLabelView;
 
 	private SpinnerAdapter mAdapter;
 	private OnItemClickListener mOnItemClickListener;
@@ -157,7 +157,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
     private android.widget.TextView getLabelView(){
         if(mLabelView == null){
-            mLabelView = new android.widget.TextView(getContext());
+            mLabelView = new TextView(getContext());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
                 mLabelView.setTextDirection(mIsRtl ? TEXT_DIRECTION_RTL : TEXT_DIRECTION_LTR);
             mLabelView.setSingleLine(true);

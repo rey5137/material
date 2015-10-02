@@ -332,6 +332,108 @@ public class ViewUtil {
         a.recycle();
     }
 
+    public static void applyTextAppearance(TextView v, int resId){
+        if(resId == 0)
+            return;
+
+        String fontFamily = null;
+        int typefaceIndex = -1;
+        int styleIndex = -1;
+        int shadowColor = 0;
+        float dx = 0, dy = 0, r = 0;
+
+        TypedArray appearance = v.getContext().obtainStyledAttributes(resId, R.styleable.TextAppearance);
+        if (appearance != null) {
+            int n = appearance.getIndexCount();
+            for (int i = 0; i < n; i++) {
+                int attr = appearance.getIndex(i);
+
+                if (attr == R.styleable.TextAppearance_android_textColorHighlight) {
+                    v.setHighlightColor(appearance.getColor(attr, 0));
+
+                } else if (attr == R.styleable.TextAppearance_android_textColor) {
+                    v.setTextColor(appearance.getColorStateList(attr));
+
+                } else if (attr == R.styleable.TextAppearance_android_textColorHint) {
+                    v.setHintTextColor(appearance.getColorStateList(attr));
+
+                } else if (attr == R.styleable.TextAppearance_android_textColorLink) {
+                    v.setLinkTextColor(appearance.getColorStateList(attr));
+
+                } else if (attr == R.styleable.TextAppearance_android_textSize) {
+                    v.setTextSize(TypedValue.COMPLEX_UNIT_PX, appearance.getDimensionPixelSize(attr, 0));
+
+                } else if (attr == R.styleable.TextAppearance_android_typeface) {
+                    typefaceIndex = appearance.getInt(attr, -1);
+
+                } else if (attr == R.styleable.TextAppearance_android_fontFamily) {
+                    fontFamily = appearance.getString(attr);
+
+                } else if (attr == R.styleable.TextAppearance_tv_fontFamily) {
+                    fontFamily = appearance.getString(attr);
+
+                } else if (attr == R.styleable.TextAppearance_android_textStyle) {
+                    styleIndex = appearance.getInt(attr, -1);
+
+                } else if (attr == R.styleable.TextAppearance_android_textAllCaps) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+                        v.setAllCaps(appearance.getBoolean(attr, false));
+
+                } else if (attr == R.styleable.TextAppearance_android_shadowColor) {
+                    shadowColor = appearance.getInt(attr, 0);
+
+                } else if (attr == R.styleable.TextAppearance_android_shadowDx) {
+                    dx = appearance.getFloat(attr, 0);
+
+                } else if (attr == R.styleable.TextAppearance_android_shadowDy) {
+                    dy = appearance.getFloat(attr, 0);
+
+                } else if (attr == R.styleable.TextAppearance_android_shadowRadius) {
+                    r = appearance.getFloat(attr, 0);
+
+                } else if (attr == R.styleable.TextAppearance_android_elegantTextHeight) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                        v.setElegantTextHeight(appearance.getBoolean(attr, false));
+
+                } else if (attr == R.styleable.TextAppearance_android_letterSpacing) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                        v.setLetterSpacing(appearance.getFloat(attr, 0));
+
+                } else if (attr == R.styleable.TextAppearance_android_fontFeatureSettings) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                        v.setFontFeatureSettings(appearance.getString(attr));
+
+                }
+            }
+
+            appearance.recycle();
+        }
+
+        if (shadowColor != 0)
+            v.setShadowLayer(r, dx, dy, shadowColor);
+
+        Typeface tf = null;
+        if (fontFamily != null) {
+            tf = TypefaceUtil.load(v.getContext(), fontFamily, styleIndex);
+            if (tf != null)
+                v.setTypeface(tf);
+        }
+        if(tf != null) {
+            switch (typefaceIndex) {
+                case 1:
+                    tf = Typeface.SANS_SERIF;
+                    break;
+                case 2:
+                    tf = Typeface.SERIF;
+                    break;
+                case 3:
+                    tf = Typeface.MONOSPACE;
+                    break;
+            }
+            v.setTypeface(tf, styleIndex);
+        }
+    }
+
     /**
      * Apply any TextView style attributes to a view.
      * @param v

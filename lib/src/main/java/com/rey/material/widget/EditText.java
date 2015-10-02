@@ -3665,7 +3665,17 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 		public LabelView(Context context) {
 			super(context);
 		}
-		
+
+        @Override
+        public void setTextAppearance(int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
+
+        @Override
+        public void setTextAppearance(Context context, int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
+
 		@Override
 		protected int[] onCreateDrawableState(int extraSpace) {
 			return mInputView.getDrawableState();
@@ -3686,6 +3696,16 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 		public InternalEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 			super(context, attrs, defStyleAttr);
 		}
+
+        @Override
+        public void setTextAppearance(int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
+
+        @Override
+        public void setTextAppearance(Context context, int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
 
 		@Override
 		public void refreshDrawableState() {
@@ -3802,6 +3822,16 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
         public InternalAutoCompleteTextView(Context context, AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
+        }
+
+        @Override
+        public void setTextAppearance(int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
+
+        @Override
+        public void setTextAppearance(Context context, int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
         }
 
         @Override
@@ -3964,6 +3994,16 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
         public InternalMultiAutoCompleteTextView(Context context, AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
+        }
+
+        @Override
+        public void setTextAppearance(int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
+        }
+
+        @Override
+        public void setTextAppearance(Context context, int resId) {
+            ViewUtil.applyTextAppearance(this, resId);
         }
 
         @Override

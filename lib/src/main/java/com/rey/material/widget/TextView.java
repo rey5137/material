@@ -67,6 +67,16 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
     }
 
     @Override
+    public void setTextAppearance(int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
+    public void setTextAppearance(Context context, int resId) {
+        ViewUtil.applyTextAppearance(this, resId);
+    }
+
+    @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
         if(mCurrentStyle != style){
