@@ -175,11 +175,13 @@ public class CheckBoxDrawable extends Drawable implements Animatable {
 				float progress = mAnimProgress / FILL_TIME;
 				float fillWidth = (mBoxSize - mStrokeSize) / 2f * progress;
 				float padding = mStrokeSize / 2f + fillWidth / 2f - 0.5f;
+				float radius = mCornerRadius * (mBoxSize - padding * 2f) / mBoxSize;
+				RectF fillRect = new RectF(mBoxRect.left + padding, mBoxRect.top + padding, mBoxRect.right - padding, mBoxRect.bottom - padding);
 				
 				mPaint.setColor(ColorUtil.getMiddleColor(mPrevColor, mCurColor, progress));
 				mPaint.setStrokeWidth(fillWidth);
 				mPaint.setStyle(Paint.Style.STROKE);
-				canvas.drawRect(mBoxRect.left + padding, mBoxRect.top + padding, mBoxRect.right - padding, mBoxRect.bottom - padding, mPaint);
+				canvas.drawRoundRect(fillRect, radius, radius, mPaint);
 								
 				mPaint.setStrokeWidth(mStrokeSize);		
 				canvas.drawRoundRect(mBoxRect, mCornerRadius, mCornerRadius, mPaint);	
@@ -239,11 +241,13 @@ public class CheckBoxDrawable extends Drawable implements Animatable {
 				float progress = (mAnimProgress + FILL_TIME - 1f) / FILL_TIME;				
 				float fillWidth = (mBoxSize - mStrokeSize) / 2f * (1f - progress);
 				float padding = mStrokeSize / 2f + fillWidth / 2f - 0.5f;
+				float radius = mCornerRadius * (mBoxSize - padding * 2f) / mBoxSize;
+				RectF fillRect = new RectF(mBoxRect.left + padding, mBoxRect.top + padding, mBoxRect.right - padding, mBoxRect.bottom - padding);
 				
 				mPaint.setColor(ColorUtil.getMiddleColor(mPrevColor, mCurColor, progress));
 				mPaint.setStrokeWidth(fillWidth);
 				mPaint.setStyle(Paint.Style.STROKE);
-				canvas.drawRect(mBoxRect.left + padding, mBoxRect.top + padding, mBoxRect.right - padding, mBoxRect.bottom - padding, mPaint);
+				canvas.drawRoundRect(fillRect, radius, radius, mPaint);
 								
 				mPaint.setStrokeWidth(mStrokeSize);		
 				canvas.drawRoundRect(mBoxRect, mCornerRadius, mCornerRadius, mPaint);	
