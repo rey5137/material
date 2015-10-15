@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rey.material.R;
@@ -285,6 +286,12 @@ public class ViewUtil {
                     }
                 }
             }
+            else if(attr == R.styleable.View_android_src){
+                if(v instanceof ImageView){
+                    int resId = a.getResourceId(attr, 0);
+                    ((ImageView)v).setImageResource(resId);
+                }
+            }
         }
 
         if (padding >= 0)
@@ -461,10 +468,10 @@ public class ViewUtil {
          */
         TypedArray a = v.getContext().obtainStyledAttributes(attrs, R.styleable.TextViewAppearance, defStyleAttr, defStyleRes);
         TypedArray appearance = null;
-        int ap = a.getResourceId(R.styleable.TextViewAppearance_android_textAppearance, -1);
+        int ap = a.getResourceId(R.styleable.TextViewAppearance_android_textAppearance, 0);
         a.recycle();
 
-        if (ap != -1)
+        if (ap != 0)
             appearance = v.getContext().obtainStyledAttributes(ap, R.styleable.TextAppearance);
 
         if (appearance != null) {

@@ -41,6 +41,7 @@
         <attr name="android:textDirection" />
         <attr name="android:visibility" />
         <attr name="android:layoutDirection" />
+        <attr name="android:src" />
     </declare-styleable>
 
     <declare-styleable name="TextView">
