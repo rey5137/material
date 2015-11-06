@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils.TruncateAt;
@@ -333,28 +334,33 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
      * Set the ViewPager associate with this indicator view.
      * @param view The ViewPager view.
      */
-    public void setViewPager(ViewPager view) {
+    public void setViewPager(@Nullable ViewPager view) {
         if (mViewPager == view) 
             return;
         
         if (mViewPager != null){
             mViewPager.removeOnPageChangeListener(this);
-            PagerAdapter adapter = view.getAdapter();
+            PagerAdapter adapter = mViewPager.getAdapter();
             if(adapter != null)
             	adapter.unregisterDataSetObserver(mObserver);
         }
-                
-        PagerAdapter adapter = view.getAdapter();
-        if (adapter == null)
-            throw new IllegalStateException("ViewPager does not have adapter instance.");        
-               
-        adapter.registerDataSetObserver(mObserver);
-        
-        mViewPager = view;        
-        view.addOnPageChangeListener(this);
-        
-        notifyDataSetChanged();
-        onPageSelected(mViewPager.getCurrentItem());
+
+        mViewPager = view;
+
+        if(mViewPager != null) {
+            PagerAdapter adapter = mViewPager.getAdapter();
+            if (adapter == null)
+                throw new IllegalStateException("ViewPager does not have adapter instance.");
+
+            adapter.registerDataSetObserver(mObserver);
+
+            mViewPager.addOnPageChangeListener(this);
+
+            notifyDataSetChanged();
+            onPageSelected(mViewPager.getCurrentItem());
+        }
+        else
+            mTabContainer.removeAllViews();
     }
 
     /**
