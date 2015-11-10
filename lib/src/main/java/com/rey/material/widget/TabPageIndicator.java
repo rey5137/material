@@ -310,11 +310,12 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
         mTabAnimSelector = new Runnable() {
             public void run() {
                 CheckedTextView tv = getTabView(position);
-            	if(!mScrolling) {
-                    updateIndicator(tv.getLeft(), tv.getMeasuredWidth());
+                if(tv != null) {
+                    if (!mScrolling)
+                        updateIndicator(tv.getLeft(), tv.getMeasuredWidth());
+
+                    smoothScrollTo(tv.getLeft() - (getWidth() - tv.getWidth()) / 2 + getPaddingLeft(), 0);
                 }
-            	          
-                smoothScrollTo(tv.getLeft() - (getWidth() - tv.getWidth()) / 2 + getPaddingLeft(), 0);
                 mTabAnimSelector = null;
             }
         };
