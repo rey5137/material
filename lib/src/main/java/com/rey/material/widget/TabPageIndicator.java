@@ -506,12 +506,14 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
 		final int count = adapter.getCount();
         for (int i = 0; i < count; i++) {
         	TextView tv = getTabView(i);
-        	
-        	CharSequence title = adapter.getPageTitle(i);
-            if (title == null) 
-                title = "NULL";            
-            
-            tv.setText(title);
+
+            if(tv != null) {
+                CharSequence title = adapter.getPageTitle(i);
+                if (title == null)
+                    title = "NULL";
+
+                tv.setText(title);
+            }
         }
         
         requestLayout();
