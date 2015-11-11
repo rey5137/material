@@ -432,25 +432,29 @@ public class BottomSheetDialog extends android.app.Dialog{
                         mAnimation = null;
                     }
 
-                    int start = mChildTop < 0 ? getHeight() : child.getTop();
-                    int end = mContainer.getHeight() - mContentView.getMeasuredHeight();
-                    if(start != end){
-                        mAnimation = new SlideAnimation(start, end);
-                        mAnimation.setDuration(mInDuration);
-                        mAnimation.setInterpolator(mInInterpolator);
-                        mAnimation.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {}
+                    if(mContentView != null) {
+                        int start = mChildTop < 0 ? getHeight() : child.getTop();
+                        int end = getMeasuredHeight() - mContentView.getMeasuredHeight();
+                        if (start != end) {
+                            mAnimation = new SlideAnimation(start, end);
+                            mAnimation.setDuration(mInDuration);
+                            mAnimation.setInterpolator(mInInterpolator);
+                            mAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+                                }
 
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {}
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+                                }
 
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                mAnimation = null;
-                            }
-                        });
-                        mContentView.startAnimation(mAnimation);
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    mAnimation = null;
+                                }
+                            });
+                            mContentView.startAnimation(mAnimation);
+                        }
                     }
                 }
             }
