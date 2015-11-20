@@ -373,7 +373,7 @@ public class BottomSheetDialog extends android.app.Dialog{
     }
 
     protected int getContainerHeight(){
-        return mContainer.getHeight();
+        return mContainer == null ? 0 : mContainer.getHeight();
     }
 
     private class ContainerFrameLayout extends FrameLayout {
