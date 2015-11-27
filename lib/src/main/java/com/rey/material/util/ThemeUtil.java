@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.os.Build;
-import android.support.v7.internal.widget.TintTypedArray;
+import android.support.v7.widget.TintTypedArray;
 import android.util.TypedValue;
 
 import com.rey.material.R;

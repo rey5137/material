@@ -19,4 +19,9 @@ allprojects {
     repositories {
         jcenter()
     }
+    ext {
+      projectBuildToolsVersion = BUILD_TOOLS_VERSION
+      projectMinSdkVersion = Integer.parseInt(MIN_SDK_VERSION)
+      projectCompileSdkVersion = Integer.parseInt(COMPILE_SDK_VERSION)
+    }
 }
