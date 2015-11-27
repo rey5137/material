@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    compileSdkVersion projectCompileSdkVersion
+    buildToolsVersion projectBuildToolsVersion
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 21
+        minSdkVersion projectMinSdkVersion
+        targetSdkVersion projectCompileSdkVersion
         versionCode 7
         versionName "1.2.1"
     }
@@ -20,8 +20,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
 }
-
-apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'

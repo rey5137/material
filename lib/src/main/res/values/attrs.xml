@@ -457,6 +457,8 @@
         <attr name="android:popupBackground" />
         <attr name="android:minWidth"/>
         <attr name="android:minHeight"/>
+        <attr name="android:gravity"/>
+        <attr name="android:disableChildrenWhenDisabled"/>
         <attr name="spn_labelEnable" format="boolean"/>
         <attr name="spn_labelPadding" format="reference|dimension"/>
         <attr name="spn_labelTextSize" format="reference|dimension"/>

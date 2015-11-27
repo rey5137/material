@@ -14,7 +14,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
-import android.util.FloatMath;
 
 /**
  * Created by Rey on 1/21/2015.
@@ -61,7 +60,7 @@ public class ContactChipSpan extends ReplacementSpan {
         int outerWidth = Math.max(0, mWidth - mPaddingLeft - mPaddingRight - mHeight);
         Paint.FontMetricsInt temp = mTextPaint.getFontMetricsInt();
         BoringLayout.Metrics mMetrics = new BoringLayout.Metrics();
-        mMetrics.width = (int)FloatMath.ceil(mTextPaint.measureText(mContactName, 0, mContactName.length()));
+        mMetrics.width = (int)Math.ceil(mTextPaint.measureText(mContactName, 0, mContactName.length()));
         mMetrics.ascent = temp.ascent;
         mMetrics.bottom = temp.bottom;
         mMetrics.descent = temp.descent;

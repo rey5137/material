@@ -11,9 +11,9 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v7.internal.widget.TintManager;
-import android.support.v7.internal.widget.TintTypedArray;
-import android.support.v7.internal.widget.ViewUtils;
+import android.support.v7.widget.TintManager;
+import android.support.v7.widget.TintTypedArray;
+import android.support.v7.widget.ViewUtils;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -233,6 +233,10 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 getLabelView().setText(a.getString(attr));
             else if(attr == R.styleable.Spinner_android_gravity)
                 mGravity = a.getInt(attr, 0);
+            else if (attr == R.styleable.Spinner_android_prompt)
+                mPopup.setPromptText(a.getString(attr));
+            else if (attr == R.styleable.Spinner_android_disableChildrenWhenDisabled)
+                mDisableChildrenWhenDisabled = a.getBoolean(attr, false);
             else if(attr == R.styleable.Spinner_android_minWidth)
                 setMinimumWidth(a.getDimensionPixelOffset(attr, 0));
             else if(attr == R.styleable.Spinner_android_minHeight)
@@ -241,14 +245,10 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 mDropDownWidth = a.getLayoutDimension(attr, LayoutParams.WRAP_CONTENT);
             else if(attr == R.styleable.Spinner_android_popupBackground)
                 mPopup.setBackgroundDrawable(a.getDrawable(attr));
-            else if(attr == R.styleable.Spinner_prompt)
-                mPopup.setPromptText(a.getString(attr));
             else if(attr == R.styleable.Spinner_spn_popupItemAnimation)
                 mPopup.setItemAnimation(a.getResourceId(attr, 0));
             else if(attr == R.styleable.Spinner_spn_popupItemAnimOffset)
                 mPopup.setItemAnimationOffset(a.getInteger(attr, 0));
-            else if(attr == R.styleable.Spinner_disableChildrenWhenDisabled)
-                mDisableChildrenWhenDisabled = a.getBoolean(attr, false);
             else if(attr == R.styleable.Spinner_spn_arrowSwitchMode)
                 mArrowAnimSwitchMode = a.getBoolean(attr, false);
             else if(attr == R.styleable.Spinner_spn_arrowAnimDuration)
