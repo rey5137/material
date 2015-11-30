@@ -241,13 +241,14 @@ public class CompoundButton extends android.widget.CompoundButton implements The
 	
 	@Override
 	public void setButtonDrawable(Drawable d) {
+        super.setButtonDrawable(null);
         getPaddingDrawable().setWrappedDrawable(d);
 		super.setButtonDrawable(getPaddingDrawable());
 	}
 
     @Override
     public Drawable getButtonDrawable(){
-        return mPaddingDrawable.getWrappedDrawable();
+        return getPaddingDrawable().getWrappedDrawable();
     }
 
     @Override
