@@ -3,6 +3,7 @@ package com.rey.material.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -11,12 +12,8 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v7.internal.widget.TintManager;
-import android.support.v7.internal.widget.TintTypedArray;
-import android.support.v7.internal.widget.ViewUtils;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -34,7 +31,6 @@ import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.ArrowDrawable;
 import com.rey.material.drawable.DividerDrawable;
-import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ThemeUtil;
 
 public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedListener{
@@ -107,8 +103,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 	
 	private SpinnerDataSetObserver mDataSetObserver = new SpinnerDataSetObserver();
 
-	private TintManager mTintManager;
-
     private boolean mIsRtl;
 		
 	public Spinner(Context context) {
@@ -173,7 +167,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
         removeAllViews();
 
-        TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
+        TypedArray a = context.obtainStyledAttributes(attrs,  R.styleable.Spinner, defStyleAttr, defStyleRes);
 
         int arrowAnimDuration = -1;
         ColorStateList arrowColor = null;
@@ -340,8 +334,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             mDividerDrawable = null;
         }
 
-        mTintManager = a.getTintManager();
-
         if (mTempAdapter != null) {
             mPopup.setAdapter(mTempAdapter);
             mTempAdapter = null;
@@ -459,7 +451,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      * @attr ref android.R.styleable#Spinner_popupBackground
      */
     public void setPopupBackgroundResource(int resId) {
-        setPopupBackgroundDrawable(mTintManager.getDrawable(resId));
+        setPopupBackgroundDrawable(getContext().getDrawable(resId));
     }
 
     /**
@@ -1249,7 +1241,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             int hOffset = 0;
             if (background != null) {
                 background.getPadding(mTempRect);
-                hOffset = ViewUtils.isLayoutRtl(Spinner.this) ? mTempRect.right : -mTempRect.left;
+                hOffset = mIsRtl ? mTempRect.right : -mTempRect.left;
             } else
                 mTempRect.left = mTempRect.right = 0;            
 
@@ -1269,7 +1261,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
             else
                 setContentWidth(mDropDownWidth);
             
-            if (ViewUtils.isLayoutRtl(Spinner.this))
+            if (mIsRtl)
                 hOffset += spinnerWidth - spinnerPaddingRight - getWidth();
             else
                 hOffset += spinnerPaddingLeft;

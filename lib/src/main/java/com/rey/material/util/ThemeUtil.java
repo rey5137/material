@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.os.Build;
-import android.support.v7.internal.widget.TintTypedArray;
 import android.util.TypedValue;
 
 import com.rey.material.R;
@@ -127,8 +126,4 @@ public class ThemeUtil {
         return result == null ? defaultValue : result;
     }
 
-    public static CharSequence getString(TintTypedArray array, int index, CharSequence defaultValue){
-        String result = array.getString(index);
-        return result == null ? defaultValue : result;
-    }
 }

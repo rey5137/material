@@ -4,13 +4,14 @@ import android.content.Context;
 import android.support.v7.internal.widget.ListViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.AbsListView;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.util.ViewUtil;
 
 public class ListView extends ListViewCompat implements ThemeManager.OnThemeChangedListener{
 
-	private RecyclerListener mRecyclerListener;
+	private AbsListView.RecyclerListener mRecyclerListener;
 
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
@@ -91,7 +92,7 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
     }
 
     @Override
-    public void setRecyclerListener(RecyclerListener listener) {
+    public void setRecyclerListener(AbsListView.RecyclerListener listener) {
     	mRecyclerListener = listener;
     }
 

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         minSdkVersion 9
@@ -18,11 +18,15 @@ android {
     }
 }
 
+ext{
+    libSupportVersion = '23.1.0'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.android.support:cardview-v7:23.0.0'
-    compile 'com.android.support:recyclerview-v7:23.0.0'
+    compile "com.android.support:appcompat-v7:${libSupportVersion}"
+    compile "com.android.support:cardview-v7:${libSupportVersion}"
+    compile "com.android.support:recyclerview-v7:${libSupportVersion}"
 }
 
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
