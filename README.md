@@ -1,7 +1,7 @@
 Material
 =====================
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.rey5137/material.svg)](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.1/material-1.2.1.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
+[![GitHub release](https://img.shields.io/github/release/rey5137/material.svg)](https://github.com/rey5137/material/releases/download/1.2.1/material_1.2.1.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
 
 MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is [Rey Pham](https://github.com/rey5137).
 
@@ -86,12 +86,12 @@ Add Gradle dependency:
 
 ```gradle
 dependencies {
-   compile 'com.github.rey5137:material:1.2.1'
+   compile 'com.github.rey5137:material:1.2.2'
 }
 ```
 
 * Or
-[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.1/material-1.2.1.aar)
+[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.2/material-1.2.2.aar)
 
 You can try the SNAPSHOT version:
 
