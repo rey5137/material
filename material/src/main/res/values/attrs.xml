@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        
+    <attr name="pv_progressMode" format="integer">
+        <enum name="determinate" value="0x00000000" />
+        <enum name="indeterminate" value="0x00000001" />
+        <enum name="buffer" value="0x00000002" />
+        <enum name="query" value="0x00000003" />    
+    </attr>
+    
+    <attr name="pv_progress" format="float"/>   
+    <attr name="pv_secondaryProgress" format="float"/>
+
+    <attr name="rd_style" format="reference"/>
+    <attr name="rd_enable" format="boolean"/>
+    <attr name="tv_fontFamily" format="reference|string"/>
+
+    <declare-styleable name="View">
+        <attr name="android:background" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:backgroundTintMode" />
+        <attr name="android:elevation" />
+        <attr name="android:fadeScrollbars" />
+        <attr name="android:fadingEdgeLength" />
+        <attr name="android:minHeight" />
+        <attr name="android:minWidth" />
+        <attr name="android:padding" />
+        <attr name="android:paddingBottom" />
+        <attr name="android:paddingEnd" />
+        <attr name="android:paddingLeft" />
+        <attr name="android:paddingRight" />
+        <attr name="android:paddingStart" />
+        <attr name="android:paddingTop" />
+        <attr name="android:requiresFadingEdge" />
+        <attr name="android:scrollbarDefaultDelayBeforeFade" />
+        <attr name="android:scrollbarFadeDuration" />
+        <attr name="android:scrollbarSize" />
+        <attr name="android:scrollbarStyle" />
+        <attr name="android:soundEffectsEnabled" />
+        <attr name="android:textAlignment" />
+        <attr name="android:textDirection" />
+        <attr name="android:visibility" />
+        <attr name="android:layoutDirection" />
+        <attr name="android:src" />
+    </declare-styleable>
+
+    <declare-styleable name="TextView">
+        <attr name="android:drawableBottom" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:drawableLeft" />
+        <attr name="android:drawablePadding" />
+        <attr name="android:drawableRight" />
+        <attr name="android:drawableStart" />
+        <attr name="android:drawableTop" />
+        <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:gravity" />
+        <attr name="android:lines" />
+        <attr name="android:letterSpacing" />
+        <attr name="android:lineSpacingExtra" />
+        <attr name="android:lineSpacingMultiplier" />
+        <attr name="android:height" />
+        <attr name="android:ems" />
+        <attr name="android:width" />
+        <attr name="android:includeFontPadding" />
+        <attr name="android:cursorVisible" />
+        <attr name="android:maxEms" />
+        <attr name="android:maxHeight" />
+        <attr name="android:maxLength" />
+        <attr name="android:maxLines" />
+        <attr name="android:maxWidth" />
+        <attr name="android:minEms" />
+        <attr name="android:minHeight" />
+        <attr name="android:minLines" />
+        <attr name="android:minWidth" />
+        <attr name="android:scrollHorizontally" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:singleLine" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textScaleX" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+    </declare-styleable>
+
+    <declare-styleable name="TextViewAppearance">
+        <attr name="android:textAppearance" />
+    </declare-styleable>
+
+    <declare-styleable name="TextAppearance">
+        <attr name="android:textColorHighlight" />
+        <attr name="android:textColor" />
+        <attr name="android:textColorHint" />
+        <attr name="android:textColorLink" />
+        <attr name="android:textSize" />
+        <attr name="android:textStyle" />
+        <attr name="android:typeface" />
+        <attr name="android:fontFamily" />
+        <attr name="tv_fontFamily" />
+        <attr name="android:textAllCaps" />
+        <attr name="android:shadowColor" />
+        <attr name="android:shadowDx" />
+        <attr name="android:shadowDy" />
+        <attr name="android:shadowRadius" />
+        <attr name="android:elegantTextHeight" />
+        <attr name="android:fontFeatureSettings" />
+        <attr name="android:letterSpacing" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoCompleteTextView">
+        <attr name="android:completionHint" />
+        <attr name="android:completionThreshold" />
+        <attr name="android:dropDownAnchor" />
+        <attr name="android:dropDownHeight" />
+        <attr name="android:dropDownHorizontalOffset" />
+        <attr name="android:dropDownVerticalOffset" />
+        <attr name="android:dropDownWidth" />
+        <attr name="android:popupBackground" />
+    </declare-styleable>
+
+    <declare-styleable name="ThemableView">
+        <attr name="v_styleId" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="CircularProgressDrawable">        
+        <attr name="cpd_padding" format="reference|dimension"/> 
+        <attr name="cpd_initialAngle" format="reference|integer"/> 
+        <attr name="cpd_maxSweepAngle" format="reference|integer"/>
+        <attr name="cpd_minSweepAngle" format="reference|integer"/>
+        <attr name="cpd_strokeSize" format="reference|dimension"/>
+        <attr name="cpd_strokeColor" format="reference|color"/>
+        <attr name="cpd_strokeSecondaryColor" format="reference|color"/>
+        <attr name="cpd_strokeColors" format="reference"/>
+        <attr name="cpd_reverse" format="boolean"/>
+        <attr name="cpd_rotateDuration" format="reference|integer"/>
+        <attr name="cpd_transformDuration" format="reference|integer"/>
+        <attr name="cpd_keepDuration" format="reference|integer"/>
+        <attr name="cpd_transformInterpolator" format="reference"/>        
+        <attr name="cpd_inAnimDuration" format="reference|integer"/>
+        <attr name="cpd_outAnimDuration" format="reference|integer"/>
+        <attr name="cpd_inStepColors" format="reference"/>
+        <attr name="cpd_inStepPercent" format="float"/>
+        <attr name="pv_progressMode"/>
+        <attr name="pv_progress"/>
+        <attr name="pv_secondaryProgress"/>
+    </declare-styleable>
+    
+    <declare-styleable name="LinearProgressDrawable">       
+        <attr name="lpd_maxLineWidth" format="reference|dimension|fraction"/>
+        <attr name="lpd_minLineWidth" format="reference|dimension|fraction"/>        
+        <attr name="lpd_strokeSize" format="reference|dimension"/>
+        <attr name="lpd_strokeColor" format="reference|color"/>
+        <attr name="lpd_strokeSecondaryColor" format="reference|color"/>
+        <attr name="lpd_strokeColors" format="reference"/>
+        <attr name="lpd_reverse" format="boolean"/>
+        <attr name="lpd_travelDuration" format="reference|integer"/>
+        <attr name="lpd_transformDuration" format="reference|integer"/>
+        <attr name="lpd_keepDuration" format="reference|integer"/>
+        <attr name="lpd_transformInterpolator" format="reference"/>        
+        <attr name="lpd_inAnimDuration" format="reference|integer"/>
+        <attr name="lpd_outAnimDuration" format="reference|integer"/>
+        <attr name="lpd_verticalAlign" format="integer">
+            <enum name="top" value="0x00000000" />
+	        <enum name="center" value="0x00000001" />
+	        <enum name="bottom" value="0x00000002" />
+        </attr>
+        <attr name="pv_progressMode"/>
+        <attr name="pv_progress"/>
+        <attr name="pv_secondaryProgress"/>
+    </declare-styleable>
+    
+    <declare-styleable name="ProgressView">        
+        <attr name="pv_autostart" format="boolean"/> 
+        <attr name="pv_circular" format="boolean"/> 
+        <attr name="pv_progressStyle" format="reference"/>
+        <attr name="pv_progressMode"/>
+        <attr name="pv_progress" />
+        <attr name="pv_secondaryProgress" />
+    </declare-styleable>
+        
+    <declare-styleable name="RippleView">
+        <attr name="rd_style" />
+        <attr name="rd_enable" />
+    </declare-styleable> 
+    
+    <declare-styleable name="RippleDrawable">
+        <attr name="rd_backgroundColor" format="reference|color"/>
+        <attr name="rd_backgroundAnimDuration" format="reference|integer"/>        
+        <attr name="rd_maxRippleRadius" format="reference|dimension|integer">
+            <enum name="match_view" value="0x00000000" />
+        </attr>
+        <attr name="rd_rippleColor" format="reference|color"/>
+        <attr name="rd_rippleAnimDuration" format="reference|integer"/>       
+        <attr name="rd_inInterpolator" format="reference"/>   
+        <attr name="rd_outInterpolator" format="reference"/>   
+        <attr name="rd_maskType" format="integer">
+            <enum name="rectangle" value="0x00000000" />
+	        <enum name="oval" value="0x00000001" />
+        </attr>
+        <attr name="rd_rippleType" format="integer">
+            <enum name="touch" value="0x00000000" />
+	        <enum name="wave" value="0x00000001" />
+        </attr>
+        <attr name="rd_cornerRadius" format="reference|dimension"/>
+        <attr name="rd_topLeftCornerRadius" format="reference|dimension"/>
+        <attr name="rd_topRightCornerRadius" format="reference|dimension"/>
+        <attr name="rd_bottomLeftCornerRadius" format="reference|dimension"/>
+        <attr name="rd_bottomRightCornerRadius" format="reference|dimension"/>
+        <attr name="rd_padding" format="reference|dimension"/>
+        <attr name="rd_leftPadding" format="reference|dimension"/>
+        <attr name="rd_topPadding" format="reference|dimension"/>
+        <attr name="rd_rightPadding" format="reference|dimension"/>
+        <attr name="rd_bottomPadding" format="reference|dimension"/>
+        <attr name="rd_delayClick" format="integer">
+            <enum name="none" value="0x00000000" />
+            <enum name="untilRelease" value="0x00000001" />
+            <enum name="afterRelease" value="0x00000002" />
+        </attr>
+    </declare-styleable>
+    
+    <declare-styleable name="LineMorphingDrawable">
+        <attr name="lmd_state" format="reference"/>
+        <attr name="lmd_curState" format="integer"/>
+        <attr name="lmd_padding" format="reference|dimension"/>
+        <attr name="lmd_paddingLeft" format="reference|dimension"/>
+        <attr name="lmd_paddingTop" format="reference|dimension"/>
+        <attr name="lmd_paddingRight" format="reference|dimension"/>
+        <attr name="lmd_paddingBottom" format="reference|dimension"/>  
+        <attr name="lmd_animDuration" format="reference|integer"/>
+        <attr name="lmd_interpolator" format="reference"/>
+        <attr name="lmd_strokeSize" format="reference|dimension"/>
+        <attr name="lmd_strokeColor" format="reference|color"/>
+        <attr name="lmd_strokeCap" format="integer">
+            <enum name="butt" value="0x00000000" />
+	        <enum name="round" value="0x00000001" />
+	        <enum name="square" value="0x00000002" />
+        </attr>
+        <attr name="lmd_strokeJoin" format="integer">
+            <enum name="miter" value="0x00000000" />
+	        <enum name="round" value="0x00000001" />
+	        <enum name="bevel" value="0x00000002" />
+        </attr>
+        <attr name="lmd_clockwise" format="boolean"/>
+        <attr name="lmd_layoutDirection" format="integer">
+            <enum name="ltr" value="0x00000000" />
+            <enum name="rtl" value="0x00000001" />
+            <enum name="locale" value="0x00000003" />
+        </attr>
+    </declare-styleable>
+    
+    <declare-styleable name="RadioButtonDrawable">
+        <attr name="rbd_width" format="reference|dimension"/>
+        <attr name="rbd_height" format="reference|dimension"/>
+        <attr name="rbd_strokeSize" format="reference|dimension"/>
+        <attr name="rbd_radius" format="reference|dimension"/>
+        <attr name="rbd_innerRadius" format="reference|dimension"/>
+        <attr name="rbd_strokeColor" format="reference|color"/>
+        <attr name="rbd_animDuration" format="reference|integer"/>
+    </declare-styleable>
+    
+    <declare-styleable name="CheckBoxDrawable">
+        <attr name="cbd_width" format="reference|dimension"/>
+        <attr name="cbd_height" format="reference|dimension"/>
+        <attr name="cbd_boxSize" format="reference|dimension"/>
+        <attr name="cbd_cornerRadius" format="reference|dimension"/>
+        <attr name="cbd_strokeSize" format="reference|dimension"/>
+        <attr name="cbd_strokeColor" format="reference|color"/>
+        <attr name="cbd_tickColor" format="reference|color"/>
+        <attr name="cbd_animDuration" format="reference|integer"/>
+    </declare-styleable>
+    
+    <declare-styleable name="Switch">
+        <attr name="sw_trackSize" format="reference|dimension"/>
+        <attr name="sw_trackColor" format="reference|color"/>
+        <attr name="sw_trackCap" format="integer">
+            <enum name="butt" value="0x00000000" />
+	        <enum name="round" value="0x00000001" />
+	        <enum name="square" value="0x00000002" />
+        </attr>
+        <attr name="sw_thumbColor" format="reference|color"/>
+        <attr name="sw_thumbRadius" format="reference|dimension"/>
+        <attr name="sw_thumbElevation" format="reference|dimension"/>
+        <attr name="sw_animDuration" format="reference|integer"/>
+        <attr name="sw_interpolator" format="reference"/>
+        <attr name="android:gravity" />
+        <attr name="android:checked" />
+    </declare-styleable>
+
+    <declare-styleable name="Slider">
+        <attr name="sl_trackSize" format="reference|dimension"/>
+        <attr name="sl_primaryColor" format="reference|color"/>
+        <attr name="sl_secondaryColor" format="reference|color"/>
+        <attr name="sl_trackCap" format="integer">
+            <enum name="butt" value="0x00000000" />
+            <enum name="round" value="0x00000001" />
+            <enum name="square" value="0x00000002" />
+        </attr>
+        <attr name="sl_thumbBorderSize" format="reference|dimension"/>
+        <attr name="sl_thumbRadius" format="reference|dimension"/>
+        <attr name="sl_thumbFocusRadius" format="reference|dimension"/>
+        <attr name="sl_travelAnimDuration" format="reference|integer"/>
+        <attr name="sl_transformAnimDuration" format="reference|integer"/>
+        <attr name="sl_interpolator" format="reference"/>
+        <attr name="sl_minValue" format="reference|integer"/>
+        <attr name="sl_maxValue" format="reference|integer"/>
+        <attr name="sl_stepValue" format="reference|integer"/>
+        <attr name="sl_value" format="reference|integer"/>
+        <attr name="sl_discreteMode" format="reference|boolean"/>
+        <attr name="sl_fontFamily" format="string|reference"/>
+        <attr name="sl_textStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <attr name="sl_textSize" format="reference|dimension"/>
+        <attr name="sl_textColor" format="reference|color"/>
+        <attr name="sl_alwaysFillThumb" format="reference|boolean"/>
+        <attr name="sl_baselineOffset" format="reference|dimension"/>
+        <attr name="android:gravity" />
+        <attr name="android:enabled" />
+    </declare-styleable>
+    
+    <declare-styleable name="NavigationDrawerDrawable">
+        <attr name="nd_ripple" format="reference"/>
+        <attr name="nd_icon" format="reference"/>
+    </declare-styleable>   
+    
+    <declare-styleable name="TabPageIndicator">
+        <attr name="tpi_tabPadding" format="reference|dimension"/>
+        <attr name="tpi_tabRipple" format="reference"/>
+        <attr name="tpi_indicatorColor" format="reference|color"/>
+        <attr name="tpi_indicatorHeight" format="reference|dimension"/>
+        <attr name="tpi_indicatorAtTop" format="reference|boolean"/>
+        <attr name="tpi_tabSingleLine" format="reference|boolean"/>
+        <attr name="tpi_centerCurrentTab" format="reference|boolean"/>
+        <attr name="android:textAppearance" />  
+        <attr name="tpi_mode" format="integer">
+            <enum name="scroll" value="0x00000000" />
+            <enum name="fixed" value="0x00000001" />	        
+        </attr> 
+    </declare-styleable>
+    
+    <declare-styleable name="EditText">
+        <attr name="et_inputId" format="reference"/>
+        <attr name="et_labelEnable" format="boolean"/>
+        <attr name="et_labelPadding" format="reference|dimension"/>
+        <attr name="et_labelTextSize" format="reference|dimension"/>
+        <attr name="et_labelTextColor" format="reference|color"/>
+        <attr name="et_labelTextAppearance" format="reference"/>
+        <attr name="et_labelEllipsize" format="integer">
+            <enum name="start" value="0x00000001" />
+            <enum name="middle" value="0x00000002" />	  
+            <enum name="end" value="0x00000003" />	 
+            <enum name="marquee" value="0x00000004" />	       
+        </attr> 
+        <attr name="et_labelInAnim" format="reference"/>
+        <attr name="et_labelOutAnim" format="reference"/>
+        <attr name="et_supportMode" format="integer">
+            <enum name="none" value="0x00000000" />
+            <enum name="helper" value="0x00000001" />	  
+            <enum name="helperWithError" value="0x00000002" />	 
+            <enum name="charCounter" value="0x00000003" />	       
+        </attr> 
+        <attr name="et_supportMaxChars" format="reference|integer"/>
+        <attr name="et_helper" format="reference|string"/>
+        <attr name="et_error" format="reference|string"/>
+        <attr name="et_supportPadding" format="reference|dimension"/>
+        <attr name="et_supportTextSize" format="reference|dimension"/>
+        <attr name="et_supportTextColor" format="reference|color"/>
+        <attr name="et_supportTextErrorColor" format="reference|color"/>
+        <attr name="et_supportTextAppearance" format="reference"/>
+        <attr name="et_supportSingleLine" format="boolean"/>
+        <attr name="et_supportMaxLines" format="reference|integer"/>
+        <attr name="et_supportLines" format="reference|integer"/>
+        <attr name="et_supportEllipsize" format="integer">
+            <enum name="start" value="0x00000001" />
+            <enum name="middle" value="0x00000002" />	  
+            <enum name="end" value="0x00000003" />	 
+            <enum name="marquee" value="0x00000004" />	       
+        </attr>         
+        <attr name="et_dividerColor" format="reference|color"/>
+        <attr name="et_dividerErrorColor" format="reference|color"/>
+        <attr name="et_dividerHeight" format="reference|dimension"/>        
+        <attr name="et_dividerPadding" format="reference|dimension"/> 
+        <attr name="et_dividerAnimDuration" format="reference|integer"/>
+        <attr name="et_dividerCompoundPadding" format="boolean"/>
+        <attr name="et_autoCompleteMode" format="integer">
+            <enum name="none"   value="0"/>
+            <enum name="single" value="1"/>
+            <enum name="multi"  value="2"/>
+        </attr>
+    </declare-styleable>
+    
+    <declare-styleable name="SnackBar">
+        <attr name="sb_backgroundColor" format="reference|color"/>
+        <attr name="sb_backgroundCornerRadius" format="reference|dimension"/>
+        <attr name="sb_horizontalPadding" format="reference|dimension"/>
+        <attr name="sb_verticalPadding" format="reference|dimension"/>
+        <attr name="sb_width" format="reference|dimension|integer">
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />	  
+        </attr>    
+        <attr name="sb_minWidth" format="reference|dimension"/>
+        <attr name="sb_maxWidth" format="reference|dimension"/>
+        <attr name="sb_height" format="reference|dimension|integer">
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />	  
+        </attr>
+        <attr name="sb_minHeight" format="reference|dimension"/>
+        <attr name="sb_maxHeight" format="reference|dimension"/>
+        <attr name="sb_marginStart" format="reference|dimension"/>
+        <attr name="sb_marginBottom" format="reference|dimension"/>
+        <attr name="sb_textSize" format="reference|dimension"/>
+        <attr name="sb_textColor" format="reference|color"/>
+        <attr name="sb_textAppearance" format="reference"/>
+        <attr name="sb_text" format="reference|string"/>
+        <attr name="sb_singleLine" format="boolean"/>
+        <attr name="sb_maxLines" format="reference|integer"/>
+        <attr name="sb_lines" format="reference|integer"/>
+        <attr name="sb_ellipsize" format="integer">
+            <enum name="start" value="0x00000001" />
+            <enum name="middle" value="0x00000002" />
+            <enum name="end" value="0x00000003" />	 
+            <enum name="marquee" value="0x00000004" />	       
+        </attr>
+        <attr name="sb_actionTextSize" format="reference|dimension"/>
+        <attr name="sb_actionTextColor" format="reference|color"/>
+        <attr name="sb_actionTextAppearance" format="reference"/>
+        <attr name="sb_actionText" format="reference|string"/>
+        <attr name="sb_actionRipple" format="reference"/>
+        <attr name="sb_duration" format="reference|integer"/>
+        <attr name="sb_inAnimation" format="reference"/>
+        <attr name="sb_outAnimation" format="reference"/>
+        <attr name="sb_removeOnDismiss" format="boolean" />
+    </declare-styleable>
+    
+    <declare-styleable name="FloatingActionButton">
+        <attr name="fab_backgroundColor" format="reference|color"/>
+        <attr name="fab_backgroundAnimDuration" format="reference|integer"/>
+        <attr name="fab_radius" format="reference|dimension"/>
+        <attr name="fab_elevation" format="reference|dimension"/>
+        <attr name="fab_iconSrc" format="reference"/>
+        <attr name="fab_iconLineMorphing" format="reference"/>
+        <attr name="fab_iconSize" format="reference|dimension"/>
+        <attr name="fab_interpolator" format="reference"/>
+        <attr name="fab_animDuration" format="reference|integer"/>
+    </declare-styleable>
+    
+    <declare-styleable name="Spinner">
+        <attr name="android:gravity" />
+        <attr name="android:prompt" />
+        <attr name="android:dropDownWidth" /> 
+        <attr name="android:popupBackground" />
+        <attr name="android:minWidth"/>
+        <attr name="android:minHeight"/>
+        <attr name="spn_disableChildrenWhenDisabled" format="boolean"/>
+        <attr name="spn_labelEnable" format="boolean"/>
+        <attr name="spn_labelPadding" format="reference|dimension"/>
+        <attr name="spn_labelTextSize" format="reference|dimension"/>
+        <attr name="spn_labelTextColor" format="reference|color"/>
+        <attr name="spn_labelTextAppearance" format="reference"/>
+        <attr name="spn_labelEllipsize" format="integer">
+            <enum name="start" value="0x00000001" />
+            <enum name="middle" value="0x00000002" />
+            <enum name="end" value="0x00000003" />
+            <enum name="marquee" value="0x00000004" />
+        </attr>
+        <attr name="spn_label" format="string|reference"/>
+        <attr name="spn_popupItemAnimation" format="reference"/>
+        <attr name="spn_popupItemAnimOffset" format="integer"/>
+        <attr name="spn_arrowColor" format="reference|color"/>
+        <attr name="spn_arrowSize" format="reference|dimension"/>
+        <attr name="spn_arrowPadding" format="reference|dimension"/>
+        <attr name="spn_arrowAnimDuration" format="integer"/>
+        <attr name="spn_arrowInterpolator" format="reference"/>
+        <attr name="spn_arrowAnimClockwise" format="boolean"/>
+        <attr name="spn_arrowSwitchMode" format="boolean"/>
+        <attr name="spn_dividerColor" format="reference|color"/>
+        <attr name="spn_dividerHeight" format="reference|dimension"/>        
+        <attr name="spn_dividerPadding" format="reference|dimension"/> 
+        <attr name="spn_dividerAnimDuration" format="reference|integer"/>        
+    </declare-styleable>   
+    
+    <declare-styleable name="Dialog">
+        <attr name="android:layout_width" />
+        <attr name="android:layout_height" />
+        <attr name="di_dimAmount" format="float" />
+        <attr name="di_backgroundColor" format="color|reference" />
+        <attr name="di_elevation" format="dimension|reference" />
+        <attr name="di_maxElevation" format="dimension|reference" />
+        <attr name="di_cornerRadius" format="dimension|reference" />
+        <attr name="di_layoutDirection" format="integer">
+            <enum name="ltr" value="0" />
+            <enum name="rtl" value="1" />
+            <enum name="locale" value="3" />
+        </attr>
+        <attr name="di_maxWidth" format="dimension|reference" />
+        <attr name="di_maxHeight" format="dimension|reference" />
+        <attr name="di_titleTextAppearance" format="reference" />
+        <attr name="di_titleTextColor" format="color|reference" />
+        <attr name="di_actionBackground" format="reference" />
+        <attr name="di_actionRipple" format="reference" />
+        <attr name="di_actionTextAppearance" format="reference" />
+        <attr name="di_actionTextColor" format="color|reference" />
+        <attr name="di_positiveActionBackground" format="reference" />
+        <attr name="di_positiveActionRipple" format="reference" />
+        <attr name="di_positiveActionTextAppearance" format="reference" />
+        <attr name="di_positiveActionTextColor" format="color|reference" />
+        <attr name="di_negativeActionBackground" format="reference" />
+        <attr name="di_negativeActionRipple" format="reference" />
+        <attr name="di_negativeActionTextAppearance" format="reference" />
+        <attr name="di_negativeActionTextColor" format="color|reference" />
+        <attr name="di_neutralActionBackground" format="reference" />
+        <attr name="di_neutralActionRipple" format="reference" />
+        <attr name="di_neutralActionTextAppearance" format="reference" />
+        <attr name="di_neutralActionTextColor" format="color|reference" />
+        <attr name="di_dividerColor" format="color|reference" />
+        <attr name="di_dividerHeight" format="dimension|reference" />
+        <attr name="di_inAnimation" format="reference" />
+        <attr name="di_outAnimation" format="reference" />
+        <attr name="di_cancelable" format="boolean" />
+        <attr name="di_canceledOnTouchOutside" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SimpleDialog">
+        <attr name="di_messageTextAppearance" format="reference" />
+        <attr name="di_messageTextColor" format="color|reference" />
+        <attr name="di_radioButtonStyle" format="reference" />
+        <attr name="di_checkBoxStyle" format="reference" />
+        <attr name="di_itemHeight" format="dimension|reference" />
+        <attr name="di_itemTextAppearance" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="TimePicker">
+        <attr name="tp_backgroundColor" format="color|reference" />
+        <attr name="tp_selectionColor" format="color|reference" />
+        <attr name="tp_selectionRadius" format="dimension|reference" />
+        <attr name="tp_tickSize" format="dimension|reference" />
+        <attr name="tp_fontFamily" format="string|reference"/>
+        <attr name="tp_textStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <attr name="tp_textSize" format="dimension|reference" />
+        <attr name="tp_textColor" format="color|reference" />
+        <attr name="tp_textHighlightColor" format="color|reference" />
+        <attr name="tp_animDuration" format="integer|reference" />
+        <attr name="tp_inInterpolator" format="reference" />
+        <attr name="tp_outInterpolator" format="reference" />
+        <attr name="tp_mode" format="integer">
+            <enum name="hour" value="0" />
+            <enum name="minute" value="1" />
+        </attr>
+        <attr name="tp_24Hour" format="boolean"/>
+        <attr name="tp_hour" format="integer"/>
+        <attr name="tp_minute" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="TimePickerDialog">
+        <attr name="tp_headerHeight" format="dimension|reference" />
+        <attr name="tp_textTimeColor" format="color|reference" />
+        <attr name="tp_textTimeSize" format="dimension|reference" />
+        <attr name="tp_am" format="string|reference"/>
+        <attr name="tp_pm" format="string|reference"/>
+        <attr name="tp_leadingZero" format="boolean|reference"/>
+    </declare-styleable>
+
+    <attr name="dp_textHighlightColor" format="color|reference" />
+    <attr name="dp_textColor" format="color|reference" />
+    <attr name="dp_selectionColor" format="color|reference" />
+    <attr name="dp_animDuration" format="integer|reference" />
+    <attr name="dp_inInterpolator" format="reference" />
+    <attr name="dp_outInterpolator" format="reference" />
+    <attr name="dp_yearMin" format="integer"/>
+    <attr name="dp_monthMin" format="integer"/>
+    <attr name="dp_dayMin" format="integer"/>
+    <attr name="dp_yearMax" format="integer"/>
+    <attr name="dp_monthMax" format="integer"/>
+    <attr name="dp_dayMax" format="integer"/>
+    <attr name="dp_year" format="integer"/>
+    <attr name="dp_month" format="integer"/>
+    <attr name="dp_day" format="integer"/>
+    <attr name="dp_fontFamily" format="string|reference"/>
+    <attr name="dp_textStyle" format="integer">
+        <enum name="normal" value="0" />
+        <enum name="bold" value="1" />
+        <enum name="italic" value="2" />
+        <enum name="bold_italic" value="3" />
+    </attr>
+
+    <declare-styleable name="YearPicker">
+        <attr name="dp_yearMin" />
+        <attr name="dp_yearMax" />
+        <attr name="dp_year" />
+        <attr name="dp_yearTextSize" format="dimension|reference" />
+        <attr name="dp_yearItemHeight" format="dimension|reference" />
+        <attr name="dp_textHighlightColor" />
+        <attr name="dp_textColor" />
+        <attr name="dp_selectionColor" />
+        <attr name="dp_animDuration" />
+        <attr name="dp_inInterpolator" />
+        <attr name="dp_outInterpolator" />
+        <attr name="dp_fontFamily" />
+        <attr name="dp_textStyle" />
+    </declare-styleable>
+
+    <declare-styleable name="DatePicker">
+        <attr name="dp_yearMin" />
+        <attr name="dp_monthMin" />
+        <attr name="dp_dayMin" />
+        <attr name="dp_yearMax" />
+        <attr name="dp_monthMax" />
+        <attr name="dp_dayMax" />
+        <attr name="dp_year" />
+        <attr name="dp_month" />
+        <attr name="dp_day" />
+        <attr name="dp_dayTextSize" format="dimension|reference" />
+        <attr name="dp_textLabelColor" format="color|reference" />
+        <attr name="dp_textDisableColor" format="color|reference" />
+        <attr name="dp_textHighlightColor" />
+        <attr name="dp_textColor" />
+        <attr name="dp_selectionColor" />
+        <attr name="dp_animDuration" />
+        <attr name="dp_inInterpolator" />
+        <attr name="dp_outInterpolator" />
+        <attr name="dp_fontFamily" />
+        <attr name="dp_textStyle" />
+        <attr name="android:padding" />
+        <attr name="android:paddingLeft" />
+        <attr name="android:paddingTop" />
+        <attr name="android:paddingRight" />
+        <attr name="android:paddingBottom" />
+    </declare-styleable>
+
+    <declare-styleable name="DatePickerDialog">
+        <attr name="dp_headerPrimaryHeight" format="dimension|reference" />
+        <attr name="dp_headerPrimaryColor" format="color|reference" />
+        <attr name="dp_headerSecondaryHeight" format="dimension|reference" />
+        <attr name="dp_headerSecondaryColor" format="color|reference" />
+        <attr name="dp_headerPrimaryTextSize" format="dimension|reference" />
+        <attr name="dp_headerSecondaryTextSize" format="dimension|reference" />
+        <attr name="dp_textHeaderColor" format="color|reference" />
+    </declare-styleable>
+
+    <declare-styleable name="BottomSheetDialog">
+        <attr name="bsd_inDuration" format="reference|integer"/>
+        <attr name="bsd_inInterpolator" format="reference"/>
+        <attr name="bsd_outDuration" format="reference|integer"/>
+        <attr name="bsd_outInterpolator" format="reference"/>
+        <attr name="bsd_cancelable" format="reference|boolean"/>
+        <attr name="bsd_canceledOnTouchOutside" format="reference|boolean"/>
+        <attr name="bsd_dimAmount" format="reference|float"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
+</resources>

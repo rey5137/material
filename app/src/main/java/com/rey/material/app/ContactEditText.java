@@ -24,7 +24,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,7 +47,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -60,7 +58,7 @@ public class ContactEditText extends EditText{
 
     private HashMap<String, Recipient> mRecipientMap;
 
-    private int mDefaultAvatarId = R.drawable.ic_user;
+    private int mDefaultAvatarId;
     private int mSpanHeight;
     private int mSpanMaxWidth;
     private int mSpanPaddingLeft;
@@ -93,7 +91,7 @@ public class ContactEditText extends EditText{
     }
 
     public ContactEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
@@ -101,6 +99,7 @@ public class ContactEditText extends EditText{
         mRecipientMap = new HashMap<>();
         mAutoCompleteMode = AUTOCOMPLETE_MODE_MULTI;
 
+        mDefaultAvatarId = R.drawable.ic_user;
         mSpanHeight = ThemeUtil.dpToPx(context, 32);
         mSpanMaxWidth = ThemeUtil.dpToPx(context, 150);
         mSpanPaddingLeft = ThemeUtil.dpToPx(context, 8);

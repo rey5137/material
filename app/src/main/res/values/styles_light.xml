@@ -243,7 +243,6 @@
 
     <style name="LightContactEditText"  parent="LightEditText">
         <item name="et_dividerPadding">4dp</item>
-        <item name="et_autoCompleteMode">multi</item>
         <item name="cet_spanHeight">32dp</item>
         <item name="cet_spanMaxWidth">150dp</item>
         <item name="cet_spanPaddingLeft">8dp</item>
