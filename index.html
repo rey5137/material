@@ -22,7 +22,7 @@
       <h1>
 <a id="material" class="anchor" href="#material" aria-hidden="true"><span class="octicon octicon-link"></span></a>Material</h1>
 
-<p><a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.1/material-1.2.1.aar"><img src="https://img.shields.io/maven-central/v/com.github.rey5137/material.svg" alt="Maven Central"></a>  <a href="http://android-arsenal.com/details/1/1685"><img src="https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
+<p><a href="https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.2/material-1.2.2.aar"><img src="https://api.bintray.com/packages/rey5137/maven/material/images/download.svg" alt="Download"></a>  <a href="http://android-arsenal.com/details/1/1685"><img src="https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
 
 <p>MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is <a href="https://github.com/rey5137">Rey Pham</a>.</p>
 
@@ -131,25 +131,25 @@
 
 <p>Add Gradle dependency:</p>
 
-<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.2.1<span class="pl-pds">'</span></span>
+<div class="highlight highlight-source-groovy-gradle"><pre><span class="pl-en">dependencies</span> {
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.2.2<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <ul>
 <li>Or
-<a href="https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.1/material-1.2.1.aar">Download from Maven</a>
+<a href="https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.2/material-1.2.2.aar">Download from Jcenter</a>
 </li>
 </ul>
 
 <p>You can try the SNAPSHOT version:</p>
 
-<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
+<div class="highlight highlight-source-groovy-gradle"><pre><span class="pl-en">dependencies</span> {
    compile <span class="pl-s"><span class="pl-pds">'</span>com.github.rey5137:material:1.2.1.6-SNAPSHOT<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <p>Make sure to add the snapshot repository:</p>
 
-<div class="highlight highlight-gradle"><pre><span class="pl-en">repositories</span> {
+<div class="highlight highlight-source-groovy-gradle"><pre><span class="pl-en">repositories</span> {
     maven {
         url <span class="pl-s"><span class="pl-pds">"</span>https://oss.sonatype.org/content/repositories/snapshots<span class="pl-pds">"</span></span>
     }
@@ -157,14 +157,14 @@
 
 <p>AppCompat and CardView library is required by Material library.</p>
 
-<div class="highlight highlight-gradle"><pre><span class="pl-en">dependencies</span> {
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:appcompat-v7:22.2.1<span class="pl-pds">'</span></span>
-   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:22.2.1<span class="pl-pds">'</span></span>
+<div class="highlight highlight-source-groovy-gradle"><pre><span class="pl-en">dependencies</span> {
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:appcompat-v7:23.1.1<span class="pl-pds">'</span></span>
+   compile <span class="pl-s"><span class="pl-pds">'</span>com.android.support:cardview-v7:23.1.1<span class="pl-pds">'</span></span>
 }</pre></div>
 
 <p>Now you can use any widget in <strong>com.rey.material.widget</strong> package as you wish. For styling, please view <a href="https://github.com/rey5137/Material/wiki">Wiki</a>. Note that default style of widgets depend on theme of AppCompat. Here is an example:</p>
 
-<div class="highlight highlight-xml"><pre>     &lt;<span class="pl-ent">style</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>AppTheme<span class="pl-pds">"</span></span> <span class="pl-e">parent</span>=<span class="pl-s"><span class="pl-pds">"</span>Theme.AppCompat.Light.DarkActionBar<span class="pl-pds">"</span></span>&gt;
+<div class="highlight highlight-text-xml"><pre>     &lt;<span class="pl-ent">style</span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>AppTheme<span class="pl-pds">"</span></span> <span class="pl-e">parent</span>=<span class="pl-s"><span class="pl-pds">"</span>Theme.AppCompat.Light.DarkActionBar<span class="pl-pds">"</span></span>&gt;
         <span class="pl-c">&lt;!-- Customize your theme here. --&gt;</span>
 
         <span class="pl-c">&lt;!-- colorPrimary is used for the default action bar background --&gt;</span>
