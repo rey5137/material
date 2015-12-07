@@ -114,8 +114,8 @@ AppCompat and CardView library is required by Material library.
 
 ```gradle
 dependencies {
-   compile 'com.android.support:appcompat-v7:22.2.1'
-   compile 'com.android.support:cardview-v7:22.2.1'
+   compile 'com.android.support:appcompat-v7:23.1.1'
+   compile 'com.android.support:cardview-v7:23.1.1'
 }
 ```
 Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view [Wiki](https://github.com/rey5137/Material/wiki). Note that default style of widgets depend on theme of AppCompat. Here is an example:
