@@ -91,7 +91,7 @@ dependencies {
 ```
 
 * Or
-[Download from Maven](https://oss.sonatype.org/content/repositories/releases/com/github/rey5137/material/1.2.2/material-1.2.2.aar)
+[Download from Jcenter](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.2/material-1.2.2.aar)
 
 You can try the SNAPSHOT version:
 
