@@ -81,6 +81,7 @@ public class Dialog extends android.app.Dialog{
 
     private boolean mCancelable = true;
     private boolean mCanceledOnTouchOutside = true;
+    private boolean mDismissPending = false;
 
     /**
      * The viewId of title view.
@@ -1045,23 +1046,27 @@ public class Dialog extends android.app.Dialog{
 
     @Override
     public void dismiss() {
-        if(!isShowing())
+        if(!isShowing() || mDismissPending)
             return;
 
         if(mOutAnimationId != 0){
             Animation anim = AnimationUtils.loadAnimation(mContainer.getContext(), mOutAnimationId);
             anim.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {}
+                public void onAnimationStart(Animation animation) {
+                    mDismissPending = true;
+                }
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {}
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    mDismissPending = false;
                     mCardView.setVisibility(View.GONE);
                     mHandler.post(mDismissAction);
                 }
+
             });
             mCardView.startAnimation(anim);
         }
