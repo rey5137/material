@@ -951,7 +951,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 itemType = positionType;
                 itemView = null;
             }
-            itemView = adapter.getView(i, itemView, null);
+            itemView = adapter.getView(i, itemView, this);
             if (itemView.getLayoutParams() == null)
                 itemView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             
