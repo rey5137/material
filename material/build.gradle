@@ -30,4 +30,6 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${libSupportVersion}"
 }
 
+apply from: '../dist/distInfo.gradle'
 apply from: '../dist/bintray.gradle'
+apply from: '../dist/maven.gradle'

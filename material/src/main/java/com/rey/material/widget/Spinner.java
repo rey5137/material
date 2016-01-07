@@ -14,6 +14,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -583,7 +584,24 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 
         if (child != null) {
             final int childBaseline = child.getBaseline();
-            return childBaseline >= 0 ? child.getTop() + childBaseline : -1;
+            if(childBaseline < 0)
+                return -1;
+
+            int paddingTop = getPaddingTop();
+            if(mLabelView != null)
+                paddingTop += mLabelView.getMeasuredHeight();
+
+            int remainHeight = getMeasuredHeight() - paddingTop - getPaddingBottom() - getDividerDrawableHeight();
+
+            int verticalGravity = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
+            switch (verticalGravity) {
+                case Gravity.TOP:
+                    return paddingTop + childBaseline;
+                case Gravity.BOTTOM:
+                    return paddingTop + remainHeight - child.getMeasuredHeight() + childBaseline;
+                default:
+                    return (remainHeight - child.getMeasuredHeight()) / 2 + paddingTop + childBaseline;
+            }
         }
 
         return -1;
@@ -813,7 +831,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 			}
 			
 			v.layout(x, y, x + v.getMeasuredWidth(), y + v.getMeasuredHeight());
-		}		
+		}
     }
 
     @Override
@@ -933,7 +951,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 itemType = positionType;
                 itemView = null;
             }
-            itemView = adapter.getView(i, itemView, null);
+            itemView = adapter.getView(i, itemView, this);
             if (itemView.getLayoutParams() == null)
                 itemView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             
