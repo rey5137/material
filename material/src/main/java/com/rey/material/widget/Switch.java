@@ -343,6 +343,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
 
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
+		if ( !isEnabled() ) return true;
 		super.onTouchEvent(event);
 		getRippleManager().onTouchEvent(this, event);
 
