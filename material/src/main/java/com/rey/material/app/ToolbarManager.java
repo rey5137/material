@@ -1,8 +1,10 @@
 package com.rey.material.app;
 
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorListenerCompat;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.FragmentManager;
@@ -377,9 +379,11 @@ public class ToolbarManager {
         protected NavigationDrawerDrawable mNavigationIcon;
         protected Toolbar mToolbar;
 
-        protected long mAnimationDuration;
         protected boolean mNavigationVisible = true;
-        protected boolean mAnimating = false;
+
+        protected long mAnimationDuration;
+        private long mAnimTime;
+        private List<Object> mAnimations = new ArrayList<>();
 
         public NavigationManager(NavigationDrawerDrawable navigationIcon, Toolbar toolbar){
             mToolbar = toolbar;
@@ -433,19 +437,21 @@ public class ToolbarManager {
         }
 
         public void setNavigationVisible(boolean visible, boolean animation){
-            if(mAnimating)
-                return;
-
             if(mNavigationVisible != visible){
                 mNavigationVisible = visible;
+                long time = SystemClock.uptimeMillis();
 
-                if(!animation)
+                if(!animation) {
                     mToolbar.setNavigationIcon(mNavigationVisible ? mNavigationIcon : null);
+                    mAnimTime = time;
+                    if(!mNavigationVisible)
+                        mNavigationIcon.cancel();
+                }
                 else{
                     if(mNavigationVisible)
-                        animateNavigationIn();
+                        animateNavigationIn(time);
                     else
-                        animateNavigationOut();
+                        animateNavigationOut(time);
                 }
 
             }
@@ -455,18 +461,29 @@ public class ToolbarManager {
             return new DecelerateInterpolator();
         }
 
-        private void animateNavigationOut(){
-            mAnimating = true;
+        private void cancelAllAnimations(){
+            for(Object obj : mAnimations){
+                if(obj instanceof Animation)
+                    ((Animation)obj).cancel();
+                else if(obj instanceof ValueAnimatorCompat)
+                    ((ValueAnimatorCompat)obj).cancel();
+            }
+
+            mAnimations.clear();
+        }
+
+        private void animateNavigationOut(long time){
+            mAnimTime = time;
+            cancelAllAnimations();
             mToolbar.setNavigationIcon(null);
-            doOnPreDraw(mToolbar, new Runnable() {
+            doOnPreDraw(mToolbar, new AnimRunnable(time) {
                 @Override
-                public void run() {
+                void doWork() {
                     final ViewData viewData = new ViewData(mToolbar);
                     mToolbar.setNavigationIcon(mNavigationIcon);
-
-                    doOnPreDraw(mToolbar, new Runnable() {
+                    doOnPreDraw(mToolbar, new AnimRunnable(mTime) {
                         @Override
-                        public void run() {
+                        void doWork() {
                             boolean first = true;
                             for (int i = 0, count = mToolbar.getChildCount(); i < count; i++) {
                                 View child = mToolbar.getChildAt(i);
@@ -476,31 +493,30 @@ public class ToolbarManager {
                                         nextLeft = -child.getLeft() - child.getWidth();
 
                                     if (first) {
-                                        animateView(child, child.getLeft(), nextLeft, new Runnable() {
+                                        animateViewOut(child, nextLeft, new Runnable() {
                                             @Override
                                             public void run() {
                                                 mToolbar.setNavigationIcon(null);
-                                                mAnimating = false;
+                                                mNavigationIcon.cancel();
                                             }
                                         });
                                         first = false;
                                     } else
-                                        animateView(child, child.getLeft(), nextLeft, null);
+                                        animateViewOut(child, nextLeft, null);
                                 }
                             }
 
-                            if (first) {
+                            if (first)
                                 mToolbar.setNavigationIcon(null);
-                                mAnimating = false;
-                            }
                         }
                     });
                 }
             });
         }
 
-        private void animateView(final View view, final int prevLeft, final int nextLeft, final Runnable doOnEndRunnable){
+        private void animateViewOut(final View view, final int nextLeft, final Runnable doOnEndRunnable){
             final Interpolator interpolator = getInterpolator(false);
+            final int prevLeft = view.getLeft();
 
             ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
             animator.setDuration(mAnimationDuration);
@@ -518,62 +534,80 @@ public class ToolbarManager {
                 }
             });
 
+            animator.addListener(new AnimatorListenerCompat() {
+                @Override
+                public void onAnimationStart(ValueAnimatorCompat animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(ValueAnimatorCompat animation) {
+                    mAnimations.remove(animation);
+                }
+
+                @Override
+                public void onAnimationCancel(ValueAnimatorCompat animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(ValueAnimatorCompat animation) {
+                }
+            });
+
             animator.start();
+            mAnimations.add(animator);
         }
 
-        private void animateNavigationIn(){
-            mAnimating = true;
-
-            doOnPreDraw(mToolbar, new Runnable() {
+        private void animateNavigationIn(long time){
+            mAnimTime = time;
+            cancelAllAnimations();
+            mToolbar.setNavigationIcon(null);
+            doOnPreDraw(mToolbar, new AnimRunnable(time) {
                 @Override
-                public void run() {
+                void doWork() {
                     final ViewData viewData = new ViewData(mToolbar);
                     mToolbar.setNavigationIcon(mNavigationIcon);
-
-                    doOnPreDraw(mToolbar, new Runnable() {
+                    doOnPreDraw(mToolbar, new AnimRunnable(mTime) {
                         @Override
-                        public void run() {
-                            boolean first = true;
-
-                            for(int i = 0, count = mToolbar.getChildCount(); i < count; i++){
+                        void doWork() {
+                            for (int i = 0, count = mToolbar.getChildCount(); i < count; i++) {
                                 View child = mToolbar.getChildAt(i);
-                                if(!(child instanceof ActionMenuView)){
+                                if (!(child instanceof ActionMenuView)) {
                                     int prevLeft = viewData.getLeft(child);
-                                    if(prevLeft < 0)
+                                    if (prevLeft < 0)
                                         prevLeft = -child.getLeft() - child.getWidth();
 
-                                    TranslateAnimation anim = new TranslateAnimation(
-                                            TranslateAnimation.ABSOLUTE, prevLeft - child.getLeft(), TranslateAnimation.ABSOLUTE, 0,
-                                            TranslateAnimation.ABSOLUTE, 0, TranslateAnimation.ABSOLUTE, 0);
-
-                                    if(first){
-                                        anim.setAnimationListener(new Animation.AnimationListener() {
-                                            @Override
-                                            public void onAnimationStart(Animation animation) {}
-
-                                            @Override
-                                            public void onAnimationEnd(Animation animation) {
-                                                mAnimating = false;
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animation animation) {}
-                                        });
-                                        first = false;
-                                    }
-
-                                    anim.setInterpolator(getInterpolator(true));
-                                    anim.setDuration(mAnimationDuration);
-                                    child.startAnimation(anim);
+                                    animateViewIn(child, prevLeft);
                                 }
                             }
-
-                            if(first)
-                                mAnimating = false;
                         }
                     });
                 }
             });
+        }
+
+        private void animateViewIn(View view, int prevLeft){
+            TranslateAnimation anim = new TranslateAnimation(
+                    TranslateAnimation.ABSOLUTE, prevLeft - view.getLeft(), TranslateAnimation.ABSOLUTE, 0,
+                    TranslateAnimation.ABSOLUTE, 0, TranslateAnimation.ABSOLUTE, 0);
+
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mAnimations.remove(animation);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            anim.setInterpolator(getInterpolator(true));
+            anim.setDuration(mAnimationDuration);
+            view.startAnimation(anim);
+            mAnimations.add(anim);
         }
 
         private void doOnPreDraw(final View v, final Runnable runnable){
@@ -614,6 +648,23 @@ public class ToolbarManager {
                 return -1;
             }
 
+        }
+
+        abstract class AnimRunnable implements Runnable{
+
+            long mTime;
+
+            public AnimRunnable(long time){
+                mTime = time;
+            }
+
+            @Override
+            public void run() {
+                if(mTime == mAnimTime)
+                    doWork();
+            }
+
+            abstract void doWork();
         }
 
     }
