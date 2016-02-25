@@ -1,10 +1,9 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -12,7 +11,7 @@ import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public class Button extends android.widget.Button implements ThemeManager.OnThemeChangedListener{
+public class Button extends AppCompatButton implements ThemeManager.OnThemeChangedListener{
 
 	private RippleManager mRippleManager;
 
@@ -36,13 +35,6 @@ public class Button extends android.widget.Button implements ThemeManager.OnThem
 		
 		init(context, attrs, defStyleAttr, 0);
 	}
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Button(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
 
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);

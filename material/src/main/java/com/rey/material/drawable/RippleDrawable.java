@@ -147,12 +147,14 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	@Override
 	public void setAlpha(int alpha) {
 		mAlpha = alpha;
+		if(mBackgroundDrawable != null)
+			mBackgroundDrawable.setAlpha(alpha);
 	}
 
 	@Override
 	public void setColorFilter(ColorFilter filter) {
-		mFillPaint.setColorFilter(filter);
-		mShaderPaint.setColorFilter(filter);
+		if(mBackgroundDrawable != null)
+			mBackgroundDrawable.setColorFilter(filter);
 	}
 
 	@Override
