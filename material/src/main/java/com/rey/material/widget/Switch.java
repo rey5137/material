@@ -87,7 +87,7 @@ public class Switch extends View implements Checkable, ThemeManager.OnThemeChang
          * @param view The Switch view.
          * @param checked The checked state.
          */
-        public void onCheckedChanged(Switch view, boolean checked);
+        void onCheckedChanged(Switch view, boolean checked);
     }
 
     private OnCheckedChangeListener mOnCheckedChangeListener;

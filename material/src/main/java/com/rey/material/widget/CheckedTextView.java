@@ -18,6 +18,20 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
+    /**
+     * Interface definition for a callback to be invoked when the checked state is changed.
+     */
+    public interface OnCheckedChangeListener{
+        /**
+         * Called when the checked state is changed.
+         * @param view The CheckedTextView view.
+         * @param checked The checked state.
+         */
+        void onCheckedChanged(CheckedTextView view, boolean checked);
+    }
+
+    private OnCheckedChangeListener mOnCheckedChangeListener;
+
     public CheckedTextView(Context context) {
         super(context);
 
@@ -57,6 +71,22 @@ public class CheckedTextView extends android.widget.CheckedTextView implements T
 
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    /**
+     * Set a listener will be called when the checked state is changed.
+     * @param listener The {@link OnCheckedChangeListener} will be called.
+     */
+    public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
+        mOnCheckedChangeListener = listener;
+    }
+
+    @Override
+    public void setChecked(boolean checked) {
+        boolean change = isChecked() != checked;
+        super.setChecked(checked);
+        if(change && mOnCheckedChangeListener != null)
+            mOnCheckedChangeListener.onCheckedChanged(this, checked);
     }
 
     @Override

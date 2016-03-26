@@ -16,7 +16,7 @@ ext {
     siteUrl = 'https://github.com/rey5137/material'
     gitUrl = 'https://github.com/rey5137/material.git'
 
-    libraryVersion = '1.2.2.5-SNAPSHOT'
+    libraryVersion = '1.2.2.6-SNAPSHOT'
 
     developerId = 'rey5137'
     developerName = 'Rey Pham'
