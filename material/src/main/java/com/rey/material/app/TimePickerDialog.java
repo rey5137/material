@@ -685,7 +685,9 @@ public class TimePickerDialog extends Dialog{
         @Override
         protected Dialog onBuild(Context context, int styleId) {
             TimePickerDialog dialog = new TimePickerDialog(context, styleId);
-            dialog.onTimeChangedListener(this);
+            dialog.hour(mHour)
+                     .minute(mMinute)
+                     .onTimeChangedListener(this);
             return dialog;
         }
 
