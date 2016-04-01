@@ -109,9 +109,9 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
 
     public final static class TimeRange{
 
-        public static final int T24 = -1;
-        public static final int AM = Calendar.AM;
-        public static final int PM = Calendar.PM;
+        public static final int HOUR_MODE_T24 = -1;
+        public static final int HOUR_MODE_AM = Calendar.AM;
+        public static final int HOUR_MODE_PM = Calendar.PM;
         public static final int[] NO_SELECTABLE_TIME_IN_MODE = new int[]{0,0};
 
         public final int minHour;
@@ -153,15 +153,15 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
             return new TimeRange(minTimeParts[0],minTimeParts[1],maxTimeParts[0],maxTimeParts[1]);
         }
 
-        public boolean isHourWithinRange(int hour, int amPm){
-            int t24Hour = covertTo24Hours(hour, amPm);
+        public boolean isHourWithinRange(int hour, int hourMode){
+            int t24Hour = covertTo24Hours(hour, hourMode);
             return t24Hour >= minHour && t24Hour <= maxHour;
         }
 
 
-        public boolean isMinuteWithinRange(int hour, int minute, int amPm){
-            if (isHourWithinRange(hour,amPm)){
-                int t24Hour = covertTo24Hours(hour, amPm);
+        public boolean isMinuteWithinRange(int hour, int minute, int hourMode){
+            if (isHourWithinRange(hour,hourMode)){
+                int t24Hour = covertTo24Hours(hour, hourMode);
                 if (t24Hour == minHour){
                     return minute >= minMinute;
                 }else if (t24Hour == maxHour){
@@ -174,23 +174,13 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         }
 
 
-        public final boolean isGreaterThanMaxTime(int hour, int minute,int amPm){
-            int t24Hour = covertTo24Hours(hour, amPm);
-            return t24Hour > maxHour || (t24Hour == maxHour && minute > maxMinute);
-        }
-
-        public final boolean isLessThanMinTime(int hour, int minute, int amPm){
-            int t24Hour = covertTo24Hours(hour, amPm);
-            return t24Hour < minHour || (t24Hour == minHour && minute < minMinute);
-        }
-
-        public final int[] getMinimumTimeInMode(int mode){
+        public final int[] getMinimumTimeForHourMode(int hourMode){
             int[] minTime = new int[]{minHour,minMinute};
             int[] maxTime = new int[]{maxHour, maxMinute};
 
-            if (mode == T24){
+            if (hourMode == HOUR_MODE_T24){
                 return minTime;
-            }else if (mode == AM){
+            }else if (hourMode == HOUR_MODE_AM){
                 return minHour < 12? minTime : maxHour < 12? maxTime : NO_SELECTABLE_TIME_IN_MODE;
             }else{
                 return minHour >= 12? maxTime : maxHour >= 12? maxTime : NO_SELECTABLE_TIME_IN_MODE;
@@ -207,7 +197,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
 
 
         private static int covertTo24Hours(int hour, int amPm){
-            if(amPm == PM){
+            if(amPm == HOUR_MODE_PM){
                 hour += 12;
                 if (hour > 23) {
                     hour %= 24;
@@ -521,14 +511,14 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
 
     public void setAm(boolean am){
         if (m24Hour){
-            throw new IllegalStateException("Can not switch to am mode when 24 hour mode is active");
+            throw new IllegalStateException("Can not toggle AM/PM mode when 24 hour mode is active");
         }
 
         this.mIsAm = am;
 
         if (mTimeRange != null){
-            int timeType = mIsAm? TimeRange.AM : TimeRange.PM;
-            int[] minTime = mTimeRange.getMinimumTimeInMode(timeType);
+            int timeType = mIsAm? TimeRange.HOUR_MODE_AM : TimeRange.HOUR_MODE_PM;
+            int[] minTime = mTimeRange.getMinimumTimeForHourMode(timeType);
             if(minTime != TimeRange.NO_SELECTABLE_TIME_IN_MODE) {
                 if (!mTimeRange.isHourWithinRange(mHour, timeType)) {
                     setHour(minTime[0]);
@@ -539,7 +529,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
             }else{
                 Log.e(getClass().getSimpleName(), String.format(
                                 "There are no user selectable times in mode: '%s'.",
-                                timeType == TimeRange.AM? "AM" : "PM")
+                                timeType == TimeRange.HOUR_MODE_AM ? "AM" : "PM")
                 );
             }
         }
@@ -782,20 +772,24 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     }
 
     private boolean isHourInRange(int hour){
-        if (m24Hour){
-            return mTimeRange.isHourWithinRange(hour,TimeRange.T24);
-        }else{
-            return mTimeRange.isHourWithinRange(hour,mIsAm? TimeRange.AM : TimeRange.PM);
-        }
+        return mTimeRange.isHourWithinRange(
+                hour,
+                m24Hour?
+                        TimeRange.HOUR_MODE_T24 :
+                        mIsAm? TimeRange.HOUR_MODE_AM : TimeRange.HOUR_MODE_PM
+        );
+
     }
 
 
     private boolean isMinuteInRange(int minute){
-        if (m24Hour){
-            return mTimeRange.isMinuteWithinRange(mHour,minute,TimeRange.T24);
-        }else{
-            return mTimeRange.isMinuteWithinRange(mHour,minute,mIsAm? TimeRange.AM : TimeRange.PM);
-        }
+        return mTimeRange.isMinuteWithinRange(
+                mHour,
+                minute,
+                m24Hour ?
+                        TimeRange.HOUR_MODE_T24 :
+                        mIsAm ? TimeRange.HOUR_MODE_AM : TimeRange.HOUR_MODE_PM
+        );
     }
 
 
