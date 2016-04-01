@@ -517,19 +517,19 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         this.mIsAm = am;
 
         if (mTimeRange != null){
-            int timeType = mIsAm? TimeRange.HOUR_MODE_AM : TimeRange.HOUR_MODE_PM;
-            int[] minTime = mTimeRange.getMinimumTimeForHourMode(timeType);
+            int hourMode = mIsAm? TimeRange.HOUR_MODE_AM : TimeRange.HOUR_MODE_PM;
+            int[] minTime = mTimeRange.getMinimumTimeForHourMode(hourMode);
             if(minTime != TimeRange.NO_SELECTABLE_TIME_IN_MODE) {
-                if (!mTimeRange.isHourWithinRange(mHour, timeType)) {
+                if (!mTimeRange.isHourWithinRange(mHour, hourMode)) {
                     setHour(minTime[0]);
                 }
-                if (!mTimeRange.isMinuteWithinRange(mHour, mMinute, timeType)) {
+                if (!mTimeRange.isMinuteWithinRange(mHour, mMinute, hourMode)) {
                     setMinute(minTime[1]);
                 }
             }else{
                 Log.e(getClass().getSimpleName(), String.format(
                                 "There are no user selectable times in mode: '%s'.",
-                                timeType == TimeRange.HOUR_MODE_AM ? "AM" : "PM")
+                                hourMode == TimeRange.HOUR_MODE_AM ? "AM" : "PM")
                 );
             }
         }
