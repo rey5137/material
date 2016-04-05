@@ -118,10 +118,6 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
 		super(context, attrs, defStyleAttr);
 	}
 
-    public Spinner(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         mLabelEnable = false;

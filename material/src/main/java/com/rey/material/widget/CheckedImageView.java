@@ -27,10 +27,6 @@ public class CheckedImageView extends ImageView implements Checkable {
         super(context, attrs, defStyleAttr);
     }
 
-    public CheckedImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     public void setChecked(boolean b) {
         if(mChecked != b){

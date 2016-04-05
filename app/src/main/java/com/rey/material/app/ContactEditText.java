@@ -90,10 +90,6 @@ public class ContactEditText extends EditText{
         super(context, attrs, defStyleAttr);
     }
 
-    public ContactEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mRecipientMap = new HashMap<>();

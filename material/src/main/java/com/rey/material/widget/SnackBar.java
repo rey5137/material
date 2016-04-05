@@ -127,10 +127,6 @@ public class SnackBar extends FrameLayout implements ThemeManager.OnThemeChanged
         super(context, attrs, defStyleAttr);
     }
 
-    public SnackBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mWidth = MATCH_PARENT;

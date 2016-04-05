@@ -1,7 +1,7 @@
 ext {
-    bintrayUser = BINTRAY_USERNAME
-    bintrayApiKey = BINTRAY_APIKEY
-    bintrayGpgPassword = GPG_PASSWORD
+    bintrayUser = hasProperty('BINTRAY_USERNAME') ? BINTRAY_USERNAME : ""
+    bintrayApiKey = hasProperty('BINTRAY_APIKEY') ? BINTRAY_APIKEY : ""
+    bintrayGpgPassword = hasProperty('GPG_PASSWORD') ? GPG_PASSWORD : ""
 
     bintrayRepo = 'maven'
     bintrayName = 'material'
@@ -16,7 +16,7 @@ ext {
     siteUrl = 'https://github.com/rey5137/material'
     gitUrl = 'https://github.com/rey5137/material.git'
 
-    libraryVersion = '1.2.2.6-SNAPSHOT'
+    libraryVersion = '1.2.2.7-SNAPSHOT'
 
     developerId = 'rey5137'
     developerName = 'Rey Pham'

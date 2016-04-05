@@ -12,26 +12,29 @@ android {
         versionName "0.0.5"
     }
 
-    signingConfigs {
-        release {
-            storeFile file(MATERIAL_KEYSTORE_FILE)
-            storePassword MATERIAL_KEYSTORE_PASSWORD
-            keyAlias MATERIAL_KEYSTORE_ALIAS
-            keyPassword MATERIAL_KEYSTORE_PASSWORD
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
+    }
+
+    if(hasProperty('MATERIAL_KEYSTORE_FILE')) {
+        android.signingConfigs {
+            release {
+                storeFile file(MATERIAL_KEYSTORE_FILE)
+                storePassword MATERIAL_KEYSTORE_PASSWORD
+                keyAlias MATERIAL_KEYSTORE_ALIAS
+                keyPassword MATERIAL_KEYSTORE_PASSWORD
+            }
+        }
+
+        android.buildTypes.release.signingConfig signingConfigs.release
     }
 }
 
 ext{
-    libSupportVersion = '23.1.1'
+    libSupportVersion = '23.2.1'
 }
 
 dependencies {

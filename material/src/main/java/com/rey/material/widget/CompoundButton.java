@@ -41,13 +41,6 @@ public class CompoundButton extends android.widget.CompoundButton implements The
 		init(context, attrs, defStyleAttr, 0);
 	}
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public CompoundButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
-
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             applyPadding(context, attrs, defStyleAttr, defStyleRes);

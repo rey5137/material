@@ -1,10 +1,9 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -15,7 +14,7 @@ import com.rey.material.util.ViewUtil;
 /**
  * Created by Rey on 9/16/2015.
  */
-public class ImageView extends android.widget.ImageView implements ThemeManager.OnThemeChangedListener {
+public class ImageView extends AppCompatImageView implements ThemeManager.OnThemeChangedListener {
 
     private RippleManager mRippleManager;
     protected int mStyleId;
@@ -37,13 +36,6 @@ public class ImageView extends android.widget.ImageView implements ThemeManager.
         super(context, attrs, defStyleAttr);
 
         init(context, attrs, defStyleAttr, 0);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
     }
 
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){

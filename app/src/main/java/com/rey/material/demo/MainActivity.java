@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +18,6 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.app.ToolbarManager;
@@ -67,10 +65,12 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
         mToolbarManager.setNavigationManager(new ToolbarManager.ThemableNavigationManager(R.array.navigation_drawer, getSupportFragmentManager(), mToolbar, dl_navigator) {
             @Override
             public void onNavigationClick() {
-                if (mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
-                    mToolbarManager.setCurrentGroup(R.id.tb_group_main);
-                else
-                    dl_navigator.openDrawer(GravityCompat.START);
+//                if (mToolbarManager.getCurrentGroup() != R.id.tb_group_main)
+//                    mToolbarManager.setCurrentGroup(R.id.tb_group_main);
+//                else
+//                    dl_navigator.openDrawer(GravityCompat.START);
+
+                mToolbarManager.setNavigationVisisble(false, true);
             }
 
             @Override
@@ -140,9 +140,14 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
                 mToolbarManager.setCurrentGroup(R.id.tb_group_main);
                 break;
             case R.id.tb_theme:
-                int theme = (ThemeManager.getInstance().getCurrentTheme() + 1) % ThemeManager.getInstance().getThemeCount();
-                ThemeManager.getInstance().setCurrentTheme(theme);
-                Toast.makeText(this, "Current theme: " + theme, Toast.LENGTH_SHORT).show();
+                if(mToolbarManager.isNavigationVisisble())
+                    mToolbarManager.setNavigationVisisble(false, true);
+                else
+                    mToolbarManager.setNavigationVisisble(true, true);
+
+//                int theme = (ThemeManager.getInstance().getCurrentTheme() + 1) % ThemeManager.getInstance().getThemeCount();
+//                ThemeManager.getInstance().setCurrentTheme(theme);
+//                Toast.makeText(this, "Current theme: " + theme, Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
