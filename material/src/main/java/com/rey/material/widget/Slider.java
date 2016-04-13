@@ -103,6 +103,10 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
          * @param newValue The new value.
          */
         public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue);
+
+        public void onStartTrackingTouch(Slider view);
+
+        public void onStopTrackingTouch(Slider view);
     }
 
     private OnPositionChangeListener mOnPositionChangeListener;
@@ -701,6 +705,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mOnPositionChangeListener.onStartTrackingTouch(this);
                 mIsDragging = isThumbHit(x, y, mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(x, y);
                 if(mIsDragging) {
@@ -726,6 +731,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                mOnPositionChangeListener.onStopTrackingTouch(this);
                 if(mIsDragging) {
                     mIsDragging = false;
                     setPosition(getPosition(), true, true, true);
