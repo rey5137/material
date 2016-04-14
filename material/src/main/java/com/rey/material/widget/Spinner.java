@@ -643,7 +643,31 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     private int getDividerDrawableHeight(){
     	return mDividerHeight > 0 ? mDividerHeight + mDividerPadding : 0;
     }
-    
+
+    private int getSpec(int availableSize, int size){
+        int spec;
+        switch (size){
+            case ViewGroup.LayoutParams.WRAP_CONTENT:
+                if(availableSize > 0)
+                    spec = MeasureSpec.makeMeasureSpec(availableSize, MeasureSpec.AT_MOST);
+                else
+                    spec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                break;
+            case ViewGroup.LayoutParams.MATCH_PARENT:
+                if(availableSize > 0)
+                    spec = MeasureSpec.makeMeasureSpec(availableSize, MeasureSpec.EXACTLY);
+                else
+                    spec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+                break;
+            default:
+                spec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
+                break;
+        }
+
+        return spec;
+    }
+
+    @SuppressWarnings("Range")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -657,7 +681,10 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
         int labelWidth = 0;
         int labelHeight = 0;
         if(mLabelView != null && mLabelView.getLayoutParams() != null){
-            mLabelView.measure(MeasureSpec.makeMeasureSpec(widthSize - paddingHorizontal, widthMode), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            int size = widthMode == MeasureSpec.UNSPECIFIED ? 0 : (widthSize - paddingHorizontal);
+            int ws = MeasureSpec.makeMeasureSpec(size, widthMode);
+            int hs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+            mLabelView.measure(ws, hs);
             labelWidth = mLabelView.getMeasuredWidth();
             labelHeight = mLabelView.getMeasuredHeight();
         }
@@ -667,31 +694,9 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
     	
     	View v = getSelectedView();
     	if(v != null){
-            int ws;
-            int hs;
             ViewGroup.LayoutParams params = v.getLayoutParams();
-            switch (params.width){
-                case ViewGroup.LayoutParams.WRAP_CONTENT:
-                    ws = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-                    break;
-                case ViewGroup.LayoutParams.MATCH_PARENT:
-                    ws = MeasureSpec.makeMeasureSpec(widthSize - paddingHorizontal, widthMode);
-                    break;
-                default:
-                    ws = MeasureSpec.makeMeasureSpec(params.width, MeasureSpec.EXACTLY);
-                    break;
-            }
-            switch (params.height){
-                case ViewGroup.LayoutParams.WRAP_CONTENT:
-                    hs = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-                    break;
-                case ViewGroup.LayoutParams.MATCH_PARENT:
-                    hs = MeasureSpec.makeMeasureSpec(heightSize - paddingVertical - labelHeight, heightMode);
-                    break;
-                default:
-                    hs = MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY);
-                    break;
-            }
+            int ws = getSpec(widthSize - paddingHorizontal, params.width);
+            int hs = getSpec(heightSize - paddingVertical - mLabelView.getMeasuredHeight(), params.height);
 
     		v.measure(ws, hs);
     		width = v.getMeasuredWidth();
