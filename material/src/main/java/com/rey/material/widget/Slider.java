@@ -60,6 +60,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
     private int mThumbBorderSize = -1;
     private int mThumbRadius = -1;
     private int mThumbFocusRadius = -1;
+    private int mThumbTouchRadius = -1;
     private float mThumbPosition = -1;
     private Typeface mTypeface = Typeface.DEFAULT;
     private int mTextSize = -1;
@@ -100,14 +101,14 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
          * @param oldValue The old value.
          * @param newValue The new value.
          */
-        public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue);
+        void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue);
     }
 
     private OnPositionChangeListener mOnPositionChangeListener;
 
     public interface ValueDescriptionProvider{
 
-        public String getDescription(int value);
+        String getDescription(int value);
 
     }
 
@@ -198,6 +199,8 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
                 mThumbRadius = a.getDimensionPixelSize(attr, 0);
             else if(attr == R.styleable.Slider_sl_thumbFocusRadius)
                 mThumbFocusRadius = a.getDimensionPixelSize(attr, 0);
+            else if(attr == R.styleable.Slider_sl_thumbTouchRadius)
+                mThumbTouchRadius = a.getDimensionPixelSize(attr, 0);
             else if(attr == R.styleable.Slider_sl_travelAnimDuration) {
                 mTravelAnimationDuration = a.getInteger(attr, 0);
                 mTransformAnimationDuration = mTravelAnimationDuration;
@@ -692,7 +695,7 @@ public class Slider extends View implements ThemeManager.OnThemeChangedListener{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsDragging = isThumbHit(x, y, mThumbRadius) && !mThumbMoveAnimator.isRunning();
+                mIsDragging = isThumbHit(x, y, mThumbTouchRadius > 0 ? mThumbTouchRadius : mThumbRadius) && !mThumbMoveAnimator.isRunning();
                 mMemoPoint.set(x, y);
                 if(mIsDragging) {
                     mThumbRadiusAnimator.startAnimation(mDiscreteMode ? 0 : mThumbFocusRadius);
