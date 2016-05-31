@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.rey.material.demo"
@@ -34,7 +34,7 @@ android {
 }
 
 ext{
-    libSupportVersion = '23.2.1'
+    libSupportVersion = '23.4.0'
 }
 
 dependencies {

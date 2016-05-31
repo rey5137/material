@@ -1,5 +1,6 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+apply from: "$rootProject.projectDir/dist/distInfo.gradle"
 
 group = publishedGroupId                               // Maven Group ID for the artifact
 

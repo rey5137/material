@@ -1,7 +1,12 @@
 ext {
-    bintrayUser = hasProperty('BINTRAY_USERNAME') ? BINTRAY_USERNAME : ""
-    bintrayApiKey = hasProperty('BINTRAY_APIKEY') ? BINTRAY_APIKEY : ""
-    bintrayGpgPassword = hasProperty('GPG_PASSWORD') ? GPG_PASSWORD : ""
+    bintrayUser = project.hasProperty('BINTRAY_USERNAME') ? BINTRAY_USERNAME : ""
+    bintrayApiKey = project.hasProperty('BINTRAY_APIKEY') ? BINTRAY_APIKEY : ""
+    bintrayGpgPassword = project.hasProperty('GPG_PASSWORD') ? GPG_PASSWORD : ""
+
+    mavenUser = project.hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
+    mavenPassword = project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
+    mavenReleaseRepo = project.hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    mavenSnapshotRepo = project.hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL : "https://oss.sonatype.org/content/repositories/snapshots/"
 
     bintrayRepo = 'maven'
     bintrayName = 'material'
@@ -16,7 +21,7 @@ ext {
     siteUrl = 'https://github.com/rey5137/material'
     gitUrl = 'https://github.com/rey5137/material.git'
 
-    libraryVersion = '1.2.2.8-SNAPSHOT'
+    libraryVersion = '1.2.3'
 
     developerId = 'rey5137'
     developerName = 'Rey Pham'
