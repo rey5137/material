@@ -1,33 +1,6 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-
-ext {
-    bintrayUser = BINTRAY_USERNAME
-    bintrayApiKey = BINTRAY_APIKEY
-    bintrayGpgPassword = GPG_PASSWORD
-
-    bintrayRepo = 'maven'
-    bintrayName = 'material'
-
-    publishedGroupId = 'com.github.rey5137'
-    libraryName = 'Material Library'
-    artifact = 'material'
-
-    libraryDescription = 'An Android library to bring Material Design UI to pre-Lolipop Android.'
-
-    siteUrl = 'https://github.com/rey5137/material'
-    gitUrl = 'https://github.com/rey5137/material.git'
-
-    libraryVersion = '1.2.2'
-
-    developerId = 'rey5137'
-    developerName = 'Rey Pham'
-    developerEmail = 'pea5137@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
+apply from: "$rootProject.projectDir/dist/distInfo.gradle"
 
 group = publishedGroupId                               // Maven Group ID for the artifact
 

@@ -41,7 +41,14 @@ public class NavigationDrawerDrawable extends Drawable implements Drawable.Callb
     public float getIconAnimProgress(){
         return mLineDrawable.getAnimProgress();
     }
-	
+
+	public void cancel(){
+		if(mRippleDrawable != null)
+			mRippleDrawable.cancel();
+		if(mLineDrawable != null)
+			mLineDrawable.cancel();
+	}
+
 	@Override
 	public void draw(Canvas canvas) {
 		mRippleDrawable.draw(canvas);

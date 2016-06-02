@@ -19,6 +19,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,7 +66,10 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	private Interpolator mOutInterpolator;
 	
 	private long mStartTime;	
-			
+
+	private long mTouchTime;
+	private int mDelayRippleTime;
+
 	private int mState = STATE_OUT;
 
     public static final int DELAY_CLICK_NONE = 0;
@@ -85,13 +89,14 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	private static final float[] GRADIENT_STOPS = new float[]{0f, 0.99f, 1f};
 	private static final float GRADIENT_RADIUS = 16;
 		
-	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int delayClickType,  int maxRippleRadius, int rippleAnimDuration, int rippleColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
+	private RippleDrawable(Drawable backgroundDrawable, int backgroundAnimDuration, int backgroundColor, int rippleType, int delayClickType,  int delayRippleTime, int maxRippleRadius, int rippleAnimDuration, int rippleColor, Interpolator inInterpolator, Interpolator outInterpolator, int type, int topLeftCornerRadius, int topRightCornerRadius, int bottomRightCornerRadius, int bottomLeftCornerRadius, int left, int top, int right, int bottom){
 		setBackgroundDrawable(backgroundDrawable);
 		mBackgroundAnimDuration = backgroundAnimDuration;
 		mBackgroundColor = backgroundColor;
 		
 		mRippleType = rippleType;
         setDelayClickType(delayClickType);
+		mDelayRippleTime = delayRippleTime;
 		mMaxRippleRadius = maxRippleRadius;
 		mRippleAnimDuration = rippleAnimDuration;
 		mRippleColor = rippleColor;
@@ -147,12 +152,14 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	@Override
 	public void setAlpha(int alpha) {
 		mAlpha = alpha;
+		if(mBackgroundDrawable != null)
+			mBackgroundDrawable.setAlpha(alpha);
 	}
 
 	@Override
 	public void setColorFilter(ColorFilter filter) {
-		mFillPaint.setColorFilter(filter);
-		mShaderPaint.setColorFilter(filter);
+		if(mBackgroundDrawable != null)
+			mBackgroundDrawable.setColorFilter(filter);
 	}
 
 	@Override
@@ -309,11 +316,17 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
 				if(mState == STATE_OUT || mState == STATE_RELEASE){
-					if(mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
-						mMaxRippleRadius = getMaxRippleRadius(event.getX(), event.getY());
-					
+					long time = SystemClock.uptimeMillis();
+					if(mTouchTime == 0)
+						mTouchTime = time;
+
 					setRippleEffect(event.getX(), event.getY(), 0);
-					setRippleState(STATE_PRESS);
+
+					if(mTouchTime <= time - mDelayRippleTime) {
+						if (mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
+							mMaxRippleRadius = getMaxRippleRadius(event.getX(), event.getY());
+						setRippleState(STATE_PRESS);
+					}
 				}
 				else if(mRippleType == TYPE_TOUCH){
 					if(setRippleEffect(event.getX(), event.getY(), mRippleRadius))		
@@ -321,7 +334,13 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_CANCEL:	
+				if(mTouchTime > 0 && mState == STATE_OUT) {
+					if (mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
+						mMaxRippleRadius = getMaxRippleRadius(event.getX(), event.getY());
+					setRippleState(STATE_PRESS);
+				}
+			case MotionEvent.ACTION_CANCEL:
+				mTouchTime = 0;
 				if(mState != STATE_OUT){
 					if(mState == STATE_HOVER){
 						if(mRippleType == TYPE_WAVE || mRippleType == TYPE_TOUCH_MATCH_VIEW)
@@ -428,7 +447,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 	
 	private void updateWave(){
 		float progress = Math.min(1f, (float)(SystemClock.uptimeMillis() - mStartTime) / mRippleAnimDuration);
-		
+
 		if(mState != STATE_RELEASE){			
 			setRippleEffect(mRipplePoint.x, mRipplePoint.y, mMaxRippleRadius * mInInterpolator.getInterpolation(progress));
 			
@@ -502,6 +521,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 		private int mRippleAnimDuration = 400;
 		private int mRippleColor;
 		private int mDelayClickType;
+		private int mDelayRippleTime;
 
 		private Interpolator mInInterpolator;
 		private Interpolator mOutInterpolator;
@@ -530,6 +550,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			backgroundAnimDuration(a.getInteger(R.styleable.RippleDrawable_rd_backgroundAnimDuration, context.getResources().getInteger(android.R.integer.config_mediumAnimTime)));
 			rippleType(a.getInteger(R.styleable.RippleDrawable_rd_rippleType, RippleDrawable.TYPE_TOUCH));
             delayClickType(a.getInteger(R.styleable.RippleDrawable_rd_delayClick, RippleDrawable.DELAY_CLICK_NONE));
+			delayRippleTime(a.getInteger(R.styleable.RippleDrawable_rd_delayRipple, 0));
             type = ThemeUtil.getType(a, R.styleable.RippleDrawable_rd_maxRippleRadius);
             if(type >= TypedValue.TYPE_FIRST_INT && type <= TypedValue.TYPE_LAST_INT)
                 maxRippleRadius(a.getInteger(R.styleable.RippleDrawable_rd_maxRippleRadius, -1));
@@ -563,7 +584,7 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
 			if(mOutInterpolator == null)
 				mOutInterpolator = new DecelerateInterpolator();
 			
-			return new RippleDrawable(mBackgroundDrawable, mBackgroundAnimDuration, mBackgroundColor, mRippleType, mDelayClickType, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator, mMaskType, mMaskTopLeftCornerRadius, mMaskTopRightCornerRadius, mMaskBottomRightCornerRadius, mMaskBottomLeftCornerRadius, mMaskLeft, mMaskTop, mMaskRight, mMaskBottom);
+			return new RippleDrawable(mBackgroundDrawable, mBackgroundAnimDuration, mBackgroundColor, mRippleType, mDelayClickType, mDelayRippleTime, mMaxRippleRadius, mRippleAnimDuration, mRippleColor, mInInterpolator, mOutInterpolator, mMaskType, mMaskTopLeftCornerRadius, mMaskTopRightCornerRadius, mMaskBottomRightCornerRadius, mMaskBottomLeftCornerRadius, mMaskLeft, mMaskTop, mMaskRight, mMaskBottom);
 		}
 		
 		public Builder backgroundDrawable(Drawable drawable){
@@ -590,6 +611,11 @@ public class RippleDrawable extends Drawable implements Animatable,	OnTouchListe
             mDelayClickType = type;
             return this;
         }
+
+		public Builder delayRippleTime(int time){
+			mDelayRippleTime = time;
+			return this;
+		}
 
 		public Builder maxRippleRadius(int radius){
 			mMaxRippleRadius = radius;

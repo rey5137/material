@@ -19,10 +19,6 @@ public class CheckBox extends CompoundButton {
 		super(context, attrs, defStyleAttr);
 	}
 
-    public CheckBox(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         super.applyStyle(context, attrs, defStyleAttr, defStyleRes);

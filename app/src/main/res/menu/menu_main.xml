@@ -12,12 +12,6 @@
         android:icon="@drawable/ic_autorenew_white_24dp"
         android:title="Switch group"/>
 
-    <item
-        android:id="@+id/tb_theme"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_visibility_white_24dp"
-        android:title="Change Theme"/>
-
     </group>
     
     <group
@@ -36,5 +30,11 @@
             android:title="Done all"/>
 
     </group>
+
+    <item
+        android:id="@+id/tb_theme"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_visibility_white_24dp"
+        android:title="Change Theme"/>
     
 </menu>

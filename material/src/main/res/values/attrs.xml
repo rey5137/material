@@ -225,6 +225,7 @@
             <enum name="untilRelease" value="0x00000001" />
             <enum name="afterRelease" value="0x00000002" />
         </attr>
+        <attr name="rd_delayRipple" format="reference|integer"/>
     </declare-styleable>
     
     <declare-styleable name="LineMorphingDrawable">
@@ -307,6 +308,7 @@
         <attr name="sl_thumbBorderSize" format="reference|dimension"/>
         <attr name="sl_thumbRadius" format="reference|dimension"/>
         <attr name="sl_thumbFocusRadius" format="reference|dimension"/>
+        <attr name="sl_thumbTouchRadius" format="reference|dimension"/>
         <attr name="sl_travelAnimDuration" format="reference|integer"/>
         <attr name="sl_transformAnimDuration" format="reference|integer"/>
         <attr name="sl_interpolator" format="reference"/>

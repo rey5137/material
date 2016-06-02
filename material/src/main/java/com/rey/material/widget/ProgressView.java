@@ -1,11 +1,9 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
@@ -50,13 +48,6 @@ public class ProgressView extends View implements ThemeManager.OnThemeChangedLis
 
         init(context, attrs, defStyleAttr, 0);
     }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public ProgressView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
-		
-		init(context, attrs, defStyleAttr, defStyleRes);
-	}
 
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         applyStyle(context, attrs, defStyleAttr, defStyleRes);

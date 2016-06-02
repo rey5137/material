@@ -3,7 +3,7 @@ package com.rey.material.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatCheckedTextView;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -11,50 +11,38 @@ import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public class CheckedTextView extends AppCompatCheckedTextView implements ThemeManager.OnThemeChangedListener {
+/**
+ * Created by Rey on 9/16/2015.
+ */
+public class ImageView extends AppCompatImageView implements ThemeManager.OnThemeChangedListener {
 
-	private RippleManager mRippleManager;
+    private RippleManager mRippleManager;
     protected int mStyleId;
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
-    /**
-     * Interface definition for a callback to be invoked when the checked state is changed.
-     */
-    public interface OnCheckedChangeListener{
-        /**
-         * Called when the checked state is changed.
-         * @param view The CheckedTextView view.
-         * @param checked The checked state.
-         */
-        void onCheckedChanged(CheckedTextView view, boolean checked);
-    }
-
-    private OnCheckedChangeListener mOnCheckedChangeListener;
-
-    public CheckedTextView(Context context) {
+    public ImageView(Context context) {
         super(context);
 
         init(context, null, 0, 0);
     }
 
-    public CheckedTextView(Context context, AttributeSet attrs) {
+    public ImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         init(context, attrs, 0, 0);
     }
 
-	public CheckedTextView(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		
-		init(context, attrs, defStyleAttr, 0);
-	}
+    public ImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
-	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);
-		applyStyle(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs, defStyleAttr, 0);
+    }
+
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+        applyStyle(context, attrs, defStyleAttr, defStyleRes);
         if(!isInEditMode())
             mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
-	}
+    }
 
     public void applyStyle(int resId){
         ViewUtil.applyStyle(this, resId);
@@ -63,32 +51,6 @@ public class CheckedTextView extends AppCompatCheckedTextView implements ThemeMa
 
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    /**
-     * Set a listener will be called when the checked state is changed.
-     * @param listener The {@link OnCheckedChangeListener} will be called.
-     */
-    public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
-        mOnCheckedChangeListener = listener;
-    }
-
-    @Override
-    public void setChecked(boolean checked) {
-        boolean change = isChecked() != checked;
-        super.setChecked(checked);
-        if(change && mOnCheckedChangeListener != null)
-            mOnCheckedChangeListener.onCheckedChanged(this, checked);
-    }
-
-    @Override
-    public void setTextAppearance(int resId) {
-        ViewUtil.applyTextAppearance(this, resId);
-    }
-
-    @Override
-    public void setTextAppearance(Context context, int resId) {
-        ViewUtil.applyTextAppearance(this, resId);
     }
 
     @Override
@@ -153,4 +115,5 @@ public class CheckedTextView extends AppCompatCheckedTextView implements ThemeMa
         boolean result = super.onTouchEvent(event);
         return  getRippleManager().onTouchEvent(this, event) || result;
     }
+
 }

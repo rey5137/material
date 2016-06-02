@@ -22,7 +22,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
@@ -67,13 +66,6 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 		
 		init(context, attrs, defStyleAttr, 0);
 	}
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
 
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		setClickable(true);
@@ -413,19 +405,15 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 	}
 		
 	private void setLeftMargin(ViewGroup.LayoutParams params, int value){
-		if(params instanceof FrameLayout.LayoutParams)
-			((FrameLayout.LayoutParams)params).leftMargin = value;
-		else if(params instanceof RelativeLayout.LayoutParams)
-			((RelativeLayout.LayoutParams)params).leftMargin = value;
+		if(params instanceof ViewGroup.MarginLayoutParams)
+			((ViewGroup.MarginLayoutParams)params).leftMargin = value;
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
 	}
 	
 	private void setTopMargin(ViewGroup.LayoutParams params, int value){
-		if(params instanceof FrameLayout.LayoutParams)
-			((FrameLayout.LayoutParams)params).topMargin = value;
-		else if(params instanceof RelativeLayout.LayoutParams)
-			((RelativeLayout.LayoutParams)params).topMargin = value;
+		if(params instanceof ViewGroup.MarginLayoutParams)
+			((ViewGroup.MarginLayoutParams)params).topMargin = value;
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
 	}

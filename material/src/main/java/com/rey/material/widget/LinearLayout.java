@@ -38,13 +38,6 @@ public class LinearLayout extends android.widget.LinearLayout implements ThemeMa
 		init(context, attrs, defStyleAttr, 0);
 	}
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public LinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
-
 	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
         if(!isInEditMode())

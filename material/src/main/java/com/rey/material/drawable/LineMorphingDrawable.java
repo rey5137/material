@@ -318,7 +318,12 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 		mStartTime = SystemClock.uptimeMillis();
 		mAnimProgress = 0f;
 	}
-	
+
+	public void cancel(){
+		stop();
+		setLineState(mCurState, 1f);
+	}
+
 	@Override
 	public void start() {
 		resetAnimation();

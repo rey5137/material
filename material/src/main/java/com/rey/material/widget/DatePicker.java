@@ -122,12 +122,6 @@ public class DatePicker extends ListView implements AbsListView.OnScrollListener
         init(context, attrs, defStyleAttr, 0);
     }
 
-    public DatePicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         mTypeface = Typeface.DEFAULT;

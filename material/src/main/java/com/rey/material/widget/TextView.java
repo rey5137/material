@@ -1,10 +1,9 @@
 package com.rey.material.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +12,7 @@ import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public class TextView extends android.widget.TextView implements ThemeManager.OnThemeChangedListener{
+public class TextView extends AppCompatTextView implements ThemeManager.OnThemeChangedListener{
 
 	private RippleManager mRippleManager;
     protected int mStyleId;
@@ -42,13 +41,6 @@ public class TextView extends android.widget.TextView implements ThemeManager.On
 		
 		init(context, attrs, defStyleAttr, 0);
 	}
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        init(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
         ViewUtil.applyFont(this, attrs, defStyleAttr, defStyleRes);

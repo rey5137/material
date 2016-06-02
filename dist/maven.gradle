@@ -1,0 +1,97 @@
+/*
+ * Copyright 2013 Chris Banes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply from: "$rootProject.projectDir/dist/distInfo.gradle"
+
+def isReleaseBuild() {
+    return libraryVersion.contains("SNAPSHOT") == false
+}
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                pom.groupId = publishedGroupId
+                pom.artifactId = artifact
+                pom.version = libraryVersion
+
+                repository(url: mavenReleaseRepo) {
+                    authentication(userName: mavenUser, password: mavenPassword)
+                }
+                snapshotRepository(url: mavenSnapshotRepo) {
+                    authentication(userName: mavenUser, password: mavenPassword)
+                }
+
+                pom.project {
+                    name libraryName
+                    packaging libraryPackaging
+                    description libraryDescription
+                    url siteUrl
+
+                    scm {
+                        url siteUrl
+                        connection gitUrl
+                        developerConnection gitUrl
+                    }
+
+                    licenses {
+                        license {
+                            name licenseName
+                            url licenseUrl
+                            distribution licenseDist
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id developerId
+                            name developerName
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.sourceFiles
+    }
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+}

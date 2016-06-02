@@ -588,7 +588,7 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
                     v = new CheckedTextView(parent.getContext());
                     break;
                 case TYPE_ICON:
-                    v = new ImageButton(parent.getContext());
+                    v = new CheckedImageView(parent.getContext());
                     break;
             }
 

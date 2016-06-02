@@ -12,6 +12,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -124,10 +127,6 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 		super(context, attrs, defStyleAttr);
 	}
 
-    public EditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-	
 	@SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -3689,7 +3688,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
 	}
 
-	private class InternalEditText extends android.widget.EditText{
+	private class InternalEditText extends AppCompatEditText{
 
 		public InternalEditText(Context context) {
 			super(context);
@@ -3816,7 +3815,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         }
     }
 
-    private class InternalAutoCompleteTextView extends AutoCompleteTextView{
+    private class InternalAutoCompleteTextView extends AppCompatAutoCompleteTextView {
 
         public InternalAutoCompleteTextView(Context context) {
             super(context);
@@ -3988,7 +3987,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         }
     }
 
-    private class InternalMultiAutoCompleteTextView extends MultiAutoCompleteTextView{
+    private class InternalMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView{
 
         public InternalMultiAutoCompleteTextView(Context context) {
             super(context);
