@@ -1,7 +1,7 @@
 Material
 =====================
 
-[![Download](https://api.bintray.com/packages/rey5137/maven/material/images/download.svg)](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.4/material-1.2.4.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
+[![](https://jitpack.io/v/rey5137/material.svg)](https://jitpack.io/#rey5137/material) [![Download](https://api.bintray.com/packages/rey5137/maven/material/images/download.svg)](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.4/material-1.2.4.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
 
 MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is [Rey Pham](https://github.com/rey5137).
 
