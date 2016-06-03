@@ -1,41 +1,42 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-apply from: "$rootProject.projectDir/dist/distInfo.gradle"
 
-group = publishedGroupId                               // Maven Group ID for the artifact
+def distInfo = ext.distInfo;
+
+group = distInfo.publishedGroupId                               // Maven Group ID for the artifact
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
             project {
-                packaging 'aar'
-                groupId publishedGroupId
-                artifactId artifact
+                packaging distInfo.libraryPackaging
+                groupId distInfo.publishedGroupId
+                artifactId distInfo.artifact
 
                 // Add your description here
-                name libraryName
-                description libraryDescription
-                url siteUrl
+                name distInfo.libraryName
+                description distInfo.libraryDescription
+                url distInfo.siteUrl
 
                 // Set your license
                 licenses {
                     license {
-                        name licenseName
-                        url licenseUrl
+                        name distInfo.licenseName
+                        url distInfo.licenseUrl
                     }
                 }
                 developers {
                     developer {
-                        id developerId
-                        name developerName
-                        email developerEmail
+                        id distInfo.developerId
+                        name distInfo.developerName
+                        email distInfo.developerEmail
                     }
                 }
                 scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
+                    connection distInfo.gitUrl
+                    developerConnection distInfo.gitUrl
+                    url distInfo.siteUrl
 
                 }
             }
@@ -43,7 +44,7 @@ install {
     }
 }
 
-version = libraryVersion
+version = distInfo.libraryVersion
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -66,24 +67,24 @@ artifacts {
 }
 
 bintray {
-    user = bintrayUser
-    key = bintrayApiKey
+    user = distInfo.bintrayUser
+    key = distInfo.bintrayApiKey
 
     configurations = ['archives']
     pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = allLicenses
+        repo = distInfo.bintrayRepo
+        name = distInfo.bintrayName
+        desc = distInfo.libraryDescription
+        websiteUrl = distInfo.siteUrl
+        vcsUrl = distInfo.gitUrl
+        licenses = distInfo.allLicenses
         publish = true
         publicDownloadNumbers = true
         version {
-            desc = libraryDescription
+            desc = distInfo.libraryDescription
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = bintrayGpgPassword
+                passphrase = distInfo.bintrayGpgPassword
                 //Optional. The passphrase for GPG signing'
             }
         }
