@@ -8,7 +8,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 21
-        versionName "1.2.3"
+        versionName "1.2.4"
     }
     buildTypes {
         release {
@@ -17,9 +17,6 @@ android {
         }
     }
 }
-
-apply from: "$rootProject.projectDir/dist/bintray.gradle"
-apply from: "$rootProject.projectDir/dist/maven.gradle"
 
 ext{
     libSupportVersion = '23.4.0'
@@ -32,3 +29,8 @@ dependencies {
     compile "com.android.support:cardview-v7:${libSupportVersion}"
     compile "com.android.support:recyclerview-v7:${libSupportVersion}"
 }
+
+// Place it at the end of the file
+apply from: "$rootProject.projectDir/dist/distInfo.gradle"
+apply from: "$rootProject.projectDir/dist/bintray.gradle"
+apply from: "$rootProject.projectDir/dist/maven.gradle"

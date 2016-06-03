@@ -16,10 +16,11 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply from: "$rootProject.projectDir/dist/distInfo.gradle"
+
+def distInfo = ext.distInfo;
 
 def isReleaseBuild() {
-    return libraryVersion.contains("SNAPSHOT") == false
+    return distInfo.libraryVersion.contains("SNAPSHOT") == false
 }
 
 afterEvaluate { project ->
@@ -28,41 +29,41 @@ afterEvaluate { project ->
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                pom.groupId = publishedGroupId
-                pom.artifactId = artifact
-                pom.version = libraryVersion
+                pom.groupId = distInfo.publishedGroupId
+                pom.artifactId = distInfo.artifact
+                pom.version = distInfo.libraryVersion
 
-                repository(url: mavenReleaseRepo) {
-                    authentication(userName: mavenUser, password: mavenPassword)
+                repository(url: distInfo.mavenReleaseRepo) {
+                    authentication(userName: distInfo.mavenUser, password: distInfo.mavenPassword)
                 }
-                snapshotRepository(url: mavenSnapshotRepo) {
-                    authentication(userName: mavenUser, password: mavenPassword)
+                snapshotRepository(url: distInfo.mavenSnapshotRepo) {
+                    authentication(userName: distInfo.mavenUser, password: distInfo.mavenPassword)
                 }
 
                 pom.project {
-                    name libraryName
-                    packaging libraryPackaging
-                    description libraryDescription
-                    url siteUrl
+                    name distInfo.libraryName
+                    packaging distInfo.libraryPackaging
+                    description distInfo.libraryDescription
+                    url distInfo.siteUrl
 
                     scm {
-                        url siteUrl
-                        connection gitUrl
-                        developerConnection gitUrl
+                        url distInfo.siteUrl
+                        connection distInfo.gitUrl
+                        developerConnection distInfo.gitUrl
                     }
 
                     licenses {
                         license {
-                            name licenseName
-                            url licenseUrl
-                            distribution licenseDist
+                            name distInfo.licenseName
+                            url distInfo.licenseUrl
+                            distribution distInfo.licenseDist
                         }
                     }
 
                     developers {
                         developer {
-                            id developerId
-                            name developerName
+                            id distInfo.developerId
+                            name distInfo.developerName
                         }
                     }
                 }

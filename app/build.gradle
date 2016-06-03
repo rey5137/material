@@ -19,7 +19,7 @@ android {
         }
     }
 
-    if(hasProperty('MATERIAL_KEYSTORE_FILE')) {
+    if(project.hasProperty('MATERIAL_KEYSTORE_FILE')) {
         android.signingConfigs {
             release {
                 storeFile file(MATERIAL_KEYSTORE_FILE)
