@@ -36,7 +36,10 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	private boolean mRunning = false;
 	
 	private Paint mPaint;
-	
+
+	private int mWidth;
+	private int mHeight;
+
 	private int mPaddingLeft = 12;
 	private int mPaddingTop = 12;
 	private int mPaddingRight = 12;
@@ -61,8 +64,11 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	
 	private State[] mStates;
 	
-	private LineMorphingDrawable(State[] states, int curState, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom, int animDuration, Interpolator interpolator, int strokeSize, int strokeColor, Paint.Cap strokeCap, Paint.Join strokeJoin, boolean clockwise, boolean isRtl){
+	private LineMorphingDrawable(State[] states, int curState, int width, int height, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom, int animDuration, Interpolator interpolator, int strokeSize, int strokeColor, Paint.Cap strokeCap, Paint.Join strokeJoin, boolean clockwise, boolean isRtl){
 		mStates = states;
+		mWidth = width;
+		mHeight = height;
+
 		mPaddingLeft = paddingLeft;
 		mPaddingTop = paddingTop;
 		mPaddingRight = paddingRight;
@@ -123,11 +129,19 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	@Override
 	protected void onBoundsChange(Rect bounds) {
 		super.onBoundsChange(bounds);
-		
-		mDrawBound.left = bounds.left + mPaddingLeft;
-		mDrawBound.top = bounds.top + mPaddingTop;
-		mDrawBound.right = bounds.right - mPaddingRight;
-		mDrawBound.bottom = bounds.bottom - mPaddingBottom;
+
+		if(mWidth > 0 && mHeight > 0){
+			mDrawBound.left = bounds.left + (bounds.width() - mWidth) / 2f;
+			mDrawBound.top = bounds.top + (bounds.height() - mHeight) / 2f;
+			mDrawBound.right = mDrawBound.left + mWidth;
+			mDrawBound.bottom = mDrawBound.top + mHeight;
+		}
+		else {
+			mDrawBound.left = bounds.left + mPaddingLeft;
+			mDrawBound.top = bounds.top + mPaddingTop;
+			mDrawBound.right = bounds.right - mPaddingRight;
+			mDrawBound.bottom = bounds.bottom - mPaddingBottom;
+		}
 		
 		updatePath();
 	}
@@ -391,7 +405,10 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 	
 	public static class Builder{
 		private int mCurState;
-		
+
+		private int mWidth;
+		private int mHeight;
+
 		private int mPaddingLeft;
 		private int mPaddingTop;
 		private int mPaddingRight;
@@ -426,7 +443,9 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			
 			if((resId = a.getResourceId(R.styleable.LineMorphingDrawable_lmd_state, 0)) != 0)
 				states(readStates(context, resId));			
-			curState(a.getInteger(R.styleable.LineMorphingDrawable_lmd_curState, 0));			
+			curState(a.getInteger(R.styleable.LineMorphingDrawable_lmd_curState, 0));
+			width(a.getDimensionPixelSize(R.styleable.LineMorphingDrawable_lmd_width, 0));
+			height(a.getDimensionPixelSize(R.styleable.LineMorphingDrawable_lmd_height, 0));
 			padding(a.getDimensionPixelSize(R.styleable.LineMorphingDrawable_lmd_padding, 0));
 			paddingLeft(a.getDimensionPixelSize(R.styleable.LineMorphingDrawable_lmd_paddingLeft, mPaddingLeft));
 			paddingTop(a.getDimensionPixelSize(R.styleable.LineMorphingDrawable_lmd_paddingTop, mPaddingTop));
@@ -584,7 +603,7 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			if(mInterpolator == null)
 				mInterpolator = new AccelerateInterpolator();
 							
-			return new LineMorphingDrawable(mStates, mCurState, mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom, mAnimDuration, mInterpolator, mStrokeSize, mStrokeColor, mStrokeCap, mStrokeJoin, mClockwise, mIsRtl);
+			return new LineMorphingDrawable(mStates, mCurState, mWidth, mHeight, mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom, mAnimDuration, mInterpolator, mStrokeSize, mStrokeColor, mStrokeCap, mStrokeJoin, mClockwise, mIsRtl);
 		}
 		
 		public Builder states(State... states){			
@@ -596,7 +615,17 @@ public class LineMorphingDrawable extends Drawable implements Animatable{
 			mCurState = state;
 			return this;
 		}
-		
+
+		public Builder width(int width){
+			mWidth = width;
+			return this;
+		}
+
+		public Builder height(int height){
+			mHeight = height;
+			return this;
+		}
+
 		public Builder padding(int padding){
 			mPaddingLeft = padding;
 			mPaddingTop = padding;

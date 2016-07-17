@@ -153,10 +153,11 @@
     <style name="Material.Drawable.NavigationDrawerIcon">
         <item name="lmd_state">@xml/nav_states</item>
         <item name="lmd_curState">0</item>
-        <item name="lmd_padding">6dp</item>
+        <item name="lmd_width">18dp</item>
+        <item name="lmd_height">18dp</item>
         <item name="lmd_animDuration">@android:integer/config_mediumAnimTime</item>
         <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
-        <item name="lmd_strokeSize">3dp</item>
+        <item name="lmd_strokeSize">2dp</item>
         <item name="lmd_strokeColor">#FFFFFFFF</item>
         <item name="lmd_strokeCap">butt</item>
         <item name="lmd_strokeJoin">miter</item>
