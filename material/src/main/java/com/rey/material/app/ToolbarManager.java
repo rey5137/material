@@ -27,7 +27,6 @@ import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +59,11 @@ public class ToolbarManager {
          * @param oldGroupId The id of old group.
          * @param groupId The id of new group.
          */
-        public void onToolbarGroupChanged(int oldGroupId, int groupId);
+        void onToolbarGroupChanged(int oldGroupId, int groupId);
 
     }
 
-    private ArrayList<WeakReference<OnToolbarGroupChangedListener>> mListeners = new ArrayList<>();
+    private ArrayList<OnToolbarGroupChangedListener> mListeners = new ArrayList<>();
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -109,18 +108,11 @@ public class ToolbarManager {
     }
 
     /**
-     * Register a listener for current group changed event. Note that it doesn't hold any strong reference to listener, so don't use anonymous listener.
+     * Register a listener for current group changed event.
      */
     public void registerOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null)
-                mListeners.remove(i);
-            else if(ref.get() == listener)
-                return;
-        }
-
-        mListeners.add(new WeakReference<OnToolbarGroupChangedListener>(listener));
+        if(!mListeners.contains(listener))
+            mListeners.add(listener);
     }
 
     /**
@@ -128,21 +120,12 @@ public class ToolbarManager {
      * @param listener
      */
     public void unregisterOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null || ref.get() == listener)
-                mListeners.remove(i);
-        }
+        mListeners.remove(listener);
     }
 
     private void dispatchOnToolbarGroupChanged(int oldGroupId, int groupId){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null)
-                mListeners.remove(i);
-            else
-                ref.get().onToolbarGroupChanged(oldGroupId, groupId);
-        }
+        for(OnToolbarGroupChangedListener listener : mListeners)
+            listener.onToolbarGroupChanged(oldGroupId, groupId);
     }
 
     /**
