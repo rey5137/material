@@ -25,6 +25,8 @@ import com.rey.material.widget.TimePicker;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Rey on 12/24/2014.
@@ -104,6 +106,17 @@ public class TimePickerDialog extends Dialog{
      */
     public TimePickerDialog minute(int minute){
         mTimePickerLayout.setMinute(minute);
+        return this;
+    }
+
+
+    public TimePickerDialog timeRange(int hour, int minute, TimePicker.TimeRange timeRange){
+        mTimePickerLayout.setTimeRange(hour, minute, timeRange);
+        return this;
+    }
+
+    public TimePickerDialog timeRange(Date time, TimePicker.TimeRange timeRange){
+        mTimePickerLayout.setTimeRange(time,timeRange);
         return this;
     }
 
@@ -321,6 +334,7 @@ public class TimePickerDialog extends Dialog{
                 if(animation) {
                     mAmView.setChecked(mIsAm);
                     mPmView.setChecked(!mIsAm);
+                    mTimePicker.setAm(am);
                 }
                 else{
                     mAmView.setCheckedImmediately(mIsAm);
@@ -332,6 +346,28 @@ public class TimePickerDialog extends Dialog{
                 if(mOnTimeChangedListener != null)
                     mOnTimeChangedListener.onTimeChanged(oldHour, getMinute(), getHour(), getMinute());
             }
+        }
+
+        public void setTimeRange(int hour, int minute, TimePicker.TimeRange timeRange){
+            int initalHour = hour > timeRange.minHour ? hour : timeRange.minHour;
+            int initalMinute = hour > timeRange.minHour? minute :timeRange.minHour;
+
+            setHour(initalHour);
+            setMinute(initalMinute);
+            mTimePicker.setTimeRange(timeRange);
+
+            //TODO ought to be grayed out.
+            mAmView.setEnabled(timeRange.hasAMTimes());
+            mPmView.setEnabled(timeRange.hasPMTimes());
+        }
+
+        public void setTimeRange(Date time, TimePicker.TimeRange timeRange){
+            Calendar cal = GregorianCalendar.getInstance();
+            cal.setTime(time);
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            int minute = cal.get(Calendar.MINUTE);
+
+            setTimeRange(hour,minute,timeRange);
         }
 
         public String getFormattedTime(DateFormat formatter){
@@ -592,7 +628,6 @@ public class TimePickerDialog extends Dialog{
                 case MotionEvent.ACTION_UP:
                     if(isTouched(mHourX, mBaseY - mBaseHeight, mHourX + mHourWidth, mBaseY, event.getX(), event.getY()))
                         mTimePicker.setMode(TimePicker.MODE_HOUR, true);
-
                     if(isTouched(mMinuteX, mBaseY - mBaseHeight, mMinuteX + mMinuteWidth, mBaseY, event.getX(), event.getY()))
                         mTimePicker.setMode(TimePicker.MODE_MINUTE, true);
                     break;
@@ -651,8 +686,8 @@ public class TimePickerDialog extends Dialog{
         protected Dialog onBuild(Context context, int styleId) {
             TimePickerDialog dialog = new TimePickerDialog(context, styleId);
             dialog.hour(mHour)
-                    .minute(mMinute)
-                    .onTimeChangedListener(this);
+                     .minute(mMinute)
+                     .onTimeChangedListener(this);
             return dialog;
         }
 
