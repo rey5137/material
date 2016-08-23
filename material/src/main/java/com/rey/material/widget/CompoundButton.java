@@ -229,7 +229,7 @@ public class CompoundButton extends android.widget.CompoundButton implements The
 	@Override
 	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		return  getRippleManager().onTouchEvent(this, event) || result;
+		return  result && getRippleManager().onTouchEvent(this, event);
 	}
 	
 	@Override

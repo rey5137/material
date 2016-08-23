@@ -15,7 +15,6 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.text.TextUtils;
@@ -159,7 +158,7 @@ public class ContactView extends FrameLayout implements Target{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  mRippleManager.onTouchEvent(this, event) || result;
+        return  result && mRippleManager.onTouchEvent(this, event);
     }
 
     public void setAvatarBitmap(Bitmap bm){

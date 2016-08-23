@@ -128,7 +128,7 @@ public class TextView extends AppCompatTextView implements ThemeManager.OnThemeC
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(this, event) || result;
+        return  result && getRippleManager().onTouchEvent(this, event);
     }
 
     public void setOnSelectionChangedListener(OnSelectionChangedListener listener){
