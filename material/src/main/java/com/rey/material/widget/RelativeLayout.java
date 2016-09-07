@@ -110,7 +110,9 @@ public class RelativeLayout extends android.widget.RelativeLayout implements The
 	@Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		return  result && getRippleManager().onTouchEvent(this, event);
+        if(result)
+            getRippleManager().onTouchEvent(this, event);
+        return  result;
 	}
 
 }

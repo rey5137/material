@@ -158,7 +158,9 @@ public class ContactView extends FrameLayout implements Target{
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  result && mRippleManager.onTouchEvent(this, event);
+        if(result)
+            mRippleManager.onTouchEvent(this, event);
+        return  result;
     }
 
     public void setAvatarBitmap(Bitmap bm){
