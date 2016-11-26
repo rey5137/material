@@ -82,12 +82,15 @@ public final class RippleManager implements View.OnClickListener{
 				delay = ((ToolbarRippleDrawable) background).getClickDelayTime();
 		}
 			
-		if(delay > 0 && v.getHandler() != null && !mClickScheduled) {
-            mClickScheduled = true;
-            v.getHandler().postDelayed(new ClickRunnable(v), delay);
-        }
+		if(delay > 0 && v.getHandler() != null) {
+            		if(!mClickScheduled){
+            			mClickScheduled = true;
+            			v.getHandler().postDelayed(new ClickRunnable(v), delay);
+            		}
+		}
 		else
 			dispatchClickEvent(v);
+			
 	}
 
 	private void dispatchClickEvent(View v){
