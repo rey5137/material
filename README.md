@@ -11,7 +11,7 @@ MaterialLibrary is an Open Source Android library that back-port Material Design
 * [Donation](#donation)
 * [Contributing](#contributing)
 
-##Features
+## Features
 - [Progress](https://github.com/rey5137/Material/wiki/Progress)
     - Circular
     
@@ -145,7 +145,7 @@ You can support the project and thank the author for his hard work.
 <a href='https://pledgie.com/campaigns/28714'><img alt='Click here to lend your support to: Support Material Library project. and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/28714.png?skin_name=chrome' border='0' ></a>
 
 **PayPal**
-- [Donate] (https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pea5137%40gmail%2ecom&lc=US&item_name=Rey%20Pham&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
+- [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pea5137%40gmail%2ecom&lc=US&item_name=Rey%20Pham&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
 
 ## Contributing
 Want to contribute? You are welcome! 
