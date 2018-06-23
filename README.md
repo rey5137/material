@@ -86,7 +86,7 @@ Add Gradle dependency:
 
 ```gradle
 dependencies {
-   compile 'com.github.rey5137:material:1.2.4'
+   implementation 'com.github.rey5137:material:1.2.4'
 }
 ```
 
