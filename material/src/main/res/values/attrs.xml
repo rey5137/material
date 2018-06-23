@@ -231,6 +231,8 @@
     <declare-styleable name="LineMorphingDrawable">
         <attr name="lmd_state" format="reference"/>
         <attr name="lmd_curState" format="integer"/>
+        <attr name="lmd_width" format="reference|dimension"/>
+        <attr name="lmd_height" format="reference|dimension"/>
         <attr name="lmd_padding" format="reference|dimension"/>
         <attr name="lmd_paddingLeft" format="reference|dimension"/>
         <attr name="lmd_paddingTop" format="reference|dimension"/>

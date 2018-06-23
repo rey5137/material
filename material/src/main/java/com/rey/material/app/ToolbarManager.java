@@ -1,12 +1,10 @@
 package com.rey.material.app;
 
+import android.animation.Animator.AnimatorListener;
+import android.animation.ValueAnimator;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v4.animation.AnimatorCompatHelper;
-import android.support.v4.animation.AnimatorListenerCompat;
-import android.support.v4.animation.AnimatorUpdateListenerCompat;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,7 +25,6 @@ import com.rey.material.drawable.NavigationDrawerDrawable;
 import com.rey.material.drawable.ToolbarRippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +57,11 @@ public class ToolbarManager {
          * @param oldGroupId The id of old group.
          * @param groupId The id of new group.
          */
-        public void onToolbarGroupChanged(int oldGroupId, int groupId);
+        void onToolbarGroupChanged(int oldGroupId, int groupId);
 
     }
 
-    private ArrayList<WeakReference<OnToolbarGroupChangedListener>> mListeners = new ArrayList<>();
+    private ArrayList<OnToolbarGroupChangedListener> mListeners = new ArrayList<>();
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -109,18 +106,11 @@ public class ToolbarManager {
     }
 
     /**
-     * Register a listener for current group changed event. Note that it doesn't hold any strong reference to listener, so don't use anonymous listener.
+     * Register a listener for current group changed event.
      */
     public void registerOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null)
-                mListeners.remove(i);
-            else if(ref.get() == listener)
-                return;
-        }
-
-        mListeners.add(new WeakReference<OnToolbarGroupChangedListener>(listener));
+        if(!mListeners.contains(listener))
+            mListeners.add(listener);
     }
 
     /**
@@ -128,21 +118,12 @@ public class ToolbarManager {
      * @param listener
      */
     public void unregisterOnToolbarGroupChangedListener(OnToolbarGroupChangedListener listener){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null || ref.get() == listener)
-                mListeners.remove(i);
-        }
+        mListeners.remove(listener);
     }
 
     private void dispatchOnToolbarGroupChanged(int oldGroupId, int groupId){
-        for(int i = mListeners.size() - 1; i >= 0; i--){
-            WeakReference<OnToolbarGroupChangedListener> ref = mListeners.get(i);
-            if(ref.get() == null)
-                mListeners.remove(i);
-            else
-                ref.get().onToolbarGroupChanged(oldGroupId, groupId);
-        }
+        for(OnToolbarGroupChangedListener listener : mListeners)
+            listener.onToolbarGroupChanged(oldGroupId, groupId);
     }
 
     /**
@@ -465,8 +446,8 @@ public class ToolbarManager {
             for(Object obj : mAnimations){
                 if(obj instanceof Animation)
                     ((Animation)obj).cancel();
-                else if(obj instanceof ValueAnimatorCompat)
-                    ((ValueAnimatorCompat)obj).cancel();
+                else if(obj instanceof ValueAnimator)
+                    ((ValueAnimator)obj).cancel();
             }
 
             mAnimations.clear();
@@ -518,38 +499,42 @@ public class ToolbarManager {
             final Interpolator interpolator = getInterpolator(false);
             final int prevLeft = view.getLeft();
 
-            ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+            ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
             animator.setDuration(mAnimationDuration);
-            animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimatorCompat animation) {
-                    float factor = interpolator.getInterpolation(animation.getAnimatedFraction());
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float factor = interpolator.getInterpolation(valueAnimator.getAnimatedFraction());
                     float left = prevLeft + (nextLeft - prevLeft) * factor;
                     view.offsetLeftAndRight((int) (left - view.getLeft()));
 
-                    if (animation.getAnimatedFraction() == 1f) {
+                    if (valueAnimator.getAnimatedFraction() == 1f) {
                         if (doOnEndRunnable != null)
                             doOnEndRunnable.run();
                     }
                 }
+
             });
 
-            animator.addListener(new AnimatorListenerCompat() {
+            animator.addListener(new AnimatorListener() {
                 @Override
-                public void onAnimationStart(ValueAnimatorCompat animation) {
+                public void onAnimationStart(android.animation.Animator animator) {
+
                 }
 
                 @Override
-                public void onAnimationEnd(ValueAnimatorCompat animation) {
-                    mAnimations.remove(animation);
+                public void onAnimationEnd(android.animation.Animator animator) {
+                    mAnimations.remove(animator);
                 }
 
                 @Override
-                public void onAnimationCancel(ValueAnimatorCompat animation) {
+                public void onAnimationCancel(android.animation.Animator animator) {
+
                 }
 
                 @Override
-                public void onAnimationRepeat(ValueAnimatorCompat animation) {
+                public void onAnimationRepeat(android.animation.Animator animator) {
+
                 }
             });
 

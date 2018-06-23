@@ -21,34 +21,34 @@ public class DialogFragment extends android.support.v4.app.DialogFragment{
          * @param context A Context instance.
          * @return The Dialog will be used for this fragment.
          */
-        public Dialog build(Context context);
+        Dialog build(Context context);
 
         /**
          * Handle click event on Positive Action.
          */
-        public void onPositiveActionClicked(DialogFragment fragment);
+        void onPositiveActionClicked(DialogFragment fragment);
 
         /**
          * Handle click event on Negative Action.
          */
-        public void onNegativeActionClicked(DialogFragment fragment);
+        void onNegativeActionClicked(DialogFragment fragment);
 
         /**
          * Handle click event on Neutral Action.
          */
-        public void onNeutralActionClicked(DialogFragment fragment);
+        void onNeutralActionClicked(DialogFragment fragment);
 
         /**
          * Handle OnCancel event of dialog.
          * @param dialog
          */
-        public void onCancel(DialogInterface dialog);
+        void onCancel(DialogInterface dialog);
 
         /**
          * Handle OnDismiss event of dialog.
          * @param dialog
          */
-        public void onDismiss(DialogInterface dialog);
+        void onDismiss(DialogInterface dialog);
     }
 
     protected static final String ARG_BUILDER = "arg_builder";

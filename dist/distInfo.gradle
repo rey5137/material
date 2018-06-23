@@ -13,7 +13,7 @@ ext.distInfo = [
 
     publishedGroupId        : "com.github.rey5137",
     libraryName             : "Material Library",
-    libraryVersion          : "1.2.4",
+    libraryVersion          : "1.2.5",
     libraryDescription      : "An Android library to bring Material Design UI to pre-Lolipop Android.",
     artifact                : "material",
     libraryPackaging        : "aar",
