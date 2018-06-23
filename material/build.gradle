@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 21
-        versionName "1.2.4"
+        versionCode 22
+        versionName "1.2.5"
     }
     buildTypes {
         release {
@@ -19,15 +19,15 @@ android {
 }
 
 ext{
-    libSupportVersion = '27.0.1'
+    libSupportVersion = '27.1.1'
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile "com.android.support:appcompat-v7:${libSupportVersion}"
-    compile "com.android.support:cardview-v7:${libSupportVersion}"
-    compile "com.android.support:recyclerview-v7:${libSupportVersion}"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation "com.android.support:appcompat-v7:${libSupportVersion}"
+    implementation "com.android.support:cardview-v7:${libSupportVersion}"
+    implementation "com.android.support:recyclerview-v7:${libSupportVersion}"
 }
 
 // Place it at the end of the file
