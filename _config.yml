@@ -1,0 +1,8 @@
+title: Material
+description: A library to bring Material Design UI to pre-Lolipop Android.
+google_analytics: UA-52008083-5
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
