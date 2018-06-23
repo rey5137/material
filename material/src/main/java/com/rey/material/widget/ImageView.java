@@ -113,7 +113,9 @@ public class ImageView extends AppCompatImageView implements ThemeManager.OnThem
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(this, event) || result;
+        if(result)
+            getRippleManager().onTouchEvent(this, event);
+        return  result;
     }
 
 }

@@ -110,7 +110,9 @@ public class ImageButton extends AppCompatImageButton implements ThemeManager.On
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        return  getRippleManager().onTouchEvent(this, event) || result;
+        if(result)
+            getRippleManager().onTouchEvent(this, event);
+        return  result;
     }
 
 }

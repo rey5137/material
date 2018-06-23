@@ -164,6 +164,18 @@ public class SimpleDialog extends Dialog {
     }
 
     /**
+     * Set a gravity to this message view
+     * @param gravity
+     * @return The SimpleDialog for chaining methods.
+     */
+    public SimpleDialog messageGravity(int gravity){
+        if(mMessage == null)
+            initMessageView();
+        mMessage.setGravity(gravity);
+        return this;
+    }
+
+    /**
      * Set a message text to this SimpleDialog.
      * @param message
      * @return The SimpleDialog for chaining methods.

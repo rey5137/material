@@ -31,6 +31,3 @@ dependencies {
 }
 
 // Place it at the end of the file
-apply from: "$rootProject.projectDir/dist/distInfo.gradle"
-apply from: "$rootProject.projectDir/dist/bintray.gradle"
-apply from: "$rootProject.projectDir/dist/maven.gradle"

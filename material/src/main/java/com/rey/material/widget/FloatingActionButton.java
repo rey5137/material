@@ -501,8 +501,10 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 		if(action == MotionEvent.ACTION_DOWN && ! mBackground.isPointerOver(event.getX(), event.getY()))
 			return false;
 		
-		boolean result = super.onTouchEvent(event);		
-		return  getRippleManager().onTouchEvent(this, event) || result;
+		boolean result = super.onTouchEvent(event);
+        if(result)
+            getRippleManager().onTouchEvent(this, event);
+        return  result;
 	}
 
     @Override
