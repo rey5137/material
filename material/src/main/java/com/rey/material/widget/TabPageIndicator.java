@@ -473,6 +473,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setCheckMarkDrawable(null);
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                tv.setTextAlignment(CheckedTextView.TEXT_ALIGNMENT_GRAVITY);
+            }
             tv.setTextAppearance(getContext(), mTextAppearance);
             if(mTabSingleLine)
                 tv.setSingleLine(true);
@@ -526,6 +529,9 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             tv.setCheckMarkDrawable(null);
             tv.setText(title);
             tv.setGravity(Gravity.CENTER);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                tv.setTextAlignment(CheckedTextView.TEXT_ALIGNMENT_GRAVITY);
+            }
             tv.setTextAppearance(getContext(), mTextAppearance);
             tv.setSingleLine(true);
             tv.setEllipsize(TruncateAt.END);
