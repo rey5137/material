@@ -187,7 +187,7 @@
         <item name="rbd_innerRadius">5dp</item>
         <item name="rbd_animDuration">@android:integer/config_mediumAnimTime</item>
     </style>
-    
+
     <style name="Material.Drawable.CheckBox">
         <item name="cbd_width">32dp</item>
         <item name="cbd_height">32dp</item>
@@ -564,6 +564,7 @@
         <item name="spn_arrowPadding">8dp</item>
         <item name="spn_popupItemAnimation">@anim/abc_slide_in_bottom</item>
         <item name="spn_popupItemAnimOffset">120</item>
+        <item name="spn_dividerColor">@android:color/black</item>
     </style>
 
     <style name="Material.Widget.Spinner.Light" parent="Material.Widget.Spinner">
