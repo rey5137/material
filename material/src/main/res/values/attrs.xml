@@ -98,19 +98,8 @@
 
     <declare-styleable name="TextAppearance">
         <attr name="android:textColorHighlight" />
-        <attr name="android:textColor" />
-        <attr name="android:textColorHint" />
-        <attr name="android:textColorLink" />
-        <attr name="android:textSize" />
-        <attr name="android:textStyle" />
-        <attr name="android:typeface" />
-        <attr name="android:fontFamily" />
         <attr name="tv_fontFamily" />
         <attr name="android:textAllCaps" />
-        <attr name="android:shadowColor" />
-        <attr name="android:shadowDx" />
-        <attr name="android:shadowDy" />
-        <attr name="android:shadowRadius" />
         <attr name="android:elegantTextHeight" />
         <attr name="android:fontFeatureSettings" />
         <attr name="android:letterSpacing" />
@@ -462,9 +451,6 @@
     
     <declare-styleable name="Spinner">
         <attr name="android:gravity" />
-        <attr name="android:prompt" />
-        <attr name="android:dropDownWidth" /> 
-        <attr name="android:popupBackground" />
         <attr name="android:minWidth"/>
         <attr name="android:minHeight"/>
         <attr name="spn_disableChildrenWhenDisabled" format="boolean"/>
