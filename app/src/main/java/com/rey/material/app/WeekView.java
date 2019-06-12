@@ -5,22 +5,19 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.rey.material.demo.R;
+import androidx.annotation.NonNull;
+
 import com.rey.material.util.ThemeUtil;
-import com.rey.material.util.ViewUtil;
 import com.rey.material.widget.CircleCheckedTextView;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by Rey on 2/6/2015.

@@ -1,9 +1,10 @@
 package com.rey.material.widget;
 
 import android.content.Context;
-import android.support.v7.widget.ListViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.appcompat.widget.ListViewCompat;
 
 import com.rey.material.app.ThemeManager;
 import com.rey.material.util.ViewUtil;

@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "28.0.0"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 22
         versionName "1.2.5"
     }
@@ -19,15 +19,15 @@ android {
 }
 
 ext{
-    libSupportVersion = '27.1.1'
+    androidXVersion = '1.0.0'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation "com.android.support:appcompat-v7:${libSupportVersion}"
-    implementation "com.android.support:cardview-v7:${libSupportVersion}"
-    implementation "com.android.support:recyclerview-v7:${libSupportVersion}"
+    implementation "androidx.appcompat:appcompat:${androidXVersion}"
+    implementation "androidx.cardview:cardview:${androidXVersion}"
+    implementation "androidx.recyclerview:recyclerview:${androidXVersion}"
 }
 
 // Place it at the end of the file

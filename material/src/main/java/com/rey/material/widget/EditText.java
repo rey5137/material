@@ -10,11 +10,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView;
+import androidx.core.view.GravityCompat;
+
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -3688,7 +3689,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
 	}
 
-	private class InternalEditText extends AppCompatEditText{
+	private class InternalEditText extends AppCompatEditText {
 
 		public InternalEditText(Context context) {
 			super(context);
@@ -3987,7 +3988,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         }
     }
 
-    private class InternalMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView{
+    private class InternalMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView {
 
         public InternalMultiAutoCompleteTextView(Context context) {
             super(context);

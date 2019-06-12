@@ -5,13 +5,14 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ScrollView;
+
+import androidx.core.view.ViewCompat;
 
 import com.rey.material.R;
 import com.rey.material.drawable.BlankDrawable;

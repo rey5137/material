@@ -2,8 +2,9 @@ package com.rey.material.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatCheckedTextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatCheckedTextView;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
