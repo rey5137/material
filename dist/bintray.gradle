@@ -1,48 +1,8 @@
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 def distInfo = ext.distInfo;
 
 group = distInfo.publishedGroupId                               // Maven Group ID for the artifact
-
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging distInfo.libraryPackaging
-                groupId distInfo.publishedGroupId
-                artifactId distInfo.artifact
-
-                // Add your description here
-                name distInfo.libraryName
-                description distInfo.libraryDescription
-                url distInfo.siteUrl
-
-                // Set your license
-                licenses {
-                    license {
-                        name distInfo.licenseName
-                        url distInfo.licenseUrl
-                    }
-                }
-                developers {
-                    developer {
-                        id distInfo.developerId
-                        name distInfo.developerName
-                        email distInfo.developerEmail
-                    }
-                }
-                scm {
-                    connection distInfo.gitUrl
-                    developerConnection distInfo.gitUrl
-                    url distInfo.siteUrl
-
-                }
-            }
-        }
-    }
-}
 
 version = distInfo.libraryVersion
 
