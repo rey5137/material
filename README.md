@@ -1,7 +1,7 @@
 Material
 =====================
 
-[![](https://jitpack.io/v/rey5137/material.svg)](https://jitpack.io/#rey5137/material) [![Download](https://api.bintray.com/packages/rey5137/maven/material/images/download.svg)](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.5/material-1.2.5.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
+[![](https://jitpack.io/v/rey5137/material.svg)](https://jitpack.io/#rey5137/material) [![Download](https://api.bintray.com/packages/rey5137/maven/material/images/download.svg)](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.3.0/material-1.3.0.aar)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1685)
 
 MaterialLibrary is an Open Source Android library that back-port Material Design components to pre-Lolipop Android. MaterialLibrary's original author is [Rey Pham](https://github.com/rey5137).
 
@@ -86,37 +86,20 @@ Add Gradle dependency:
 
 ```gradle
 dependencies {
-   implementation 'com.github.rey5137:material:1.2.5'
+   implementation 'com.github.rey5137:material:1.3.0'
 }
 ```
 
 * Or
-[Download from Jcenter](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.2.5/material-1.2.5.aar)
-
-You can try the SNAPSHOT version:
-
-```gradle
-dependencies {
-   compile 'com.github.rey5137:material:1.2.3.1-SNAPSHOT'
-}
-```
-Make sure to add the snapshot repository:
-
-```gradle
-repositories {
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
-}
-```
+[Download from Jcenter](https://bintray.com/artifact/download/rey5137/maven/com/github/rey5137/material/1.3.0/material-1.3.0.aar)
 
 AppCompat, CardView, RecyclerView library is required by Material library.
 
 ```gradle
 dependencies {
-   compile 'com.android.support:appcompat-v7:27.1.1'
-   compile 'com.android.support:cardview-v7:27.1.1'
-   compile 'com.android.support:recyclerview-v7:27.1.1'
+   compile 'androidx.appcompat:appcompat:1.0.0'
+   compile 'androidx.cardview:cardview:1.0.0'
+   compile 'androidx.recyclerview:recyclerview:1.0.0'
 }
 ```
 Now you can use any widget in **com.rey.material.widget** package as you wish. For styling, please view [Wiki](https://github.com/rey5137/Material/wiki). Note that default style of widgets depend on theme of AppCompat. Here is an example:
