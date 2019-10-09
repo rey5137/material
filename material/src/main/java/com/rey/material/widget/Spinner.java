@@ -216,11 +216,11 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
                 setMinimumWidth(a.getDimensionPixelOffset(attr, 0));
             else if(attr == R.styleable.Spinner_android_minHeight)
                 setMinimumHeight(a.getDimensionPixelOffset(attr, 0));
-            else if(attr == R.styleable.Spinner_android_dropDownWidth)
+            else if(attr == R.styleable.Spinner_spn_dropDownWidth)
                 mDropDownWidth = a.getLayoutDimension(attr, LayoutParams.WRAP_CONTENT);
-            else if(attr == R.styleable.Spinner_android_popupBackground)
+            else if(attr == R.styleable.Spinner_spn_popupBackground)
                 mPopup.setBackgroundDrawable(a.getDrawable(attr));
-            else if(attr == R.styleable.Spinner_android_prompt)
+            else if(attr == R.styleable.Spinner_spn_prompt)
                 mPopup.setPromptText(a.getString(attr));
             else if(attr == R.styleable.Spinner_spn_popupItemAnimation)
                 mPopup.setItemAnimation(a.getResourceId(attr, 0));
@@ -434,7 +434,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      *
      * @param background Background drawable
      *
-     * @attr ref android.R.styleable#Spinner_popupBackground
+     * @attr ref android.R.styleable#Spinner_spn_popupBackground
      */
     public void setPopupBackgroundDrawable(Drawable background) {
     	mPopup.setBackgroundDrawable(background);
@@ -445,7 +445,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      *
      * @param resId Resource ID of a background drawable
      *
-     * @attr ref android.R.styleable#Spinner_popupBackground
+     * @attr ref android.R.styleable#Spinner_spn_popupBackground
      */
     public void setPopupBackgroundResource(int resId) {
         setPopupBackgroundDrawable(getContext().getDrawable(resId));
@@ -456,7 +456,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      *
      * @return background Background drawable
      *
-     * @attr ref android.R.styleable#Spinner_popupBackground
+     * @attr ref android.R.styleable#Spinner_spn_popupBackground
      */
     public Drawable getPopupBackground() {
         return mPopup.getBackground();
@@ -515,7 +515,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      *
      * @param pixels Width in pixels, WRAP_CONTENT, or MATCH_PARENT
      *
-     * @attr ref android.R.styleable#Spinner_dropDownWidth
+     * @attr ref android.R.styleable#Spinner_spn_dropDownWidth
      */
     public void setDropDownWidth(int pixels) {
         mDropDownWidth = pixels;
@@ -530,7 +530,7 @@ public class Spinner extends FrameLayout implements ThemeManager.OnThemeChangedL
      *
      * @return Width in pixels, WRAP_CONTENT, or MATCH_PARENT
      *
-     * @attr ref android.R.styleable#Spinner_dropDownWidth
+     * @attr ref android.R.styleable#Spinner_spn_dropDownWidth
      */
     public int getDropDownWidth() {
         return mDropDownWidth;

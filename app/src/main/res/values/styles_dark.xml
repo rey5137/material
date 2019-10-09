@@ -188,7 +188,7 @@
         <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="spn_arrowColor">@color/colorAccent</item>
-        <item name="android:popupBackground">@drawable/popup_background_dark</item>
+        <item name="spn_popupBackground">@drawable/popup_background_dark</item>
     </style>
 
     <style name="DarkSpinnerNoArrow" parent="DarkSpinner">
