@@ -88,6 +88,16 @@ Add Gradle dependency:
 dependencies {
    implementation 'com.github.rey5137:material:1.2.4'
 }
+``` 
+
+Under Project Level build.gradle, Add:     
+
+```
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }    // Add This Line
+    }
+}
 ```
 
 * Or
