@@ -16,8 +16,9 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
+import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;

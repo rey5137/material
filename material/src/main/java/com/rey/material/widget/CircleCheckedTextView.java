@@ -1,10 +1,11 @@
 package com.rey.material.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatCheckedTextView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.animation.Interpolator;
+
+import androidx.appcompat.widget.AppCompatCheckedTextView;
 
 import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ViewUtil;

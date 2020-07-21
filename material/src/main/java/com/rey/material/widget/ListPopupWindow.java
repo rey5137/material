@@ -24,11 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.text.TextUtilsCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
-import android.support.v4.widget.ListViewAutoScrollHelper;
-import android.support.v4.widget.PopupWindowCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,6 +42,12 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+
+import androidx.core.text.TextUtilsCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.ViewPropertyAnimatorCompat;
+import androidx.core.widget.ListViewAutoScrollHelper;
+import androidx.core.widget.PopupWindowCompat;
 
 import com.rey.material.R;
 

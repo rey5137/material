@@ -1,26 +1,18 @@
 package com.rey.material.demo;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.rey.material.app.DialogFragment;
-import com.rey.material.app.Recurring;
-import com.rey.material.app.RecurringPickerDialog;
-import com.rey.material.drawable.RippleDrawable;
+import androidx.fragment.app.Fragment;
+
 import com.rey.material.widget.Button;
 import com.rey.material.widget.FloatingActionButton;
 
-import java.util.Calendar;
-
-public class ButtonFragment extends Fragment{
+public class ButtonFragment extends Fragment {
 
 	public static ButtonFragment newInstance(){
 		ButtonFragment fragment = new ButtonFragment();

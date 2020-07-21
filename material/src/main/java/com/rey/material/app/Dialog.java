@@ -12,8 +12,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,6 +24,9 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+
+import androidx.cardview.widget.CardView;
+import androidx.core.view.ViewCompat;
 
 import com.rey.material.R;
 import com.rey.material.drawable.BlankDrawable;
@@ -1139,7 +1140,7 @@ public class Dialog extends android.app.Dialog{
 
     }
 
-    private class DialogCardView extends CardView{
+    private class DialogCardView extends CardView {
 
         private Paint mDividerPaint;
         private float mDividerPos = -1f;

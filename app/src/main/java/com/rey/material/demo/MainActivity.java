@@ -2,14 +2,16 @@ package com.rey.material.demo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,14 +56,14 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
-				
-		dl_navigator = (DrawerLayout)findViewById(R.id.main_dl);
-		fl_drawer = (FrameLayout)findViewById(R.id.main_fl_drawer);
-		lv_drawer = (ListView)findViewById(R.id.main_lv_drawer);
-		mToolbar = (Toolbar)findViewById(R.id.main_toolbar);
-		vp = (CustomViewPager)findViewById(R.id.main_vp);
-		tiv = (TabIndicatorView)findViewById(R.id.main_tiv);
-        mSnackBar = (SnackBar)findViewById(R.id.main_sn);
+
+        lv_drawer = findViewById(R.id.main_lv_drawer);
+		dl_navigator = findViewById(R.id.main_dl);
+		fl_drawer = findViewById(R.id.main_fl_drawer);
+        mToolbar = findViewById(R.id.main_toolbar);
+		vp = findViewById(R.id.main_vp);
+		tiv = findViewById(R.id.main_tiv);
+        mSnackBar = findViewById(R.id.main_sn);
 
         mToolbarManager = new ToolbarManager(getDelegate(), mToolbar, R.id.tb_group_main, R.style.ToolbarRippleStyle, R.anim.abc_fade_in, R.anim.abc_fade_out);
         mToolbarManager.setNavigationManager(new ToolbarManager.ThemableNavigationManager(R.array.navigation_drawer, getSupportFragmentManager(), mToolbar, dl_navigator) {
@@ -278,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarManager.On
 		static {
 			Field f = null;
 			try {
-				Class<?> c = Class.forName("android.support.v4.app.FragmentManagerImpl");
+				Class<?> c = Class.forName("androidx.fragment.app.FragmentManagerImpl");
 				f = c.getDeclaredField("mActive");
 				f.setAccessible(true);   
 			} catch (Exception e) {}

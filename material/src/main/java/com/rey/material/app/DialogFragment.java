@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 /**
  * Created by Rey on 1/12/2015.
  */
-public class DialogFragment extends android.support.v4.app.DialogFragment{
+public class DialogFragment extends androidx.fragment.app.DialogFragment {
 
     /**
      * Interface definition for passing style data.
