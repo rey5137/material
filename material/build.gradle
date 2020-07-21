@@ -8,7 +8,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 22
-        versionName "1.3.0"
+        versionName "1.3.1"
     }
     buildTypes {
         release {
@@ -30,13 +30,12 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:${androidXVersion}"
 }
 
-// Place it at the end of the file
-apply from: "$rootProject.projectDir/dist/distInfo.gradle"
-apply from: "$rootProject.projectDir/dist/bintray.gradle"
-apply from: "$rootProject.projectDir/dist/maven.gradle"
-
 tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
 }
+
+// Place it at the end of the file
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'

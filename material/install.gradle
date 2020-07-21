@@ -1,0 +1,52 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+ext {
+    publishedGroupId = "com.github.rey5137"
+
+    artifact = "material"
+    libraryName = "Material Library"
+    libraryDescription = "An Android library to bring Material Design UI to pre-Lolipop Android."
+    siteUrl = "https://github.com/rey5137/material"
+
+    developerId = "rey5137"
+    developerName = "Rey Pham"
+    developerEmail = "pea5137@gmail.com"
+}
+
+group = publishedGroupId
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                groupId publishedGroupId
+                artifactId artifact
+                name libraryName
+                description libraryDescription
+                url siteUrl
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id developerId
+                        name developerName
+                        email developerEmail
+                    }
+                }
+
+                scm {
+                    connection siteUrl
+                    developerConnection siteUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}

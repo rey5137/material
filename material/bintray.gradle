@@ -1,0 +1,65 @@
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    bintrayUser = project.hasProperty('BINTRAY_USERNAME') ? BINTRAY_USERNAME : ""
+    bintrayApiKey = project.hasProperty('BINTRAY_APIKEY') ? BINTRAY_APIKEY : ""
+    bintrayGpgPassword = project.hasProperty('GPG_PASSWORD') ? GPG_PASSWORD : ""
+
+    bintrayRepo = "maven"
+    bintrayName = "material"
+
+    libraryVersion = "1.3.1"
+    libraryDescription = "An Android library to bring Material Design UI to pre-Lolipop Android."
+
+    siteUrl = "https://github.com/rey5137/material"
+    gitUrl = "https://github.com/rey5137/material.git"
+
+}
+
+version = libraryVersion
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = bintrayGpgPassword
+                //Optional. The passphrase for GPG signing'
+            }
+        }
+    }
+
+}
