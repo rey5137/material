@@ -186,7 +186,7 @@
         <item name="spn_arrowAnimDuration">@android:integer/config_shortAnimTime</item>
         <item name="spn_arrowInterpolator">@android:anim/decelerate_interpolator</item>
         <item name="spn_arrowColor">@color/colorControlNormal</item>
-        <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
+        <item name="spn_popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
     </style>
 
     <style name="LightSpinnerNoArrow" parent="LightSpinner">

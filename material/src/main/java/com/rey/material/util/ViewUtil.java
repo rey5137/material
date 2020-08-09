@@ -358,44 +358,44 @@ public class ViewUtil {
                 if (attr == R.styleable.TextAppearance_android_textColorHighlight) {
                     v.setHighlightColor(appearance.getColor(attr, 0));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColor) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColor) {
                     v.setTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColorHint) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColorHint) {
                     v.setHintTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColorLink) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColorLink) {
                     v.setLinkTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textSize) {
+                } else if (attr == R.styleable.TextAppearance_ta_textSize) {
                     v.setTextSize(TypedValue.COMPLEX_UNIT_PX, appearance.getDimensionPixelSize(attr, 0));
 
-                } else if (attr == R.styleable.TextAppearance_android_typeface) {
+                } else if (attr == R.styleable.TextAppearance_ta_typeface) {
                     typefaceIndex = appearance.getInt(attr, -1);
 
-                } else if (attr == R.styleable.TextAppearance_android_fontFamily) {
+                } else if (attr == R.styleable.TextAppearance_ta_fontFamily) {
                     fontFamily = appearance.getString(attr);
 
                 } else if (attr == R.styleable.TextAppearance_tv_fontFamily) {
                     fontFamily = appearance.getString(attr);
 
-                } else if (attr == R.styleable.TextAppearance_android_textStyle) {
+                } else if (attr == R.styleable.TextAppearance_ta_textStyle) {
                     styleIndex = appearance.getInt(attr, -1);
 
                 } else if (attr == R.styleable.TextAppearance_android_textAllCaps) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                         v.setAllCaps(appearance.getBoolean(attr, false));
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowColor) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowColor) {
                     shadowColor = appearance.getInt(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowDx) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowDx) {
                     dx = appearance.getFloat(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowDy) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowDy) {
                     dy = appearance.getFloat(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowRadius) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowRadius) {
                     r = appearance.getFloat(attr, 0);
 
                 } else if (attr == R.styleable.TextAppearance_android_elegantTextHeight) {
@@ -482,44 +482,44 @@ public class ViewUtil {
                 if (attr == R.styleable.TextAppearance_android_textColorHighlight) {
                     v.setHighlightColor(appearance.getColor(attr, 0));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColor) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColor) {
                     v.setTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColorHint) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColorHint) {
                     v.setHintTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textColorLink) {
+                } else if (attr == R.styleable.TextAppearance_ta_textColorLink) {
                     v.setLinkTextColor(appearance.getColorStateList(attr));
 
-                } else if (attr == R.styleable.TextAppearance_android_textSize) {
+                } else if (attr == R.styleable.TextAppearance_ta_textSize) {
                     v.setTextSize(TypedValue.COMPLEX_UNIT_PX, appearance.getDimensionPixelSize(attr, 0));
 
-                } else if (attr == R.styleable.TextAppearance_android_typeface) {
+                } else if (attr == R.styleable.TextAppearance_ta_typeface) {
                     typefaceIndex = appearance.getInt(attr, -1);
 
-                } else if (attr == R.styleable.TextAppearance_android_fontFamily) {
+                } else if (attr == R.styleable.TextAppearance_ta_fontFamily) {
                     fontFamily = appearance.getString(attr);
 
                 } else if (attr == R.styleable.TextAppearance_tv_fontFamily) {
                     fontFamily = appearance.getString(attr);
 
-                } else if (attr == R.styleable.TextAppearance_android_textStyle) {
+                } else if (attr == R.styleable.TextAppearance_ta_textStyle) {
                     styleIndex = appearance.getInt(attr, -1);
 
                 } else if (attr == R.styleable.TextAppearance_android_textAllCaps) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                         v.setAllCaps(appearance.getBoolean(attr, false));
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowColor) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowColor) {
                     shadowColor = appearance.getInt(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowDx) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowDx) {
                     dx = appearance.getFloat(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowDy) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowDy) {
                     dy = appearance.getFloat(attr, 0);
 
-                } else if (attr == R.styleable.TextAppearance_android_shadowRadius) {
+                } else if (attr == R.styleable.TextAppearance_ta_shadowRadius) {
                     r = appearance.getFloat(attr, 0);
 
                 } else if (attr == R.styleable.TextAppearance_android_elegantTextHeight) {

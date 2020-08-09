@@ -98,19 +98,24 @@
 
     <declare-styleable name="TextAppearance">
         <attr name="android:textColorHighlight" />
-        <attr name="android:textColor" />
-        <attr name="android:textColorHint" />
-        <attr name="android:textColorLink" />
-        <attr name="android:textSize" />
-        <attr name="android:textStyle" />
-        <attr name="android:typeface" />
-        <attr name="android:fontFamily" />
+        <attr name="ta_textColor" format="reference|color" />
+        <attr name="ta_textColorHint" format="string|reference" />
+        <attr name="ta_textColorLink" format="string|reference" />
+        <attr name="ta_textSize" format="reference|dimension"/>
+        <attr name="ta_textStyle" format="integer">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+            <enum name="bold_italic" value="3" />
+        </attr>
+        <attr name="ta_typeface" format="string|reference" />
+        <attr name="ta_fontFamily" format="string|reference" />
         <attr name="tv_fontFamily" />
         <attr name="android:textAllCaps" />
-        <attr name="android:shadowColor" />
-        <attr name="android:shadowDx" />
-        <attr name="android:shadowDy" />
-        <attr name="android:shadowRadius" />
+        <attr name="ta_shadowColor" format="reference|color"/>
+        <attr name="ta_shadowDx" format="reference|integer"/>
+        <attr name="ta_shadowDy" format="reference|integer"/>
+        <attr name="ta_shadowRadius" format="reference|integer"/>
         <attr name="android:elegantTextHeight" />
         <attr name="android:fontFeatureSettings" />
         <attr name="android:letterSpacing" />
@@ -462,9 +467,9 @@
     
     <declare-styleable name="Spinner">
         <attr name="android:gravity" />
-        <attr name="android:prompt" />
-        <attr name="android:dropDownWidth" /> 
-        <attr name="android:popupBackground" />
+        <attr name="spn_prompt" format="string|reference"/>
+        <attr name="spn_dropDownWidth" format="reference|dimension"/>
+        <attr name="spn_popupBackground" format="reference"/>
         <attr name="android:minWidth"/>
         <attr name="android:minHeight"/>
         <attr name="spn_disableChildrenWhenDisabled" format="boolean"/>
