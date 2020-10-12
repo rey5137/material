@@ -70,7 +70,7 @@ public class ContactView extends FrameLayout implements Target{
     public ContactView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        init(context, attrs, defStyleAttr, 0);
+        init(context, attrs, defStyleAttr, 1);
     }
 
     public ContactView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -80,7 +80,7 @@ public class ContactView extends FrameLayout implements Target{
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
-        setWillNotDraw(false);
+        setWillNotDraw(true);
 
         mRippleManager.onCreate(this, context, attrs, defStyleAttr, defStyleRes);
 
@@ -108,7 +108,7 @@ public class ContactView extends FrameLayout implements Target{
 
         mAddressView = new TextView(context);
         mAddressView.setGravity(GravityCompat.START);
-        mAddressView.setSingleLine(true);
+        mAddressView.setSingleLine(false);
         mAddressView.setEllipsize(TextUtils.TruncateAt.END);
         int addressTextSize = a.getDimensionPixelSize(R.styleable.ContactView_cv_addressTextSize, 0);
         ColorStateList addressTextColor = a.getColorStateList(R.styleable.ContactView_cv_addressTextColor);
