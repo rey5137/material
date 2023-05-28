@@ -2,7 +2,6 @@ package com.rey.material.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
 import com.rey.material.drawable.RadioButtonDrawable;
 
 public class RadioButton extends CompoundButton {
@@ -15,22 +14,21 @@ public class RadioButton extends CompoundButton {
         super(context, attrs);
     }
 
-	public RadioButton(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-	}
+    public RadioButton(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
 
     @Override
-    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super.applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
         RadioButtonDrawable drawable = new RadioButtonDrawable.Builder(context, attrs, defStyleAttr, defStyleRes).build();
         drawable.setInEditMode(isInEditMode());
         drawable.setAnimEnable(false);
         setButtonDrawable(drawable);
         drawable.setAnimEnable(true);
     }
-	
-	@Override
+
+    @Override
     public void toggle() {
         // we override to prevent toggle when the radio is already
         // checked (as opposed to check boxes widgets)
@@ -43,15 +41,13 @@ public class RadioButton extends CompoundButton {
      * Change the checked state of this button immediately without showing animation.
      * @param checked The checked state.
      */
-    public void setCheckedImmediately(boolean checked){
-        if(getButtonDrawable() instanceof RadioButtonDrawable){
-            RadioButtonDrawable drawable = (RadioButtonDrawable)getButtonDrawable();
+    public void setCheckedImmediately(boolean checked) {
+        if (getButtonDrawable() instanceof RadioButtonDrawable) {
+            RadioButtonDrawable drawable = (RadioButtonDrawable) getButtonDrawable();
             drawable.setAnimEnable(false);
             setChecked(checked);
             drawable.setAnimEnable(true);
-        }
-        else
+        } else
             setChecked(checked);
     }
-	
 }

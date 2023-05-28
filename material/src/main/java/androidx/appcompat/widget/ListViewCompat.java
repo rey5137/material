@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package androidx.appcompat.widget;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -26,30 +27,42 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
 import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.core.graphics.drawable.DrawableCompat;
-
 import java.lang.reflect.Field;
 
 public class ListViewCompat extends ListView {
+
     public static final int INVALID_POSITION = -1;
+
     public static final int NO_POSITION = -1;
+
     private static final int[] STATE_SET_NOTHING = new int[] { 0 };
+
     final Rect mSelectorRect = new Rect();
+
     int mSelectionLeftPadding = 0;
+
     int mSelectionTopPadding = 0;
+
     int mSelectionRightPadding = 0;
+
     int mSelectionBottomPadding = 0;
+
     protected int mMotionPosition;
+
     private Field mIsChildViewEnabled;
+
     private GateKeeperDrawable mSelector;
+
     public ListViewCompat(Context context) {
         this(context, null);
     }
+
     public ListViewCompat(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
+
     public ListViewCompat(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         try {
@@ -59,6 +72,7 @@ public class ListViewCompat extends ListView {
             e.printStackTrace();
         }
     }
+
     @Override
     public void setSelector(Drawable sel) {
         mSelector = sel != null ? new GateKeeperDrawable(sel) : null;
@@ -72,12 +86,14 @@ public class ListViewCompat extends ListView {
         mSelectionRightPadding = padding.right;
         mSelectionBottomPadding = padding.bottom;
     }
+
     @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
         setSelectorEnabled(true);
         updateSelectorStateCompat();
     }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         final boolean drawSelectorOnTop = false;
@@ -86,27 +102,32 @@ public class ListViewCompat extends ListView {
         }
         super.dispatchDraw(canvas);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
+        switch(ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mMotionPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
                 break;
         }
         return super.onTouchEvent(ev);
     }
+
     protected void updateSelectorStateCompat() {
         Drawable selector = getSelector();
         if (selector != null && shouldShowSelectorCompat()) {
             selector.setState(getDrawableState());
         }
     }
+
     protected boolean shouldShowSelectorCompat() {
         return touchModeDrawsInPressedStateCompat() && isPressed();
     }
+
     protected boolean touchModeDrawsInPressedStateCompat() {
         return false;
     }
+
     protected void drawSelectorCompat(Canvas canvas) {
         if (!mSelectorRect.isEmpty()) {
             final Drawable selector = getSelector();
@@ -116,6 +137,7 @@ public class ListViewCompat extends ListView {
             }
         }
     }
+
     /**
      * Find a position that can be selected (i.e., is not a separator).
      *
@@ -153,6 +175,7 @@ public class ListViewCompat extends ListView {
             return position;
         }
     }
+
     protected void positionSelectorLikeTouchCompat(int position, View sel, float x, float y) {
         positionSelectorLikeFocusCompat(position, sel);
         Drawable selector = getSelector();
@@ -160,6 +183,7 @@ public class ListViewCompat extends ListView {
             DrawableCompat.setHotspot(selector, x, y);
         }
     }
+
     protected void positionSelectorLikeFocusCompat(int position, View sel) {
         // If we're changing position, update the visibility since the selector
         // is technically being detached from the previous selection.
@@ -177,6 +201,7 @@ public class ListViewCompat extends ListView {
             DrawableCompat.setHotspot(selector, x, y);
         }
     }
+
     protected void positionSelectorCompat(int position, View sel) {
         final Rect selectorRect = mSelectorRect;
         selectorRect.set(sel.getLeft(), sel.getTop(), sel.getRight(), sel.getBottom());
@@ -199,6 +224,7 @@ public class ListViewCompat extends ListView {
             e.printStackTrace();
         }
     }
+
     /**
      * Measures the height of the given range of children (inclusive) and returns the height
      * with this ListView's padding and divider heights included. If maxHeight is provided, the
@@ -225,9 +251,7 @@ public class ListViewCompat extends ListView {
      *                                     startPosition is 0).
      * @return The height of this ListView with the given children.
      */
-    public int measureHeightOfChildrenCompat(int widthMeasureSpec, int startPosition,
-            int endPosition, final int maxHeight,
-            int disallowPartialChildPosition) {
+    public int measureHeightOfChildrenCompat(int widthMeasureSpec, int startPosition, int endPosition, final int maxHeight, int disallowPartialChildPosition) {
         final int paddingTop = getListPaddingTop();
         final int paddingBottom = getListPaddingBottom();
         final int paddingLeft = getListPaddingLeft();
@@ -240,8 +264,7 @@ public class ListViewCompat extends ListView {
         }
         // Include the padding of the list
         int returnedHeight = paddingTop + paddingBottom;
-        final int dividerHeight = ((reportedDividerHeight > 0) && divider != null)
-                ? reportedDividerHeight : 0;
+        final int dividerHeight = ((reportedDividerHeight > 0) && divider != null) ? reportedDividerHeight : 0;
         // The previous height value that was less than maxHeight and contained
         // no partial children
         int prevHeightWithoutPartialChild = 0;
@@ -263,8 +286,7 @@ public class ListViewCompat extends ListView {
                 child.setLayoutParams(childLp);
             }
             if (childLp.height > 0) {
-                heightMeasureSpec = MeasureSpec.makeMeasureSpec(childLp.height,
-                        MeasureSpec.EXACTLY);
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(childLp.height, MeasureSpec.EXACTLY);
             } else {
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
             }
@@ -280,12 +302,11 @@ public class ListViewCompat extends ListView {
             if (returnedHeight >= maxHeight) {
                 // We went over, figure out which height to return.  If returnedHeight >
                 // maxHeight, then the i'th position did not fit completely.
-                return (disallowPartialChildPosition >= 0) // Disallowing is enabled (> -1)
-                        && (i > disallowPartialChildPosition) // We've past the min pos
-                        && (prevHeightWithoutPartialChild > 0) // We have a prev height
-                        && (returnedHeight != maxHeight) // i'th child did not fit completely
-                        ? prevHeightWithoutPartialChild
-                        : maxHeight;
+                return // Disallowing is enabled (> -1)
+                (disallowPartialChildPosition >= 0) && // We've past the min pos
+                (i > disallowPartialChildPosition) && // We have a prev height
+                (prevHeightWithoutPartialChild > 0) && // i'th child did not fit completely
+                (returnedHeight != maxHeight) ? prevHeightWithoutPartialChild : maxHeight;
             }
             if ((disallowPartialChildPosition >= 0) && (i >= disallowPartialChildPosition)) {
                 prevHeightWithoutPartialChild = returnedHeight;
@@ -295,6 +316,7 @@ public class ListViewCompat extends ListView {
         // completely fit, so return the returnedHeight
         return returnedHeight;
     }
+
     protected void setSelectorEnabled(boolean enabled) {
         if (mSelector != null) {
             mSelector.setEnabled(enabled);
@@ -303,14 +325,18 @@ public class ListViewCompat extends ListView {
 
     @SuppressLint("RestrictedApi")
     private static class GateKeeperDrawable extends DrawableWrapper {
+
         private boolean mEnabled;
+
         public GateKeeperDrawable(Drawable drawable) {
             super(drawable);
             mEnabled = true;
         }
+
         void setEnabled(boolean enabled) {
             mEnabled = enabled;
         }
+
         @Override
         public boolean setState(int[] stateSet) {
             if (mEnabled) {
@@ -318,24 +344,28 @@ public class ListViewCompat extends ListView {
             }
             return false;
         }
+
         @Override
         public void draw(Canvas canvas) {
             if (mEnabled) {
                 super.draw(canvas);
             }
         }
+
         @Override
         public void setHotspot(float x, float y) {
             if (mEnabled) {
                 super.setHotspot(x, y);
             }
         }
+
         @Override
         public void setHotspotBounds(int left, int top, int right, int bottom) {
             if (mEnabled) {
                 super.setHotspotBounds(left, top, right, bottom);
             }
         }
+
         @Override
         public boolean setVisible(boolean visible, boolean restart) {
             if (mEnabled) {

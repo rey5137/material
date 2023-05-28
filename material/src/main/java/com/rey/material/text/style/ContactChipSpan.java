@@ -20,19 +20,29 @@ import android.text.style.ReplacementSpan;
 public class ContactChipSpan extends ReplacementSpan {
 
     private Paint mPaint;
+
     private int mPaddingLeft;
+
     private int mPaddingRight;
+
     private int mBackgroundColor;
+
     private int mHeight;
+
     private int mWidth;
 
     private CharSequence mContactName;
+
     private BoringLayout mBoringLayout;
+
     private TextPaint mTextPaint;
+
     private RectF mRect;
 
     private BitmapShader mBitmapShader;
+
     private Bitmap mBitmap;
+
     private Matrix mMatrix;
 
     public ContactChipSpan(CharSequence name, int height, int maxWidth, int paddingLeft, int paddingRight, Typeface typeface, int textColor, int textSize, int backgroundColor) {
@@ -41,21 +51,15 @@ public class ContactChipSpan extends ReplacementSpan {
         mPaint.setColor(textColor);
         mPaint.setTypeface(typeface);
         mPaint.setTextSize(textSize);
-
         mTextPaint = new TextPaint(mPaint);
-
-
         mRect = new RectF();
-
         mMatrix = new Matrix();
-
         mContactName = name;
         mPaddingLeft = paddingLeft;
         mPaddingRight = paddingRight;
         mBackgroundColor = backgroundColor;
         mHeight = height;
         mWidth = Math.round(Math.min(maxWidth, mPaint.measureText(name, 0, name.length()) + paddingLeft + paddingRight + height));
-
         int outerWidth = Math.max(0, mWidth - mPaddingLeft - mPaddingRight - mHeight);
         Paint.FontMetricsInt temp = mTextPaint.getFontMetricsInt();
         BoringLayout.Metrics mMetrics = new BoringLayout.Metrics();
@@ -68,16 +72,15 @@ public class ContactChipSpan extends ReplacementSpan {
         mBoringLayout = BoringLayout.make(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);
     }
 
-    public void setImage(Bitmap bm){
-        if(mBitmap != bm){
+    public void setImage(Bitmap bm) {
+        if (mBitmap != bm) {
             mBitmap = bm;
-            if(mBitmap != null) {
+            if (mBitmap != null) {
                 mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
                 mMatrix.reset();
-                float scale = mHeight / (float)Math.min(mBitmap.getWidth(), mBitmap.getHeight());
+                float scale = mHeight / (float) Math.min(mBitmap.getWidth(), mBitmap.getHeight());
                 mMatrix.setScale(scale, scale, 0, 0);
-                mMatrix.postTranslate((mHeight  - mBitmap.getWidth() * scale) / 2, (mHeight - mBitmap.getHeight() * scale) / 2);
-
+                mMatrix.postTranslate((mHeight - mBitmap.getWidth() * scale) / 2, (mHeight - mBitmap.getHeight() * scale) / 2);
                 mBitmapShader.setLocalMatrix(mMatrix);
             }
         }
@@ -92,16 +95,13 @@ public class ContactChipSpan extends ReplacementSpan {
             fm.top = Math.min(fm.top, fm.ascent);
             fm.bottom = Math.max(fm.bottom, fm.descent);
         }
-
         return mWidth;
     }
 
     @Override
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         canvas.save();
-
         canvas.translate(x, top);
-
         float halfHeight = mHeight / 2f;
         mPaint.setShader(null);
         mPaint.setColor(mBackgroundColor);
@@ -111,17 +111,14 @@ public class ContactChipSpan extends ReplacementSpan {
         canvas.drawArc(mRect, 270, 180, true, mPaint);
         mRect.set(halfHeight, 0, mWidth - halfHeight, mHeight);
         canvas.drawRect(mRect, mPaint);
-
-        if(mBitmap != null){
+        if (mBitmap != null) {
             mPaint.setShader(mBitmapShader);
             canvas.drawCircle(halfHeight, halfHeight, halfHeight, mPaint);
         }
-
-        if(mContactName != null && mBoringLayout != null) {
+        if (mContactName != null && mBoringLayout != null) {
             canvas.translate(mHeight + mPaddingLeft, (mHeight - mBoringLayout.getHeight()) / 2f);
             mBoringLayout.draw(canvas);
         }
-
         canvas.restore();
     }
 }

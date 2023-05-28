@@ -6,9 +6,12 @@ import android.os.Parcelable;
 /**
  * Created by Rey on 3/2/2015.
  */
-public class Recipient implements Parcelable{
+public class Recipient implements Parcelable {
+
     String name;
+
     String number;
+
     String lookupKey;
 
     public Recipient() {
@@ -21,10 +24,9 @@ public class Recipient implements Parcelable{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return Recipient.class.getSimpleName() + "[name = " + name + ", number = " + number + ", key = " + lookupKey + "]";
     }
-
 
     @Override
     public int describeContents() {
@@ -39,6 +41,7 @@ public class Recipient implements Parcelable{
     }
 
     public static final Creator<Recipient> CREATOR = new Creator<Recipient>() {
+
         public Recipient createFromParcel(Parcel source) {
             return new Recipient(source);
         }

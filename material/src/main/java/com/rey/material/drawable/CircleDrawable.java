@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-
 import com.rey.material.util.ViewUtil;
 
 /**
@@ -19,20 +18,29 @@ import com.rey.material.util.ViewUtil;
 public class CircleDrawable extends Drawable implements Animatable {
 
     private boolean mRunning = false;
+
     private long mStartTime;
+
     private float mAnimProgress;
+
     private int mAnimDuration = 1000;
+
     private Interpolator mInInterpolator = new DecelerateInterpolator();
+
     private Interpolator mOutInterpolator = new DecelerateInterpolator();
 
     private Paint mPaint;
 
     private float mX;
+
     private float mY;
+
     private float mRadius;
 
     private boolean mVisible;
+
     private boolean mInEditMode = false;
+
     private boolean mAnimEnable = true;
 
     public CircleDrawable() {
@@ -70,14 +78,12 @@ public class CircleDrawable extends Drawable implements Animatable {
     @Override
     protected boolean onStateChange(int[] state) {
         boolean visible = ViewUtil.hasState(state, android.R.attr.state_checked) || ViewUtil.hasState(state, android.R.attr.state_pressed);
-
         if (mVisible != visible) {
             mVisible = visible;
             if (!mInEditMode && mAnimEnable)
                 start();
             return true;
         }
-
         return false;
     }
 
@@ -150,20 +156,15 @@ public class CircleDrawable extends Drawable implements Animatable {
         public void run() {
             update();
         }
-
     };
 
     private void update() {
         long curTime = SystemClock.uptimeMillis();
         mAnimProgress = Math.min(1f, (float) (curTime - mStartTime) / mAnimDuration);
-
         if (mAnimProgress == 1f)
             mRunning = false;
-
         if (isRunning())
             scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
-
         invalidateSelf();
     }
-
 }

@@ -7,56 +7,53 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.RippleDrawable;
 import com.rey.material.util.ViewUtil;
 
-public class LinearLayout extends android.widget.LinearLayout implements ThemeManager.OnThemeChangedListener{
+public class LinearLayout extends android.widget.LinearLayout implements ThemeManager.OnThemeChangedListener {
 
-	private RippleManager mRippleManager;
+    private RippleManager mRippleManager;
 
     protected int mStyleId;
+
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     public LinearLayout(Context context) {
         super(context);
-
         init(context, null, 0, 0);
     }
 
     public LinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         init(context, attrs, 0, 0);
     }
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public LinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
+        super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, 0);
+    }
 
-		init(context, attrs, defStyleAttr, 0);
-	}
-
-	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-        if(!isInEditMode())
+        if (!isInEditMode())
             mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
-	}
+    }
 
-    public void applyStyle(int resId){
+    public void applyStyle(int resId) {
         ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
+        if (mCurrentStyle != style) {
             mCurrentStyle = style;
             applyStyle(mCurrentStyle);
         }
@@ -65,7 +62,7 @@ public class LinearLayout extends android.widget.LinearLayout implements ThemeMa
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(mStyleId != 0) {
+        if (mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
             onThemeChanged(null);
         }
@@ -75,32 +72,31 @@ public class LinearLayout extends android.widget.LinearLayout implements ThemeMa
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         RippleManager.cancelRipple(this);
-        if(mStyleId != 0)
+        if (mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @Override
     public void setBackgroundDrawable(Drawable drawable) {
         Drawable background = getBackground();
-        if(background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
+        if (background instanceof RippleDrawable && !(drawable instanceof RippleDrawable))
             ((RippleDrawable) background).setBackgroundDrawable(drawable);
         else
             super.setBackgroundDrawable(drawable);
     }
 
-    protected RippleManager getRippleManager(){
-        if(mRippleManager == null){
-            synchronized (RippleManager.class){
-                if(mRippleManager == null)
+    protected RippleManager getRippleManager() {
+        if (mRippleManager == null) {
+            synchronized (RippleManager.class) {
+                if (mRippleManager == null)
                     mRippleManager = new RippleManager();
             }
         }
-
         return mRippleManager;
     }
 
     @Override
-	public void setOnClickListener(OnClickListener l) {
+    public void setOnClickListener(OnClickListener l) {
         RippleManager rippleManager = getRippleManager();
         if (l == rippleManager)
             super.setOnClickListener(l);
@@ -108,12 +104,11 @@ public class LinearLayout extends android.widget.LinearLayout implements ThemeMa
             rippleManager.setOnClickListener(l);
             setOnClickListener(rippleManager);
         }
-	}
-	
-	@Override
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
-		boolean result = super.onTouchEvent(event);
-		return  getRippleManager().onTouchEvent(this, event) || result;
-	}
+    }
 
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
+        return getRippleManager().onTouchEvent(this, event) || result;
+    }
 }

@@ -22,7 +22,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-
 import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
 import com.rey.material.drawable.LineMorphingDrawable;
@@ -33,151 +32,137 @@ import com.rey.material.util.ViewUtil;
 
 public class FloatingActionButton extends View implements ThemeManager.OnThemeChangedListener {
 
-	private OvalShadowDrawable mBackground;
-	private Drawable mIcon;
-    private Drawable mPrevIcon;
-    private int mAnimDuration = -1;
-    private Interpolator mInterpolator;
-    private SwitchIconAnimator mSwitchIconAnimator;
-	private int mIconSize = -1;
-		
-	private RippleManager mRippleManager;
-    protected int mStyleId;
-    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
-			
-	public static FloatingActionButton make(Context context, int resId){
-		return new FloatingActionButton(context, null, resId);
-	}
-	
- 	public FloatingActionButton(Context context) {
-		super(context);
-		
-		init(context, null, 0, 0);
-	}
-	
-	public FloatingActionButton(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		init(context, attrs, 0, 0);
-	}
-	
-	public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		
-		init(context, attrs, defStyleAttr, 0);
-	}
+    private OvalShadowDrawable mBackground;
 
-	protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		setClickable(true);
+    private Drawable mIcon;
+
+    private Drawable mPrevIcon;
+
+    private int mAnimDuration = -1;
+
+    private Interpolator mInterpolator;
+
+    private SwitchIconAnimator mSwitchIconAnimator;
+
+    private int mIconSize = -1;
+
+    private RippleManager mRippleManager;
+
+    protected int mStyleId;
+
+    protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
+
+    public static FloatingActionButton make(Context context, int resId) {
+        return new FloatingActionButton(context, null, resId);
+    }
+
+    public FloatingActionButton(Context context) {
+        super(context);
+        init(context, null, 0, 0);
+    }
+
+    public FloatingActionButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs, 0, 0);
+    }
+
+    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, 0);
+    }
+
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        setClickable(true);
         mSwitchIconAnimator = new SwitchIconAnimator();
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
+        if (!isInEditMode())
+            mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
+    }
 
-		if(!isInEditMode())
-			mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
-	}
-
-    public void applyStyle(int resId){
+    public void applyStyle(int resId) {
         ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
     protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, defStyleRes);
-
         int radius = -1;
         int elevation = -1;
         ColorStateList bgColor = null;
         int bgAnimDuration = -1;
         int iconSrc = 0;
         int iconLineMorphing = 0;
-
-        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+        for (int i = 0, count = a.getIndexCount(); i < count; i++) {
             int attr = a.getIndex(i);
-
-            if(attr == R.styleable.FloatingActionButton_fab_radius)
+            if (attr == R.styleable.FloatingActionButton_fab_radius)
                 radius = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_elevation)
+            else if (attr == R.styleable.FloatingActionButton_fab_elevation)
                 elevation = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_backgroundColor)
+            else if (attr == R.styleable.FloatingActionButton_fab_backgroundColor)
                 bgColor = a.getColorStateList(attr);
-            else if(attr == R.styleable.FloatingActionButton_fab_backgroundAnimDuration)
+            else if (attr == R.styleable.FloatingActionButton_fab_backgroundAnimDuration)
                 bgAnimDuration = a.getInteger(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_iconSrc)
+            else if (attr == R.styleable.FloatingActionButton_fab_iconSrc)
                 iconSrc = a.getResourceId(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_iconLineMorphing)
+            else if (attr == R.styleable.FloatingActionButton_fab_iconLineMorphing)
                 iconLineMorphing = a.getResourceId(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_iconSize)
+            else if (attr == R.styleable.FloatingActionButton_fab_iconSize)
                 mIconSize = a.getDimensionPixelSize(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_animDuration)
+            else if (attr == R.styleable.FloatingActionButton_fab_animDuration)
                 mAnimDuration = a.getInteger(attr, 0);
-            else if(attr == R.styleable.FloatingActionButton_fab_interpolator){
+            else if (attr == R.styleable.FloatingActionButton_fab_interpolator) {
                 int resId = a.getResourceId(R.styleable.FloatingActionButton_fab_interpolator, 0);
-                if(resId != 0)
+                if (resId != 0)
                     mInterpolator = AnimationUtils.loadInterpolator(context, resId);
             }
         }
-
         a.recycle();
-
-        if(mIconSize < 0)
+        if (mIconSize < 0)
             mIconSize = ThemeUtil.dpToPx(context, 24);
-
-        if(mAnimDuration < 0)
+        if (mAnimDuration < 0)
             mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
-        if(mInterpolator == null)
+        if (mInterpolator == null)
             mInterpolator = new DecelerateInterpolator();
-
-        if(mBackground == null){
-            if(radius < 0)
+        if (mBackground == null) {
+            if (radius < 0)
                 radius = ThemeUtil.dpToPx(context, 28);
-
-            if(elevation < 0)
+            if (elevation < 0)
                 elevation = ThemeUtil.dpToPx(context, 4);
-
-            if(bgColor == null)
+            if (bgColor == null)
                 bgColor = ColorStateList.valueOf(ThemeUtil.colorAccent(context, 0));
-
-            if(bgAnimDuration < 0)
+            if (bgAnimDuration < 0)
                 bgAnimDuration = 0;
-
             mBackground = new OvalShadowDrawable(radius, bgColor, elevation, elevation, bgAnimDuration);
             mBackground.setInEditMode(isInEditMode());
             mBackground.setBounds(0, 0, getWidth(), getHeight());
             mBackground.setCallback(this);
-        }
-        else{
-            if(radius >= 0)
+        } else {
+            if (radius >= 0)
                 mBackground.setRadius(radius);
-
-            if(bgColor != null)
+            if (bgColor != null)
                 mBackground.setColor(bgColor);
-
-            if(elevation >= 0)
+            if (elevation >= 0)
                 mBackground.setShadow(elevation, elevation);
-
-            if(bgAnimDuration >= 0)
+            if (bgAnimDuration >= 0)
                 mBackground.setAnimationDuration(bgAnimDuration);
         }
-
-        if(iconLineMorphing != 0)
+        if (iconLineMorphing != 0)
             setIcon(new LineMorphingDrawable.Builder(context, iconLineMorphing).build(), false);
-        else if(iconSrc != 0)
+        else if (iconSrc != 0)
             setIcon(context.getResources().getDrawable(iconSrc), false);
-
         getRippleManager().onCreate(this, context, attrs, defStyleAttr, defStyleRes);
         Drawable background = getBackground();
-        if(background != null && background instanceof RippleDrawable){
-            RippleDrawable drawable = (RippleDrawable)background;
+        if (background != null && background instanceof RippleDrawable) {
+            RippleDrawable drawable = (RippleDrawable) background;
             drawable.setBackgroundDrawable(null);
-            drawable.setMask(RippleDrawable.Mask.TYPE_OVAL, 0, 0, 0, 0, (int)mBackground.getPaddingLeft(), (int)mBackground.getPaddingTop(), (int)mBackground.getPaddingRight(), (int)mBackground.getPaddingBottom());
+            drawable.setMask(RippleDrawable.Mask.TYPE_OVAL, 0, 0, 0, 0, (int) mBackground.getPaddingLeft(), (int) mBackground.getPaddingTop(), (int) mBackground.getPaddingRight(), (int) mBackground.getPaddingBottom());
         }
     }
 
     @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
+        if (mCurrentStyle != style) {
             mCurrentStyle = style;
             applyStyle(mCurrentStyle);
         }
@@ -186,7 +171,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(mStyleId != 0) {
+        if (mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
             onThemeChanged(null);
         }
@@ -196,116 +181,110 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         RippleManager.cancelRipple(this);
-        if(mStyleId != 0)
+        if (mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
-
 
     /**
      * @return The radius of the button.
      */
-	public int getRadius(){
-		return mBackground.getRadius();
-	}
+    public int getRadius() {
+        return mBackground.getRadius();
+    }
 
     /**
      * Set radius of the button.
      * @param radius The radius in pixel.
      */
-	public void setRadius(int radius){
-		if(mBackground.setRadius(radius))
-			requestLayout();
-	}
-	
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	@Override
-	public float getElevation() {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			return super.getElevation();
-		
-		return mBackground.getShadowSize();
-	}
-	
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	@Override
-	public void setElevation(float elevation) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			super.setElevation(elevation);
-		else if(mBackground.setShadow(elevation, elevation))
-			requestLayout();
-	}
+    public void setRadius(int radius) {
+        if (mBackground.setRadius(radius))
+            requestLayout();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public float getElevation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            return super.getElevation();
+        return mBackground.getShadowSize();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void setElevation(float elevation) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            super.setElevation(elevation);
+        else if (mBackground.setShadow(elevation, elevation))
+            requestLayout();
+    }
 
     /**
      * @return The line state of LineMorphingDrawable that is used as this button's icon.
      */
-	public int getLineMorphingState(){
-		if(mIcon != null && mIcon instanceof LineMorphingDrawable)
-			return ((LineMorphingDrawable)mIcon).getLineState();
-		
-		return -1;
-	}
+    public int getLineMorphingState() {
+        if (mIcon != null && mIcon instanceof LineMorphingDrawable)
+            return ((LineMorphingDrawable) mIcon).getLineState();
+        return -1;
+    }
 
     /**
      * Set the line state of LineMorphingDrawable that is used as this button's icon.
      * @param state The line state.
      * @param animation Indicate should show animation when switch line state or not.
      */
-	public void setLineMorphingState(int state, boolean animation){
-		if(mIcon != null && mIcon instanceof LineMorphingDrawable)
-            ((LineMorphingDrawable)mIcon).switchLineState(state, animation);
-	}
+    public void setLineMorphingState(int state, boolean animation) {
+        if (mIcon != null && mIcon instanceof LineMorphingDrawable)
+            ((LineMorphingDrawable) mIcon).switchLineState(state, animation);
+    }
 
     /**
      * @return The background color of this button.
      */
-	public ColorStateList getBackgroundColor(){
-		return mBackground.getColor();
-	}
+    public ColorStateList getBackgroundColor() {
+        return mBackground.getColor();
+    }
 
     /**
      * @return The drawable is used as this button's icon.
      */
-	public Drawable getIcon(){
-		return mIcon;
-	}
+    public Drawable getIcon() {
+        return mIcon;
+    }
 
     /**
      * Set the drawable that is used as this button's icon.
      * @param icon The drawable.
      * @param animation Indicate should show animation when switch drawable or not.
      */
-	public void setIcon(Drawable icon, boolean animation){
-        if(icon == null)
+    public void setIcon(Drawable icon, boolean animation) {
+        if (icon == null)
             return;
-
-        if(animation) {
+        if (animation) {
             mSwitchIconAnimator.startAnimation(icon);
             invalidate();
-        }
-        else{
-            if(mIcon != null){
+        } else {
+            if (mIcon != null) {
                 mIcon.setCallback(null);
                 unscheduleDrawable(mIcon);
             }
-
             mIcon = icon;
             float half = mIconSize / 2f;
-            mIcon.setBounds((int)(mBackground.getCenterX() - half), (int)(mBackground.getCenterY() - half), (int)(mBackground.getCenterX() + half), (int)(mBackground.getCenterY() + half));
+            mIcon.setBounds((int) (mBackground.getCenterX() - half), (int) (mBackground.getCenterY() - half), (int) (mBackground.getCenterX() + half), (int) (mBackground.getCenterY() + half));
             mIcon.setCallback(this);
             invalidate();
         }
-	}
+    }
 
-	public void setBackgroundColor(ColorStateList color){
-		mBackground.setColor(color);
-		invalidate();
-	}
-
-	@Override
-	public void setBackgroundColor(int color){
-		mBackground.setColor(color);
+    public void setBackgroundColor(ColorStateList color) {
+        mBackground.setColor(color);
         invalidate();
-	}
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        mBackground.setColor(color);
+        invalidate();
+    }
 
     /**
      * Show this button at the specific location. If this button isn't attached to any parent view yet,
@@ -317,16 +296,14 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
      *
      * @see Gravity
      */
-	public void show(Activity activity, int x, int y, int gravity){
-		if(getParent() == null){
-			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
-			updateParams(x, y, gravity, params);
-
-			activity.getWindow().addContentView(this, params);
-		}
-		else
-			updateLocation(x, y, gravity);
-	}
+    public void show(Activity activity, int x, int y, int gravity) {
+        if (getParent() == null) {
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
+            updateParams(x, y, gravity, params);
+            activity.getWindow().addContentView(this, params);
+        } else
+            updateLocation(x, y, gravity);
+    }
 
     /**
      * Show this button at the specific location. If this button isn't attached to any parent view yet,
@@ -338,18 +315,16 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
      *
      * @see Gravity
      */
-	public void show(ViewGroup parent, int x, int y, int gravity){
-		if(getParent() == null){
-			ViewGroup.LayoutParams params = parent.generateLayoutParams(null);
-			params.width = mBackground.getIntrinsicWidth();
-			params.height = mBackground.getIntrinsicHeight();
-			updateParams(x, y, gravity, params);
-
-			parent.addView(this, params);
-		}
-		else
-			updateLocation(x, y, gravity);
-	}
+    public void show(ViewGroup parent, int x, int y, int gravity) {
+        if (getParent() == null) {
+            ViewGroup.LayoutParams params = parent.generateLayoutParams(null);
+            params.width = mBackground.getIntrinsicWidth();
+            params.height = mBackground.getIntrinsicHeight();
+            updateParams(x, y, gravity, params);
+            parent.addView(this, params);
+        } else
+            updateLocation(x, y, gravity);
+    }
 
     /**
      * Update the location of this button. This method only work if it's already attached to a parent view.
@@ -359,158 +334,147 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
      *
      * @see Gravity
      */
-	public void updateLocation(int x, int y, int gravity){
-		if(getParent() != null)
-			updateParams(x, y, gravity, getLayoutParams());
+    public void updateLocation(int x, int y, int gravity) {
+        if (getParent() != null)
+            updateParams(x, y, gravity, getLayoutParams());
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "updateLocation() is called without parent");
-	}
-	
-	private void updateParams(int x, int y, int gravity, ViewGroup.LayoutParams params){		
-		int horizontalGravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
-		
-		switch (horizontalGravity) {
-			case Gravity.LEFT:
-				setLeftMargin(params, (int)(x - mBackground.getPaddingLeft()));
-				break;
-			case Gravity.CENTER_HORIZONTAL:
-				setLeftMargin(params, (int)(x - mBackground.getCenterX()));
-				break;
-			case Gravity.RIGHT:
-				setLeftMargin(params, (int)(x - mBackground.getPaddingLeft() - mBackground.getRadius() * 2));
-				break;	
-			default:
-				setLeftMargin(params, (int)(x - mBackground.getPaddingLeft()));
-				break;
-		}
-		
-		int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
-		
-		switch (verticalGravity) {
-			case Gravity.TOP:
-				setTopMargin(params, (int)(y - mBackground.getPaddingTop()));
-				break;
-			case Gravity.CENTER_VERTICAL:
-				setTopMargin(params, (int)(y - mBackground.getCenterY()));
-				break;
-			case Gravity.BOTTOM:
-				setTopMargin(params, (int)(y - mBackground.getPaddingTop() - mBackground.getRadius() * 2));
-				break;		
-			default:
-				setTopMargin(params, (int)(y - mBackground.getPaddingTop()));
-				break;
-		}
+    }
 
+    private void updateParams(int x, int y, int gravity, ViewGroup.LayoutParams params) {
+        int horizontalGravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
+        switch(horizontalGravity) {
+            case Gravity.LEFT:
+                setLeftMargin(params, (int) (x - mBackground.getPaddingLeft()));
+                break;
+            case Gravity.CENTER_HORIZONTAL:
+                setLeftMargin(params, (int) (x - mBackground.getCenterX()));
+                break;
+            case Gravity.RIGHT:
+                setLeftMargin(params, (int) (x - mBackground.getPaddingLeft() - mBackground.getRadius() * 2));
+                break;
+            default:
+                setLeftMargin(params, (int) (x - mBackground.getPaddingLeft()));
+                break;
+        }
+        int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+        switch(verticalGravity) {
+            case Gravity.TOP:
+                setTopMargin(params, (int) (y - mBackground.getPaddingTop()));
+                break;
+            case Gravity.CENTER_VERTICAL:
+                setTopMargin(params, (int) (y - mBackground.getCenterY()));
+                break;
+            case Gravity.BOTTOM:
+                setTopMargin(params, (int) (y - mBackground.getPaddingTop() - mBackground.getRadius() * 2));
+                break;
+            default:
+                setTopMargin(params, (int) (y - mBackground.getPaddingTop()));
+                break;
+        }
         setLayoutParams(params);
-	}
-		
-	private void setLeftMargin(ViewGroup.LayoutParams params, int value){
-		if(params instanceof ViewGroup.MarginLayoutParams)
-			((ViewGroup.MarginLayoutParams)params).leftMargin = value;
+    }
+
+    private void setLeftMargin(ViewGroup.LayoutParams params, int value) {
+        if (params instanceof ViewGroup.MarginLayoutParams)
+            ((ViewGroup.MarginLayoutParams) params).leftMargin = value;
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
-	}
-	
-	private void setTopMargin(ViewGroup.LayoutParams params, int value){
-		if(params instanceof ViewGroup.MarginLayoutParams)
-			((ViewGroup.MarginLayoutParams)params).topMargin = value;
+    }
+
+    private void setTopMargin(ViewGroup.LayoutParams params, int value) {
+        if (params instanceof ViewGroup.MarginLayoutParams)
+            ((ViewGroup.MarginLayoutParams) params).topMargin = value;
         else
             Log.v(FloatingActionButton.class.getSimpleName(), "cannot recognize LayoutParams: " + params);
-	}
+    }
 
     /**
      * Remove this button from parent view.
      */
-	public void dismiss(){
-		if(getParent() != null)
-			((ViewGroup)getParent()).removeView(this);		
-	}
+    public void dismiss() {
+        if (getParent() != null)
+            ((ViewGroup) getParent()).removeView(this);
+    }
 
-	@Override
-	protected boolean verifyDrawable(Drawable who) {
+    @Override
+    protected boolean verifyDrawable(Drawable who) {
         return super.verifyDrawable(who) || mBackground == who || mIcon == who || mPrevIcon == who;
     }
 
-	@Override
-	protected void drawableStateChanged() {
-		super.drawableStateChanged();
-		if(mBackground != null)
-			mBackground.setState(getDrawableState());
-		if(mIcon != null)
-			mIcon.setState(getDrawableState());
-		if(mPrevIcon != null)
-			mPrevIcon.setState(getDrawableState());
-	}
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (mBackground != null)
+            mBackground.setState(getDrawableState());
+        if (mIcon != null)
+            mIcon.setState(getDrawableState());
+        if (mPrevIcon != null)
+            mPrevIcon.setState(getDrawableState());
+    }
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
-	}
-	
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		mBackground.setBounds(0, 0, w, h);
-		
-		if(mIcon != null){
-			float half = mIconSize / 2f;
-			mIcon.setBounds((int)(mBackground.getCenterX() - half), (int)(mBackground.getCenterY() - half), (int)(mBackground.getCenterX() + half), (int)(mBackground.getCenterY() + half));
-		}
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(mBackground.getIntrinsicWidth(), mBackground.getIntrinsicHeight());
+    }
 
-        if(mPrevIcon != null){
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        mBackground.setBounds(0, 0, w, h);
+        if (mIcon != null) {
             float half = mIconSize / 2f;
-            mPrevIcon.setBounds((int)(mBackground.getCenterX() - half), (int)(mBackground.getCenterY() - half), (int)(mBackground.getCenterX() + half), (int)(mBackground.getCenterY() + half));
+            mIcon.setBounds((int) (mBackground.getCenterX() - half), (int) (mBackground.getCenterY() - half), (int) (mBackground.getCenterX() + half), (int) (mBackground.getCenterY() + half));
         }
-	}
+        if (mPrevIcon != null) {
+            float half = mIconSize / 2f;
+            mPrevIcon.setBounds((int) (mBackground.getCenterX() - half), (int) (mBackground.getCenterY() - half), (int) (mBackground.getCenterX() + half), (int) (mBackground.getCenterY() + half));
+        }
+    }
 
-	@Override
-	public void draw(@NonNull Canvas canvas) {
-		mBackground.draw(canvas);
-		super.draw(canvas);
-        if(mPrevIcon != null)
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        mBackground.draw(canvas);
+        super.draw(canvas);
+        if (mPrevIcon != null)
             mPrevIcon.draw(canvas);
-		if(mIcon != null)
-			mIcon.draw(canvas);
-	}
+        if (mIcon != null)
+            mIcon.draw(canvas);
+    }
 
-	protected RippleManager getRippleManager(){
-		if(mRippleManager == null){
-			synchronized (RippleManager.class){
-				if(mRippleManager == null)
-					mRippleManager = new RippleManager();
-			}
-		}
+    protected RippleManager getRippleManager() {
+        if (mRippleManager == null) {
+            synchronized (RippleManager.class) {
+                if (mRippleManager == null)
+                    mRippleManager = new RippleManager();
+            }
+        }
+        return mRippleManager;
+    }
 
-		return mRippleManager;
-	}
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        RippleManager rippleManager = getRippleManager();
+        if (l == rippleManager)
+            super.setOnClickListener(l);
+        else {
+            rippleManager.setOnClickListener(l);
+            setOnClickListener(rippleManager);
+        }
+    }
 
-	@Override
-	public void setOnClickListener(OnClickListener l) {
-		RippleManager rippleManager = getRippleManager();
-		if (l == rippleManager)
-			super.setOnClickListener(l);
-		else {
-			rippleManager.setOnClickListener(l);
-			setOnClickListener(rippleManager);
-		}
-	}
-
-	@Override
+    @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-		int action = event.getActionMasked();
-		
-		if(action == MotionEvent.ACTION_DOWN && ! mBackground.isPointerOver(event.getX(), event.getY()))
-			return false;
-		
-		boolean result = super.onTouchEvent(event);		
-		return  getRippleManager().onTouchEvent(this, event) || result;
-	}
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN && !mBackground.isPointerOver(event.getX(), event.getY()))
+            return false;
+        boolean result = super.onTouchEvent(event);
+        return getRippleManager().onTouchEvent(this, event) || result;
+    }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-
         SavedState ss = new SavedState(superState);
-
         ss.state = getLineMorphingState();
         return ss;
     }
@@ -518,14 +482,14 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
-
         super.onRestoreInstanceState(ss.getSuperState());
-        if(ss.state >= 0)
+        if (ss.state >= 0)
             setLineMorphingState(ss.state, false);
         requestLayout();
     }
 
     static class SavedState extends BaseSavedState {
+
         int state;
 
         /**
@@ -551,13 +515,11 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
 
         @Override
         public String toString() {
-            return "FloatingActionButton.SavedState{"
-                    + Integer.toHexString(System.identityHashCode(this))
-                    + " state=" + state + "}";
+            return "FloatingActionButton.SavedState{" + Integer.toHexString(System.identityHashCode(this)) + " state=" + state + "}";
         }
 
-        public static final Creator<SavedState> CREATOR
-                = new Creator<SavedState>() {
+        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);
             }
@@ -568,38 +530,35 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
         };
     }
 
-    class SwitchIconAnimator implements Runnable{
+    class SwitchIconAnimator implements Runnable {
 
         boolean mRunning = false;
+
         long mStartTime;
 
-        public void resetAnimation(){
+        public void resetAnimation() {
             mStartTime = SystemClock.uptimeMillis();
             mIcon.setAlpha(0);
             mPrevIcon.setAlpha(255);
         }
 
         public boolean startAnimation(Drawable icon) {
-            if(mIcon == icon)
+            if (mIcon == icon)
                 return false;
-
             mPrevIcon = mIcon;
             mIcon = icon;
             float half = mIconSize / 2f;
-            mIcon.setBounds((int)(mBackground.getCenterX() - half), (int)(mBackground.getCenterY() - half), (int)(mBackground.getCenterX() + half), (int)(mBackground.getCenterY() + half));
+            mIcon.setBounds((int) (mBackground.getCenterX() - half), (int) (mBackground.getCenterY() - half), (int) (mBackground.getCenterX() + half), (int) (mBackground.getCenterY() + half));
             mIcon.setCallback(FloatingActionButton.this);
-
-            if(getHandler() != null){
+            if (getHandler() != null) {
                 resetAnimation();
                 mRunning = true;
                 getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
-            }
-            else {
+            } else {
                 mPrevIcon.setCallback(null);
                 unscheduleDrawable(mPrevIcon);
                 mPrevIcon = null;
             }
-
             invalidate();
             return true;
         }
@@ -610,7 +569,7 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
             unscheduleDrawable(mPrevIcon);
             mPrevIcon = null;
             mIcon.setAlpha(255);
-            if(getHandler() != null)
+            if (getHandler() != null)
                 getHandler().removeCallbacks(this);
             invalidate();
         }
@@ -618,24 +577,19 @@ public class FloatingActionButton extends View implements ThemeManager.OnThemeCh
         @Override
         public void run() {
             long curTime = SystemClock.uptimeMillis();
-            float progress = Math.min(1f, (float)(curTime - mStartTime) / mAnimDuration);
+            float progress = Math.min(1f, (float) (curTime - mStartTime) / mAnimDuration);
             float value = mInterpolator.getInterpolation(progress);
-
             mIcon.setAlpha(Math.round(255 * value));
             mPrevIcon.setAlpha(Math.round(255 * (1f - value)));
-
-            if(progress == 1f)
+            if (progress == 1f)
                 stopAnimation();
-
-            if(mRunning) {
-                if(getHandler() != null)
+            if (mRunning) {
+                if (getHandler() != null)
                     getHandler().postAtTime(this, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
                 else
                     stopAnimation();
             }
-
             invalidate();
         }
-
     }
 }

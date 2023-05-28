@@ -3,67 +3,59 @@ package com.rey.material.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-
 import androidx.appcompat.widget.ListViewCompat;
-
 import com.rey.material.app.ThemeManager;
 import com.rey.material.util.ViewUtil;
 
-public class ListView extends ListViewCompat implements ThemeManager.OnThemeChangedListener{
+public class ListView extends ListViewCompat implements ThemeManager.OnThemeChangedListener {
 
-	private RecyclerListener mRecyclerListener;
+    private RecyclerListener mRecyclerListener;
 
     protected int mStyleId;
+
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
-	public ListView(Context context) {
-		super(context);
-
-		init(context, null, 0, 0);
+    public ListView(Context context) {
+        super(context);
+        init(context, null, 0, 0);
     }
 
     public ListView(Context context, AttributeSet attrs) {
-    	super(context, attrs);
-
-    	init(context, attrs, 0, 0);
+        super(context, attrs);
+        init(context, attrs, 0, 0);
     }
 
     public ListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         init(context, attrs, defStyleAttr, 0);
     }
 
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super.setRecyclerListener(new RecyclerListener() {
 
-    	super.setRecyclerListener(new RecyclerListener() {
-
-			@Override
-			public void onMovedToScrapHeap(View view) {
-				RippleManager.cancelRipple(view);
-
-				if(mRecyclerListener != null)
-					mRecyclerListener.onMovedToScrapHeap(view);
-			}
-
-		});
-
-        if(!isInEditMode())
+            @Override
+            public void onMovedToScrapHeap(View view) {
+                RippleManager.cancelRipple(view);
+                if (mRecyclerListener != null)
+                    mRecyclerListener.onMovedToScrapHeap(view);
+            }
+        });
+        if (!isInEditMode())
             mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void applyStyle(int resId){
+    public void applyStyle(int resId) {
         ViewUtil.applyStyle(this, resId);
         applyStyle(getContext(), null, 0, resId);
     }
 
-    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     }
 
     @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
+        if (mCurrentStyle != style) {
             mCurrentStyle = style;
             applyStyle(mCurrentStyle);
         }
@@ -72,7 +64,7 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(mStyleId != 0) {
+        if (mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
             onThemeChanged(null);
         }
@@ -81,13 +73,12 @@ public class ListView extends ListViewCompat implements ThemeManager.OnThemeChan
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if(mStyleId != 0)
+        if (mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
     @Override
     public void setRecyclerListener(RecyclerListener listener) {
-    	mRecyclerListener = listener;
+        mRecyclerListener = listener;
     }
-
 }

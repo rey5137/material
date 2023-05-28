@@ -4,9 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.animation.Interpolator;
-
 import androidx.appcompat.widget.AppCompatCheckedTextView;
-
 import com.rey.material.drawable.CircleDrawable;
 import com.rey.material.util.ViewUtil;
 
@@ -17,7 +15,8 @@ public class CircleCheckedTextView extends AppCompatCheckedTextView {
 
     private CircleDrawable mBackground;
 
-    public interface OnCheckedChangeListener{
+    public interface OnCheckedChangeListener {
+
         void onCheckedChanged(CircleCheckedTextView view, boolean checked);
     }
 
@@ -25,26 +24,22 @@ public class CircleCheckedTextView extends AppCompatCheckedTextView {
 
     public CircleCheckedTextView(Context context) {
         super(context);
-
         init(context, null, 0, 0);
     }
 
     public CircleCheckedTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         init(context, attrs, 0, 0);
     }
 
     public CircleCheckedTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         init(context, attrs, defStyleAttr, 0);
     }
 
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setGravity(Gravity.CENTER);
         setPadding(0, 0, 0, 0);
-
         mBackground = new CircleDrawable();
         mBackground.setInEditMode(isInEditMode());
         mBackground.setAnimEnable(false);
@@ -52,7 +47,7 @@ public class CircleCheckedTextView extends AppCompatCheckedTextView {
         mBackground.setAnimEnable(true);
     }
 
-    public void setOnCheckedChangeListener(OnCheckedChangeListener listener){
+    public void setOnCheckedChangeListener(OnCheckedChangeListener listener) {
         mCheckedChangeListener = listener;
     }
 
@@ -86,19 +81,16 @@ public class CircleCheckedTextView extends AppCompatCheckedTextView {
     @Override
     public void setChecked(boolean checked) {
         boolean oldCheck = isChecked();
-
-        if(oldCheck != checked) {
+        if (oldCheck != checked) {
             super.setChecked(checked);
-
-            if(mCheckedChangeListener != null)
+            if (mCheckedChangeListener != null)
                 mCheckedChangeListener.onCheckedChanged(this, checked);
         }
     }
 
-    public void setCheckedImmediately(boolean checked){
+    public void setCheckedImmediately(boolean checked) {
         mBackground.setAnimEnable(false);
         setChecked(checked);
         mBackground.setAnimEnable(true);
     }
-
 }

@@ -8,34 +8,34 @@ import android.graphics.drawable.Drawable;
 /**
  * A drawable that draw nothing.
  * @author Rey
- *
  */
 public class BlankDrawable extends Drawable {
 
-	private static BlankDrawable mInstance;
-	
-	public static BlankDrawable getInstance(){
-		if(mInstance == null)
-			synchronized (BlankDrawable.class) {
-				if(mInstance == null)
-					mInstance = new BlankDrawable();
-			}
-		
-		return mInstance;
-	}
-	
-	@Override
-	public void draw(Canvas canvas) {}
+    private static BlankDrawable mInstance;
 
-	@Override
-	public void setAlpha(int alpha) {}
+    public static BlankDrawable getInstance() {
+        if (mInstance == null)
+            synchronized (BlankDrawable.class) {
+                if (mInstance == null)
+                    mInstance = new BlankDrawable();
+            }
+        return mInstance;
+    }
 
-	@Override
-	public void setColorFilter(ColorFilter cf) {}
+    @Override
+    public void draw(Canvas canvas) {
+    }
 
-	@Override
-	public int getOpacity() {
-		return PixelFormat.TRANSPARENT;
-	}
+    @Override
+    public void setAlpha(int alpha) {
+    }
 
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+    }
+
+    @Override
+    public int getOpacity() {
+        return PixelFormat.TRANSPARENT;
+    }
 }
