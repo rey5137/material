@@ -626,11 +626,9 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
                 mRunState = RUN_STATE_STARTED;
                 return;
             }
-        } else if (mRunState == RUN_STATE_STOPPING) {
-            if (curTime - mLastRunStateTime > mOutAnimationDuration) {
-                stop(false);
-                return;
-            }
+        } else if (mRunState == RUN_STATE_STOPPING && curTime - mLastRunStateTime > mOutAnimationDuration) {
+            stop(false);
+            return;
         }
         if (isRunning())
             scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
@@ -722,11 +720,9 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
         if (mRunState == RUN_STATE_STARTING) {
             if (curTime - mLastRunStateTime > mInAnimationDuration)
                 mRunState = RUN_STATE_RUNNING;
-        } else if (mRunState == RUN_STATE_STOPPING) {
-            if (curTime - mLastRunStateTime > mOutAnimationDuration) {
-                stop(false);
-                return;
-            }
+        } else if (mRunState == RUN_STATE_STOPPING && curTime - mLastRunStateTime > mOutAnimationDuration) {
+            stop(false);
+            return;
         }
         if (isRunning())
             scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
@@ -784,11 +780,9 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
         if (mRunState == RUN_STATE_STARTING) {
             if (curTime - mLastRunStateTime > mInAnimationDuration)
                 mRunState = RUN_STATE_RUNNING;
-        } else if (mRunState == RUN_STATE_STOPPING) {
-            if (curTime - mLastRunStateTime > mOutAnimationDuration) {
-                stop(false);
-                return;
-            }
+        } else if (mRunState == RUN_STATE_STOPPING && curTime - mLastRunStateTime > mOutAnimationDuration) {
+            stop(false);
+            return;
         }
         if (isRunning())
             scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
@@ -816,11 +810,9 @@ public class LinearProgressDrawable extends Drawable implements Animatable {
         if (mRunState == RUN_STATE_STARTING) {
             if (curTime - mLastRunStateTime > mInAnimationDuration)
                 mRunState = RUN_STATE_RUNNING;
-        } else if (mRunState == RUN_STATE_STOPPING) {
-            if (curTime - mLastRunStateTime > mOutAnimationDuration) {
-                stop(false);
-                return;
-            }
+        } else if (mRunState == RUN_STATE_STOPPING && curTime - mLastRunStateTime > mOutAnimationDuration) {
+            stop(false);
+            return;
         }
         if (isRunning()) {
             if (requestUpdate)

@@ -261,11 +261,9 @@ public class ViewUtil {
                             break;
                     }
                 }
-            } else if (attr == R.styleable.View_android_src) {
-                if (v instanceof ImageView) {
-                    int resId = a.getResourceId(attr, 0);
-                    ((ImageView) v).setImageResource(resId);
-                }
+            } else if (attr == R.styleable.View_android_src && v instanceof ImageView) {
+                int resId = a.getResourceId(attr, 0);
+                ((ImageView) v).setImageResource(resId);
             }
         }
         if (padding >= 0)
@@ -345,10 +343,8 @@ public class ViewUtil {
                 } else if (attr == R.styleable.TextAppearance_android_letterSpacing) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                         v.setLetterSpacing(appearance.getFloat(attr, 0));
-                } else if (attr == R.styleable.TextAppearance_android_fontFeatureSettings) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        v.setFontFeatureSettings(appearance.getString(attr));
-                }
+                } else if (attr == R.styleable.TextAppearance_android_fontFeatureSettings && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    v.setFontFeatureSettings(appearance.getString(attr));
             }
             appearance.recycle();
         }
@@ -443,10 +439,8 @@ public class ViewUtil {
                 } else if (attr == R.styleable.TextAppearance_android_letterSpacing) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                         v.setLetterSpacing(appearance.getFloat(attr, 0));
-                } else if (attr == R.styleable.TextAppearance_android_fontFeatureSettings) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        v.setFontFeatureSettings(appearance.getString(attr));
-                }
+                } else if (attr == R.styleable.TextAppearance_android_fontFeatureSettings && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    v.setFontFeatureSettings(appearance.getString(attr));
             }
             appearance.recycle();
         }
@@ -543,10 +537,8 @@ public class ViewUtil {
             } else if (attr == R.styleable.TextView_android_letterSpacing) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     v.setLetterSpacing(a.getFloat(attr, 0));
-            } else if (attr == R.styleable.TextView_android_fontFeatureSettings) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    v.setFontFeatureSettings(a.getString(attr));
-            }
+            } else if (attr == R.styleable.TextView_android_fontFeatureSettings && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                v.setFontFeatureSettings(a.getString(attr));
         }
         a.recycle();
         if (shadowColor != 0)

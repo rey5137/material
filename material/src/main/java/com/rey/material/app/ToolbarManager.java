@@ -256,10 +256,8 @@ public class ToolbarManager {
         ActionMenuView menuView = getMenuView();
         for (int i = 0, count = menuView == null ? 0 : menuView.getChildCount(); i < count; i++) {
             View child = menuView.getChildAt(i);
-            if (mRippleStyle != 0) {
-                if (child.getBackground() == null || !(child.getBackground() instanceof ToolbarRippleDrawable))
-                    ViewUtil.setBackground(child, getBackground());
-            }
+            if (mRippleStyle != 0 && child.getBackground() == null || !(child.getBackground() instanceof ToolbarRippleDrawable))
+                ViewUtil.setBackground(child, getBackground());
         }
         if (mGroupChanged) {
             animateIn();
@@ -504,10 +502,8 @@ public class ToolbarManager {
                     float factor = interpolator.getInterpolation(valueAnimator.getAnimatedFraction());
                     float left = prevLeft + (nextLeft - prevLeft) * factor;
                     view.offsetLeftAndRight((int) (left - view.getLeft()));
-                    if (valueAnimator.getAnimatedFraction() == 1f) {
-                        if (doOnEndRunnable != null)
-                            doOnEndRunnable.run();
-                    }
+                    if (valueAnimator.getAnimatedFraction() == 1f && doOnEndRunnable != null)
+                        doOnEndRunnable.run();
                 }
             });
             animator.addListener(new AnimatorListener() {

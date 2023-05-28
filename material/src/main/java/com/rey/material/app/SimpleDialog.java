@@ -417,10 +417,8 @@ public class SimpleDialog extends Dialog {
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
-            if (heightMode == View.MeasureSpec.UNSPECIFIED) {
-                if (mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
-                    heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(mItemHeight * getAdapter().getCount() + getPaddingTop() + getPaddingBottom(), View.MeasureSpec.EXACTLY);
-            }
+            if (heightMode == View.MeasureSpec.UNSPECIFIED && mItemHeight != ViewGroup.LayoutParams.WRAP_CONTENT)
+                heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(mItemHeight * getAdapter().getCount() + getPaddingTop() + getPaddingBottom(), View.MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
 

@@ -327,17 +327,15 @@ public class TabIndicatorView extends RecyclerView implements ThemeManager.OnThe
 
     protected void onTabScrollStateChanged(int state) {
         if (mCenterCurrentTab) {
-            if (state == SCROLL_STATE_IDLE) {
-                if (!mScrollingToCenter) {
-                    View v = mLayoutManager.findViewByPosition(mSelectedPosition);
-                    if (v != null) {
-                        int viewCenter = (v.getLeft() + v.getRight()) / 2;
-                        int parentCenter = (getLeft() + getPaddingLeft() + getRight() - getPaddingRight()) / 2;
-                        int scrollNeeded = viewCenter - parentCenter;
-                        if (scrollNeeded != 0) {
-                            smoothScrollBy(scrollNeeded, 0);
-                            mScrollingToCenter = true;
-                        }
+            if (state == SCROLL_STATE_IDLE && !mScrollingToCenter) {
+                View v = mLayoutManager.findViewByPosition(mSelectedPosition);
+                if (v != null) {
+                    int viewCenter = (v.getLeft() + v.getRight()) / 2;
+                    int parentCenter = (getLeft() + getPaddingLeft() + getRight() - getPaddingRight()) / 2;
+                    int scrollNeeded = viewCenter - parentCenter;
+                    if (scrollNeeded != 0) {
+                        smoothScrollBy(scrollNeeded, 0);
+                        mScrollingToCenter = true;
                     }
                 }
             }

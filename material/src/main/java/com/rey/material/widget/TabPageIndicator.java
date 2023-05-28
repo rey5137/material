@@ -152,17 +152,15 @@ public class TabPageIndicator extends HorizontalScrollView implements ViewPager.
             mTabPadding = ThemeUtil.dpToPx(context, 12);
         if (mIndicatorHeight < 0)
             mIndicatorHeight = ThemeUtil.dpToPx(context, 2);
-        if (mode >= 0) {
-            if (mMode != mode || getChildCount() == 0) {
-                mMode = mode;
-                removeAllViews();
-                if (mMode == MODE_SCROLL) {
-                    addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    setFillViewport(false);
-                } else if (mMode == MODE_FIXED) {
-                    addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    setFillViewport(true);
-                }
+        if (mode >= 0 && mMode != mode || getChildCount() == 0) {
+            mMode = mode;
+            removeAllViews();
+            if (mMode == MODE_SCROLL) {
+                addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                setFillViewport(false);
+            } else if (mMode == MODE_FIXED) {
+                addView(mTabContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                setFillViewport(true);
             }
         }
         if (textAppearance != 0 && mTextAppearance != textAppearance) {

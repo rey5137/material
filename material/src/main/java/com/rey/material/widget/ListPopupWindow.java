@@ -737,10 +737,8 @@ public class ListPopupWindow {
         if (isShowing() && list != null) {
             list.mListSelectionHidden = false;
             list.setSelection(position);
-            if (Build.VERSION.SDK_INT >= 11) {
-                if (list.getChoiceMode() != ListView.CHOICE_MODE_NONE) {
-                    list.setItemChecked(position, true);
-                }
+            if (Build.VERSION.SDK_INT >= 11 && list.getChoiceMode() != ListView.CHOICE_MODE_NONE) {
+                list.setItemChecked(position, true);
             }
         }
     }
@@ -877,69 +875,62 @@ public class ListPopupWindow {
      */
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // when the drop down is shown, we drive it directly
-        if (isShowing()) {
-            // the key events are forwarded to the list in the drop down view
-            // note that ListView handles space but we don't want that to happen
-            // also if selection is not currently in the drop down, then don't
-            // let center or enter presses go there since that would cause it
-            // to select one of its items
-            if (keyCode != KeyEvent.KEYCODE_SPACE && (mDropDownList.getSelectedItemPosition() >= 0 || !isConfirmKey(keyCode))) {
-                int curIndex = mDropDownList.getSelectedItemPosition();
-                boolean consumed;
-                final boolean below = !mPopup.isAboveAnchor();
-                final ListAdapter adapter = mAdapter;
-                boolean allEnabled;
-                int firstItem = Integer.MAX_VALUE;
-                int lastItem = Integer.MIN_VALUE;
-                if (adapter != null) {
-                    allEnabled = adapter.areAllItemsEnabled();
-                    firstItem = allEnabled ? 0 : mDropDownList.lookForSelectablePosition(0, true);
-                    lastItem = allEnabled ? adapter.getCount() - 1 : mDropDownList.lookForSelectablePosition(adapter.getCount() - 1, false);
+        if (isShowing() && keyCode != KeyEvent.KEYCODE_SPACE && (mDropDownList.getSelectedItemPosition() >= 0 || !isConfirmKey(keyCode))) {
+            int curIndex = mDropDownList.getSelectedItemPosition();
+            boolean consumed;
+            final boolean below = !mPopup.isAboveAnchor();
+            final ListAdapter adapter = mAdapter;
+            boolean allEnabled;
+            int firstItem = Integer.MAX_VALUE;
+            int lastItem = Integer.MIN_VALUE;
+            if (adapter != null) {
+                allEnabled = adapter.areAllItemsEnabled();
+                firstItem = allEnabled ? 0 : mDropDownList.lookForSelectablePosition(0, true);
+                lastItem = allEnabled ? adapter.getCount() - 1 : mDropDownList.lookForSelectablePosition(adapter.getCount() - 1, false);
+            }
+            if ((below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex <= firstItem) || (!below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN && curIndex >= lastItem)) {
+                // When the selection is at the top, we block the key
+                // event to prevent focus from moving.
+                clearListSelection();
+                mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+                show();
+                return true;
+            } else {
+                // WARNING: Please read the comment where mListSelectionHidden
+                //          is declared
+                mDropDownList.mListSelectionHidden = false;
+            }
+            consumed = mDropDownList.onKeyDown(keyCode, event);
+            if (DEBUG)
+                Log.v(TAG, "Key down: code=" + keyCode + " list consumed=" + consumed);
+            if (consumed) {
+                // If it handled the key event, then the user is
+                // navigating in the list, so we should put it in front.
+                mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+                // Here's a little trick we need to do to make sure that
+                // the list view is actually showing its focus indicator,
+                // by ensuring it has focus and getting its window out
+                // of touch mode.
+                mDropDownList.requestFocusFromTouch();
+                show();
+                switch(keyCode) {
+                    // avoid passing the focus from the text view to the
+                    // next component
+                    case KeyEvent.KEYCODE_ENTER:
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        return true;
                 }
-                if ((below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex <= firstItem) || (!below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN && curIndex >= lastItem)) {
-                    // When the selection is at the top, we block the key
-                    // event to prevent focus from moving.
-                    clearListSelection();
-                    mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
-                    show();
-                    return true;
-                } else {
-                    // WARNING: Please read the comment where mListSelectionHidden
-                    //          is declared
-                    mDropDownList.mListSelectionHidden = false;
-                }
-                consumed = mDropDownList.onKeyDown(keyCode, event);
-                if (DEBUG)
-                    Log.v(TAG, "Key down: code=" + keyCode + " list consumed=" + consumed);
-                if (consumed) {
-                    // If it handled the key event, then the user is
-                    // navigating in the list, so we should put it in front.
-                    mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-                    // Here's a little trick we need to do to make sure that
-                    // the list view is actually showing its focus indicator,
-                    // by ensuring it has focus and getting its window out
-                    // of touch mode.
-                    mDropDownList.requestFocusFromTouch();
-                    show();
-                    switch(keyCode) {
-                        // avoid passing the focus from the text view to the
-                        // next component
-                        case KeyEvent.KEYCODE_ENTER:
-                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                        case KeyEvent.KEYCODE_DPAD_DOWN:
-                        case KeyEvent.KEYCODE_DPAD_UP:
-                            return true;
-                    }
-                } else {
-                    if (below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                        // when the selection is at the bottom, we block the
-                        // event to avoid going to the next focusable widget
-                        if (curIndex == lastItem) {
-                            return true;
-                        }
-                    } else if (!below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex == firstItem) {
+            } else {
+                if (below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    // when the selection is at the bottom, we block the
+                    // event to avoid going to the next focusable widget
+                    if (curIndex == lastItem) {
                         return true;
                     }
+                } else if (!below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex == firstItem) {
+                    return true;
                 }
             }
         }

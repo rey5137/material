@@ -94,11 +94,9 @@ public class CompoundButton extends android.widget.CompoundButton implements The
                     startPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
                     startPaddingDefined = (startPadding != Integer.MIN_VALUE);
                 }
-            } else if (attr == 6) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    endPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
-                    endPaddingDefined = (endPadding != Integer.MIN_VALUE);
-                }
+            } else if (attr == 6 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                endPadding = a.getDimensionPixelSize(attr, Integer.MIN_VALUE);
+                endPaddingDefined = (endPadding != Integer.MIN_VALUE);
             }
         }
         a.recycle();
