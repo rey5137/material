@@ -3,9 +3,7 @@ package com.rey.material.demo;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-
 import androidx.viewpager.widget.ViewPager;
-
 import com.rey.material.widget.Slider;
 import com.rey.material.widget.Switch;
 

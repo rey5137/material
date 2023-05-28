@@ -20,21 +20,30 @@ import android.text.TextUtils;
 /**
  * Created by Rey on 1/21/2015.
  */
-public class ContactChipDrawable extends Drawable{
+public class ContactChipDrawable extends Drawable {
 
     private Paint mPaint;
+
     private int mPaddingLeft;
+
     private int mPaddingRight;
+
     private int mBackgroundColor;
 
     private CharSequence mContactName;
+
     private BoringLayout mBoringLayout;
+
     private BoringLayout.Metrics mMetrics;
+
     private TextPaint mTextPaint;
+
     private RectF mRect;
 
     private BitmapShader mBitmapShader;
+
     private Bitmap mBitmap;
+
     private Matrix mMatrix;
 
     public ContactChipDrawable(int paddingLeft, int paddingRight, Typeface typeface, int textColor, int textSize, int backgroundColor) {
@@ -43,7 +52,6 @@ public class ContactChipDrawable extends Drawable{
         mPaint.setColor(textColor);
         mPaint.setTypeface(typeface);
         mPaint.setTextSize(textSize);
-
         mTextPaint = new TextPaint(mPaint);
         mMetrics = new BoringLayout.Metrics();
         Paint.FontMetricsInt temp = mTextPaint.getFontMetricsInt();
@@ -52,26 +60,23 @@ public class ContactChipDrawable extends Drawable{
         mMetrics.descent = temp.descent;
         mMetrics.top = temp.top;
         mMetrics.leading = temp.leading;
-
         mRect = new RectF();
-
         mMatrix = new Matrix();
-
         mPaddingLeft = paddingLeft;
         mPaddingRight = paddingRight;
         mBackgroundColor = backgroundColor;
     }
 
-    public void setContactName(CharSequence name){
+    public void setContactName(CharSequence name) {
         mContactName = name;
         updateLayout();
         invalidateSelf();
     }
 
-    public void setImage(Bitmap bm){
-        if(mBitmap != bm){
+    public void setImage(Bitmap bm) {
+        if (mBitmap != bm) {
             mBitmap = bm;
-            if(mBitmap != null) {
+            if (mBitmap != null) {
                 mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
                 updateMatrix();
             }
@@ -79,36 +84,30 @@ public class ContactChipDrawable extends Drawable{
         }
     }
 
-    private void updateLayout(){
-        if(mContactName == null)
+    private void updateLayout() {
+        if (mContactName == null)
             return;
-
         Rect bounds = getBounds();
-        if(bounds.width() == 0 || bounds.height() == 0)
+        if (bounds.width() == 0 || bounds.height() == 0)
             return;
-
         int outerWidth = Math.max(0, bounds.width() - bounds.height() - mPaddingLeft - mPaddingRight);
         mMetrics.width = Math.round(mTextPaint.measureText(mContactName, 0, mContactName.length()) + 0.5f);
-
-        if(mBoringLayout == null)
+        if (mBoringLayout == null)
             mBoringLayout = BoringLayout.make(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);
         else
             mBoringLayout = mBoringLayout.replaceOrMake(mContactName, mTextPaint, outerWidth, Layout.Alignment.ALIGN_NORMAL, 1f, 1f, mMetrics, true, TextUtils.TruncateAt.END, outerWidth);
     }
 
-    private void updateMatrix(){
-        if(mBitmap == null)
+    private void updateMatrix() {
+        if (mBitmap == null)
             return;
-
         Rect bounds = getBounds();
-        if(bounds.width() == 0 || bounds.height() == 0)
+        if (bounds.width() == 0 || bounds.height() == 0)
             return;
-
         mMatrix.reset();
-        float scale = bounds.height() / (float)Math.min(mBitmap.getWidth(), mBitmap.getHeight());
+        float scale = bounds.height() / (float) Math.min(mBitmap.getWidth(), mBitmap.getHeight());
         mMatrix.setScale(scale, scale, 0, 0);
-        mMatrix.postTranslate((bounds.height()  - mBitmap.getWidth() * scale) / 2, (bounds.height() - mBitmap.getHeight() * scale) / 2);
-
+        mMatrix.postTranslate((bounds.height() - mBitmap.getWidth() * scale) / 2, (bounds.height() - mBitmap.getHeight() * scale) / 2);
         mBitmapShader.setLocalMatrix(mMatrix);
     }
 
@@ -121,7 +120,6 @@ public class ContactChipDrawable extends Drawable{
     @Override
     public void draw(Canvas canvas) {
         int saveCount = canvas.save();
-
         Rect bounds = getBounds();
         float halfHeight = bounds.height() / 2f;
         mPaint.setShader(null);
@@ -132,17 +130,14 @@ public class ContactChipDrawable extends Drawable{
         canvas.drawArc(mRect, 270, 180, true, mPaint);
         mRect.set(halfHeight, 0, bounds.width() - halfHeight, bounds.height());
         canvas.drawRect(mRect, mPaint);
-
-        if(mBitmap != null){
+        if (mBitmap != null) {
             mPaint.setShader(mBitmapShader);
             canvas.drawCircle(halfHeight, halfHeight, halfHeight, mPaint);
         }
-
-        if(mContactName != null && mBoringLayout != null) {
+        if (mContactName != null && mBoringLayout != null) {
             canvas.translate(bounds.height() + mPaddingLeft, (bounds.height() - mBoringLayout.getHeight()) / 2f);
             mBoringLayout.draw(canvas);
         }
-
         canvas.restoreToCount(saveCount);
     }
 

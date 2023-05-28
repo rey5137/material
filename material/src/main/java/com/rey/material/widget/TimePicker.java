@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-
 import com.rey.material.R;
 import com.rey.material.app.ThemeManager;
 import com.rey.material.util.ColorUtil;
@@ -29,45 +28,66 @@ import com.rey.material.util.ViewUtil;
 /**
  * Created by Rey on 12/19/2014.
  */
-public class TimePicker extends View implements ThemeManager.OnThemeChangedListener{
+public class TimePicker extends View implements ThemeManager.OnThemeChangedListener {
 
     protected int mStyleId;
+
     protected int mCurrentStyle = ThemeManager.THEME_UNDEFINED;
 
     private int mBackgroundColor;
+
     private int mSelectionColor;
+
     private int mSelectionRadius = -1;
+
     private int mTickSize = -1;
+
     private Typeface mTypeface = Typeface.DEFAULT;
+
     private int mTextSize = -1;
+
     private int mTextColor = 0xFF000000;
+
     private int mTextHighlightColor = 0xFFFFFFFF;
+
     private boolean m24Hour = true;
 
     private int mAnimDuration = -1;
+
     private Interpolator mInInterpolator;
+
     private Interpolator mOutInterpolator;
+
     private long mStartTime;
+
     private float mAnimProgress;
+
     private boolean mRunning;
 
     private Paint mPaint;
 
     private PointF mCenterPoint;
+
     private float mOuterRadius;
+
     private float mInnerRadius;
+
     private float mSecondInnerRadius;
 
     private float[] mLocations = new float[72];
+
     private Rect mRect;
+
     private String[] mTicks;
 
     private int mMode = MODE_HOUR;
 
     public static final int MODE_HOUR = 0;
+
     public static final int MODE_MINUTE = 1;
 
     private int mHour = 0;
+
     private int mMinute = 0;
 
     private boolean mEdited = false;
@@ -75,7 +95,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     /**
      * Interface definition for a callback to be invoked when the selected time is changed.
      */
-    public interface OnTimeChangedListener{
+    public interface OnTimeChangedListener {
 
         /**
          * Called when the select mode is changed
@@ -102,35 +122,28 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
 
     public TimePicker(Context context) {
         super(context);
-
         init(context, null, 0, 0);
     }
 
     public TimePicker(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         init(context, attrs, 0, 0);
     }
 
     public TimePicker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         init(context, attrs, defStyleAttr, 0);
     }
 
-    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRect = new Rect();
-
         mBackgroundColor = ColorUtil.getColor(ThemeUtil.colorPrimary(context, 0xFF000000), 0.25f);
         mSelectionColor = ThemeUtil.colorPrimary(context, 0xFF000000);
-
         initTickLabels();
-
         setWillNotDraw(false);
         applyStyle(context, attrs, defStyleAttr, defStyleRes);
-
-        if(!isInEditMode())
+        if (!isInEditMode())
             mStyleId = ThemeManager.getStyleId(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -140,99 +153,84 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "0",
      * "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "0"
      */
-    private void initTickLabels(){
+    private void initTickLabels() {
         String format = "%2d";
         mTicks = new String[36];
-        for(int i = 0; i < 23; i++)
-            mTicks[i] = String.format(format, i + 1);
+        for (int i = 0; i < 23; i++) mTicks[i] = String.format(format, i + 1);
         mTicks[23] = String.format(format, 0);
         mTicks[35] = mTicks[23];
-        for(int i = 24; i < 35; i++)
-            mTicks[i] = String.format(format, (i - 23) * 5);
+        for (int i = 24; i < 35; i++) mTicks[i] = String.format(format, (i - 23) * 5);
     }
 
-    public void applyStyle(int styleId){
+    public void applyStyle(int styleId) {
         ViewUtil.applyStyle(this, styleId);
         applyStyle(getContext(), null, 0, styleId);
     }
 
-    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes){
+    protected void applyStyle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TimePicker, defStyleAttr, defStyleRes);
-
         boolean hourDefined = false;
         String familyName = null;
         int style = -1;
-
-        for(int i = 0, count = a.getIndexCount(); i < count; i++){
+        for (int i = 0, count = a.getIndexCount(); i < count; i++) {
             int attr = a.getIndex(i);
-
-            if(attr == R.styleable.TimePicker_tp_backgroundColor)
+            if (attr == R.styleable.TimePicker_tp_backgroundColor)
                 mBackgroundColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_selectionColor)
+            else if (attr == R.styleable.TimePicker_tp_selectionColor)
                 mSelectionColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_selectionRadius)
+            else if (attr == R.styleable.TimePicker_tp_selectionRadius)
                 mSelectionRadius = a.getDimensionPixelOffset(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_tickSize)
+            else if (attr == R.styleable.TimePicker_tp_tickSize)
                 mTickSize = a.getDimensionPixelOffset(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_textSize)
+            else if (attr == R.styleable.TimePicker_tp_textSize)
                 mTextSize = a.getDimensionPixelOffset(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_textColor)
+            else if (attr == R.styleable.TimePicker_tp_textColor)
                 mTextColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_textHighlightColor)
+            else if (attr == R.styleable.TimePicker_tp_textHighlightColor)
                 mTextHighlightColor = a.getColor(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_animDuration)
+            else if (attr == R.styleable.TimePicker_tp_animDuration)
                 mAnimDuration = a.getInteger(attr, 0);
-            else if(attr == R.styleable.TimePicker_tp_inInterpolator)
+            else if (attr == R.styleable.TimePicker_tp_inInterpolator)
                 mInInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
-            else if(attr == R.styleable.TimePicker_tp_outInterpolator)
+            else if (attr == R.styleable.TimePicker_tp_outInterpolator)
                 mOutInterpolator = AnimationUtils.loadInterpolator(context, a.getResourceId(attr, 0));
-            else if(attr == R.styleable.TimePicker_tp_mode)
+            else if (attr == R.styleable.TimePicker_tp_mode)
                 setMode(a.getInteger(attr, 0), false);
-            else if(attr == R.styleable.TimePicker_tp_24Hour) {
+            else if (attr == R.styleable.TimePicker_tp_24Hour) {
                 set24Hour(a.getBoolean(attr, false));
                 hourDefined = true;
-            }
-            else if(attr == R.styleable.TimePicker_tp_hour)
+            } else if (attr == R.styleable.TimePicker_tp_hour)
                 setHour(a.getInteger(attr, 0));
-            else if(attr == R.styleable.TimePicker_tp_minute)
+            else if (attr == R.styleable.TimePicker_tp_minute)
                 setMinute(a.getInteger(attr, 0));
-            else if(attr == R.styleable.TimePicker_tp_fontFamily)
+            else if (attr == R.styleable.TimePicker_tp_fontFamily)
                 familyName = a.getString(attr);
-            else if(attr == R.styleable.TimePicker_tp_textStyle)
+            else if (attr == R.styleable.TimePicker_tp_textStyle)
                 style = a.getInteger(attr, 0);
         }
-
         a.recycle();
-
-        if(mSelectionRadius < 0)
+        if (mSelectionRadius < 0)
             mSecondInnerRadius = ThemeUtil.dpToPx(context, 8);
-
-        if(mTickSize < 0)
+        if (mTickSize < 0)
             mTickSize = ThemeUtil.dpToPx(context, 1);
-
-        if(mTextSize < 0)
+        if (mTextSize < 0)
             mTextSize = context.getResources().getDimensionPixelOffset(R.dimen.abc_text_size_caption_material);
-
-        if(mAnimDuration < 0)
+        if (mAnimDuration < 0)
             mAnimDuration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
-        if(mInInterpolator == null)
+        if (mInInterpolator == null)
             mInInterpolator = new DecelerateInterpolator();
-
-        if(mOutInterpolator == null)
+        if (mOutInterpolator == null)
             mOutInterpolator = new DecelerateInterpolator();
-
-        if(!hourDefined)
+        if (!hourDefined)
             set24Hour(DateFormat.is24HourFormat(context));
-
-        if(familyName != null || style >= 0)
+        if (familyName != null || style >= 0)
             mTypeface = TypefaceUtil.load(context, familyName, style);
     }
 
     @Override
     public void onThemeChanged(ThemeManager.OnThemeChangedEvent event) {
         int style = ThemeManager.getInstance().getCurrentStyle(mStyleId);
-        if(mCurrentStyle != style){
+        if (mCurrentStyle != style) {
             mCurrentStyle = style;
             applyStyle(mCurrentStyle);
         }
@@ -241,7 +239,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(mStyleId != 0) {
+        if (mStyleId != 0) {
             ThemeManager.getInstance().registerOnThemeChangedListener(this);
             onThemeChanged(null);
         }
@@ -250,71 +248,71 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if(mStyleId != 0)
+        if (mStyleId != 0)
             ThemeManager.getInstance().unregisterOnThemeChangedListener(this);
     }
 
-    public int getBackgroundColor(){
+    public int getBackgroundColor() {
         return mBackgroundColor;
     }
 
-    public int getSelectionColor(){
+    public int getSelectionColor() {
         return mSelectionColor;
     }
 
-    public Typeface getTypeface(){
+    public Typeface getTypeface() {
         return mTypeface;
     }
 
-    public int getTextSize(){
+    public int getTextSize() {
         return mTextSize;
     }
 
-    public int getTextColor(){
+    public int getTextColor() {
         return mTextColor;
     }
 
-    public int getTextHighlightColor(){
+    public int getTextHighlightColor() {
         return mTextHighlightColor;
     }
 
-    public int getAnimDuration(){
+    public int getAnimDuration() {
         return mAnimDuration;
     }
 
-    public Interpolator getInInterpolator(){
+    public Interpolator getInInterpolator() {
         return mInInterpolator;
     }
 
-    public Interpolator getOutInterpolator(){
+    public Interpolator getOutInterpolator() {
         return mOutInterpolator;
     }
 
     /**
      * @return The current select mode. Can be {@link #MODE_HOUR} or {@link #MODE_MINUTE}.
      */
-    public int getMode(){
+    public int getMode() {
         return mMode;
     }
 
     /**
      * @return The selected hour value.
      */
-    public int getHour(){
+    public int getHour() {
         return mHour;
     }
 
     /**
      * @return The selected minute value.
      */
-    public int getMinute(){
+    public int getMinute() {
         return mMinute;
     }
 
     /**
      * @return this TimePicker use 24-hour format or not.
      */
-    public boolean is24Hour(){
+    public boolean is24Hour() {
         return m24Hour;
     }
 
@@ -323,14 +321,12 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * @param mode The select mode. Can be {@link #MODE_HOUR} or {@link #MODE_MINUTE}.
      * @param animation Indicate that should show animation when switch select mode or not.
      */
-    public void setMode(int mode, boolean animation){
-        if(mMode != mode){
+    public void setMode(int mode, boolean animation) {
+        if (mMode != mode) {
             mMode = mode;
-
-            if(mOnTimeChangedListener != null)
+            if (mOnTimeChangedListener != null)
                 mOnTimeChangedListener.onModeChanged(mMode);
-
-            if(animation)
+            if (animation)
                 startAnimation();
             else
                 invalidate();
@@ -341,20 +337,17 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * Set the selected hour value.
      * @param hour The selected hour value.
      */
-    public void setHour(int hour){
-        if(m24Hour)
+    public void setHour(int hour) {
+        if (m24Hour)
             hour = Math.max(hour, 0) % 24;
         else
             hour = Math.max(hour, 0) % 12;
-
-        if(mHour != hour){
+        if (mHour != hour) {
             int old = mHour;
             mHour = hour;
-
-            if(mOnTimeChangedListener != null)
+            if (mOnTimeChangedListener != null)
                 mOnTimeChangedListener.onHourChanged(old, mHour);
-
-            if(mMode == MODE_HOUR)
+            if (mMode == MODE_HOUR)
                 invalidate();
         }
     }
@@ -363,17 +356,14 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * Set the selected minute value.
      * @param minute The selected minute value.
      */
-    public void setMinute(int minute){
+    public void setMinute(int minute) {
         minute = Math.min(Math.max(minute, 0), 59);
-
-        if(mMinute != minute){
+        if (mMinute != minute) {
             int old = mMinute;
             mMinute = minute;
-
-            if(mOnTimeChangedListener != null)
+            if (mOnTimeChangedListener != null)
                 mOnTimeChangedListener.onMinuteChanged(old, mMinute);
-
-            if(mMode == MODE_MINUTE)
+            if (mMode == MODE_MINUTE)
                 invalidate();
         }
     }
@@ -382,7 +372,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * Set a listener will be called when the selected time is changed.
      * @param listener The {@link OnTimeChangedListener} will be called.
      */
-    public void setOnTimeChangedListener(OnTimeChangedListener listener){
+    public void setOnTimeChangedListener(OnTimeChangedListener listener) {
         mOnTimeChangedListener = listener;
     }
 
@@ -390,32 +380,32 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
      * Set this TimePicker use 24-hour format or not.
      * @param b
      */
-    public void set24Hour(boolean b){
-        if(m24Hour != b){
+    public void set24Hour(boolean b) {
+        if (m24Hour != b) {
             m24Hour = b;
-            if(!m24Hour && mHour > 11)
+            if (!m24Hour && mHour > 11)
                 setHour(mHour - 12);
             calculateTextLocation();
         }
     }
 
-    private float getAngle(int value, int mode){
-        switch (mode){
+    private float getAngle(int value, int mode) {
+        switch(mode) {
             case MODE_HOUR:
-                return (float)(-Math.PI / 2 + Math.PI / 6 * value);
+                return (float) (-Math.PI / 2 + Math.PI / 6 * value);
             case MODE_MINUTE:
-                return (float)(-Math.PI / 2 + Math.PI / 30 * value);
+                return (float) (-Math.PI / 2 + Math.PI / 30 * value);
             default:
                 return 0f;
         }
     }
 
-    private int getSelectedTick(int value, int mode){
-        switch (mode){
+    private int getSelectedTick(int value, int mode) {
+        switch(mode) {
             case MODE_HOUR:
                 return value == 0 ? (m24Hour ? 23 : 11) : value - 1;
             case MODE_MINUTE:
-                if(value % 5 == 0)
+                if (value % 5 == 0)
                     return (value == 0) ? 35 : (value / 5 + 23);
             default:
                 return -1;
@@ -425,80 +415,61 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = (widthMode == MeasureSpec.UNSPECIFIED) ?  mSelectionRadius * 12 : MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
+        int widthSize = (widthMode == MeasureSpec.UNSPECIFIED) ? mSelectionRadius * 12 : MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = (heightMode == MeasureSpec.UNSPECIFIED) ?  mSelectionRadius * 12 : MeasureSpec.getSize(heightMeasureSpec) - getPaddingTop() - getPaddingBottom();
-
+        int heightSize = (heightMode == MeasureSpec.UNSPECIFIED) ? mSelectionRadius * 12 : MeasureSpec.getSize(heightMeasureSpec) - getPaddingTop() - getPaddingBottom();
         int size = Math.min(widthSize, heightSize);
-
         int width = (widthMode == MeasureSpec.EXACTLY) ? widthSize : size;
         int height = (heightMode == MeasureSpec.EXACTLY) ? heightSize : size;
-
         setMeasuredDimension(width + getPaddingLeft() + getPaddingRight(), height + getPaddingTop() + getPaddingBottom());
     }
 
-    private void calculateTextLocation(){
-        if(mCenterPoint == null)
+    private void calculateTextLocation() {
+        if (mCenterPoint == null)
             return;
-
         double step = Math.PI / 6;
         double angle = -Math.PI / 3;
         float x, y;
-
         mPaint.setTextSize(mTextSize);
         mPaint.setTypeface(mTypeface);
         mPaint.setTextAlign(Paint.Align.CENTER);
-
-        if(m24Hour){
-            for(int i = 0; i < 12; i++){
+        if (m24Hour) {
+            for (int i = 0; i < 12; i++) {
                 mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
-                if(i == 0)
+                if (i == 0)
                     mSecondInnerRadius = mInnerRadius - mSelectionRadius - mRect.height();
-
-                x = mCenterPoint.x + (float)Math.cos(angle) * mSecondInnerRadius;
-                y = mCenterPoint.y + (float)Math.sin(angle) * mSecondInnerRadius;
-
+                x = mCenterPoint.x + (float) Math.cos(angle) * mSecondInnerRadius;
+                y = mCenterPoint.y + (float) Math.sin(angle) * mSecondInnerRadius;
                 mLocations[i * 2] = x;
                 mLocations[i * 2 + 1] = y + mRect.height() / 2f;
-
                 angle += step;
             }
-
-            for(int i = 12; i < mTicks.length; i++){
-                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
-                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
-
+            for (int i = 12; i < mTicks.length; i++) {
+                x = mCenterPoint.x + (float) Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float) Math.sin(angle) * mInnerRadius;
                 mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
                 mLocations[i * 2] = x;
                 mLocations[i * 2 + 1] = y + mRect.height() / 2f;
-
+                angle += step;
+            }
+        } else {
+            for (int i = 0; i < 12; i++) {
+                x = mCenterPoint.x + (float) Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float) Math.sin(angle) * mInnerRadius;
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
+                angle += step;
+            }
+            for (int i = 24; i < mTicks.length; i++) {
+                x = mCenterPoint.x + (float) Math.cos(angle) * mInnerRadius;
+                y = mCenterPoint.y + (float) Math.sin(angle) * mInnerRadius;
+                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
+                mLocations[i * 2] = x;
+                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
                 angle += step;
             }
         }
-        else{
-            for(int i = 0; i < 12; i++){
-                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
-                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
-
-                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
-                mLocations[i * 2] = x;
-                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
-
-                angle += step;
-            }
-
-            for(int i = 24; i < mTicks.length; i++){
-                x = mCenterPoint.x + (float)Math.cos(angle) * mInnerRadius;
-                y = mCenterPoint.y + (float)Math.sin(angle) * mInnerRadius;
-
-                mPaint.getTextBounds(mTicks[i], 0, mTicks[i].length(), mRect);
-                mLocations[i * 2] = x;
-                mLocations[i * 2 + 1] = y + mRect.height() / 2f;
-
-                angle += step;
-            }
-        }
-
     }
 
     @Override
@@ -506,86 +477,76 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         int left = getPaddingLeft();
         int top = getPaddingTop();
         int size = Math.min(w - getPaddingLeft() - getPaddingRight(), h - getPaddingTop() - getPaddingBottom());
-
-        if(mCenterPoint == null)
+        if (mCenterPoint == null)
             mCenterPoint = new PointF();
-
         mOuterRadius = size / 2f;
         mCenterPoint.set(left + mOuterRadius, top + mOuterRadius);
         mInnerRadius = mOuterRadius - mSelectionRadius - ThemeUtil.dpToPx(getContext(), 4);
-
         calculateTextLocation();
     }
 
-    private int getPointedValue(float x, float y, boolean isDown){
+    private int getPointedValue(float x, float y, boolean isDown) {
         float radius = (float) Math.sqrt(Math.pow(x - mCenterPoint.x, 2) + Math.pow(y - mCenterPoint.y, 2));
-        if(isDown) {
-            if(mMode == MODE_HOUR && m24Hour){
+        if (isDown) {
+            if (mMode == MODE_HOUR && m24Hour) {
                 if (radius > mInnerRadius + mSelectionRadius || radius < mSecondInnerRadius - mSelectionRadius)
                     return -1;
-            }
-            else if (radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
+            } else if (radius > mInnerRadius + mSelectionRadius || radius < mInnerRadius - mSelectionRadius)
                 return -1;
         }
-
-        float angle = (float)Math.atan2(y - mCenterPoint.y, x - mCenterPoint.x);
-        if(angle < 0)
+        float angle = (float) Math.atan2(y - mCenterPoint.y, x - mCenterPoint.x);
+        if (angle < 0)
             angle += Math.PI * 2;
-
-        if(mMode == MODE_HOUR){
-            if(m24Hour){
-                if(radius > mSecondInnerRadius + mSelectionRadius / 2){
+        if (mMode == MODE_HOUR) {
+            if (m24Hour) {
+                if (radius > mSecondInnerRadius + mSelectionRadius / 2) {
                     int value = (int) Math.round(angle * 6 / Math.PI) + 15;
-                    if(value == 24)
+                    if (value == 24)
                         return 0;
-                    else if(value > 24)
+                    else if (value > 24)
                         return value - 12;
                     else
                         return value;
-                }
-                else{
+                } else {
                     int value = (int) Math.round(angle * 6 / Math.PI) + 3;
                     return value > 12 ? value - 12 : value;
                 }
-            }
-            else {
+            } else {
                 int value = (int) Math.round(angle * 6 / Math.PI) + 3;
                 return value > 11 ? value - 12 : value;
             }
-        }
-        else if(mMode == MODE_MINUTE){
-            int value = (int)Math.round(angle * 30 / Math.PI) + 15;
+        } else if (mMode == MODE_MINUTE) {
+            int value = (int) Math.round(angle * 30 / Math.PI) + 15;
             return value > 59 ? value - 60 : value;
         }
-
         return -1;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
+        switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 int value = getPointedValue(event.getX(), event.getY(), true);
-                if(value < 0)
+                if (value < 0)
                     return false;
-                else if(mMode == MODE_HOUR)
+                else if (mMode == MODE_HOUR)
                     setHour(value);
-                else if(mMode == MODE_MINUTE)
+                else if (mMode == MODE_MINUTE)
                     setMinute(value);
                 mEdited = true;
                 return true;
             case MotionEvent.ACTION_MOVE:
                 value = getPointedValue(event.getX(), event.getY(), false);
-                if(value < 0)
+                if (value < 0)
                     return true;
-                else if(mMode == MODE_HOUR)
+                else if (mMode == MODE_HOUR)
                     setHour(value);
-                else if(mMode == MODE_MINUTE)
+                else if (mMode == MODE_MINUTE)
                     setMinute(value);
                 mEdited = true;
                 return true;
             case MotionEvent.ACTION_UP:
-                if(mEdited && mMode == MODE_HOUR){
+                if (mEdited && mMode == MODE_HOUR) {
                     setMode(MODE_MINUTE, true);
                     mEdited = false;
                     return true;
@@ -595,72 +556,61 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
                 mEdited = false;
                 break;
         }
-
         return false;
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-
         mPaint.setColor(mBackgroundColor);
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mOuterRadius, mPaint);
-
-        if(!mRunning){
+        if (!mRunning) {
             float angle;
             int selectedTick;
             int start;
             int length;
             float radius;
-
-            if(mMode == MODE_HOUR){
+            if (mMode == MODE_HOUR) {
                 angle = getAngle(mHour, MODE_HOUR);
                 selectedTick = getSelectedTick(mHour, MODE_HOUR);
                 start = 0;
                 length = m24Hour ? 24 : 12;
                 radius = m24Hour && selectedTick < 12 ? mSecondInnerRadius : mInnerRadius;
-            }
-            else{
+            } else {
                 angle = getAngle(mMinute, MODE_MINUTE);
                 selectedTick = getSelectedTick(mMinute, MODE_MINUTE);
                 start = 24;
                 length = 12;
                 radius = mInnerRadius;
             }
-
             mPaint.setColor(mSelectionColor);
-            float x = mCenterPoint.x + (float)Math.cos(angle) * radius;
-            float y = mCenterPoint.y + (float)Math.sin(angle) * radius;
+            float x = mCenterPoint.x + (float) Math.cos(angle) * radius;
+            float y = mCenterPoint.y + (float) Math.sin(angle) * radius;
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
-
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(mTickSize);
-            x -= (float)Math.cos(angle) * mSelectionRadius;
-            y -= (float)Math.sin(angle) * mSelectionRadius;
+            x -= (float) Math.cos(angle) * mSelectionRadius;
+            y -= (float) Math.sin(angle) * mSelectionRadius;
             canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
-
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setColor(mTextColor);
             canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mTickSize * 2, mPaint);
-
             mPaint.setTextSize(mTextSize);
             mPaint.setTypeface(mTypeface);
             mPaint.setTextAlign(Paint.Align.CENTER);
-
             int index;
-            for(int i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 index = start + i;
                 mPaint.setColor(index == selectedTick ? mTextHighlightColor : mTextColor);
                 canvas.drawText(mTicks[index], mLocations[index * 2], mLocations[index * 2 + 1], mPaint);
             }
-        }
-        else{
+        } else {
             float maxOffset = mOuterRadius - mInnerRadius + mTextSize / 2;
             int textOutColor = ColorUtil.getColor(mTextColor, 1f - mAnimProgress);
-            int textHighlightOutColor= ColorUtil.getColor(mTextHighlightColor, 1f - mAnimProgress);
+            int textHighlightOutColor = ColorUtil.getColor(mTextHighlightColor, 1f - mAnimProgress);
             int textInColor = ColorUtil.getColor(mTextColor, mAnimProgress);
-            int textHighlightInColor= ColorUtil.getColor(mTextHighlightColor, mAnimProgress);
+            int textHighlightInColor = ColorUtil.getColor(mTextHighlightColor, mAnimProgress);
             float outOffset;
             float inOffset;
             float outAngle;
@@ -673,8 +623,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
             int inSelectedTick;
             float outRadius;
             float inRadius;
-
-            if(mMode == MODE_MINUTE){
+            if (mMode == MODE_MINUTE) {
                 outAngle = getAngle(mHour, MODE_HOUR);
                 inAngle = getAngle(mMinute, MODE_MINUTE);
                 outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * maxOffset;
@@ -687,8 +636,7 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
                 inStart = 24;
                 inLength = 12;
                 inRadius = mInnerRadius;
-            }
-            else{
+            } else {
                 outAngle = getAngle(mMinute, MODE_MINUTE);
                 inAngle = getAngle(mHour, MODE_HOUR);
                 outOffset = mOutInterpolator.getInterpolation(mAnimProgress) * -maxOffset;
@@ -702,55 +650,46 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
                 inLength = m24Hour ? 24 : 12;
                 inRadius = m24Hour && inSelectedTick < 12 ? mSecondInnerRadius : mInnerRadius;
             }
-
             mPaint.setColor(ColorUtil.getColor(mSelectionColor, 1f - mAnimProgress));
-            float x = mCenterPoint.x + (float)Math.cos(outAngle) * (outRadius + outOffset);
-            float y = mCenterPoint.y + (float)Math.sin(outAngle) * (outRadius + outOffset);
+            float x = mCenterPoint.x + (float) Math.cos(outAngle) * (outRadius + outOffset);
+            float y = mCenterPoint.y + (float) Math.sin(outAngle) * (outRadius + outOffset);
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
-
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(mTickSize);
-            x -= (float)Math.cos(outAngle) * mSelectionRadius;
-            y -= (float)Math.sin(outAngle) * mSelectionRadius;
+            x -= (float) Math.cos(outAngle) * mSelectionRadius;
+            y -= (float) Math.sin(outAngle) * mSelectionRadius;
             canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
-
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setColor(ColorUtil.getColor(mSelectionColor, mAnimProgress));
-            x = mCenterPoint.x + (float)Math.cos(inAngle) * (inRadius + inOffset);
-            y = mCenterPoint.y + (float)Math.sin(inAngle) * (inRadius + inOffset);
+            x = mCenterPoint.x + (float) Math.cos(inAngle) * (inRadius + inOffset);
+            y = mCenterPoint.y + (float) Math.sin(inAngle) * (inRadius + inOffset);
             canvas.drawCircle(x, y, mSelectionRadius, mPaint);
-
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(mTickSize);
-            x -= (float)Math.cos(inAngle) * mSelectionRadius;
-            y -= (float)Math.sin(inAngle) * mSelectionRadius;
+            x -= (float) Math.cos(inAngle) * mSelectionRadius;
+            y -= (float) Math.sin(inAngle) * mSelectionRadius;
             canvas.drawLine(mCenterPoint.x, mCenterPoint.y, x, y, mPaint);
-
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setColor(mTextColor);
             canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, mTickSize * 2, mPaint);
-
             mPaint.setTextSize(mTextSize);
             mPaint.setTypeface(mTypeface);
             mPaint.setTextAlign(Paint.Align.CENTER);
-
             double step = Math.PI / 6;
             double angle = -Math.PI / 3;
             int index;
-
-            for(int i = 0; i < outLength; i++){
+            for (int i = 0; i < outLength; i++) {
                 index = i + outStart;
-                x = mLocations[index * 2] + (float)Math.cos(angle) * outOffset;
-                y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * outOffset;
+                x = mLocations[index * 2] + (float) Math.cos(angle) * outOffset;
+                y = mLocations[index * 2 + 1] + (float) Math.sin(angle) * outOffset;
                 mPaint.setColor(index == outSelectedTick ? textHighlightOutColor : textOutColor);
                 canvas.drawText(mTicks[index], x, y, mPaint);
                 angle += step;
             }
-
-            for(int i = 0; i < inLength; i++){
+            for (int i = 0; i < inLength; i++) {
                 index = i + inStart;
-                x = mLocations[index * 2] + (float)Math.cos(angle) * inOffset;
-                y = mLocations[index * 2 + 1] + (float)Math.sin(angle) * inOffset;
+                x = mLocations[index * 2] + (float) Math.cos(angle) * inOffset;
+                y = mLocations[index * 2 + 1] + (float) Math.sin(angle) * inOffset;
                 mPaint.setColor(index == inSelectedTick ? textHighlightInColor : textInColor);
                 canvas.drawText(mTicks[index], x, y, mPaint);
                 angle += step;
@@ -758,25 +697,24 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         }
     }
 
-    private void resetAnimation(){
+    private void resetAnimation() {
         mStartTime = SystemClock.uptimeMillis();
         mAnimProgress = 0f;
     }
 
     private void startAnimation() {
-        if(getHandler() != null){
+        if (getHandler() != null) {
             resetAnimation();
             mRunning = true;
             getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
         }
-
         invalidate();
     }
 
     private void stopAnimation() {
         mRunning = false;
         mAnimProgress = 1f;
-        if(getHandler() != null)
+        if (getHandler() != null)
             getHandler().removeCallbacks(mUpdater);
         invalidate();
     }
@@ -787,37 +725,30 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
         public void run() {
             update();
         }
-
     };
 
-    private void update(){
+    private void update() {
         long curTime = SystemClock.uptimeMillis();
-        mAnimProgress = Math.min(1f, (float)(curTime - mStartTime) / mAnimDuration);
-
-        if(mAnimProgress == 1f)
+        mAnimProgress = Math.min(1f, (float) (curTime - mStartTime) / mAnimDuration);
+        if (mAnimProgress == 1f)
             stopAnimation();
-
-        if(mRunning) {
-            if(getHandler() != null)
+        if (mRunning) {
+            if (getHandler() != null)
                 getHandler().postAtTime(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
             else
                 stopAnimation();
         }
-
         invalidate();
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-
         SavedState ss = new SavedState(superState);
-
         ss.mode = mMode;
         ss.hour = mHour;
         ss.minute = mMinute;
         ss.is24Hour = m24Hour;
-
         return ss;
     }
 
@@ -832,9 +763,13 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
     }
 
     static class SavedState extends BaseSavedState {
+
         int mode;
+
         int hour;
+
         int minute;
+
         boolean is24Hour;
 
         /**
@@ -866,16 +801,11 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
 
         @Override
         public String toString() {
-            return "TimePicker.SavedState{"
-                    + Integer.toHexString(System.identityHashCode(this))
-                    + " mode=" + mode
-                    + " hour=" + hour
-                    + " minute=" + minute
-                    + "24hour=" + is24Hour + "}";
+            return "TimePicker.SavedState{" + Integer.toHexString(System.identityHashCode(this)) + " mode=" + mode + " hour=" + hour + " minute=" + minute + "24hour=" + is24Hour + "}";
         }
 
-        public static final Creator<SavedState> CREATOR
-                = new Creator<SavedState>() {
+        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);
             }
@@ -885,5 +815,4 @@ public class TimePicker extends View implements ThemeManager.OnThemeChangedListe
             }
         };
     }
-
 }
