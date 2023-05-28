@@ -123,7 +123,7 @@ public class Recurring {
     }
 
     public int getRepeatSetting() {
-        return mRepeatSetting;
+        return retrieveRepeatSetting();
     }
 
     public void setRepeatSetting(int setting) {
@@ -163,7 +163,7 @@ public class Recurring {
     }
 
     public int getMonthRepeatType() {
-        return mRepeatSetting;
+        return retrieveRepeatSetting();
     }
 
     public void setEndMode(int mode) {
@@ -362,5 +362,9 @@ public class Recurring {
                 return cal.getTimeInMillis();
             year += mPeriod;
         } while (true);
+    }
+
+    private int retrieveRepeatSetting() {
+        return mRepeatSetting;
     }
 }

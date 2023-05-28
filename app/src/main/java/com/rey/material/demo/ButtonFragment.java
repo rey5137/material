@@ -37,22 +37,16 @@ public class ButtonFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                if (v instanceof FloatingActionButton) {
-                    FloatingActionButton bt = (FloatingActionButton) v;
-                    bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
-                }
                 //                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
+                setState(v);
             }
         };
         View.OnClickListener listener_delay = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (v instanceof FloatingActionButton) {
-                    FloatingActionButton bt = (FloatingActionButton) v;
-                    bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
-                }
                 //                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
+                setState(v);
             }
         };
         bt_flat.setOnClickListener(listener);
@@ -109,5 +103,13 @@ public class ButtonFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    private void setState(View v) {
+        if (v instanceof FloatingActionButton) {
+            FloatingActionButton bt = (FloatingActionButton) v;
+            bt.setLineMorphingState((bt.getLineMorphingState() + 1) % 2, true);
+        }
+        //                System.out.println(v + " " + ((RippleDrawable)v.getBackground()).getDelayClickType());
     }
 }

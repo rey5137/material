@@ -96,7 +96,7 @@ public class BottomSheetDialog extends android.app.Dialog {
 
             @Override
             public boolean onDown(MotionEvent e) {
-                return false;
+                return deny(e);
             }
 
             @Override
@@ -105,7 +105,7 @@ public class BottomSheetDialog extends android.app.Dialog {
 
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                return false;
+                return deny(e);
             }
 
             @Override
@@ -515,5 +515,9 @@ public class BottomSheetDialog extends android.app.Dialog {
             else
                 cancel();
         }
+    }
+
+    private boolean deny(MotionEvent e) {
+        return false;
     }
 }

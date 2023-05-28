@@ -76,22 +76,22 @@ public class RadioButtonDrawable extends Drawable implements Animatable {
 
     @Override
     public int getIntrinsicWidth() {
-        return mWidth;
+        return getWidth();
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return mHeight;
+        return getHeight();
     }
 
     @Override
     public int getMinimumWidth() {
-        return mWidth;
+        return getWidth();
     }
 
     @Override
     public int getMinimumHeight() {
-        return mHeight;
+        return getHeight();
     }
 
     @Override
@@ -344,5 +344,13 @@ public class RadioButtonDrawable extends Drawable implements Animatable {
             mAnimDuration = duration;
             return this;
         }
+    }
+
+    private int getWidth() {
+        return mWidth;
+    }
+
+    private int getHeight() {
+        return mHeight;
     }
 }

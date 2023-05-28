@@ -129,7 +129,7 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
     }
 
     public float getShadowSize() {
-        return mShadowSize;
+        return calculateShadowSize();
     }
 
     public float getShadowOffset() {
@@ -137,15 +137,15 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
     }
 
     public float getPaddingLeft() {
-        return mShadowSize;
+        return calculateShadowSize();
     }
 
     public float getPaddingTop() {
-        return mShadowSize;
+        return calculateShadowSize();
     }
 
     public float getPaddingRight() {
-        return mShadowSize;
+        return calculateShadowSize();
     }
 
     public float getPaddingBottom() {
@@ -153,11 +153,11 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
     }
 
     public float getCenterX() {
-        return mRadius + mShadowSize;
+        return getSizeWithShadow();
     }
 
     public float getCenterY() {
-        return mRadius + mShadowSize;
+        return getSizeWithShadow();
     }
 
     public boolean isPointerOver(float x, float y) {
@@ -336,5 +336,13 @@ public class OvalShadowDrawable extends Drawable implements Animatable {
         if (isRunning())
             scheduleSelf(mUpdater, SystemClock.uptimeMillis() + ViewUtil.FRAME_DURATION);
         invalidateSelf();
+    }
+
+    private float calculateShadowSize() {
+        return mShadowSize;
+    }
+
+    private float getSizeWithShadow() {
+        return mRadius + mShadowSize;
     }
 }

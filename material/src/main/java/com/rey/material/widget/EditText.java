@@ -599,7 +599,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
                         @Override
                         public void onAnimationStart(Animation animation) {
-                            mLabelView.setVisibility(View.VISIBLE);
+                            setVisibleLabelView(animation);
                         }
 
                         @Override
@@ -621,7 +621,7 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
 
                         @Override
                         public void onAnimationStart(Animation animation) {
-                            mLabelView.setVisibility(View.VISIBLE);
+                            setVisibleLabelView(animation);
                         }
 
                         @Override
@@ -4071,5 +4071,9 @@ public class EditText extends FrameLayout implements ThemeManager.OnThemeChanged
         void superOnSelectionChanged(int selStart, int selEnd) {
             super.onSelectionChanged(selStart, selEnd);
         }
+    }
+
+    private void setVisibleLabelView(Animation animation) {
+        mLabelView.setVisibility(View.VISIBLE);
     }
 }

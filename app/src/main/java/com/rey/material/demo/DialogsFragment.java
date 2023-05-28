@@ -129,8 +129,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 ((SimpleDialog.Builder) builder).message("Delete this conversation?").positiveAction("DELETE").negativeAction("CANCEL");
@@ -169,8 +168,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 builder.title("Google Wi-Fi").positiveAction("CONNECT").negativeAction("CANCEL").contentView(R.layout.layout_dialog_custom);
@@ -186,8 +184,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 ((SimpleDialog.Builder) builder).items(new String[] { "None", "Callisto", "Dione", "Ganymede", "Hangouts Call", "Luna", "Oberon", "Phobos" }, 0).title("Phone Ringtone").positiveAction("OK").negativeAction("CANCEL");
@@ -211,8 +208,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 ((SimpleDialog.Builder) builder).multiChoiceItems(new String[] { "Soup", "Pizza", "Hotdogs", "Hamburguer", "Coffee", "Juice", "Milk", "Water" }, 2, 5).title("Food Order").positiveAction("OK").negativeAction("CANCEL");
@@ -229,8 +225,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 builder.positiveAction("OK").negativeAction("CANCEL");
@@ -248,8 +243,7 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onNegativeActionClicked(DialogFragment fragment) {
-                        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
-                        super.onNegativeActionClicked(fragment);
+                        toastCancelAction(fragment);
                     }
                 };
                 builder.positiveAction("OK").negativeAction("CANCEL");
@@ -257,5 +251,10 @@ public class DialogsFragment extends Fragment implements View.OnClickListener {
         }
         DialogFragment fragment = DialogFragment.newInstance(builder);
         fragment.show(getFragmentManager(), null);
+    }
+
+    private void toastCancelAction(DialogFragment fragment) {
+        Toast.makeText(mActivity, "Cancelled", Toast.LENGTH_SHORT).show();
+        super.onNegativeActionClicked(fragment);
     }
 }

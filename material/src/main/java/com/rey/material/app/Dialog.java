@@ -1405,17 +1405,17 @@ public class Dialog extends android.app.Dialog {
 
         @Override
         public void onPositiveActionClicked(DialogFragment fragment) {
-            fragment.dismiss();
+            hide(fragment);
         }
 
         @Override
         public void onNegativeActionClicked(DialogFragment fragment) {
-            fragment.dismiss();
+            hide(fragment);
         }
 
         @Override
         public void onNeutralActionClicked(DialogFragment fragment) {
-            fragment.dismiss();
+            hide(fragment);
         }
 
         @Override
@@ -1505,5 +1505,9 @@ public class Dialog extends android.app.Dialog {
                 return new Builder[size];
             }
         };
+
+        private void hide(DialogFragment fragment) {
+            fragment.dismiss();
+        }
     }
 }
